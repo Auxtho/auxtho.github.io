@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<style>
+  :root { --top:#66B8FF; --left:#3C96EE; --right:#0071e3; }
+  .top { fill: var(--top); } .left { fill: var(--left); } .right { fill: var(--right); }
+  @media (prefers-color-scheme: dark) {
+    :root { --top:#FFFFFF; --left:#E3E6EB; --right:#C9CFD8; }
+  }
+</style>
+  <!-- Top face -->
+  <polygon class="top" points="16,6 25,11 16,16 7,11"/>
+  <!-- Left face -->
+  <polygon class="left" points="7,11 16,16 16,26 7,21"/>
+  <!-- Right face -->
+  <polygon class="right" points="25,11 16,16 16,26 25,21"/>
+</svg>
