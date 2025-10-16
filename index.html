@@ -120,8 +120,6 @@
         /* Custom styles for content integration */
         .diagram-container svg { max-width: 100%; height: auto; border-radius: 1rem; }
         
-        .logo-text { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.05em; color: #fff; text-decoration: none; }
-        
         .headline-balance { text-wrap: balance; }
         
         /* --- Scroll Navigation (Updated Color) --- */
@@ -203,8 +201,8 @@
 
     <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
         <div class="container mx-auto px-6 py-5 flex justify-between items-center">
-            <a href="/" class="z-50 logo-text" aria-label="Auxtho Home">
-                AUXTHO
+            <a href="/" class="z-50" aria-label="Auxtho Home">
+                <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
             </a>
             <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
                 <span class="sr-only">Menu</span><span class="nav-icon-line line-1"></span><span class="nav-icon-line line-2"></span>
@@ -227,7 +225,7 @@
     <!-- Scroll Navigation (Restored) -->
     <nav id="scroll-nav" aria-label="In-page navigation">
         <div class="scroll-nav-content">
-            <span class="scroll-nav-title">Auxtho</span>
+            <img src="/assets/favicon.svg" alt="Auxtho" class="h-6 w-6">
             <button id="scroll-nav-toggle" class="scroll-nav-toggle" aria-expanded="false" aria-controls="scroll-nav-menu">
                 <span class="sr-only">Menu</span>
                 <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
