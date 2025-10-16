@@ -2,28 +2,42 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
+    <!-- 
+    CSP is now enforced via HTTP Response Header by Cloudflare.
+    The meta tag has been removed to prevent conflicts.
+    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auxtho — Governance OS for AI</title>
     <meta name="description" content="Auxtho provides deterministic control for trustworthy AI behavior, solving agent and strategic drift.">
     <meta name="robots" content="index,follow"> 
+    <meta name="color-scheme" content="dark light">
     
-    <!-- Restored Asset Paths -->
+    <!-- Asset Paths -->
     <link rel="icon" href="/assets/favicon.svg">
     <link rel="canonical" href="https://auxtho.com" />
     <meta name="theme-color" content="#0d6efd" />
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <!-- Global referrer policy for privacy -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <!-- Restored OG Meta -->
+    <!-- OG Meta -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Auxtho — Governance OS for AI">
     <meta property="og:description" content="Deterministic control, automated governance, and contextual judgment for reliable AI.">
-    <meta property="og:image" content="/assets/og-image.png">
+    <meta property="og:image" content="https://auxtho.com/assets/og-image.png">
+    <meta property="og:image:alt" content="Auxtho — Governance OS for AI">
     <meta property="og:url" content="https://auxtho.com">
     <meta property="og:site_name" content="Auxtho">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter Card Meta -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@auxtho">
     <meta name="twitter:title" content="Auxtho — Governance OS for AI">
     <meta name="twitter:description" content="Deterministic control, automated governance, and contextual judgment for reliable AI.">
-    <meta name="twitter:image" content="/assets/og-image.png">
+    <meta name="twitter:image" content="https://auxtho.com/assets/og-image.png">
 
     <!-- Schema.org -->
     <script type="application/ld+json">
@@ -32,16 +46,40 @@
       "@type":"Organization",
       "name":"Auxtho Inc.",
       "url":"https://auxtho.com",
+      "logo":"https://auxtho.com/assets/og-image.png",
       "description":"Governance OS for deterministic AI control",
       "founder": { "@type":"Person", "name":"Jin Sung" },
-      "sameAs": [],
+      "sameAs": [
+        "https://www.linkedin.com/company/auxtho",
+        "https://github.com/auxtho"
+      ],
       "contactPoint":[{"@type":"ContactPoint","email":"hello@auxtho.com","contactType":"inquiries"}]
+    }
+    </script>
+    <!-- VideoObject Schema for Demo -->
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"VideoObject",
+      "name":"Auxtho 50s Demo",
+      "description":"Deterministic routing: same input → same route → same output hash.",
+      "thumbnailUrl":["https://auxtho.com/assets/demo-thumbnail.png"],
+      "uploadDate":"2025-10-15",
+      "embedUrl":"https://www.youtube-nocookie.com/embed/7Sc8csboxcU",
+      "publisher":{"@type":"Organization","name":"Auxtho Inc."}
     }
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.youtube-nocookie.com">
+    <link rel="preconnect" href="https://i.ytimg.com">
+    <link rel="preconnect" href="https://www.youtube.com">
+    <link rel="preconnect" href="https://img.youtube.com">
+    <!-- Added &display=swap for performance -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preload" href="/assets/demo-thumbnail.png" as="image">
+    <script>window.tailwind={config:{darkMode:"class"}};</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- Original Design System --- */
@@ -64,6 +102,10 @@
         .mobile-nav-toggle[aria-expanded="true"] .nav-icon-line.line-1 { top: 50%; transform: rotate(45deg); }
         .mobile-nav-toggle[aria-expanded="true"] .nav-icon-line.line-2 { top: 50%; transform: rotate(-45deg); }
         body.resizing .primary-navigation { transition: none !important; }
+
+        @media (prefers-reduced-motion: reduce) {
+          html { scroll-behavior: auto !important; }
+        }
 
         @media (max-width: 52.125em) { 
             .primary-header .container { position: relative; }
@@ -132,10 +174,32 @@
         .scroll-nav-menu-list a { display: block; padding: 0.75rem 0.5rem; color: #d2d2d7; text-decoration: none; border-radius: 6px; transition: background-color 0.2s, color 0.2s; }
         .scroll-nav-menu-list a:hover { background-color: rgba(255, 255, 255, 0.1); color: #fff; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        
+        /* Skip link focus style */
+        .focus\:not-sr-only:focus {
+            position: static;
+            width: auto;
+            height: auto;
+            padding: 0;
+            margin: 0;
+            overflow: visible;
+            clip: auto;
+            white-space: normal;
+        }
+
+        /* Global Focus Style */
+        :focus-visible { 
+            outline: 2px solid #60a5fa; 
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
 
     </style>
 </head>
 <body class="antialiased">
+    
+    <!-- Skip to content link for accessibility -->
+    <a href="#problem" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black rounded-lg">Skip to content</a>
 
     <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
         <div class="container mx-auto px-6 py-5 flex justify-between items-center">
@@ -150,8 +214,9 @@
                     <!-- Navigation Links Updated -->
                     <li><a href="#problem" class="text-gray-300 hover:text-white transition-colors">Problem</a></li>
                     <li><a href="#solution" class="text-gray-300 hover:text-white transition-colors">Solution</a></li>
-                    <li><a href="/story.html" class="text-gray-300 hover:text-white transition-colors">Our Story</a></li>
+                    <li><a href="#overview" class="text-gray-300 hover:text-white transition-colors">Overview</a></li>
                     <li><a href="#demo" class="text-gray-300 hover:text-white transition-colors">Demo</a></li>
+                    <li><a href="/story.html" class="text-gray-300 hover:text-white transition-colors">Our Story</a></li>
                     <li><a href="#founder" class="text-gray-300 hover:text-white transition-colors">Founder</a></li>
                     <li><a href="#contact" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Contact</a></li>
                 </ul>
@@ -171,12 +236,12 @@
         <div id="scroll-nav-menu">
             <ul class="scroll-nav-menu-list">
                  <!-- Scroll Navigation Links Updated -->
-                <li><a href="/index.html#problem">Problem</a></li>
-                <li><a href="/index.html#solution">Solution</a></li>
+                <li><a href="#problem">Problem</a></li>
+                <li><a href="#solution">Solution</a></li>
+                <li><a href="#overview">System Overview</a></li>
+                <li><a href="#demo">Demo</a></li>
                 <li><a href="/story.html">Our Story</a></li>
-                <li><a href="/index.html#overview">System Overview</a></li>
-                <li><a href="/index.html#demo">Demo</a></li>
-                <li><a href="/index.html#founder">Founder</a></li>
+                <li><a href="#founder">Founder</a></li>
             </ul>
         </div>
     </nav>
@@ -186,11 +251,11 @@
         <!-- Layer 1: The Hook (Updated) -->
         <section class="text-center pt-24 pb-16">
             <div class="container mx-auto px-6">
-                <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4 headline-balance">When your AI forgets its goal, Auxtho remembers.</h1>
+                <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4 headline-balance">When your AI forgets its goal, Auxtho remembers</h1>
                 <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">Beyond smart AI, to reliable AI. We are the Governance OS that controls AI's unpredictability, ensuring every action aligns with your original intent.</p>
                 <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                    <a href="#solution" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">Explore the Solution</a>
-                    <a href="/story.html" class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">Read Our Story</a>
+                    <a href="#demo" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">See 50s Demo</a>
+                    <a href="#solution" class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">Explore the Solution</a>
                 </div>
             </div>
         </section>
@@ -201,7 +266,7 @@
                 <div class="max-w-4xl mx-auto">
                     <h2 class="text-3xl md:text-4xl font-bold headline-balance">The Silent Failure: AI's Strategic Drift</h2>
                     <p class="text-lg text-gray-400 mt-4">'Strategic Drift' is the critical flaw in today's AI agents. It's the silent error where an AI, over time, deviates from your core mission, leading to unreliable outcomes and broken trust. We believe the answer lies in making AI behavior accountable.</p>
-                    <p class="text-xl text-white mt-6 font-semibold">For us, Predictability is the New Intelligence.</p>
+                    <p class="text-xl text-white mt-6 font-semibold">For us, Predictability is the New Intelligence</p>
                 </div>
             </div>
         </section>
@@ -216,15 +281,15 @@
                 <div class="grid md:grid-cols-3 gap-8">
                     <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
                         <h3 class="text-xl font-bold mb-2">1. Supervisor Control</h3>
-                        <p class="text-gray-400">A supervisor AI governs all tasks, creating a clear, machine-readable plan before any action is taken. Pre-plan then execute, no surprises.</p>
+                        <p class="text-gray-400">Pre-plan then execute, no surprises.</p>
                     </div>
                     <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
                         <h3 class="text-xl font-bold mb-2">2. Memory Injection</h3>
-                        <p class="text-gray-400">The system injects the user's long-term goals into every request, keeping context stable across steps and sessions.</p>
+                        <p class="text-gray-400">Long-term goals applied at every step.</p>
                     </div>
                     <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
                         <h3 class="text-xl font-bold mb-2">3. Expert Execution</h3>
-                        <p class="text-gray-400">Specialized experts execute within strict, pre-approved plans, eliminating off-policy or unpredictable actions.</p>
+                        <p class="text-gray-400">Specialists operate within strict, pre-approved plans.</p>
                     </div>
                 </div>
             </div>
@@ -238,7 +303,7 @@
                     <p class="text-lg text-gray-400 mt-2">A high-level overview of Auxtho’s three-stage architecture.</p>
                 </div>
                 <div class="diagram-container max-w-5xl mx-auto">
-                    <svg width="980" height="420" viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+                    <svg width="100%" height="auto" viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
                         <title id="title">High-level overview of a three-stage AI control pipeline</title>
                         <desc id="desc">Boxes labeled Input Guard, Analyzer, Rule Router, and Outcomes arranged left to right, with an external Governance Policy feeding into the Rule Router.</desc>
                         <defs>
@@ -271,11 +336,11 @@
                         <g class="diagram-font">
                             <text class="title" x="55" y="150">Input Guard</text><text class="meta" x="55" y="174">Filters unsafe/unstable requests</text><rect class="pill" x="55" y="205" width="180" height="28"></rect><text class="pillText" x="145" y="224">Pattern Checks</text><rect class="pill" x="55" y="240" width="180" height="28"></rect><text class="pillText" x="145" y="259">Similarity Screening</text>
                             <text class="title" x="305" y="150">Analyzer</text><text class="meta" x="305" y="174">Extracts user intent</text><rect class="pill" x="305" y="205" width="180" height="48"></rect><text class="pillText" x="395" y="226"><tspan x="395" dy="0em">Intent, Tone, Slots</tspan><tspan x="395" dy="1.2em">→ Structured JSON</tspan></text><rect class="pill" x="305" y="260" width="180" height="28"></rect><text class="pillText" x="395" y="279">Schema Validation</text>
-                            <text class="title" x="555" y="150">Rule Router</text><text class="meta" x="555" y="174">Applies deterministic policies</text><rect class="pill" x="555" y="205" width="180" height="28"></rect><text class="pillText" x="645" y="224">First-Match Rules</text><rect class="pill" x="555" y="240" width="180" height="28"></rect><text class="pillText" x="645" y="259">No Randomness</text>
+                            <text class="title" x="555" y="150">Rule Router</text><text class="meta" x="555" y="174">Applies deterministic policies</text><rect class="pill" x="555" y="205" width="180" height="28"></rect><text class="pillText" x="645" y="224">First-Match Rules</text><rect class="pill" x="555" y="240" width="180" height="28"></rect><text class="pillText" x="645" y="259">Deterministic routing (sampling off)</text>
                             <text class="title" x="785" y="150">Outcomes</text><text class="meta" x="785" y="174">Consistent & reviewable</text><rect class="pill" x="785" y="205" width="140" height="28"></rect><text class="pillText" x="855" y="224">Trace + Hash</text><rect class="pill" x="785" y="240" width="140" height="28"></rect><text class="pillText" x="855" y="259">Audit-Friendly</text>
                         </g>
                         <g class="diagram-font">
-                            <rect class="panel" x="560" y="340" width="170" height="64"></rect><text class="title" x="575" y="365">Governance Policy</text><text class="meta" x="575" y="385">allow / deny / modify</text>
+                            <rect class="panel" x="560" y="340" width="170" height="64"></rect><text class="title" x="575" y="365">Governance Policy</text><text class="meta" x="575" y="385">allow / deny / rewrite</text>
                         </g>
                         <g>
                             <path class="wire" d="M250,220 H 290"></path><path class="wire" d="M500,220 H 540"></path><path class="wire" d="M750,220 H 770"></path><path class="wire" d="M645,340 V 270"></path>
@@ -294,12 +359,17 @@
                 </div>
                 <div class="demo-player aspect-video max-w-4xl mx-auto rounded-2xl overflow-hidden bg-gray-900 border border-gray-700 cursor-pointer relative" style="background-image: url('/assets/demo-thumbnail.png'); background-size: cover; background-position: center;" role="button" tabindex="0" aria-label="Play Demo Video">
                     <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                        <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg width="80" height="80" viewBox="0 0 80" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="40" cy="40" r="38" stroke="white" stroke-width="4"/>
                             <path d="M54.5 40L32.75 52.5593L32.75 27.4407L54.5 40Z" fill="white"/>
                         </svg>
                     </div>
                 </div>
+                <noscript>
+                    <div class="max-w-4xl mx-auto text-center mt-4 text-gray-400">
+                        JavaScript is required to view the demo. Email us at <a class="underline" href="mailto:hello@auxtho.com?subject=Demo%20Access%20Request">hello@auxtho.com</a> for access.
+                    </div>
+                </noscript>
             </div>
         </section>
         
@@ -347,37 +417,44 @@
     </footer>
 
     <script>
+        // Frame-buster for clickjacking protection (best-effort for GitHub Pages)
+        if (window.top !== window.self) {
+            try { window.top.location = window.self.location; } catch(e) { console.warn("Frame-buster failed:", e); }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const primaryNav = document.getElementById('primary-navigation');
             const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
-            mobileNavToggle.addEventListener('click', () => {
-                const isVisible = primaryNav.getAttribute('data-visible') === 'true';
-                if (isVisible) {
-                    primaryNav.setAttribute('data-visible', 'false');
-                    mobileNavToggle.setAttribute('aria-expanded', 'false');
-                    document.documentElement.classList.remove('nav-open');
-                } else {
-                    primaryNav.setAttribute('data-visible', 'true');
-                    mobileNavToggle.setAttribute('aria-expanded', 'true');
-                    document.documentElement.classList.add('nav-open');
-                }
-            });
-            primaryNav.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href').startsWith('#')) {
+            if (primaryNav && mobileNavToggle) {
+                mobileNavToggle.addEventListener('click', () => {
+                    const isVisible = primaryNav.getAttribute('data-visible') === 'true';
+                    if (isVisible) {
                         primaryNav.setAttribute('data-visible', 'false');
                         mobileNavToggle.setAttribute('aria-expanded', 'false');
                         document.documentElement.classList.remove('nav-open');
+                    } else {
+                        primaryNav.setAttribute('data-visible', 'true');
+                        mobileNavToggle.setAttribute('aria-expanded', 'true');
+                        document.documentElement.classList.add('nav-open');
                     }
                 });
-            });
+                primaryNav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href').startsWith('#')) {
+                            primaryNav.setAttribute('data-visible', 'false');
+                            mobileNavToggle.setAttribute('aria-expanded', 'false');
+                            document.documentElement.classList.remove('nav-open');
+                        }
+                    });
+                });
+            }
             
             const scrollNav = document.getElementById('scroll-nav');
             const scrollNavToggle = document.getElementById('scroll-nav-toggle');
             const scrollNavMenu = document.getElementById('scroll-nav-menu');
             const primaryHeader = document.querySelector('.primary-header');
             
-            if(scrollNav && primaryHeader) {
+            if(scrollNav && scrollNavToggle && scrollNavMenu && primaryHeader) {
                 window.addEventListener('scroll', () => {
                     if (window.scrollY > primaryHeader.offsetHeight) {
                         scrollNav.classList.add('is-visible');
@@ -391,7 +468,7 @@
                 scrollNavToggle.addEventListener('click', (e) => {
                     e.stopPropagation();
                     const isExpanded = scrollNavToggle.getAttribute('aria-expanded') === 'true';
-                    scrollNavToggle.setAttribute('aria-expanded', !isExpanded);
+                    scrollNavToggle.setAttribute('aria-expanded', String(!isExpanded));
                     scrollNavMenu.classList.toggle('is-open');
                 });
 
@@ -414,19 +491,46 @@
             if (demoPlayer) {
                 const play = () => {
                     const YT_ID = "7Sc8csboxcU"; 
-                    if (YT_ID && YT_ID !== "YOUR_VIDEO_ID") {
+                    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    const autoplay = reduce ? 0 : 1;
+                    const YT_SRC = `https://www.youtube-nocookie.com/embed/${YT_ID}?autoplay=${autoplay}&rel=0&modestbranding=1`;
+
+                    try {
                         const iframe = document.createElement('iframe');
-                        iframe.setAttribute('src', `https://www.youtube.com/embed/${YT_ID}?autoplay=1&rel=0&modestbranding=1`);
-                        iframe.setAttribute('title', 'Auxtho Demo Video');
-                        iframe.setAttribute('frameborder', '0');
+                        iframe.src = YT_SRC;
+                        iframe.title = 'Auxtho Demo Video';
+                        iframe.loading = 'lazy';
+                        iframe.frameBorder = '0';
                         iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
                         iframe.setAttribute('allowfullscreen', '');
+                        iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation');
+                        iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
                         demoPlayer.innerHTML = '';
                         demoPlayer.appendChild(iframe);
-                    } else { window.location.href = "mailto:hello@auxtho.com?subject=Demo%20Access%20Request"; }
+
+                        // Timeout fallback in case embeds are blocked by network/corporate policy
+                        setTimeout(() => {
+                           try {
+                                const loaded = iframe.contentWindow && iframe.contentWindow.length !== undefined;
+                                if (!loaded) {
+                                    window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
+                                }
+                            } catch (e) {
+                                window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
+                            }
+                        }, 4000);
+                    } catch (e) {
+                        // Fallback for strict environments or JS errors
+                        window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
+                    }
                 };
                 demoPlayer.addEventListener('click', play, { once: true });
-                demoPlayer.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); play(); } }, { once: true });
+                demoPlayer.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        play();
+                    }
+                }, { once: true });
             }
 
             let resizeTimer;
