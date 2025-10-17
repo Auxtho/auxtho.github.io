@@ -40,9 +40,35 @@
     <meta name="twitter:image" content="https://auxtho.com/assets/og-image.png">
 
     <!-- Schema.org -->
-    <script type="application/ld+json" src="/assets/ld-org.json"></script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"Organization",
+      "name":"Auxtho Inc.",
+      "url":"https://auxtho.com",
+      "logo":"https://auxtho.com/assets/og-image.png",
+      "description":"Governance OS for deterministic AI control",
+      "founder": { "@type":"Person", "name":"Jin Sung" },
+      "sameAs": [
+        "https://www.linkedin.com/company/auxtho",
+        "https://github.com/auxtho"
+      ],
+      "contactPoint":[{"@type":"ContactPoint","email":"hello@auxtho.com","contactType":"inquiries"}]
+    }
+    </script>
     <!-- VideoObject Schema for Demo -->
-    <script type="application/ld+json" src="/assets/ld-video.json"></script>
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"VideoObject",
+      "name":"Auxtho 50s Demo",
+      "description":"Deterministic routing: same input → same route → same output hash.",
+      "thumbnailUrl":["https://auxtho.com/assets/demo-thumbnail.png"],
+      "uploadDate":"2025-10-15",
+      "embedUrl":"https://www.youtube-nocookie.com/embed/7Sc8csboxcU",
+      "publisher":{"@type":"Organization","name":"Auxtho Inc."}
+    }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -53,9 +79,123 @@
     <!-- Added &display=swap for performance -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="preload" href="/assets/demo-thumbnail.png" as="image">
-    <script src="/assets/tw-init.js" defer></script>
-    
-    </head>
+    <script>window.tailwind={config:{darkMode:"class"}};</script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- Original Design System --- */
+        html.nav-open { overflow: hidden; }
+        html, body { overflow-x: hidden; width: 100%; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+        .demo-player iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+        .mobile-nav-toggle { display: none; position: absolute; z-index: 2000; right: 1.5rem; top: 50%; transform: translateY(-50%); background: transparent; border: none; cursor: pointer; width: 28px; height: 28px; padding: 0; }
+        .nav-icon-line { position: absolute; left: 15%; width: 70%; height: 2px; background-color: white; transition: transform 0.3s ease-in-out, top 0.3s ease-in-out; border-radius: 2px; }
+        .nav-icon-line.line-1 { top: 30%; }
+        .nav-icon-line.line-2 { top: 65%; }
+        .mobile-nav-toggle[aria-expanded="true"] .nav-icon-line.line-1 { top: 50%; transform: rotate(45deg); }
+        .mobile-nav-toggle[aria-expanded="true"] .nav-icon-line.line-2 { top: 50%; transform: rotate(-45deg); }
+        body.resizing .primary-navigation { transition: none !important; }
+
+        @media (prefers-reduced-motion: reduce) {
+          html { scroll-behavior: auto !important; }
+        }
+
+        @media (max-width: 52.125em) { 
+            .primary-header .container { position: relative; }
+            .primary-navigation { position: fixed; z-index: 1000; top: 0; left: 0; width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; gap: 2.5rem; transform: translateY(-100%); transition: transform 350ms ease-out; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(1rem); -webkit-backdrop-filter: blur(1rem); }
+            .primary-navigation > li > a { font-size: 1.5rem; }
+            .primary-navigation { --tw-space-x-reverse: 0 !important; margin: 0 !important; }
+            .primary-navigation > * { margin: 0 !important; }
+            .primary-navigation[data-visible="true"] { transform: translateY(0%); }
+            .mobile-nav-toggle { display: block; }
+        }
+        
+        /* Custom styles for content integration */
+        .diagram-container svg { max-width: 100%; height: auto; border-radius: 1rem; }
+        
+        .logo-text { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.05em; color: #fff; text-decoration: none; }
+        
+        .headline-balance { text-wrap: balance; }
+        
+        /* --- Scroll Navigation (Updated Color) --- */
+        #scroll-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 40;
+            background: rgba(17, 24, 39, 0.8); /* Updated for consistency */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgb(55, 65, 81); /* Updated for consistency */
+            padding: 0.75rem 1.5rem;
+            transform: translateY(-100%);
+            opacity: 0;
+            visibility: hidden;
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
+        }
+
+        #scroll-nav.is-visible {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-nav-content { display: flex; justify-content: space-between; align-items: center; max-width: 960px; margin: 0 auto; }
+        .scroll-nav-title { font-weight: 600; font-size: 1.1rem; }
+        .scroll-nav-toggle { background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: 8px; transition: background-color 0.2s ease; }
+        .scroll-nav-toggle:hover { background-color: rgba(255, 255, 255, 0.1); }
+        .chevron-icon { width: 16px; height: 16px; stroke-width: 2; transition: transform 0.3s ease; }
+        .scroll-nav-toggle[aria-expanded="true"] .chevron-icon { transform: rotate(180deg); }
+
+        #scroll-nav-menu { 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            right: 0; 
+            background: rgba(17, 24, 39, 0.8); /* Updated for consistency */
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid rgb(55, 65, 81); /* Updated for consistency */
+            opacity: 0; 
+            visibility: hidden; 
+            transform: translateY(-10px); 
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s; 
+        }
+        #scroll-nav-menu.is-open { opacity: 1; visibility: visible; transform: translateY(0); }
+        .scroll-nav-menu-list { list-style: none; padding: 1rem 0; max-width: 960px; margin: 0 auto; padding-left: 1.5rem; padding-right: 1.5rem; }
+        .scroll-nav-menu-list a { display: block; padding: 0.75rem 0.5rem; color: #d2d2d7; text-decoration: none; border-radius: 6px; transition: background-color 0.2s, color 0.2s; }
+        .scroll-nav-menu-list a:hover { background-color: rgba(255, 255, 255, 0.1); color: #fff; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border-width: 0; }
+        
+        /* Skip link focus style */
+        .focus\:not-sr-only:focus {
+            position: static;
+            width: auto;
+            height: auto;
+            padding: 0;
+            margin: 0;
+            overflow: visible;
+            clip: auto;
+            white-space: normal;
+        }
+
+        /* Global Focus Style */
+        :focus-visible { 
+            outline: 2px solid #60a5fa; 
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+    </style>
+</head>
 <body class="antialiased">
     
     <!-- Skip to content link for accessibility -->
@@ -160,35 +300,24 @@
             <div class="container mx-auto px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-3xl md:text-4xl font-bold">System Overview</h2>
-                    <p class="text-lg text-gray-400 mt-2">A high-level overview of Auxtho?셲 three-stage architecture.</p>
+                    <p class="text-lg text-gray-400 mt-2">A high-level overview of Auxtho’s three-stage architecture.</p>
                 </div>
                 <div class="diagram-container max-w-5xl mx-auto">
                     <svg width="100%" height="auto" viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
                         <title id="title">High-level overview of a three-stage AI control pipeline</title>
                         <desc id="desc">Boxes labeled Input Guard, Analyzer, Rule Router, and Outcomes arranged left to right, with an external Governance Policy feeding into the Rule Router.</desc>
                         <defs>
-<style>
-  .diagram-font { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  .panel { fill: rgb(17 24 39 / 0.5); stroke: rgb(55 65 81); stroke-width:1; rx:14; }
-  .title { font-size:16px; font-weight:600; fill:#E5E5EA; }
-  .meta  { font-size:13px; fill:#9CA3AF; }
-  .wire  { stroke:#4B5563; stroke-width:1.5; marker-end:url(#arrow); fill:none; }
-  .pill  { fill: rgb(55 65 81 / 0.5); stroke: rgb(75 85 99); stroke-width:1; rx:10; }
-  .pillText { font-size:12px; fill:#E5E5EA; text-anchor: middle; }
-  .header-title { font-size: 20px; font-weight: 700; fill: #fff; }
-  .header-meta  { font-size: 14px; fill: #9CA3AF; }
-</style>
                             <style>
-  .diagram-font { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-  .panel { fill: rgb(17 24 39 / 0.5); stroke: rgb(55 65 81); stroke-width:1; rx:14; }
-  .title { font-size:16px; font-weight:600; fill:#E5E5EA; }
-  .meta  { font-size:13px; fill:#9CA3AF; }
-  .wire  { stroke:#4B5563; stroke-width:1.5; marker-end:url(#arrow); fill:none; }
-  .pill  { fill: rgb(55 65 81 / 0.5); stroke: rgb(75 85 99); stroke-width:1; rx:10; }
-  .pillText { font-size:12px; fill:#E5E5EA; text-anchor: middle; }
-  .header-title { font-size: 20px; font-weight: 700; fill: #fff; }
-  .header-meta  { font-size: 14px; fill: #9CA3AF; }
-</style>
+                                .diagram-font { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+                                .panel { fill: rgb(17 24 39 / 0.5); stroke: rgb(55 65 81); stroke-width:1; rx:14; }
+                                .title { font-size:16px; font-weight:600; fill:#E5E5EA; }
+                                .meta  { font-size:13px; fill:#9CA3AF; }
+                                .wire  { stroke:#4B5563; stroke-width:1.5; marker-end:url(#arrow); fill:none; }
+                                .pill  { fill: rgb(55 65 81 / 0.5); stroke: rgb(75 85 99); stroke-width:1; rx:10; }
+                                .pillText { font-size:12px; fill:#E5E5EA; text-anchor: middle; }
+                                .header-title { font-size: 20px; font-weight: 700; fill: #fff; }
+                                .header-meta { font-size: 14px; fill: #9CA3AF; }
+                            </style>
                             <marker id="arrow" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
                                 <polygon points="0 0, 8 3.5, 0 7" fill="#4B5563"></polygon>
                             </marker>
@@ -206,7 +335,7 @@
                         </g>
                         <g class="diagram-font">
                             <text class="title" x="55" y="150">Input Guard</text><text class="meta" x="55" y="174">Filters unsafe/unstable requests</text><rect class="pill" x="55" y="205" width="180" height="28"></rect><text class="pillText" x="145" y="224">Pattern Checks</text><rect class="pill" x="55" y="240" width="180" height="28"></rect><text class="pillText" x="145" y="259">Similarity Screening</text>
-                            <text class="title" x="305" y="150">Analyzer</text><text class="meta" x="305" y="174">Extracts user intent</text><rect class="pill" x="305" y="205" width="180" height="48"></rect><text class="pillText" x="395" y="226"><tspan x="395" dy="0em">Intent, Tone, Slots → Structured JSON</tspan></text><rect class="pill" x="305" y="260" width="180" height="28"></rect><text class="pillText" x="395" y="279">Schema Validation</text>
+                            <text class="title" x="305" y="150">Analyzer</text><text class="meta" x="305" y="174">Extracts user intent</text><rect class="pill" x="305" y="205" width="180" height="48"></rect><text class="pillText" x="395" y="226"><tspan x="395" dy="0em">Intent, Tone, Slots</tspan><tspan x="395" dy="1.2em">→ Structured JSON</tspan></text><rect class="pill" x="305" y="260" width="180" height="28"></rect><text class="pillText" x="395" y="279">Schema Validation</text>
                             <text class="title" x="555" y="150">Rule Router</text><text class="meta" x="555" y="174">Applies deterministic policies</text><rect class="pill" x="555" y="205" width="180" height="28"></rect><text class="pillText" x="645" y="224">First-Match Rules</text><rect class="pill" x="555" y="240" width="180" height="28"></rect><text class="pillText" x="645" y="259">Deterministic routing (sampling off)</text>
                             <text class="title" x="785" y="150">Outcomes</text><text class="meta" x="785" y="174">Consistent & reviewable</text><rect class="pill" x="785" y="205" width="140" height="28"></rect><text class="pillText" x="855" y="224">Trace + Hash</text><rect class="pill" x="785" y="240" width="140" height="28"></rect><text class="pillText" x="855" y="259">Audit-Friendly</text>
                         </g>
@@ -249,7 +378,7 @@
             <div class="container mx-auto px-6 text-center">
                 <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl border border-gray-800">
                     <h2 class="text-3xl font-bold mb-4">About the Founder</h2>
-                    <p class="text-lg text-gray-400"><strong>Jin Sung</strong> ??A solo founder bootstrapping Auxtho to solve AI?셲 core reliability problem. He architected the company?셲 deterministic control system to ensure trustworthy human-AI interaction.</p>
+                    <p class="text-lg text-gray-400"><strong>Jin Sung</strong> — A solo founder bootstrapping Auxtho to solve AI’s core reliability problem. He architected the company’s deterministic control system to ensure trustworthy human-AI interaction.</p>
                     <div id="contact" class="mt-8 flex justify-center items-center space-x-6">
                         <a href="mailto:hello@auxtho.com" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -278,26 +407,140 @@
             <p class="text-center md:text-left order-1">&copy; 2025 Auxtho. All rights reserved.</p>
             <div class="space-x-4 order-2">
                 <a href="/privacy.html" class="hover:text-white">Privacy</a>
-                <span class="text-gray-600"></span>
+                <span class="text-gray-600">•</span>
                 <a href="/terms.html" class="hover:text-white">Terms</a>
-                <span class="text-gray-600"></span>
+                <span class="text-gray-600">•</span>
                 <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
             </div>
              <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Public descriptions reflect a patent-pending architecture and do not disclose unpublished claims.</p>
         </div>
     </footer>
 
-    <script src="/assets/app.js" defer></script>
+    <script>
+        // Frame-buster for clickjacking protection (best-effort for GitHub Pages)
+        if (window.top !== window.self) {
+            try { window.top.location = window.self.location; } catch(e) { console.warn("Frame-buster failed:", e); }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const primaryNav = document.getElementById('primary-navigation');
+            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+            if (primaryNav && mobileNavToggle) {
+                mobileNavToggle.addEventListener('click', () => {
+                    const isVisible = primaryNav.getAttribute('data-visible') === 'true';
+                    if (isVisible) {
+                        primaryNav.setAttribute('data-visible', 'false');
+                        mobileNavToggle.setAttribute('aria-expanded', 'false');
+                        document.documentElement.classList.remove('nav-open');
+                    } else {
+                        primaryNav.setAttribute('data-visible', 'true');
+                        mobileNavToggle.setAttribute('aria-expanded', 'true');
+                        document.documentElement.classList.add('nav-open');
+                    }
+                });
+                primaryNav.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href').startsWith('#')) {
+                            primaryNav.setAttribute('data-visible', 'false');
+                            mobileNavToggle.setAttribute('aria-expanded', 'false');
+                            document.documentElement.classList.remove('nav-open');
+                        }
+                    });
+                });
+            }
+            
+            const scrollNav = document.getElementById('scroll-nav');
+            const scrollNavToggle = document.getElementById('scroll-nav-toggle');
+            const scrollNavMenu = document.getElementById('scroll-nav-menu');
+            const primaryHeader = document.querySelector('.primary-header');
+            
+            if(scrollNav && scrollNavToggle && scrollNavMenu && primaryHeader) {
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > primaryHeader.offsetHeight) {
+                        scrollNav.classList.add('is-visible');
+                    } else {
+                        scrollNav.classList.remove('is-visible');
+                        scrollNavMenu.classList.remove('is-open');
+                        scrollNavToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+
+                scrollNavToggle.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isExpanded = scrollNavToggle.getAttribute('aria-expanded') === 'true';
+                    scrollNavToggle.setAttribute('aria-expanded', String(!isExpanded));
+                    scrollNavMenu.classList.toggle('is-open');
+                });
+
+                scrollNavMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        scrollNavMenu.classList.remove('is-open');
+                        scrollNavToggle.setAttribute('aria-expanded', 'false');
+                    });
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!scrollNav.contains(e.target) && scrollNavMenu.classList.contains('is-open')) {
+                        scrollNavMenu.classList.remove('is-open');
+                        scrollNavToggle.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            }
+
+            const demoPlayer = document.querySelector('.demo-player');
+            if (demoPlayer) {
+                const play = () => {
+                    const YT_ID = "7Sc8csboxcU"; 
+                    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    const autoplay = reduce ? 0 : 1;
+                    const YT_SRC = `https://www.youtube-nocookie.com/embed/${YT_ID}?autoplay=${autoplay}&rel=0&modestbranding=1`;
+
+                    try {
+                        const iframe = document.createElement('iframe');
+                        iframe.src = YT_SRC;
+                        iframe.title = 'Auxtho Demo Video';
+                        iframe.loading = 'lazy';
+                        iframe.frameBorder = '0';
+                        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+                        iframe.setAttribute('allowfullscreen', '');
+                        iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation');
+                        iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
+                        demoPlayer.innerHTML = '';
+                        demoPlayer.appendChild(iframe);
+
+                        // Timeout fallback in case embeds are blocked by network/corporate policy
+                        setTimeout(() => {
+                           try {
+                                const loaded = iframe.contentWindow && iframe.contentWindow.length !== undefined;
+                                if (!loaded) {
+                                    window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
+                                }
+                            } catch (e) {
+                                window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
+                            }
+                        }, 4000);
+                    } catch (e) {
+                        // Fallback for strict environments or JS errors
+                        window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
+                    }
+                };
+                demoPlayer.addEventListener('click', play, { once: true });
+                demoPlayer.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        play();
+                    }
+                }, { once: true });
+            }
+
+            let resizeTimer;
+            window.addEventListener('resize', () => {
+                document.body.classList.add('resizing');
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(() => { document.body.classList.remove('resizing'); }, 250);
+            });
+        });
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
 
