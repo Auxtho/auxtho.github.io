@@ -115,3 +115,17 @@ body.resizing .primary-navigation { transition: none !important; }
 #scroll-nav { z-index: 40; }
 .primary-header { z-index: 50; }
 .demo-player { position: relative; z-index: 1; }
+
+
+.diagram-container svg .panel { fill: rgba(17,24,39,0.5); stroke: rgb(55,65,81); stroke-width: 1; }
+.diagram-container svg .title { font-size: 16px; font-weight: 600; fill: #E5E5EA; }
+.diagram-container svg .meta  { font-size: 13px; fill: #9CA3AF; }
+.diagram-container svg .wire  { stroke: #4B5563; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+.diagram-container svg .pill  { fill: rgba(55,65,81,0.5); stroke: rgb(75,85,99); stroke-width: 1; rx: 10; }
+.diagram-container svg .pillText { font-size: 12px; fill: #E5E5EA; text-anchor: middle; }
+.diagram-container svg .header-title { font-size: 20px; font-weight: 700; fill: #fff; }
+.diagram-container svg .header-meta  { font-size: 14px; fill: #9CA3AF; }
+.diagram-container svg marker polygon { fill: #4B5563; }
+
+.diagram-container { position: relative; z-index: 1; isolation: isolate; }
+.diagram-container svg { display: block; max-width: 100%; height: auto; }
