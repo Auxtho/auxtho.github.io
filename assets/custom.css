@@ -107,3 +107,11 @@ body.resizing .primary-navigation { transition: none !important; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto !important; }
 }
+
+/* --- diagram visibility guard --- */
+.diagram-container { position: relative; z-index: 1; isolation: isolate; }
+.diagram-container svg { display: block; max-width: 100%; height: auto; }
+
+#scroll-nav { z-index: 40; }
+.primary-header { z-index: 50; }
+.demo-player { position: relative; z-index: 1; }
