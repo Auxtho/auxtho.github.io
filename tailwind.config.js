@@ -1,9 +1,35 @@
+@'
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./*.html", "./assets/app.js"],
+  content: ["./**/*.html", "./assets/**/*.js"],
   theme: { extend: {} },
-
   safelist: [
-  
+    { pattern: /(bg|text|border)-(white|black|transparent)/ },
+    { pattern: /(bg|text|border)-(slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|100|200|300|400|500|600|700|800|900)/ },
+    { pattern: /^(m|mx|my|mt|mr|mb|ml)-(0|1|2|3|4|5|6|8|10|12|16|20|24)$/ },
+    { pattern: /^(p|px|py|pt|pr|pb|pl)-(0|1|2|3|4|5|6|8|10|12|16|20|24)$/ },
+    { pattern: /^(container|block|inline-block|hidden)$/ },
+    { pattern: /^(flex|inline-flex|grid)$/ },
+    { pattern: /^(items|content|justify)-(start|center|end|between|around)$/ },
+    { pattern: /^gap-(0|1|2|3|4|5|6|8|10|12|16|20)$/ },
+    { pattern: /^space-(x|y)-(1|2|3|4|5|6|8|10|12|16)$/ },
+    { pattern: /^text-(xs|sm|base|lg|xl|2xl|3xl|4xl|5xl|6xl)$/ },
+    { pattern: /^font-(light|normal|medium|semibold|bold|extrabold)$/ },
+    { pattern: /^leading-(none|tight|snug|normal|relaxed|loose)$/ },
+    { pattern: /^rounded(-(sm|md|lg|xl|2xl|full))?$/ },
+    { pattern: /^border(-(0|2|4))?$/ },
+    { pattern: /^opacity-(50|60|70|80|90|100)$/ },
+    { pattern: /^bg-(black|white)$/ },
+    { pattern: /^bg-(opacity|black|white)\/(10|20|30|40|50|60|70|80|90)$/ },
+    { pattern: /^backdrop-blur(-(sm|md|lg|xl|2xl))?$/ },
+    { pattern: /^(relative|absolute|fixed|sticky)$/ },
+    { pattern: /^(top|right|bottom|left)-(0|1|2|3|4|5|6|8|10|12|16)$/ },
+    { pattern: /^(w|h)-(auto|full|screen)$/ },
+    { pattern: /^z-(0|10|20|30|40|50)$/ },
+    { pattern: /^transition(-(all|colors|opacity|transform))?$/ },
+    { pattern: /^duration-(150|200|300|500)$/ },
+    { pattern: /^ease-(linear|in|out|in-out)$/ },
+    { pattern: /^focus:(ring|outline)-/ },
   ],
 };
+'@ | Set-Content .\tailwind.config.js -Encoding utf8
