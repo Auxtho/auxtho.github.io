@@ -1,26 +1,24 @@
-// moved from the bottom inline <script> ... (content preserved as-is)
-
-// Frame-buster for clickjacking protection (best-effort for GitHub Pages)
+// Frame-buster for clickjacking protection.
 if (window.top !== window.self) {
-    try { window.top.location = window.self.location; } catch(e) { console.warn("Frame-buster failed:", e); }
+    try {
+        window.top.location = window.self.location;
+    } catch (e) {
+        console.warn("Frame-buster failed:", e);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Mobile navigation toggle handler.
     const primaryNav = document.getElementById('primary-navigation');
     const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
     if (primaryNav && mobileNavToggle) {
         mobileNavToggle.addEventListener('click', () => {
             const isVisible = primaryNav.getAttribute('data-visible') === 'true';
-            if (isVisible) {
-                primaryNav.setAttribute('data-visible', 'false');
-                mobileNavToggle.setAttribute('aria-expanded', 'false');
-                document.documentElement.classList.remove('nav-open');
-            } else {
-                primaryNav.setAttribute('data-visible', 'true');
-                mobileNavToggle.setAttribute('aria-expanded', 'true');
-                document.documentElement.classList.add('nav-open');
-            }
+            primaryNav.setAttribute('data-visible', String(!isVisible));
+            mobileNavToggle.setAttribute('aria-expanded', String(!isVisible));
+            document.documentElement.classList.toggle('nav-open', !isVisible);
         });
+
         primaryNav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href').startsWith('#')) {
@@ -31,18 +29,17 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-    
+
+    // Sticky scroll navigation handler.
     const scrollNav = document.getElementById('scroll-nav');
     const scrollNavToggle = document.getElementById('scroll-nav-toggle');
     const scrollNavMenu = document.getElementById('scroll-nav-menu');
     const primaryHeader = document.querySelector('.primary-header');
-    
     if (scrollNav && scrollNavToggle && scrollNavMenu && primaryHeader) {
         window.addEventListener('scroll', () => {
-            if (window.scrollY > primaryHeader.offsetHeight) {
-                scrollNav.classList.add('is-visible');
-            } else {
-                scrollNav.classList.remove('is-visible');
+            const shouldBeVisible = window.scrollY > primaryHeader.offsetHeight;
+            scrollNav.classList.toggle('is-visible', shouldBeVisible);
+            if (!shouldBeVisible) {
                 scrollNavMenu.classList.remove('is-open');
                 scrollNavToggle.setAttribute('aria-expanded', 'false');
             }
@@ -55,13 +52,6 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollNavMenu.classList.toggle('is-open');
         });
 
-        scrollNavMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                scrollNavMenu.classList.remove('is-open');
-                scrollNavToggle.setAttribute('aria-expanded', 'false');
-            });
-        });
-
         document.addEventListener('click', (e) => {
             if (!scrollNav.contains(e.target) && scrollNavMenu.classList.contains('is-open')) {
                 scrollNavMenu.classList.remove('is-open');
@@ -70,40 +60,26 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Demo video player handler.
     const demoPlayer = document.querySelector('.demo-player');
     if (demoPlayer) {
         const play = () => {
             const YT_ID = "7Sc8csboxcU";
-            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const autoplay = reduce ? 0 : 1;
+            const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const autoplay = reduceMotion ? 0 : 1;
             const YT_SRC = `https://www.youtube-nocookie.com/embed/${YT_ID}?autoplay=${autoplay}&rel=0&modestbranding=1`;
 
-            try {
-                const iframe = document.createElement('iframe');
-                iframe.src = YT_SRC;
-                iframe.title = 'Auxtho Demo Video';
-                iframe.loading = 'lazy';
-                iframe.frameBorder = '0';
-                iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-                iframe.setAttribute('allowfullscreen', '');
-                iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation');
-                iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
-                demoPlayer.innerHTML = '';
-                demoPlayer.appendChild(iframe);
-
-                setTimeout(() => {
-                    try {
-                        const loaded = iframe.contentWindow && iframe.contentWindow.length !== undefined;
-                        if (!loaded) {
-                            window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
-                        }
-                    } catch (e) {
-                        window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
-                    }
-                }, 4000);
-            } catch (e) {
-                window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
-            }
+            const iframe = document.createElement('iframe');
+            iframe.src = YT_SRC;
+            iframe.title = 'Auxtho Demo Video';
+            iframe.loading = 'lazy';
+            iframe.frameBorder = '0';
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-presentation');
+            iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+            demoPlayer.innerHTML = '';
+            demoPlayer.appendChild(iframe);
         };
         demoPlayer.addEventListener('click', play, { once: true });
         demoPlayer.addEventListener('keydown', (e) => {
@@ -114,10 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { once: true });
     }
 
+    // Debounce resize events for performance.
     let resizeTimer;
     window.addEventListener('resize', () => {
         document.body.classList.add('resizing');
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { document.body.classList.remove('resizing'); }, 250);
+        resizeTimer = setTimeout(() => {
+            document.body.classList.remove('resizing');
+        }, 250);
     });
 });

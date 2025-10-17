@@ -1,45 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <title>Terms of Service — Auxtho</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            background-color: #F8F8FA;
-            color: #1a1a1a;
-            margin: 0;
-            padding: 0;
-        }
-        main {
-            max-width: 720px;
-            margin: 4rem auto;
-            padding: 2rem;
-            background-color: #fff;
-            border-radius: 8px;
-            border: 1px solid #eee;
-        }
-        a {
-            color: #0071e3;
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-        h1 {
-            font-size: 2rem;
-        }
-    </style>
+    <title>Terms of Service — Auxtho</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" href="/assets/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Link to the consolidated and built stylesheet -->
+    <link rel="stylesheet" href="/assets/style.css">
+
+    <!-- Removed Tailwind CDN and inline styles -->
 </head>
-<body>
-    <main>
-        <h1>Terms of Service</h1>
-        <p>Last updated: October 14, 2025</p>
-        <p>By accessing this website, you agree to be bound by these terms of service. The information provided on this site is for informational purposes only. The content is provided "as is" without warranty of any kind. For any inquiries, please contact us at <a href="mailto:hello@auxtho.com">hello@auxtho.com</a>.</p>
-        <p><a href="/">← Back to Home</a></p>
+<body class="antialiased">
+
+    <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <a href="/index.html" class="z-50" aria-label="Auxtho Home">
+                <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-20">
+        <div class="max-w-4xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl border border-gray-800">
+            <h1 class="text-3xl md:text-4xl font-bold mb-8">Terms of Service</h1>
+            <div class="space-y-6 text-gray-300 leading-relaxed">
+                <p><strong>Last updated: October 17, 2025</strong></p>
+                <p>By accessing this website, you agree to be bound by these terms of service. The information provided on this site is for informational purposes only and is provided "as is" without warranty of any kind.</p>
+                <p>For any inquiries, please contact us at <a href="mailto:hello@auxtho.com" class="underline">hello@auxtho.com</a>.</p>
+                <p class="mt-12"><a href="/index.html" class="text-blue-400 hover:text-blue-300 transition-colors">← Back to Home</a></p>
+            </div>
+        </div>
     </main>
+
+    <footer class="border-t border-gray-800 mt-20">
+        <div class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+            <p class="text-center md:text-left order-1">&copy; 2025 Auxtho. All rights reserved.</p>
+            <div class="space-x-4 order-2">
+                <a href="/privacy.html" class="hover:text-white">Privacy</a>
+                <span class="text-gray-600">•</span>
+                <a href="/terms.html" class="hover:text-white">Terms</a>
+                <span class="text-gray-600">•</span>
+                <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
+            </div>
+             <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Public descriptions reflect a patent-pending architecture and do not disclose unpublished claims.</p>
+        </div>
+    </footer>
+
 </body>
 </html>
-

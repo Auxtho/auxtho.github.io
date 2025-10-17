@@ -1,34 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Story — Auxtho</title>
-    <meta name="robots" content="noindex">
+    <meta name="robots" content="index,follow">
     <link rel="icon" href="/assets/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000;
-            color: #fff;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-    </style>
+    
+    <!-- Link to the consolidated and built stylesheet -->
+    <link rel="stylesheet" href="/assets/style.css">
+
+    <!-- Removed Tailwind CDN and inline styles for improved security -->
 </head>
 <body class="antialiased">
-    <header class="sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
+
+    <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
         <div class="container mx-auto px-6 py-5 flex justify-between items-center">
-            <a href="/" class="z-50 text-2xl font-extrabold tracking-tighter" aria-label="Auxtho Home">
-                AUXTHO
+            <a href="/index.html" class="z-50" aria-label="Auxtho Home">
+                <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
             </a>
-            <a href="/" class="text-gray-300 hover:text-white transition-colors">← Back to Home</a>
         </div>
     </header>
+    
     <main class="container mx-auto px-6 py-20">
         <div class="max-w-4xl mx-auto">
             <div class="text-center mb-12">
@@ -54,17 +50,26 @@
                 <p class="text-xl text-gray-300 max-w-3xl mx-auto mt-2">
                     'Ethos' is brought to life by our patented <strong>'Memory Injection'</strong> technology, ensuring your core principles are never forgotten. 'Growth' is achieved through our <strong>'Supervisor-Expert'</strong> architecture, providing a structured path to your goals.
                 </p>
-                <a href="/#solution" class="inline-block mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors">
+                <a href="/index.html#solution" class="inline-block mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors">
                     Explore Our Technology
                 </a>
             </div>
         </div>
     </main>
+
     <footer class="border-t border-gray-800 mt-20">
-        <div class="container mx-auto px-6 py-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2025 Auxtho. All rights reserved.</p>
+        <div class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+            <p class="text-center md:text-left order-1">&copy; 2025 Auxtho. All rights reserved.</p>
+            <div class="space-x-4 order-2">
+                <a href="/privacy.html" class="hover:text-white">Privacy</a>
+                <span class="text-gray-600">•</span>
+                <a href="/terms.html" class="hover:text-white">Terms</a>
+                <span class="text-gray-600">•</span>
+                <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
+            </div>
+             <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Public descriptions reflect a patent-pending architecture and do not disclose unpublished claims.</p>
         </div>
     </footer>
+
 </body>
 </html>
-
