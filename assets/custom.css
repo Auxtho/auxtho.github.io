@@ -146,3 +146,34 @@ main > section:last-of-type { margin-bottom: 2rem; }
     gap: 1.5rem !important;
   }
 }
+
+html, body { height: 100%; }
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+
+main, .page-main, .page, .content-wrap { flex: 1 0 auto; }
+
+
+main > section:last-of-type,
+.page-main > section:last-of-type,
+.page > section:last-of-type,
+.content-wrap > section:last-of-type {
+  margin-bottom: 2.5rem !important;
+}
+
+footer {
+  margin-top: 2.5rem !important;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .force-grid-2 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 1.5rem !important;
+  }
+}
