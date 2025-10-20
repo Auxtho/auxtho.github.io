@@ -1,15 +1,24 @@
-Node.js dependencies
-
-/node_modules
-
-NPM cache logs
-
+# ── Node.js ─────────────────────────────────────────────
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-OS-generated files
-
+# ── OS / Editor junk ────────────────────────────────────
 .DS_Store
-Thumbs.dbnode_modules/
+Thumbs.db
+
+# ── Build artifacts ──
+*.min.html
+*.src.html
+
+# ── Local build/preview caches ─────────────────
+dist/
+.cache/
+.tmp/
+
+# ── Env ───────────────────────────────────────
+.env
+.env.local
+.env.*.local
