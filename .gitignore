@@ -22,3 +22,6 @@ dist/
 .env
 .env.local
 .env.*.local
+
+# prevent re-upload of generated/minified css
+assets/*.min.css

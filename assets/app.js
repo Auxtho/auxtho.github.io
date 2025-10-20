@@ -9,7 +9,8 @@ if (window.top !== window.self) {
 
 document.addEventListener('DOMContentLoaded', () => {
     // Mobile navigation toggle handler.
-    const primaryNav = document.getElementById('primary-navigation');
+    // NOTE: 원본은 ID 선택자였지만, 실제 마크업은 class(.primary-navigation)인 경우가 많아 보강함.
+    const primaryNav = document.querySelector('.primary-navigation') || document.getElementById('primary-navigation');
     const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
     if (primaryNav && mobileNavToggle) {
         mobileNavToggle.addEventListener('click', () => {
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         primaryNav.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href').startsWith('#')) {
+                if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href')?.startsWith('#')) {
                     primaryNav.setAttribute('data-visible', 'false');
                     mobileNavToggle.setAttribute('aria-expanded', 'false');
                     document.documentElement.classList.remove('nav-open');
@@ -30,37 +31,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Sticky scroll navigation handler.
+    // Sticky scroll navigation handler. (보강: 토글/메뉴가 없어도 가시성 동작)
     const scrollNav = document.getElementById('scroll-nav');
     const scrollNavToggle = document.getElementById('scroll-nav-toggle');
     const scrollNavMenu = document.getElementById('scroll-nav-menu');
     const primaryHeader = document.querySelector('.primary-header');
-    if (scrollNav && scrollNavToggle && scrollNavMenu && primaryHeader) {
-        window.addEventListener('scroll', () => {
-            const shouldBeVisible = window.scrollY > primaryHeader.offsetHeight;
+
+    if (scrollNav && primaryHeader) {
+        const threshold = Math.min(primaryHeader.offsetHeight || 120, 120);
+
+        const onScroll = () => {
+            const shouldBeVisible = window.scrollY > threshold;
             scrollNav.classList.toggle('is-visible', shouldBeVisible);
-            if (!shouldBeVisible) {
+            if (!shouldBeVisible && scrollNavMenu && scrollNavToggle) {
                 scrollNavMenu.classList.remove('is-open');
                 scrollNavToggle.setAttribute('aria-expanded', 'false');
             }
-        });
+        };
 
-        scrollNavToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isExpanded = scrollNavToggle.getAttribute('aria-expanded') === 'true';
-            scrollNavToggle.setAttribute('aria-expanded', String(!isExpanded));
-            scrollNavMenu.classList.toggle('is-open');
-        });
+        onScroll(); // 초기 상태 동기화
+        window.addEventListener('scroll', onScroll, { passive: true });
 
-        document.addEventListener('click', (e) => {
-            if (!scrollNav.contains(e.target) && scrollNavMenu.classList.contains('is-open')) {
-                scrollNavMenu.classList.remove('is-open');
-                scrollNavToggle.setAttribute('aria-expanded', 'false');
-            }
-        });
+        if (scrollNavToggle && scrollNavMenu) {
+            scrollNavToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = scrollNavToggle.getAttribute('aria-expanded') === 'true';
+                scrollNavToggle.setAttribute('aria-expanded', String(!isExpanded));
+                scrollNavMenu.classList.toggle('is-open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!scrollNav.contains(e.target) && scrollNavMenu.classList.contains('is-open')) {
+                    scrollNavMenu.classList.remove('is-open');
+                    scrollNavToggle.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
     }
 
-    // Demo video player handler.
+    // Demo video player handler. (원본 유지)
     const demoPlayer = document.querySelector('.demo-player');
     if (demoPlayer) {
         const play = () => {
