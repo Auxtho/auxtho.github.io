@@ -1,16 +1,21 @@
 ﻿
+/* ========= Auxtho custom layout fixes (FINAL MERGED) ========= */
+/* Place AFTER /assets/style.css in <head> */
 
-
-
+/* Base */
 :root { color-scheme: dark; }
 html, body { background: #000; color: #e5e7eb; overflow-x: hidden; width: 100%; }
 body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; position: relative; }
-html.nav-open { overflow: hidden; }
 
+html.nav-open,
+body.nav-open {
+  overflow: hidden;
+}
 
+/* Header */
 .primary-header { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); z-index: 50; }
 
-
+/* Mobile navigation (hamburger + full-screen panel) */
 .mobile-nav-toggle {
   display: none;
   position: absolute; z-index: 2000; right: 1.5rem; top: 50%; transform: translateY(-50%);
@@ -43,7 +48,7 @@ html.nav-open { overflow: hidden; }
 }
 body.resizing .primary-navigation { transition: none !important; }
 
-
+/* Scroll Navigation */
 #scroll-nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 40;
   background: rgba(17, 24, 39, 0.8);
@@ -79,7 +84,7 @@ body.resizing .primary-navigation { transition: none !important; }
 .scroll-nav-menu-list a { display: block; padding: 0.75rem 0.5rem; color: #d2d2d7; text-decoration: none; border-radius: 6px; transition: background-color 0.2s, color 0.2s; }
 .scroll-nav-menu-list a:hover { background-color: rgba(255, 255, 255, 0.1); color: #fff; }
 
-
+/* Diagram (visibility + CSP-safe colors) */
 .diagram-container { position: relative; z-index: 1; isolation: isolate; }
 .diagram-container svg { display: block; max-width: 100%; height: auto; border-radius: 1rem; }
 .diagram-container svg .panel { fill: rgba(17,24,39,0.5) !important; stroke: rgb(55,65,81) !important; stroke-width: 1 !important; rx: 14 !important; }
@@ -92,12 +97,12 @@ body.resizing .primary-navigation { transition: none !important; }
 .diagram-container svg .header-meta  { font-size: 14px !important; fill: #9CA3AF !important; }
 .diagram-container svg marker polygon { fill: #4B5563 !important; }
 
-
+/* Demo video: responsive full-bleed 16:9 */
 .demo-player {
   position: relative;
   border-radius: 1rem;
   overflow: hidden;
-  
+  /* primary responsive sizing using aspect-ratio */
   aspect-ratio: 16 / 9;
 }
 .demo-player iframe {
@@ -105,33 +110,33 @@ body.resizing .primary-navigation { transition: none !important; }
   width: 100% !important; height: 100% !important; display: block;
   border: 0;
 }
-
+/* Fallback for older browsers that ignore aspect-ratio */
 @supports not (aspect-ratio: 16 / 9) {
   .demo-player { height: 0; padding-bottom: 56.25%; }
   .demo-player iframe { position: absolute; top: 0; left: 0; width: 100% !important; height: 100% !important; }
 }
 
-
+/* Typography helpers */
 .logo-text { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.05em; color: #fff; text-decoration: none; }
 .headline-balance { text-wrap: balance; }
 
-
+/* Buttons / chips */
 .btn { border-radius: 9999px; padding: .5rem 1rem; font-weight: 600; }
 
-
+/* Sections */
 .hero { padding-top: 5rem; padding-bottom: 5rem; }
 
-
+/* Footer */
 .site-footer { border-top: 1px solid rgba(255,255,255,0.08); }
 
-
+/* Accessibility */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
 .focus\:not-sr-only:focus { position: static; width: auto; height: auto; padding: 0; margin: 0; overflow: visible; clip: auto; white-space: normal; }
 :focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; border-radius: 4px; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto !important; } }
 
-
+/* ---- layout polish (footer spacing & story grid) ---- */
 
 main { padding-bottom: 3.5rem; }        
 footer { margin-top: 3.5rem !important; }
@@ -177,33 +182,10 @@ footer {
   }
 }
 
-
-
-@media (max-width:52.125em){
-  .primary-navigation > :not([hidden]) ~ :not([hidden]){ margin-left:0 !important; }
-  .primary-navigation{ align-items:center !important; padding-left:0 !important; padding-right:0 !important; }
-  .primary-navigation > li{ width:100% !important; }
-  .primary-navigation > li > a{ display:block !important; width:100% !important; text-align:center !important; }
+/*
+  [추가] 스크롤 시 primary-header의 z-index를 
+  scroll-nav (z-40)보다 낮추기 위한 클래스입니다.
+*/
+.header-behind {
+  z-index: 30 !important; /* z-40인 scroll-nav 뒤로 보냅니다 */
 }
-
-
-.force-grid-2{
-  max-width:64rem !important;
-  margin:0 !important;
-  position:relative !important; left:50% !important; transform:translateX(-50%) !important;
-}
-@media (min-width:768px){
-  .force-grid-2{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
-}
-
-
-.story-card{ text-align:center !important; }
-
-
-.story-divider{
-  border:0; border-top:1px solid rgba(255,255,255,.12);
-  width:100%; max-width:72rem; margin:3rem auto;
-}
-
-
-:root{--auxtho-bump:20251020230236}

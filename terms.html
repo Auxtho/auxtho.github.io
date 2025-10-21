@@ -13,9 +13,9 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
-  
-  <link rel="stylesheet" href="/assets/style.css?v=20251020-223717">
-  <link rel="stylesheet" href="/assets/custom.css?v=20251020-223717">
+  <!-- ✅ 외부 CSS만 2개, 반드시 이 순서 -->
+  <link rel="stylesheet" href="/assets/style.css?v=2025-10-19-2">
+  <link rel="stylesheet" href="/assets/custom.css?v=2025-10-19-2">
 
   <script src="/assets/tw-init.js" defer></script>
 </head>
@@ -31,7 +31,7 @@
             </button>
             <nav>
                 <ul id="primary-navigation" data-visible="false" class="primary-navigation flex items-center space-x-8">
-                    
+                    <!-- Navigation Links Updated -->
                     
                     
                     
@@ -43,6 +43,29 @@
             </nav>
         </div>
     </header>
+
+    <nav id="scroll-nav" aria-label="In-page navigation">
+    <div class="scroll-nav-content">
+      <img src="/assets/logo-scroll.svg" alt="Auxtho" class="h-6 w-auto">
+      <button id="scroll-nav-toggle" class="scroll-nav-toggle" aria-expanded="false" aria-controls="scroll-nav-menu">
+        <span class="sr-only">Menu</span>
+        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+        </svg>
+      </button>
+    </div>
+    <div id="scroll-nav-menu">
+      <ul class="scroll-nav-menu-list">
+        <li><a href="#problem">Problem</a></li>
+        <li><a href="#solution">Solution</a></li>
+        <li><a href="#overview">System Overview</a></li>
+        <li><a href="#demo">Demo</a></li>
+        <li><a href="/story.html">Our Story</a></li>
+        <li><a href="#founder">Founder</a></li>
+      </ul>
+    </div>
+  </nav>
+
 <main class="pt-24 md:pt-28 pb-20">
 <section class="container mx-auto px-6 max-w-4xl">
 
@@ -58,135 +81,6 @@
 
 </section>
 </main>
-
-
-    
-
-    <script>
-        // Frame-buster for clickjacking protection (best-effort for GitHub Pages)
-        if (window.top !== window.self) {
-            try { window.top.location = window.self.location; } catch(e) { console.warn("Frame-buster failed:", e); }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const primaryNav = document.getElementById('primary-navigation');
-            const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
-            if (primaryNav && mobileNavToggle) {
-                mobileNavToggle.addEventListener('click', () => {
-                    const isVisible = primaryNav.getAttribute('data-visible') === 'true';
-                    if (isVisible) {
-                        primaryNav.setAttribute('data-visible', 'false');
-                        mobileNavToggle.setAttribute('aria-expanded', 'false');
-                        document.documentElement.classList.remove('nav-open');
-                    } else {
-                        primaryNav.setAttribute('data-visible', 'true');
-                        mobileNavToggle.setAttribute('aria-expanded', 'true');
-                        document.documentElement.classList.add('nav-open');
-                    }
-                });
-                primaryNav.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        if (primaryNav.getAttribute('data-visible') === 'true' && link.getAttribute('href').startsWith('#')) {
-                            primaryNav.setAttribute('data-visible', 'false');
-                            mobileNavToggle.setAttribute('aria-expanded', 'false');
-                            document.documentElement.classList.remove('nav-open');
-                        }
-                    });
-                });
-            }
-            
-            const scrollNav = document.getElementById('scroll-nav');
-            const scrollNavToggle = document.getElementById('scroll-nav-toggle');
-            const scrollNavMenu = document.getElementById('scroll-nav-menu');
-            const primaryHeader = document.querySelector('.primary-header');
-            
-            if(scrollNav && scrollNavToggle && scrollNavMenu && primaryHeader) {
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > primaryHeader.offsetHeight) {
-                        scrollNav.classList.add('is-visible');
-                    } else {
-                        scrollNav.classList.remove('is-visible');
-                        scrollNavMenu.classList.remove('is-open');
-                        scrollNavToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-
-                scrollNavToggle.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const isExpanded = scrollNavToggle.getAttribute('aria-expanded') === 'true';
-                    scrollNavToggle.setAttribute('aria-expanded', String(!isExpanded));
-                    scrollNavMenu.classList.toggle('is-open');
-                });
-
-                scrollNavMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', () => {
-                        scrollNavMenu.classList.remove('is-open');
-                        scrollNavToggle.setAttribute('aria-expanded', 'false');
-                    });
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!scrollNav.contains(e.target) && scrollNavMenu.classList.contains('is-open')) {
-                        scrollNavMenu.classList.remove('is-open');
-                        scrollNavToggle.setAttribute('aria-expanded', 'false');
-                    }
-                });
-            }
-
-            const demoPlayer = document.querySelector('.demo-player');
-            if (demoPlayer) {
-                const play = () => {
-                    const YT_ID = "7Sc8csboxcU"; 
-                    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                    const autoplay = reduce ? 0 : 1;
-                    const YT_SRC = `https://www.youtube-nocookie.com/embed/${YT_ID}?autoplay=${autoplay}&rel=0&modestbranding=1`;
-
-                    try {
-                        const iframe = document.createElement('iframe');
-                        iframe.src = YT_SRC;
-                        iframe.title = 'Auxtho Demo Video';
-                        iframe.loading = 'lazy';
-                        iframe.frameBorder = '0';
-                        iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-                        iframe.setAttribute('allowfullscreen', '');
-                        iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-presentation');
-                        iframe.setAttribute('referrerpolicy','strict-origin-when-cross-origin');
-                        demoPlayer.innerHTML = '';
-                        demoPlayer.appendChild(iframe);
-
-                        // Timeout fallback in case embeds are blocked by network/corporate policy
-                        setTimeout(() => {
-                           try {
-                                const loaded = iframe.contentWindow && iframe.contentWindow.length !== undefined;
-                                if (!loaded) {
-                                    window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
-                                }
-                            } catch (e) {
-                                window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
-                            }
-                        }, 4000);
-                    } catch (e) {
-                        // Fallback for strict environments or JS errors
-                        window.location.href = 'mailto:hello@auxtho.com?subject=Demo%20Access%20Request';
-                    }
-                };
-                demoPlayer.addEventListener('click', play, { once: true });
-                demoPlayer.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        play();
-                    }
-                }, { once: true });
-            }
-
-            let resizeTimer;
-            window.addEventListener('resize', () => {
-                document.body.classList.add('resizing');
-                clearTimeout(resizeTimer);
-                resizeTimer = setTimeout(() => { document.body.classList.remove('resizing'); }, 250);
-            });
-        });
-    </script>
 
 
 <footer class="border-t border-gray-800 mt-16">
@@ -206,7 +100,4 @@
   <script src="/assets/app.js" defer></script>
 </body>
 </html>
-
-
-
 
