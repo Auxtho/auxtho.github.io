@@ -220,7 +220,7 @@ body.resizing .primary-navigation { transition: none !important; }
     rgba(15, 18, 25, 0.80) 0%,
     rgba(30, 40, 60, 0.60) 100%
   );
-  border: 2px solid rgba(59, 130, 246, 0.30);
+  border: 1px solid rgba(59, 130, 246, 0.15);
   box-shadow: 0 0 80px rgba(59, 130, 246, 0.06);
 }
 .verify-panel h2 {
@@ -273,6 +273,22 @@ h3 { line-height: 1.4  !important; }
    BUTTONS
    ────────────────────────────── */
 .btn { border-radius: 9999px; padding: .5rem 1rem; font-weight: 600; }
+.btn-primary {
+  background: #2563eb;
+  color: #fff !important;
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  letter-spacing: 0.025em;
+  transition: background 0.2s ease;
+  display: inline-block;
+  text-align: center;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+  color: #fff !important;
+}
 .hero { padding-top: 5rem; padding-bottom: 5rem; }
 
 /* ──────────────────────────────
@@ -284,11 +300,11 @@ footer {
   flex-shrink: 0;
 }
 footer p,
-footer a,
+footer a:not(.btn-primary),
 footer div {
   color: #a1a1aa !important;
 }
-footer a:hover { color: #fff !important; }
+footer a:hover:not(.btn-primary) { color: #fff !important; }
 /* Separator dots stay subtler */
 footer span.text-gray-600 { color: #52525b !important; }
 /* Legal disclaimer */

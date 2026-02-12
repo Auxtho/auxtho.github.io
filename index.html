@@ -126,8 +126,7 @@
           Auxtho produces verifiable audit artifacts — not chatbot responses.
         </p>
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <a href="#capabilities"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">Explore
+          <a href="#capabilities" class="btn-primary w-full sm:w-auto">Explore
             Capabilities</a>
           <a href="#mas-tier1"
             class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">MAS
@@ -451,93 +450,78 @@
             </div>
             <div class="mt-3 flex justify-end">
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✅
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/8 text-emerald-400/60">✅
                 Implemented</span>
             </div>
           </div>
 
           <!-- Q2: Trust Score manipulation -->
           <div class="card-qa bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
-                Q</div>
-              <div>
-                <h3 class="text-lg font-bold text-white mb-2">"Can trust scores be manipulated at runtime?"</h3>
-                <p class="text-gray-400 mb-4">No. Trust score weights and thresholds are policy-bound and cannot be
-                  changed at runtime.</p>
-                <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
-                  <p class="text-gray-300"><strong class="text-emerald-400">Policy Binding:</strong> Weights are fixed
-                    per policy version. Any modification requires a new policy version with explicit approval and audit
-                    trail.</p>
-                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Verification:</strong> Each exported
-                    report includes the policy version hash used during generation, enabling independent verification
-                    that the correct weights were applied.</p>
-                </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">"Can trust scores be manipulated at runtime?"</h3>
+              <p class="text-gray-400 mb-4">No. Trust score weights and thresholds are policy-bound and cannot be
+                changed at runtime.</p>
+              <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                <p class="text-gray-300"><strong class="text-emerald-400">Policy Binding:</strong> Weights are fixed
+                  per policy version. Any modification requires a new policy version with explicit approval and audit
+                  trail.</p>
+                <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Verification:</strong> Each exported
+                  report includes the policy version hash used during generation, enabling independent verification
+                  that the correct weights were applied.</p>
               </div>
             </div>
             <div class="mt-3 flex justify-end">
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✅
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/8 text-emerald-400/60">✅
                 Implemented</span>
             </div>
           </div>
 
           <!-- Q3: Model/Pipeline versioning -->
           <div class="card-qa bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
-                Q</div>
-              <div>
-                <h3 class="text-lg font-bold text-white mb-2">"How do you govern model and pipeline changes?"</h3>
-                <p class="text-gray-400 mb-4">All model and embedding pipeline versions are tracked and locked per
-                  policy version. No silent upgrades.</p>
-                <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
-                  <p class="text-gray-300"><strong class="text-emerald-400">Version Governance:</strong> Model changes
-                    (LLM provider, embedding model) require a policy version update with approval chain. Current
-                    versions are stamped on every exported artifact.</p>
-                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Reproducibility:</strong> Given the
-                    same policy version and input, the system enforces deterministic governance controls — same evidence
-                    retrieval path, same trust score calculation, same output structure.</p>
-                </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">"How do you govern model and pipeline changes?"</h3>
+              <p class="text-gray-400 mb-4">All model and embedding pipeline versions are tracked and locked per
+                policy version. No silent upgrades.</p>
+              <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                <p class="text-gray-300"><strong class="text-emerald-400">Version Governance:</strong> Model changes
+                  (LLM provider, embedding model) require a policy version update with approval chain. Current
+                  versions are stamped on every exported artifact.</p>
+                <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Reproducibility:</strong> Given the
+                  same policy version and input, the system enforces deterministic governance controls — same evidence
+                  retrieval path, same trust score calculation, same output structure.</p>
               </div>
             </div>
             <div class="mt-3 flex justify-end">
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✅
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/8 text-emerald-400/60">✅
                 Implemented</span>
             </div>
           </div>
 
           <!-- Q4: Data retention -->
           <div class="card-qa bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <div class="flex items-start gap-4">
-              <div
-                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
-                Q</div>
-              <div>
-                <h3 class="text-lg font-bold text-white mb-2">"What is your data retention and chain-of-custody policy?"
-                </h3>
-                <p class="text-gray-400 mb-4">Audit logs, evidence chains, and exported artifacts are designed to
-                  support up to 7-year retention requirements with tamper-evident SHA-256 hashing. PII minimized and
-                  redacted per policy.</p>
-                <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
-                  <p class="text-gray-300"><strong class="text-emerald-400">Chain of Custody:</strong> Every action in
-                    the system — from login to evidence retrieval to export — is logged with user ID, timestamp, and
-                    action type. PII minimized and redacted per policy (including hashing where applicable).</p>
-                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Integrity:</strong> Exported PDF
-                    artifacts carry a SHA-256 artifact hash that can be independently verified. PKCS#7 CMS detached
-                    signing + RFC 3161 timestamp is a production milestone.</p>
-                </div>
+            <div>
+              <h3 class="text-lg font-bold text-white mb-2">"What is your data retention and chain-of-custody policy?"
+              </h3>
+              <p class="text-gray-400 mb-4">Audit logs, evidence chains, and exported artifacts are designed to
+                support up to 7-year retention requirements with tamper-evident SHA-256 hashing. PII minimized and
+                redacted per policy.</p>
+              <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                <p class="text-gray-300"><strong class="text-emerald-400">Chain of Custody:</strong> Every action in
+                  the system — from login to evidence retrieval to export — is logged with user ID, timestamp, and
+                  action type. PII minimized and redacted per policy (including hashing where applicable).</p>
+                <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Integrity:</strong> Exported PDF
+                  artifacts carry a SHA-256 artifact hash that can be independently verified. PKCS#7 CMS detached
+                  signing + RFC 3161 timestamp is a production milestone.</p>
               </div>
             </div>
             <div class="mt-3 flex justify-end gap-2 flex-wrap">
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">✅
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/8 text-emerald-400/60">✅
                 Implemented</span>
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">⚙️
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/8 text-blue-400/50">⚙️
                 Production Milestone</span>
             </div>
           </div>
@@ -598,9 +582,7 @@
           </div>
 
           <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mt-2">
-            <a href="mailto:hello@auxtho.com?subject=Audit%20Verification%20Request"
-              class="font-semibold py-3 px-8 rounded-full transition-all inline-block text-sm tracking-wide"
-              style="background:linear-gradient(135deg,#2563eb,#3b82f6); color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.3)">Audit
+            <a href="mailto:hello@auxtho.com?subject=Audit%20Verification%20Request" class="btn-primary">Audit
               Verification Flow</a>
             <a href="/verify.html"
               class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-8 rounded-full transition-colors inline-block text-sm">Verification
@@ -651,10 +633,7 @@
             Designed by <span class="text-gray-300 font-medium">Jin Sung</span> · Founder & Principal Architect
           </p>
           <div id="contact" class="flex justify-center items-center gap-4 mt-4">
-            <a href="mailto:hello@auxtho.com"
-              class="font-semibold py-3 px-8 rounded-full transition-all inline-block text-sm tracking-wide"
-              style="background:linear-gradient(135deg,#2563eb,#3b82f6); color:#fff; box-shadow:0 2px 12px rgba(37,99,235,0.3)">Contact
-              →</a>
+            <a href="mailto:hello@auxtho.com" class="btn-primary">Contact →</a>
           </div>
         </div>
       </div>
