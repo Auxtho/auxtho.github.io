@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auxtho — Report Verification</title>
+    <meta name="description"
+        content="Verify the integrity of an Auxtho-generated governance report using its SHA-256 hash.">
+    <meta name="robots" content="noindex">
+    <meta name="color-scheme" content="dark light">
+    <link rel="icon" href="/assets/favicon.svg">
+    <link rel="canonical" href="https://auxtho.com/verify">
+    <meta name="theme-color" content="#0d6efd">
+    <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <link rel="stylesheet" href="/assets/style.css?v=2026-02-12">
+    <link rel="stylesheet" href="/assets/custom.css?v=2026-02-12">
+</head>
+
+<body class="antialiased">
+
+    <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
+        <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <a href="/" class="z-50" aria-label="Auxtho Home">
+                <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-24 md:pt-28 pb-20">
+        <section class="container mx-auto px-6 max-w-3xl">
+            <div class="text-center">
+                <div class="text-5xl mb-6">🔍</div>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Report Verification</h1>
+                <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto">
+                    Verify the integrity of an Auxtho-generated governance report.
+                </p>
+            </div>
+
+            <div class="mt-12 bg-gray-900/50 p-8 md:p-10 rounded-2xl border border-gray-800">
+                <h2 class="text-xl font-bold text-white mb-4">How to Verify</h2>
+                <ol class="space-y-4 text-gray-400">
+                    <li class="flex gap-3">
+                        <span
+                            class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold">1</span>
+                        <span>Locate the <strong class="text-white">SHA-256 integrity hash</strong> printed on the last
+                            page of your Auxtho report (or scan the QR code).</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span
+                            class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold">2</span>
+                        <span>Send the hash to <a href="mailto:hello@auxtho.com?subject=Report%20Verification%20Request"
+                                class="text-blue-400 hover:text-blue-300 underline">hello@auxtho.com</a> with the
+                            subject line <strong class="text-white">"Report Verification Request"</strong>.</span>
+                    </li>
+                    <li class="flex gap-3">
+                        <span
+                            class="flex-shrink-0 w-7 h-7 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-sm font-bold">3</span>
+                        <span>Our team will confirm whether the report hash matches the original generated artifact and
+                            has not been modified.</span>
+                    </li>
+                </ol>
+
+                <div class="mt-8 pt-6 border-t border-gray-800">
+                    <div class="flex items-start gap-3">
+                        <span class="text-emerald-400 font-semibold text-sm flex-shrink-0 mt-0.5">Pilot</span>
+                        <p class="text-sm text-gray-500">Manual email verification — response within 1 business day.</p>
+                    </div>
+                    <div class="flex items-start gap-3 mt-2">
+                        <span class="text-blue-400 font-semibold text-sm flex-shrink-0 mt-0.5">Production</span>
+                        <p class="text-sm text-gray-500">Automated real-time hash verification endpoint (deployment
+                            milestone).</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 text-center">
+                <a href="mailto:hello@auxtho.com?subject=Report%20Verification%20Request"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-8 rounded-full transition-colors inline-block">
+                    Verify via Email
+                </a>
+                <p class="text-xs text-gray-600 mt-4">
+                    Pilot artifacts are provided for evaluation purposes and do not constitute production regulatory
+                    submission materials.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-gray-800">
+        <div
+            class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+            <p class="text-center md:text-left order-1">&copy; 2025–2026 Auxtho. All rights reserved.</p>
+            <div class="space-x-4 order-2">
+                <a href="/privacy.html" class="hover:text-white">Privacy</a>
+                <span class="text-gray-600">•</span>
+                <a href="/terms.html" class="hover:text-white">Terms</a>
+                <span class="text-gray-600">•</span>
+                <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
+            </div>
+            <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Pilot artifacts are provided for
+                evaluation purposes and do not constitute production regulatory submission materials.</p>
+        </div>
+    </footer>
+
+    <script src="/assets/tw-init.js" defer></script>
+</body>
+
+</html>

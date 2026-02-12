@@ -1,10 +1,12 @@
 ﻿<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auxtho — Governance OS for AI</title>
-  <meta name="description" content="Auxtho provides deterministic control for trustworthy AI behavior, solving agent and strategic drift.">
+  <title>Auxtho — Bank-grade AI Governance OS</title>
+  <meta name="description"
+    content="Auxtho is the Governance OS that makes AI auditable, tamper-evident, and regulator-ready. MAS Tier 1 aligned evidence workflows, RBAC, and integrity hash chains.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="/assets/favicon.svg">
@@ -15,10 +17,11 @@
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Auxtho — Governance OS for AI">
-  <meta property="og:description" content="Deterministic control, automated governance, and contextual judgment for reliable AI.">
+  <meta property="og:title" content="Auxtho — Bank-grade AI Governance OS">
+  <meta property="og:description"
+    content="Immutable audit trails, evidence-backed AI reasoning, and regulatory compliance for Tier 1 financial institutions.">
   <meta property="og:image" content="https://auxtho.com/assets/og-image.png">
-  <meta property="og:image:alt" content="Auxtho — Governance OS for AI">
+  <meta property="og:image:alt" content="Auxtho — Bank-grade AI Governance OS">
   <meta property="og:url" content="https://auxtho.com">
   <meta property="og:site_name" content="Auxtho">
   <meta property="og:locale" content="en_US">
@@ -28,26 +31,23 @@
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:site" content="@auxtho">
-  <meta name="twitter:title" content="Auxtho — Governance OS for AI">
-  <meta name="twitter:description" content="Deterministic control, automated governance, and contextual judgment for reliable AI.">
+  <meta name="twitter:title" content="Auxtho — Bank-grade AI Governance OS">
+  <meta name="twitter:description"
+    content="Immutable audit trails, evidence-backed reasoning, and regulatory compliance for Tier 1 financial institutions.">
   <meta name="twitter:image" content="https://auxtho.com/assets/og-image.png">
 
-  <!-- Preconnects used by the working baseline -->
-  <link rel="preconnect" href="https://www.youtube-nocookie.com">
-  <link rel="preconnect" href="https://i.ytimg.com">
-  <link rel="preconnect" href="https://www.youtube.com">
-  <link rel="preconnect" href="https://img.youtube.com">
-
-  <!-- Local Tailwind build first, then custom overrides --><!-- Externalized JSON-LD (served as files to respect CSP) -->
+  <!-- Structured Data -->
   <script type="application/ld+json" src="/assets/ld-org.json"></script>
-  <script type="application/ld+json" src="/assets/ld-video.json"></script>
 
-  <link rel="stylesheet" href="/assets/style.css?v=2025-10-18-2">
-  <link rel="stylesheet" href="/assets/custom.css?v=2025-10-18-2">
+  <link rel="stylesheet" href="/assets/style.css?v=2026-02-12">
+  <link rel="stylesheet" href="/assets/custom.css?v=2026-02-12">
 </head>
+
 <body class="antialiased">
 
-  <a href="#problem" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black rounded-lg">Skip to content</a>
+  <a href="#governance"
+    class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black rounded-lg">Skip
+    to content</a>
 
   <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
     <div class="container mx-auto px-6 py-5 flex justify-between items-center">
@@ -55,22 +55,24 @@
         <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
       </a>
       <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
-        <span class="sr-only">Menu</span><span class="nav-icon-line line-1"></span><span class="nav-icon-line line-2"></span>
+        <span class="sr-only">Menu</span><span class="nav-icon-line line-1"></span><span
+          class="nav-icon-line line-2"></span>
       </button>
       <nav>
         <ul id="primary-navigation" data-visible="false" class="primary-navigation flex items-center space-x-8">
-          <li><a href="#problem" class="text-gray-300 hover:text-white transition-colors">Problem</a></li>
-          <li><a href="#solution" class="text-gray-300 hover:text-white transition-colors">Solution</a></li>
-          <li><a href="#overview" class="text-gray-300 hover:text-white transition-colors">Overview</a></li>
-          <li><a href="#demo" class="text-gray-300 hover:text-white transition-colors">Demo</a></li>
+          <li><a href="#governance" class="text-gray-300 hover:text-white transition-colors">Governance</a></li>
+          <li><a href="#capabilities" class="text-gray-300 hover:text-white transition-colors">Capabilities</a></li>
+          <li><a href="#architecture" class="text-gray-300 hover:text-white transition-colors">Architecture</a></li>
+          <li><a href="#mas-tier1" class="text-gray-300 hover:text-white transition-colors">MAS Tier 1</a></li>
+          <li><a href="#verify" class="text-gray-300 hover:text-white transition-colors">Verify</a></li>
           <li><a href="/story.html" class="text-gray-300 hover:text-white transition-colors">Our Story</a></li>
-          <li><a href="#founder" class="text-gray-300 hover:text-white transition-colors">Founder</a></li>
-          <li><a href="#contact" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Contact</a></li>
+          <li><a href="#contact"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Contact</a>
+          </li>
         </ul>
       </nav>
     </div>
   </header>
-
 
   <!-- Scroll Navigation -->
   <nav id="scroll-nav" aria-label="In-page navigation">
@@ -78,176 +80,548 @@
       <img src="/assets/logo-scroll.svg" alt="Auxtho" class="h-6 w-auto">
       <button id="scroll-nav-toggle" class="scroll-nav-toggle" aria-expanded="false" aria-controls="scroll-nav-menu">
         <span class="sr-only">Menu</span>
-        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+          stroke="currentColor" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
         </svg>
       </button>
     </div>
     <div id="scroll-nav-menu">
       <ul class="scroll-nav-menu-list">
-        <li><a href="#problem">Problem</a></li>
-        <li><a href="#solution">Solution</a></li>
-        <li><a href="#overview">System Overview</a></li>
-        <li><a href="#demo">Demo</a></li>
+        <li><a href="#governance">Governance</a></li>
+        <li><a href="#capabilities">Capabilities</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="#mas-tier1">MAS Tier 1</a></li>
+        <li><a href="#verify">Verify</a></li>
         <li><a href="/story.html">Our Story</a></li>
-        <li><a href="#founder">Founder</a></li>
       </ul>
     </div>
   </nav>
 
   <main>
+    <!-- ═══════════════════════════════════════════════
+         HERO — Regulatory Positioning
+    ═══════════════════════════════════════════════ -->
     <section class="text-center pt-24 pb-16">
       <div class="container mx-auto px-6">
-        <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4 headline-balance">When your AI forgets its goal, Auxtho remembers</h1>
-        <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-          Beyond smart AI, to reliable AI. We are the Governance OS that controls AI's unpredictability, ensuring every action aligns with your original intent.
+        <div
+          class="inline-block mb-6 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-500/10 text-blue-400 text-xs font-semibold tracking-wide uppercase">
+          MAS Tier 1 Aligned · Audit-Ready Evidence Workflow
+        </div>
+        <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4 headline-balance">
+          Without Auxtho, your AI can't survive a Tier&nbsp;1&nbsp;audit.
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-4">
+          Every AI decision needs an integrity-hashed evidence chain. Every response needs a verifiable hash. Every
+          audit question
+          needs a tamper-evident answer.
+        </p>
+        <p class="text-base text-gray-500 max-w-2xl mx-auto mb-8">
+          Auxtho is the Governance OS that binds AI behavior to institutional policy — with retention, signing,
+          chain&#8209;of&#8209;custody, and evidence traceability built in.
         </p>
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-          <a href="#demo" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">See 50s Demo</a>
-          <a href="#solution" class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">Explore the Solution</a>
+          <a href="#capabilities"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">Explore
+            Capabilities</a>
+          <a href="#mas-tier1"
+            class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block w-full sm:w-auto">MAS
+            Tier 1 Compliance</a>
         </div>
       </div>
     </section>
 
-    <section id="problem" class="py-20 text-center">
+    <!-- ═══════════════════════════════════════════════
+         GOVERNANCE PROBLEM
+    ═══════════════════════════════════════════════ -->
+    <section id="governance" class="py-20 text-center">
       <div class="container mx-auto px-6">
         <div class="max-w-4xl mx-auto">
-          <h2 class="text-3xl md:text-4xl font-bold headline-balance">The Silent Failure: AI's Strategic Drift</h2>
-          <p class="text-lg text-gray-400 mt-4">'Strategic Drift' is the critical flaw in today's AI agents. It's the silent error where an AI, over time, deviates from your core mission, leading to unreliable outcomes and broken trust. We believe the answer lies in making AI behavior accountable.</p>
-          <p class="text-xl text-white mt-6 font-semibold">For us, Predictability is the New Intelligence</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">The Audit Gap in AI Systems</h2>
+          <p class="text-lg text-gray-400 mt-4">
+            Regulators don't ask "is your AI smart?" — they ask <strong class="text-white">"can you prove what it did,
+              why, and with what evidence?"</strong>
+          </p>
+          <div class="grid md:grid-cols-3 gap-6 mt-10 text-left">
+            <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+              <div class="text-red-400 text-2xl mb-3">⚠️</div>
+              <h3 class="text-white font-semibold mb-2">No Evidence Chain</h3>
+              <p class="text-gray-400 text-sm">Most AI systems produce answers without traceable evidence. Auditors
+                cannot verify what sources informed a decision.</p>
+            </div>
+            <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+              <div class="text-red-400 text-2xl mb-3">⚠️</div>
+              <h3 class="text-white font-semibold mb-2">No Tamper Detection</h3>
+              <p class="text-gray-400 text-sm">Without integrity hashing, there is no way to prove that an AI report has
+                not been modified after generation.</p>
+            </div>
+            <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+              <div class="text-red-400 text-2xl mb-3">⚠️</div>
+              <h3 class="text-white font-semibold mb-2">No Access Control</h3>
+              <p class="text-gray-400 text-sm">Without RBAC and IDOR protection, AI thread data can be accessed by
+                unauthorized users — a critical audit failure.</p>
+            </div>
+          </div>
+          <p class="text-xl text-white mt-10 font-semibold">Auxtho closes every one of these gaps.</p>
         </div>
       </div>
     </section>
 
-    <section id="solution" class="py-20">
+    <!-- ═══════════════════════════════════════════════
+         CAPABILITIES (Solution Cards)
+    ═══════════════════════════════════════════════ -->
+    <section id="capabilities" class="py-20">
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold">Trustworthy AI, by Design</h2>
-          <p class="text-lg text-gray-400 mt-2">Our architecture ensures reliable AI behavior through a deterministic, multi-stage control process.</p>
+          <h2 class="text-3xl md:text-4xl font-bold">Governance Capabilities</h2>
+          <p class="text-lg text-gray-400 mt-2">Six pillars that make AI auditable, tamper-evident, and regulator-ready.
+          </p>
         </div>
         <div class="grid md:grid-cols-3 gap-8">
+
           <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <h3 class="text-xl font-bold mb-2">1. Supervisor Control</h3>
-            <p class="text-gray-400">Pre-plan then execute, no surprises.</p>
+            <div class="text-3xl mb-4">🔐</div>
+            <h3 class="text-xl font-bold mb-2">RBAC + Dual-Gate Export</h3>
+            <p class="text-gray-400">Role-based access control with mandatory Compliance Officer approval before any
+              audit artifact can be exported. Thread-level IDOR protection prevents unauthorized data access.</p>
           </div>
+
           <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <h3 class="text-xl font-bold mb-2">2. Memory Injection</h3>
-            <p class="text-gray-400">Long-term goals applied at every step.</p>
+            <div class="text-3xl mb-4">📚</div>
+            <h3 class="text-xl font-bold mb-2">Evidence-Backed Reasoning</h3>
+            <p class="text-gray-400">Every AI response is grounded in indexed, tiered evidence from the Knowledge Vault.
+              Sources are traceable, timestamped, and linked to the originating document.</p>
           </div>
+
           <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <h3 class="text-xl font-bold mb-2">3. Expert Execution</h3>
-            <p class="text-gray-400">Specialists operate within strict, pre-approved plans.</p>
+            <div class="text-3xl mb-4">✅</div>
+            <h3 class="text-xl font-bold mb-2">HITL Compliance Release</h3>
+            <p class="text-gray-400">Human-in-the-loop approval workflow ensures no AI-generated content is released
+              without explicit human review. Every approval is recorded with timestamp, user ID, and decision rationale.
+            </p>
           </div>
+
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="text-3xl mb-4">🔗</div>
+            <h3 class="text-xl font-bold mb-2">Tamper-Evident Audit Trail</h3>
+            <p class="text-gray-400">All system actions — logins, thread access, evidence retrieval, exports — are
+              logged with tamper-evident timestamps. Retention architecture designed to support up to 7-year regulatory
+              requirements. PII minimized and redacted per policy.</p>
+          </div>
+
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="text-3xl mb-4">🌏</div>
+            <h3 class="text-xl font-bold mb-2">Compliance Profiles</h3>
+            <p class="text-gray-400">Jurisdiction-aware governance with switchable profiles for MAS (Singapore), EU
+              (DORA/AI Act), and KR (Korea FSC). Each profile enforces region-specific export rules and evidence
+              thresholds.</p>
+          </div>
+
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="text-3xl mb-4">#️⃣</div>
+            <h3 class="text-xl font-bold mb-2">Integrity Hash Chain</h3>
+            <p class="text-gray-400">Every exported report carries a SHA-256 integrity hash. Reports can be
+              independently verified to confirm they have not been modified since generation.</p>
+          </div>
+
         </div>
       </div>
     </section>
 
-    <section id="overview" class="py-20">
+    <!-- ═══════════════════════════════════════════════
+         SYSTEM ARCHITECTURE (SVG)
+    ═══════════════════════════════════════════════ -->
+    <section id="architecture" class="py-20">
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold">System Overview</h2>
-          <p class="text-lg text-gray-400 mt-2">A high-level overview of Auxtho’s three-stage architecture.</p>
+          <h2 class="text-3xl md:text-4xl font-bold">System Architecture</h2>
+          <p class="text-lg text-gray-400 mt-2">End-to-end governance pipeline — from request to verifiable audit
+            artifact.</p>
         </div>
         <div class="diagram-container max-w-5xl mx-auto">
-          <!-- SVG same as baseline -->
-          <svg width="100%" height="auto" viewBox="0 0 980 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
-            <title id="title">High-level overview of a three-stage AI control pipeline</title>
-            <desc id="desc">Boxes labeled Input Guard, Analyzer, Rule Router, and Outcomes arranged left to right, with an external Governance Policy feeding into the Rule Router.</desc>
+          <svg width="100%" height="auto" viewBox="0 0 980 520" xmlns="http://www.w3.org/2000/svg" role="img"
+            aria-labelledby="arch-title arch-desc">
+            <title id="arch-title">Auxtho Governance Architecture</title>
+            <desc id="arch-desc">Six-stage pipeline: ThreadGuard, RBAC, Evidence Vault, HITL Approval, PDF Export, and
+              Integrity Verification, with compliance profiles feeding into the pipeline.</desc>
             <defs>
               <style>
-                .diagram-font { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-                .panel { fill: rgb(17 24 39 / 0.5); stroke: rgb(55 65 81); stroke-width:1; rx:14; }
-                .title { font-size:16px; font-weight:600; fill:#E5E5EA; }
-                .meta  { font-size:13px; fill:#9CA3AF; }
-                .wire  { stroke:#4B5563; stroke-width:1.5; marker-end:url(#arrow); fill:none; }
-                .pill  { fill: rgb(55 65 81 / 0.5); stroke: rgb(75 85 99); stroke-width:1; rx:10; }
-                .pillText { font-size:12px; fill:#E5E5EA; text-anchor: middle; }
-                .header-title { font-size: 20px; font-weight: 700; fill: #fff; }
-                .header-meta { font-size: 14px; fill: #9CA3AF; }
+                .diagram-font {
+                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                }
+
+                .panel {
+                  fill: rgb(17 24 39 / 0.5);
+                  stroke: rgb(55 65 81);
+                  stroke-width: 1;
+                  rx: 14;
+                }
+
+                .title {
+                  font-size: 14px;
+                  font-weight: 600;
+                  fill: #E5E5EA;
+                }
+
+                .meta {
+                  font-size: 11px;
+                  fill: #9CA3AF;
+                }
+
+                .wire {
+                  stroke: #4B5563;
+                  stroke-width: 1.5;
+                  marker-end: url(#arrow);
+                  fill: none;
+                }
+
+                .pill {
+                  fill: rgb(55 65 81 / 0.5);
+                  stroke: rgb(75 85 99);
+                  stroke-width: 1;
+                  rx: 10;
+                }
+
+                .pillText {
+                  font-size: 10px;
+                  fill: #E5E5EA;
+                  text-anchor: middle;
+                }
+
+                .header-title {
+                  font-size: 18px;
+                  font-weight: 700;
+                  fill: #fff;
+                }
+
+                .header-meta {
+                  font-size: 12px;
+                  fill: #9CA3AF;
+                }
+
+                .stage-num {
+                  font-size: 10px;
+                  font-weight: 700;
+                  fill: #60A5FA;
+                }
               </style>
               <marker id="arrow" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
                 <polygon points="0 0, 8 3.5, 0 7" fill="#4B5563"></polygon>
               </marker>
             </defs>
-            <rect x="0" y="0" width="980" height="420" fill="rgb(17 24 39 / 0.5)" stroke="rgb(55 65 81)" rx="14"></rect>
-            <g class="diagram-font" transform="translate(40, 40)">
-              <text class="header-title">High-Level Architecture</text>
-              <text class="header-meta" y="24">Input Guard → Analyzer → Rule Router → Outcomes</text>
+            <!-- Background -->
+            <rect x="0" y="0" width="980" height="520" fill="rgb(17 24 39 / 0.5)" stroke="rgb(55 65 81)" rx="14"></rect>
+
+            <!-- Header -->
+            <g class="diagram-font" transform="translate(40, 36)">
+              <text class="header-title">Governance Pipeline</text>
+              <text class="header-meta" y="22">Request → Guard → Evidence → Approval → Export → Verify</text>
             </g>
-            <g>
-              <rect class="panel" x="40" y="120" width="210" height="200"></rect>
-              <rect class="panel" x="290" y="120" width="210" height="200"></rect>
-              <rect class="panel" x="540" y="120" width="210" height="200"></rect>
-              <rect class="panel" x="770" y="120" width="170" height="200"></rect>
-            </g>
+
+            <!-- Stage 1: ThreadGuard -->
+            <rect class="panel" x="30" y="90" width="140" height="190"></rect>
             <g class="diagram-font">
-              <text class="title" x="55" y="150">Input Guard</text><text class="meta" x="55" y="174">Filters unsafe/unstable requests</text><rect class="pill" x="55" y="205" width="180" height="28"></rect><text class="pillText" x="145" y="224">Pattern Checks</text><rect class="pill" x="55" y="240" width="180" height="28"></rect><text class="pillText" x="145" y="259">Similarity Screening</text>
-              <text class="title" x="305" y="150">Analyzer</text><text class="meta" x="305" y="174">Extracts user intent</text><rect class="pill" x="305" y="205" width="180" height="48"></rect><text class="pillText" x="395" y="226"><tspan x="395" dy="0em">Intent, Tone, Slots</tspan><tspan x="395" dy="1.2em">→ Structured JSON</tspan></text><rect class="pill" x="305" y="260" width="180" height="28"></rect><text class="pillText" x="395" y="279">Schema Validation</text>
-              <text class="title" x="555" y="150">Rule Router</text><text class="meta" x="555" y="174">Applies deterministic policies</text><rect class="pill" x="555" y="205" width="180" height="28"></rect><text class="pillText" x="645" y="224">First-Match Rules</text><rect class="pill" x="555" y="240" width="180" height="28"></rect><text class="pillText" x="645" y="259">Deterministic routing (sampling off)</text>
-              <text class="title" x="785" y="150">Outcomes</text><text class="meta" x="785" y="174">Consistent & reviewable</text><rect class="pill" x="785" y="205" width="140" height="28"></rect><text class="pillText" x="855" y="224">Trace + Hash</text><rect class="pill" x="785" y="240" width="140" height="28"></rect><text class="pillText" x="855" y="259">Audit-Friendly</text>
+              <text class="stage-num" x="45" y="112">STAGE 1</text>
+              <text class="title" x="45" y="130">ThreadGuard</text>
+              <text class="meta" x="45" y="148">Access control gate</text>
+              <rect class="pill" x="42" y="162" width="116" height="24"></rect>
+              <text class="pillText" x="100" y="178">IDOR Protection</text>
+              <rect class="pill" x="42" y="192" width="116" height="24"></rect>
+              <text class="pillText" x="100" y="208">UUID Threads</text>
+              <rect class="pill" x="42" y="222" width="116" height="24"></rect>
+              <text class="pillText" x="100" y="238">JWT Validation</text>
             </g>
+
+            <!-- Stage 2: RBAC -->
+            <rect class="panel" x="195" y="90" width="140" height="190"></rect>
             <g class="diagram-font">
-              <rect class="panel" x="560" y="340" width="170" height="64"></rect><text class="title" x="575" y="365">Governance Policy</text><text class="meta" x="575" y="385">allow / deny / rewrite</text>
+              <text class="stage-num" x="210" y="112">STAGE 2</text>
+              <text class="title" x="210" y="130">RBAC Engine</text>
+              <text class="meta" x="210" y="148">Role enforcement</text>
+              <rect class="pill" x="207" y="162" width="116" height="24"></rect>
+              <text class="pillText" x="265" y="178">Role: CO / Analyst</text>
+              <rect class="pill" x="207" y="192" width="116" height="24"></rect>
+              <text class="pillText" x="265" y="208">Admin Mode</text>
+              <rect class="pill" x="207" y="222" width="116" height="24"></rect>
+              <text class="pillText" x="265" y="238">Dual-Gate Export</text>
             </g>
+
+            <!-- Stage 3: Evidence Vault -->
+            <rect class="panel" x="360" y="90" width="140" height="190"></rect>
+            <g class="diagram-font">
+              <text class="stage-num" x="375" y="112">STAGE 3</text>
+              <text class="title" x="375" y="130">Evidence Vault</text>
+              <text class="meta" x="375" y="148">Source retrieval</text>
+              <rect class="pill" x="372" y="162" width="116" height="24"></rect>
+              <text class="pillText" x="430" y="178">RAG Pipeline</text>
+              <rect class="pill" x="372" y="192" width="116" height="24"></rect>
+              <text class="pillText" x="430" y="208">Tiered Evidence</text>
+              <rect class="pill" x="372" y="222" width="116" height="24"></rect>
+              <text class="pillText" x="430" y="238">Trust Scoring</text>
+            </g>
+
+            <!-- Stage 4: HITL Approval -->
+            <rect class="panel" x="525" y="90" width="140" height="190"></rect>
+            <g class="diagram-font">
+              <text class="stage-num" x="540" y="112">STAGE 4</text>
+              <text class="title" x="540" y="130">HITL Approval</text>
+              <text class="meta" x="540" y="148">Human review gate</text>
+              <rect class="pill" x="537" y="162" width="116" height="24"></rect>
+              <text class="pillText" x="595" y="178">CO Sign-off</text>
+              <rect class="pill" x="537" y="192" width="116" height="24"></rect>
+              <text class="pillText" x="595" y="208">Decision Audit</text>
+              <rect class="pill" x="537" y="222" width="116" height="24"></rect>
+              <text class="pillText" x="595" y="238">Release Record</text>
+            </g>
+
+            <!-- Stage 5: PDF Export -->
+            <rect class="panel" x="690" y="90" width="140" height="190"></rect>
+            <g class="diagram-font">
+              <text class="stage-num" x="705" y="112">STAGE 5</text>
+              <text class="title" x="705" y="130">Export Engine</text>
+              <text class="meta" x="705" y="148">Artifact generation</text>
+              <rect class="pill" x="702" y="162" width="116" height="24"></rect>
+              <text class="pillText" x="760" y="178">PDF + Evidence</text>
+              <rect class="pill" x="702" y="192" width="116" height="24"></rect>
+              <text class="pillText" x="760" y="208">SHA-256 Hash</text>
+              <rect class="pill" x="702" y="222" width="116" height="24"></rect>
+              <text class="pillText" x="760" y="238">Verify Reference</text>
+            </g>
+
+            <!-- Stage 6: Verify -->
+            <rect class="panel" x="855" y="90" width="100" height="190"></rect>
+            <g class="diagram-font">
+              <text class="stage-num" x="868" y="112">STAGE 6</text>
+              <text class="title" x="868" y="130">Verify</text>
+              <text class="meta" x="868" y="148">Independent</text>
+              <rect class="pill" x="862" y="168" width="86" height="24"></rect>
+              <text class="pillText" x="905" y="184">Hash Check</text>
+              <rect class="pill" x="862" y="198" width="86" height="24"></rect>
+              <text class="pillText" x="905" y="214">Tamper Flag</text>
+              <rect class="pill" x="862" y="228" width="86" height="24"></rect>
+              <text class="pillText" x="905" y="244">Verify Ref</text>
+            </g>
+
+            <!-- Wires -->
             <g>
-              <path class="wire" d="M250,220 H 290"></path><path class="wire" d="M500,220 H 540"></path><path class="wire" d="M750,220 H 770"></path><path class="wire" d="M645,340 V 270"></path>
+              <path class="wire" d="M170,185 H 195"></path>
+              <path class="wire" d="M335,185 H 360"></path>
+              <path class="wire" d="M500,185 H 525"></path>
+              <path class="wire" d="M665,185 H 690"></path>
+              <path class="wire" d="M830,185 H 855"></path>
+            </g>
+
+            <!-- Compliance Profiles (bottom) -->
+            <rect class="panel" x="195" y="330" width="300" height="70"></rect>
+            <g class="diagram-font">
+              <text class="title" x="210" y="358">Compliance Profiles</text>
+              <text class="meta" x="210" y="378">SG-MAS-TRM-2024 · EU-DORA/AI Act · KR-FSC-2024</text>
+            </g>
+
+            <!-- Audit Log (bottom) -->
+            <rect class="panel" x="525" y="330" width="300" height="70"></rect>
+            <g class="diagram-font">
+              <text class="title" x="540" y="358">Immutable Audit Log</text>
+              <text class="meta" x="540" y="378">All actions logged · Up to 7yr · PII per policy</text>
+            </g>
+
+            <!-- Vertical wires from bottom boxes -->
+            <g>
+              <path class="wire" d="M345,330 V 280"></path>
+              <path class="wire" d="M675,330 V 280"></path>
+            </g>
+
+            <!-- Pipeline version label -->
+            <g class="diagram-font">
+              <text x="40" y="510" style="font-size:10px; fill:#4B5563;">Pipeline v5.2 · Policy-bound · SHA-256 verified
+                · Deterministic governance controls</text>
             </g>
           </svg>
         </div>
       </div>
     </section>
 
-    <section id="demo" class="py-16">
+    <!-- ═══════════════════════════════════════════════
+         MAS TIER 1 SECTION (NEW — P1)
+    ═══════════════════════════════════════════════ -->
+    <section id="mas-tier1" class="py-20">
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold">See It in Action</h2>
-          <p class="text-lg text-gray-400 mt-2">A brief demonstration showing how Auxtho's deterministic control prevents AI drift.</p>
-        </div>
-        <div class="demo-player aspect-video max-w-4xl mx-auto rounded-2xl overflow-hidden bg-gray-900 border border-gray-700 cursor-pointer relative" style="background-image: url('/assets/demo-thumbnail.png'); background-size: cover; background-position: center;" role="button" tabindex="0" aria-label="Play Demo Video">
-          <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <svg width="80" height="80" viewBox="0 0 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="40" cy="40" r="38" stroke="white" stroke-width="4"/>
-              <path d="M54.5 40L32.75 52.5593L32.75 27.4407L54.5 40Z" fill="white"/>
-            </svg>
+          <div
+            class="inline-block mb-4 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold tracking-wide uppercase">
+            Regulatory Compliance
           </div>
+          <h2 class="text-3xl md:text-4xl font-bold">For Banks &amp; MAS Tier 1 Auditors</h2>
+          <p class="text-lg text-gray-400 mt-2">Answers to the questions every regulator will ask about your AI
+            governance.</p>
         </div>
-        <noscript>
-          <div class="max-w-4xl mx-auto text-center mt-4 text-gray-400">
-            JavaScript is required to view the demo. Email us at <a class="underline" href="mailto:hello@auxtho.com?subject=Demo%20Access%20Request">hello@auxtho.com</a> for access.
+
+        <div class="max-w-4xl mx-auto space-y-6">
+
+          <!-- Q1: Non-indexed sources -->
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+                Q</div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-2">"How do you handle non-indexed sources?"</h3>
+                <p class="text-gray-400 mb-4">All evidence is sourced exclusively from the indexed Knowledge Vault.
+                  Non-indexed content is explicitly excluded from AI reasoning.</p>
+                <div class="bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                  <p class="text-gray-300"><strong class="text-emerald-400">Indexing Policy:</strong> Documents are
+                    ingested via controlled upload with CO approval. Refresh cycle runs daily at <code
+                      class="text-blue-400">00:00 UTC</code>. Every indexed source carries a content hash and ingestion
+                    timestamp.</p>
+                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Scope Limitation:</strong> Auxtho
+                    explicitly declares scope boundaries in every exported report. Non-indexed sources are flagged as
+                    out-of-scope.</p>
+                </div>
+              </div>
+            </div>
           </div>
-        </noscript>
+
+          <!-- Q2: Trust Score manipulation -->
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+                Q</div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-2">"Can trust scores be manipulated at runtime?"</h3>
+                <p class="text-gray-400 mb-4">No. Trust score weights and thresholds are policy-bound and cannot be
+                  changed at runtime.</p>
+                <div class="bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                  <p class="text-gray-300"><strong class="text-emerald-400">Policy Binding:</strong> Weights are fixed
+                    per policy version. Any modification requires a new policy version with explicit approval and audit
+                    trail.</p>
+                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Verification:</strong> Each exported
+                    report includes the policy version hash used during generation, enabling independent verification
+                    that the correct weights were applied.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q3: Model/Pipeline versioning -->
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+                Q</div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-2">"How do you govern model and pipeline changes?"</h3>
+                <p class="text-gray-400 mb-4">All model and embedding pipeline versions are tracked and locked per
+                  policy version. No silent upgrades.</p>
+                <div class="bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                  <p class="text-gray-300"><strong class="text-emerald-400">Version Governance:</strong> Model changes
+                    (LLM provider, embedding model) require a policy version update with approval chain. Current
+                    versions are stamped on every exported artifact.</p>
+                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Reproducibility:</strong> Given the
+                    same policy version and input, the system enforces deterministic governance controls — same evidence
+                    retrieval path, same trust score calculation, same output structure.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Q4: Data retention -->
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="flex items-start gap-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
+                Q</div>
+              <div>
+                <h3 class="text-lg font-bold text-white mb-2">"What is your data retention and chain-of-custody policy?"
+                </h3>
+                <p class="text-gray-400 mb-4">Audit logs, evidence chains, and exported artifacts are designed to
+                  support up to 7-year retention requirements with tamper-evident integrity hashing. PII minimized and
+                  redacted per policy.</p>
+                <div class="bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                  <p class="text-gray-300"><strong class="text-emerald-400">Chain of Custody:</strong> Every action in
+                    the system — from login to evidence retrieval to export — is logged with user ID, timestamp, and
+                    action type. PII minimized and redacted per policy (including hashing where applicable).</p>
+                  <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Integrity:</strong> Exported PDF
+                    artifacts carry a SHA-256 hash that can be independently verified. Cryptographic signing (HSM/KMS)
+                    is planned for production deployment.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </section>
 
+    <!-- ═══════════════════════════════════════════════
+         VERIFY (Report Verification)
+    ═══════════════════════════════════════════════ -->
+    <section id="verify" class="py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl border border-gray-800">
+          <div class="text-4xl mb-4">🔍</div>
+          <h2 class="text-3xl font-bold mb-4">Verify a Report</h2>
+          <p class="text-lg text-gray-400 mb-2">
+            Every Auxtho-generated report includes an integrity hash and verification reference.
+          </p>
+          <p class="text-gray-500 mb-8">
+            Confirm that a report has not been modified since generation.
+          </p>
+          <div class="bg-black/30 rounded-lg p-6 border border-gray-800 mb-6">
+            <p class="text-sm text-gray-400 font-mono">
+              Verification Endpoint
+            </p>
+            <p class="text-lg text-blue-400 font-mono font-bold mt-1">
+              verify.auxtho.com
+            </p>
+            <div class="mt-3 space-y-1">
+              <p class="text-xs text-gray-500"><span class="text-emerald-400 font-semibold">Pilot:</span> Manual
+                verification via email — send report hash to hello@auxtho.com</p>
+              <p class="text-xs text-gray-500"><span class="text-blue-400 font-semibold">Production:</span> Automated
+                verification endpoint with real-time hash lookup</p>
+            </div>
+            <p class="text-xs text-gray-600 mt-3 border-t border-gray-800 pt-3">Pilot exports use manual email
+              verification. Automated verification endpoint is a production deployment milestone.</p>
+          </div>
+          <a href="mailto:hello@auxtho.com?subject=Report%20Verification%20Request"
+            class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block">Verify
+            via Email (Pilot)</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════
+         FOUNDER (minimal update)
+    ═══════════════════════════════════════════════ -->
     <section id="founder" class="py-20">
       <div class="container mx-auto px-6 text-center">
         <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl border border-gray-800">
-          <h2 class="text-3xl font-bold mb-4">About the Founder</h2>
-          <p class="text-lg text-gray-400"><strong>Jin Sung</strong> — A solo founder bootstrapping Auxtho to solve AI’s core reliability problem. He architected the company’s deterministic control system to ensure trustworthy human-AI interaction.</p>
+          <h2 class="text-3xl font-bold mb-4">Founder &amp; Architect</h2>
+          <p class="text-lg text-gray-400"><strong>Jin Sung</strong> — Founder and principal architect of Auxtho. He
+            designed the governance pipeline to ensure that every AI action within institutional workflows is
+            explainable, verifiable, and tamper-evident.</p>
           <div id="contact" class="mt-8 flex justify-center items-center space-x-6">
-            <a href="mailto:hello@auxtho.com" class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-              <span>Email</span>
+            <a href="mailto:hello@auxtho.com"
+              class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2z" />
+                <polyline points="22,6 12,13 2,6" />
+              </svg>
+              <span>hello@auxtho.com</span>
             </a>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="deep-dive" class="py-20 text-center">
-      <div class="container mx-auto px-6 border-t border-gray-800 pt-20">
-        <div class="max-w-3xl mx-auto">
-          <h2 class="text-3xl font-bold mb-4">Explore the Technical Details</h2>
-          <p class="text-lg text-gray-400 mt-4 mb-8">For a deeper understanding of our deterministic architecture, explore our public patent filing or contact us for our technical whitepaper.</p>
-          <a href="mailto:hello@auxtho.com?subject=Technical%20Whitepaper%20Request" class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block">Request Whitepaper</a>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="border-t border-gray-800">
-    <div class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
-      <p class="text-center md:text-left order-1">&copy; 2025 Auxtho. All rights reserved.</p>
+    <div
+      class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+      <p class="text-center md:text-left order-1">&copy; 2025–2026 Auxtho. All rights reserved.</p>
       <div class="space-x-4 order-2">
         <a href="/privacy.html" class="hover:text-white">Privacy</a>
         <span class="text-gray-600">•</span>
@@ -255,7 +629,8 @@
         <span class="text-gray-600">•</span>
         <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
       </div>
-      <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Public descriptions reflect a patent-pending architecture and do not disclose unpublished claims.</p>
+      <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Pilot artifacts are provided for
+        evaluation purposes and do not constitute production regulatory submission materials.</p>
     </div>
   </footer>
 
@@ -263,5 +638,5 @@
   <script src="/assets/tw-init.js" defer></script>
   <script src="/assets/app.js" defer></script>
 </body>
-</html>
 
+</html>
