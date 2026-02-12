@@ -15,8 +15,85 @@
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <link rel="stylesheet" href="/assets/style.css?v=2026-02-13">
-    <link rel="stylesheet" href="/assets/custom.css?v=2026-02-13">
+    <link rel="stylesheet" href="/assets/style.css?v=2026-02-13b">
+    <link rel="stylesheet" href="/assets/custom.css?v=2026-02-13b">
+
+    <style>
+        /* Page-specific styles — no Tailwind dependency */
+        .step-circle {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .step-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .step-text {
+            color: #d1d5db;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .qr-card {
+            display: none;
+            background: rgba(16, 185, 129, 0.06);
+            border: 1px solid rgba(16, 185, 129, 0.20);
+            border-radius: 16px;
+            padding: 28px 32px;
+            text-align: left;
+            margin: 36px 0 8px 0;
+        }
+
+        .qr-label {
+            color: #6b7280;
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .qr-value {
+            color: #ffffff;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            word-break: break-all;
+            margin: 0 0 16px 0;
+            padding: 0;
+            min-height: 20px;
+        }
+
+        .section-divider {
+            margin-top: 28px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .label-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .verify-cta-area {
+            margin-top: 36px;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body class="antialiased">
@@ -32,93 +109,83 @@
     <main class="pt-24 md:pt-28 pb-20">
         <section class="container mx-auto px-6 max-w-3xl">
             <div class="text-center">
-                <div class="text-5xl mb-6">🔍</div>
+                <div class="text-5xl mb-4" style="margin-bottom:16px">🔍</div>
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Artifact Verification</h1>
-                <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto">
+                <p class="text-lg text-gray-400"
+                    style="margin-top:12px; max-width:600px; margin-left:auto; margin-right:auto">
                     Verify the integrity of an Auxtho-generated audit artifact.
                 </p>
             </div>
 
-            <!-- QR Verification Card — hidden by default, shown by JS when ?report=&h= params exist -->
-            <div id="qr-verify"
-                style="display:none; background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.20); border-radius:16px; padding:24px 32px; text-align:left; margin:32px 0">
+            <!-- QR Verification Card -->
+            <div id="qr-verify" class="qr-card">
                 <p
-                    style="color:#34d399; font-weight:600; font-size:0.8rem; margin-bottom:16px; letter-spacing:0.08em; text-transform:uppercase">
-                    QR Verification Detected</p>
-                <div style="margin-bottom:12px">
-                    <span style="color:#6b7280; font-size:0.8rem">Report ID</span>
-                    <p id="qr-report-id"
-                        style="color:#fff; font-family:'Courier New',monospace; font-size:15px; margin:6px 0 0 0; word-break:break-all">
-                        —</p>
-                </div>
-                <div style="margin-bottom:16px">
-                    <span style="color:#6b7280; font-size:0.8rem">SHA-256 Artifact Hash</span>
-                    <p id="qr-hash"
-                        style="color:#fff; font-family:'Courier New',monospace; font-size:15px; margin:6px 0 0 0; word-break:break-all">
-                        —</p>
-                </div>
-                <p style="color:#9ca3af; font-size:0.875rem; margin:16px 0 0 0; line-height:1.6">
-                    Send this hash to <a href="" id="qr-mailto"
-                        style="color:#60a5fa; text-decoration:underline">hello@auxtho.com</a> to verify that this
-                    artifact has not been modified. Response within 1 business day.
+                    style="color:#34d399; font-weight:600; font-size:0.8rem; margin:0 0 20px 0; letter-spacing:0.08em; text-transform:uppercase">
+                    ✅ QR Verification Detected</p>
+
+                <span class="qr-label">Report ID</span>
+                <p id="qr-report-id" class="qr-value">—</p>
+
+                <span class="qr-label">SHA-256 Artifact Hash</span>
+                <p id="qr-hash" class="qr-value">—</p>
+
+                <p style="color:#9ca3af; font-size:0.875rem; margin:0 0 0 0; line-height:1.6">
+                    Send this hash to
+                    <a href="" id="qr-mailto" style="color:#60a5fa; text-decoration:underline">hello@auxtho.com</a>
+                    to verify that this artifact has not been modified. Response within 1 business day.
                 </p>
-                <div style="margin-top:24px">
+                <div style="margin-top:28px">
                     <a href="" id="qr-verify-btn" class="btn-primary">Verify This Artifact →</a>
                 </div>
             </div>
 
             <!-- Manual Instructions -->
-            <div class="mt-12 bg-gray-900/50 p-8 md:p-10 rounded-2xl border border-gray-800">
-                <h2 style="font-size:1.25rem; font-weight:700; color:#fff; margin-bottom:20px">How to Verify</h2>
-                <ol style="list-style:none; padding:0; margin:0">
-                    <li style="display:flex; align-items:flex-start; gap:14px; margin-bottom:20px">
-                        <span
-                            style="flex-shrink:0; width:28px; height:28px; min-width:28px; border-radius:50%; background:rgba(59,130,246,0.15); color:rgba(96,165,250,0.9); display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; margin-top:2px">1</span>
-                        <span style="color:#d1d5db; line-height:1.7">Locate the <strong style="color:#fff">SHA-256
-                                artifact hash</strong> printed on the last
-                            page of your Auxtho artifact (or scan the QR code).</span>
-                    </li>
-                    <li style="display:flex; align-items:flex-start; gap:14px; margin-bottom:20px">
-                        <span
-                            style="flex-shrink:0; width:28px; height:28px; min-width:28px; border-radius:50%; background:rgba(59,130,246,0.15); color:rgba(96,165,250,0.9); display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; margin-top:2px">2</span>
-                        <span style="color:#d1d5db; line-height:1.7">Send the hash to <a
-                                href="mailto:hello@auxtho.com?subject=Audit%20Verification%20Request"
-                                style="color:#60a5fa; text-decoration:underline">hello@auxtho.com</a> with the
-                            subject line <strong style="color:#fff">"Audit Verification Request"</strong>.</span>
-                    </li>
-                    <li style="display:flex; align-items:flex-start; gap:14px">
-                        <span
-                            style="flex-shrink:0; width:28px; height:28px; min-width:28px; border-radius:50%; background:rgba(59,130,246,0.15); color:rgba(96,165,250,0.9); display:inline-flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; margin-top:2px">3</span>
-                        <span style="color:#d1d5db; line-height:1.7">Our team will confirm whether the artifact hash
-                            matches the original exported artifact and has not been modified.</span>
-                    </li>
-                </ol>
+            <div class="mt-12 bg-gray-900/50 p-8 rounded-2xl border border-gray-800" style="padding:32px 36px">
+                <h2 style="font-size:1.25rem; font-weight:700; color:#fff; margin:0 0 24px 0">How to Verify</h2>
+
+                <div class="step-row">
+                    <span class="step-circle">1</span>
+                    <span class="step-text">Locate the <strong style="color:#fff">SHA-256 artifact hash</strong>
+                        printed on the last page of your Auxtho artifact (or scan the QR code).</span>
+                </div>
+                <div class="step-row">
+                    <span class="step-circle">2</span>
+                    <span class="step-text">Send the hash to
+                        <a href="mailto:hello@auxtho.com?subject=Audit%20Verification%20Request"
+                            style="color:#60a5fa; text-decoration:underline">hello@auxtho.com</a>
+                        with the subject line <strong style="color:#fff">"Audit Verification Request"</strong>.</span>
+                </div>
+                <div class="step-row" style="margin-bottom:0">
+                    <span class="step-circle">3</span>
+                    <span class="step-text">Our team will confirm whether the artifact hash matches the original
+                        exported artifact and has not been modified.</span>
+                </div>
 
                 <!-- Pilot / Production -->
-                <div style="margin-top:28px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08)">
-                    <div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:8px">
+                <div class="section-divider">
+                    <div class="label-row">
                         <span style="color:#34d399; font-weight:600; font-size:0.875rem; flex-shrink:0">Pilot</span>
                         <p style="font-size:0.875rem; color:#6b7280; margin:0">Manual email verification — response
                             within 1 business day.</p>
                     </div>
-                    <div style="display:flex; align-items:flex-start; gap:12px">
+                    <div class="label-row" style="margin-bottom:0">
                         <span
                             style="color:#60a5fa; font-weight:600; font-size:0.875rem; flex-shrink:0">Production</span>
                         <div style="font-size:0.875rem; color:#6b7280">
                             <div>Active: <strong style="color:rgba(52,211,153,0.8)">SHA-256 artifact hash
                                     verification</strong></div>
-                            <div style="margin-top:2px">Production: <strong style="color:rgba(96,165,250,0.8)">hash +
-                                    PKCS#7 CMS signature + RFC 3161 timestamp verification</strong></div>
+                            <div style="margin-top:2px">Production: <strong style="color:rgba(96,165,250,0.8)">hash
+                                    + PKCS#7 CMS signature + RFC 3161 timestamp verification</strong></div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Verification Standard Stack -->
-                <div style="margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.08)">
+                <div class="section-divider">
                     <p
-                        style="color:#9ca3af; font-family:monospace; font-size:0.75rem; margin-bottom:8px; letter-spacing:0.05em">
+                        style="color:#9ca3af; font-family:monospace; font-size:0.75rem; margin:0 0 8px 0; letter-spacing:0.05em">
                         VERIFICATION STANDARD STACK</p>
-                    <div style="font-family:monospace; font-size:0.75rem; color:#d1d5db; line-height:2">
+                    <div style="font-family:monospace; font-size:0.75rem; color:#d1d5db; line-height:2.2">
                         <div>✅ SHA-256 Artifact Hash <span style="color:rgba(52,211,153,0.7)">· Active</span></div>
                         <div>⚙️ PKCS#7 CMS Detached Signature <span style="color:rgba(96,165,250,0.7)">·
                                 Production</span></div>
@@ -130,7 +197,7 @@
                 </div>
             </div>
 
-            <div style="margin-top:28px; text-align:center">
+            <div class="verify-cta-area">
                 <a href="mailto:hello@auxtho.com?subject=Audit%20Verification%20Request" class="btn-primary">
                     Verify via Email
                 </a>
@@ -156,30 +223,63 @@
 
     <script src="/assets/tw-init.js" defer></script>
     <script>
-        // QR Verification: read URL params and display report details
-        // Uses DOMContentLoaded + inline display to guarantee rendering
-        document.addEventListener('DOMContentLoaded', function () {
-            var params = new URLSearchParams(window.location.search);
-            var reportId = params.get('report');
-            var hash = params.get('h');
-            if (reportId && hash) {
-                // Show QR card via inline style (immune to Tailwind/class overrides)
-                document.getElementById('qr-verify').style.display = 'block';
+        // QR Verification — reads URL params and injects values
+        // Runs on DOMContentLoaded with setTimeout fallback for safety
+        function initQRVerify() {
+            try {
+                var search = window.location.search || '';
+                var params = new URLSearchParams(search);
+                var reportId = params.get('report');
+                var hash = params.get('h');
 
-                // Inject values directly
-                document.getElementById('qr-report-id').textContent = reportId;
-                document.getElementById('qr-hash').textContent = hash;
+                if (!reportId || !hash) return;
 
-                // Build pre-filled mailto link
+                // Show QR card
+                var card = document.getElementById('qr-verify');
+                if (card) card.style.display = 'block';
+
+                // Set Report ID
+                var reportEl = document.getElementById('qr-report-id');
+                if (reportEl) {
+                    reportEl.textContent = reportId;
+                    reportEl.innerText = reportId; // fallback
+                }
+
+                // Set Hash
+                var hashEl = document.getElementById('qr-hash');
+                if (hashEl) {
+                    hashEl.textContent = hash;
+                    hashEl.innerText = hash; // fallback
+                }
+
+                // Build mailto
                 var subject = encodeURIComponent('Audit Verification Request');
                 var body = encodeURIComponent(
-                    'Please verify the following artifact:\n\nReport ID: ' + reportId + '\nSHA-256 Hash: ' + hash + '\n\nThank you.'
+                    'Please verify the following artifact:\n\nReport ID: ' + reportId +
+                    '\nSHA-256 Hash: ' + hash + '\n\nThank you.'
                 );
                 var mailto = 'mailto:hello@auxtho.com?subject=' + subject + '&body=' + body;
-                document.getElementById('qr-mailto').href = mailto;
-                document.getElementById('qr-verify-btn').href = mailto;
+
+                var mailtoEl = document.getElementById('qr-mailto');
+                if (mailtoEl) mailtoEl.href = mailto;
+
+                var btnEl = document.getElementById('qr-verify-btn');
+                if (btnEl) btnEl.href = mailto;
+            } catch (e) {
+                // Silent fail — page still functional without QR
             }
-        });
+        }
+
+        // Run immediately (DOM should be parsed since script is at bottom)
+        initQRVerify();
+
+        // Also run on DOMContentLoaded as safety net
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initQRVerify);
+        }
+
+        // Final fallback: run again after 500ms
+        setTimeout(initQRVerify, 500);
     </script>
 </body>
 
