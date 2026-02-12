@@ -143,19 +143,19 @@
               why, and with what evidence?"</strong>
           </p>
           <div class="grid md:grid-cols-3 gap-6 mt-10 text-left">
-            <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+            <div class="card-risk bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
               <div class="text-red-400 text-2xl mb-3">⚠️</div>
               <h3 class="text-white font-semibold mb-2">No Evidence Chain</h3>
               <p class="text-gray-400 text-sm">Most AI systems produce answers without traceable evidence. Auditors
                 cannot verify what sources informed a decision.</p>
             </div>
-            <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+            <div class="card-risk bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
               <div class="text-red-400 text-2xl mb-3">⚠️</div>
               <h3 class="text-white font-semibold mb-2">No Tamper Detection</h3>
               <p class="text-gray-400 text-sm">Without integrity hashing, there is no way to prove that an AI report has
                 not been modified after generation.</p>
             </div>
-            <div class="bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
+            <div class="card-risk bg-red-500/5 border border-red-500/20 rounded-2xl p-6">
               <div class="text-red-400 text-2xl mb-3">⚠️</div>
               <h3 class="text-white font-semibold mb-2">No Access Control</h3>
               <p class="text-gray-400 text-sm">Without RBAC and IDOR protection, AI thread data can be accessed by
@@ -179,21 +179,21 @@
         </div>
         <div class="grid md:grid-cols-3 gap-8">
 
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="text-3xl mb-4">🔐</div>
             <h3 class="text-xl font-bold mb-2">RBAC + Dual-Gate Export</h3>
             <p class="text-gray-400">Role-based access control with mandatory Compliance Officer approval before any
               audit artifact can be exported. Thread-level IDOR protection prevents unauthorized data access.</p>
           </div>
 
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="text-3xl mb-4">📚</div>
             <h3 class="text-xl font-bold mb-2">Evidence-Backed Reasoning</h3>
             <p class="text-gray-400">Every AI response is grounded in indexed, tiered evidence from the Knowledge Vault.
               Sources are traceable, timestamped, and linked to the originating document.</p>
           </div>
 
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="text-3xl mb-4">✅</div>
             <h3 class="text-xl font-bold mb-2">HITL Compliance Release</h3>
             <p class="text-gray-400">Human-in-the-loop approval workflow ensures no AI-generated content is released
@@ -201,7 +201,7 @@
             </p>
           </div>
 
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="text-3xl mb-4">🔗</div>
             <h3 class="text-xl font-bold mb-2">Tamper-Evident Audit Trail</h3>
             <p class="text-gray-400">All system actions — logins, thread access, evidence retrieval, exports — are
@@ -209,7 +209,7 @@
               requirements. PII minimized and redacted per policy.</p>
           </div>
 
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="text-3xl mb-4">🌏</div>
             <h3 class="text-xl font-bold mb-2">Compliance Profiles</h3>
             <p class="text-gray-400">Jurisdiction-aware governance with switchable profiles for MAS (Singapore), EU
@@ -217,7 +217,7 @@
               thresholds.</p>
           </div>
 
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="text-3xl mb-4">#️⃣</div>
             <h3 class="text-xl font-bold mb-2">Integrity Hash Chain</h3>
             <p class="text-gray-400">Every exported report carries a SHA-256 integrity hash. Reports can be
@@ -459,7 +459,7 @@
         <div class="max-w-4xl mx-auto space-y-6">
 
           <!-- Q1: Non-indexed sources -->
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+          <div class="card-qa bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
             <div class="flex items-start gap-4">
               <div
                 class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-sm font-bold">
@@ -468,7 +468,7 @@
                 <h3 class="text-lg font-bold text-white mb-2">"How do you handle non-indexed sources?"</h3>
                 <p class="text-gray-400 mb-4">All evidence is sourced exclusively from the indexed Knowledge Vault.
                   Non-indexed content is explicitly excluded from AI reasoning.</p>
-                <div class="bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
+                <div class="card-detail bg-black/30 rounded-lg p-4 border border-gray-800 text-sm">
                   <p class="text-gray-300"><strong class="text-emerald-400">Indexing Policy:</strong> Documents are
                     ingested via controlled upload with CO approval. Refresh cycle runs daily at <code
                       class="text-blue-400">00:00 UTC</code>. Every indexed source carries a content hash and ingestion
@@ -558,59 +558,91 @@
     ═══════════════════════════════════════════════ -->
     <section id="verify" class="py-20 text-center">
       <div class="container mx-auto px-6">
-        <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl border border-gray-800">
+        <div class="verify-panel max-w-3xl mx-auto p-8 md:p-12 rounded-2xl">
           <div class="text-4xl mb-4">🔍</div>
-          <h2 class="text-3xl font-bold mb-4">Verify a Report</h2>
-          <p class="text-lg text-gray-400 mb-2">
-            Every Auxtho-generated report includes an integrity hash and verification reference.
+          <h2 class="text-3xl font-bold mb-4">Artifact Integrity Verification</h2>
+          <p class="text-lg text-gray-300 mb-2">
+            Every Auxtho-generated report carries a SHA-256 integrity hash.
           </p>
-          <p class="text-gray-500 mb-8">
-            Confirm that a report has not been modified since generation.
+          <p class="text-gray-400 mb-8">
+            Independently confirm that a governance artifact has not been modified since generation.
           </p>
-          <div class="bg-black/30 rounded-lg p-6 border border-gray-800 mb-6">
-            <p class="text-sm text-gray-400 font-mono">
-              Verification Endpoint
-            </p>
-            <p class="text-lg text-blue-400 font-mono font-bold mt-1">
-              verify.auxtho.com
-            </p>
-            <div class="mt-3 space-y-1">
-              <p class="text-xs text-gray-500"><span class="text-emerald-400 font-semibold">Pilot:</span> Manual
-                verification via email — send report hash to hello@auxtho.com</p>
-              <p class="text-xs text-gray-500"><span class="text-blue-400 font-semibold">Production:</span> Automated
-                verification endpoint with real-time hash lookup</p>
+
+          <div class="verify-endpoint rounded-lg p-6 mb-8">
+            <p class="text-sm text-gray-400 font-mono">Verification Domain</p>
+            <p class="text-xl text-blue-400 font-mono font-bold mt-1">verify.auxtho.com</p>
+
+            <div class="grid sm:grid-cols-2 gap-4 mt-5 text-left">
+              <div class="rounded-lg p-4"
+                style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.20)">
+                <p class="text-emerald-400 font-semibold text-sm mb-1">Current — Pilot</p>
+                <p class="text-sm text-gray-400">Email-based verification. Send report hash to <a
+                    href="mailto:hello@auxtho.com"
+                    class="text-blue-400 hover:text-blue-300 underline">hello@auxtho.com</a> — response within 1
+                  business day.</p>
+              </div>
+              <div class="rounded-lg p-4"
+                style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.20)">
+                <p class="text-blue-400 font-semibold text-sm mb-1">Production Milestone</p>
+                <p class="text-sm text-gray-400">Automated real-time hash verification endpoint with API access and
+                  HSM/KMS-signed attestation.</p>
+              </div>
             </div>
-            <p class="text-xs text-gray-600 mt-3 border-t border-gray-800 pt-3">Pilot exports use manual email
-              verification. Automated verification endpoint is a production deployment milestone.</p>
           </div>
-          <a href="mailto:hello@auxtho.com?subject=Report%20Verification%20Request"
-            class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block">Verify
-            via Email (Pilot)</a>
+
+          <div class="flex flex-col sm:flex-row justify-center items-center gap-3">
+            <a href="mailto:hello@auxtho.com?subject=Report%20Verification%20Request"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block">Verify
+              via Email</a>
+            <a href="/verify.html"
+              class="bg-gray-800 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block">Verification
+              Guide →</a>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ═══════════════════════════════════════════════
-         FOUNDER (minimal update)
+         OPERATIONS & SUPPORT
     ═══════════════════════════════════════════════ -->
-    <section id="founder" class="py-20">
-      <div class="container mx-auto px-6 text-center">
-        <div class="max-w-3xl mx-auto bg-gray-900/50 p-8 md:p-12 rounded-2xl border border-gray-800">
-          <h2 class="text-3xl font-bold mb-4">Founder &amp; Architect</h2>
-          <p class="text-lg text-gray-400"><strong>Jin Sung</strong> — Founder and principal architect of Auxtho. He
-            designed the governance pipeline to ensure that every AI action within institutional workflows is
-            explainable, verifiable, and tamper-evident.</p>
-          <div id="contact" class="mt-8 flex justify-center items-center space-x-6">
+    <section id="operations" class="py-20">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl md:text-4xl font-bold">Operations & Support</h2>
+          <p class="text-lg text-gray-400 mt-2">Built for institutional deployment. Designed for auditability at every
+            layer.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="text-3xl mb-4">🛡️</div>
+            <h3 class="text-xl font-bold mb-2">Security Posture</h3>
+            <p class="text-gray-400 text-sm">SOC2-aligned architecture. End-to-end PII redaction. JWT-based session
+              management. Thread-level IDOR protection. All infrastructure runs on isolated tenancy.</p>
+          </div>
+
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="text-3xl mb-4">⏱️</div>
+            <h3 class="text-xl font-bold mb-2">Pilot Support</h3>
+            <p class="text-gray-400 text-sm">Dedicated point of contact for pilot engagements. Email response within 1
+              business day. Issue resolution tracked with audit-grade logging.</p>
+          </div>
+
+          <div class="card-panel bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <div class="text-3xl mb-4">🗺️</div>
+            <h3 class="text-xl font-bold mb-2">Production Roadmap</h3>
+            <p class="text-gray-400 text-sm">HSM/KMS signing, automated verification endpoint, regulatory clause
+              mapping, continuous monitoring — structured milestones toward Tier 1 production deployment.</p>
+          </div>
+
+        </div>
+
+        <div class="text-center mt-10">
+          <p class="text-gray-500 text-sm mb-4">Designed and architected by <strong class="text-white">Jin Sung</strong>
+            — Founder & Principal Architect</p>
+          <div id="contact" class="flex justify-center items-center gap-4">
             <a href="mailto:hello@auxtho.com"
-              class="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                aria-hidden="true">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2z" />
-                <polyline points="22,6 12,13 2,6" />
-              </svg>
-              <span>hello@auxtho.com</span>
-            </a>
+              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-full transition-colors inline-block">Contact</a>
           </div>
         </div>
       </div>

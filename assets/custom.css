@@ -1,21 +1,25 @@
 ﻿
-/* ========= Auxtho custom layout fixes (FINAL MERGED) ========= */
+/* ========= Auxtho custom layout (Regulatory Polish v2) ========= */
 /* Place AFTER /assets/style.css in <head> */
 
 /* ──────────────────────────────
-   BASE — dark theme + text color
+   DESIGN TOKENS
    ────────────────────────────── */
 :root {
   color-scheme: dark;
   --color-bg:       #000;
   --color-surface:  rgba(15, 18, 25, 0.65);
   --color-border:   rgba(255, 255, 255, 0.10);
-  --color-border-s: rgba(255, 255, 255, 0.16);  /* stronger variant */
+  --color-border-s: rgba(255, 255, 255, 0.16);
   --color-text:     #e5e7eb;
   --color-muted:    #a1a1aa;
   --color-dim:      #71717a;
   --color-accent:   #3b82f6;
 }
+
+/* ──────────────────────────────
+   BASE
+   ────────────────────────────── */
 html, body {
   background: var(--color-bg);
   color: var(--color-text);
@@ -34,9 +38,16 @@ body {
 html.nav-open,
 body.nav-open { overflow: hidden; }
 
-/* Force light-on-dark text everywhere */
+/* Enforce white headings on dark bg */
 h1, h2, h3, h4, h5, h6 { color: #fff; }
-p, li, span, td, th { color: var(--color-text); }
+/* Readable body text — scope to elements that inherit black from UA */
+p, li, td, th { color: var(--color-text); }
+/* NOTE: span excluded to preserve Tailwind accent classes (text-emerald-400 etc) */
+/* NOTE: a excluded to preserve link colors */
+
+/* Explicit link defaults for dark theme */
+a { color: inherit; text-decoration: none; }
+a:hover { color: #fff; }
 
 /* ──────────────────────────────
    HEADER
@@ -95,7 +106,6 @@ body.resizing .primary-navigation { transition: none !important; }
   transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s;
 }
 #scroll-nav.is-visible { transform: translateY(0); opacity: 1; visibility: visible; }
-
 .scroll-nav-content { display: flex; justify-content: space-between; align-items: center; max-width: 960px; margin: 0 auto; }
 .scroll-nav-title { font-weight: 600; font-size: 1.1rem; }
 .scroll-nav-toggle {
@@ -106,7 +116,6 @@ body.resizing .primary-navigation { transition: none !important; }
 .scroll-nav-toggle:hover { background-color: rgba(255, 255, 255, 0.1); }
 .chevron-icon { width: 16px; height: 16px; stroke-width: 2; transition: transform 0.3s ease; }
 .scroll-nav-toggle[aria-expanded="true"] .chevron-icon { transform: rotate(180deg); }
-
 #scroll-nav-menu {
   position: absolute; top: 100%; left: 0; right: 0;
   background: rgba(17, 24, 39, 0.8);
@@ -121,125 +130,99 @@ body.resizing .primary-navigation { transition: none !important; }
 .scroll-nav-menu-list a:hover { background-color: rgba(255, 255, 255, 0.1); color: #fff; }
 
 /* ──────────────────────────────
-   GOVERNANCE CARDS (capability / problem / Q&A)
-   
-   P0 fix — stronger border, larger padding, 
-   enforced white headings + readable body text
+   CARDS — semantic classes
+   Targets: .card-panel, .card-risk, .card-qa, .card-detail
    ────────────────────────────── */
 
-/* Capability cards */
-.bg-gray-900\/50 {
+/* Governance capability cards + operations cards */
+.card-panel {
   background: var(--color-surface) !important;
   border-color: var(--color-border-s) !important;
-}
-
-/* All governance card upgrades */
-section .bg-gray-900\/50,
-section .bg-red-500\/5 {
   padding: 2rem !important;
 }
-section .bg-gray-900\/50 h3,
-section .bg-red-500\/5 h3 {
+.card-panel h3 {
   color: #fff !important;
   font-size: 1.25rem !important;
   line-height: 1.4 !important;
   margin-bottom: 0.75rem !important;
 }
-section .bg-gray-900\/50 p,
-section .bg-red-500\/5 p {
+.card-panel p {
   color: var(--color-muted) !important;
   font-size: 0.9375rem !important;
   line-height: 1.7 !important;
 }
 
-/* Risk cards (red accent) — strengthen border */
-.border-red-500\/20 {
+/* Risk cards (red accent) */
+.card-risk {
   border-color: rgba(239, 68, 68, 0.30) !important;
+  padding: 1.75rem !important;
 }
-
-/* Inner detail boxes (Q&A, architecture details) */
-.bg-black\/30 {
-  background: rgba(0, 0, 0, 0.40) !important;
-  border-color: var(--color-border-s) !important;
-}
-.bg-black\/30 p {
+.card-risk h3 { color: #fff !important; }
+.card-risk p {
   color: var(--color-muted) !important;
   line-height: 1.7 !important;
 }
-.bg-black\/30 strong {
-  color: inherit !important;
-}
 
-/* ──────────────────────────────
-   VERIFY SECTION — "trust weapon" emphasis  
-   P0 — elevated visual treatment
-   ────────────────────────────── */
-#verify .bg-gray-900\/50 {
-  background: linear-gradient(
-    135deg,
-    rgba(15, 18, 25, 0.80) 0%,
-    rgba(30, 40, 60, 0.60) 100%
-  ) !important;
-  border: 2px solid rgba(59, 130, 246, 0.35) !important;
-  box-shadow:
-    0 0 60px rgba(59, 130, 246, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-#verify h2 {
-  color: #fff !important;
-  font-size: 2rem !important;
-}
-#verify .bg-black\/30 {
-  background: rgba(0, 0, 0, 0.50) !important;
-  border: 1px solid rgba(59, 130, 246, 0.25) !important;
-  padding: 1.75rem !important;
-}
-/* verify.auxtho.com domain highlight */
-#verify .font-mono.font-bold {
-  font-size: 1.375rem !important;
-  letter-spacing: 0.02em;
-  color: #60a5fa !important;
-}
-/* Pilot/Production labels stronger */
-#verify .text-xs {
-  font-size: 0.8125rem !important;
-  line-height: 1.6 !important;
-  color: var(--color-muted) !important;
-}
-/* CTA button — blue for emphasis */
-#verify a[href^="mailto:"] {
-  background: #2563eb !important;
-  font-size: 1rem !important;
-  padding: 0.875rem 2rem !important;
-}
-#verify a[href^="mailto:"]:hover {
-  background: #1d4ed8 !important;
-}
-
-/* ──────────────────────────────
-   MAS TIER 1 Q&A — card upgrades
-   ────────────────────────────── */
-#mas-tier1 .bg-gray-900\/50 {
+/* MAS Tier 1 Q&A cards */
+.card-qa {
+  background: var(--color-surface) !important;
+  border-color: var(--color-border-s) !important;
   padding: 2.25rem !important;
 }
-#mas-tier1 h3 {
+.card-qa h3 {
   font-size: 1.125rem !important;
   line-height: 1.5 !important;
   color: #fff !important;
 }
-#mas-tier1 .bg-black\/30 {
+.card-qa p {
+  color: var(--color-muted) !important;
+  line-height: 1.7 !important;
+}
+
+/* Inner detail boxes inside Q&A */
+.card-detail {
+  background: rgba(0, 0, 0, 0.40) !important;
+  border-color: var(--color-border-s) !important;
   margin-top: 1rem !important;
 }
-#mas-tier1 .bg-black\/30 p {
+.card-detail p {
+  color: var(--color-muted) !important;
   font-size: 0.875rem !important;
   line-height: 1.75 !important;
 }
+/* Preserve accent colors inside detail boxes */
+.card-detail strong { color: inherit !important; }
 
-/* Q badge — slightly larger */
-#mas-tier1 .w-8 {
+/* Q badge */
+.card-qa .w-8 {
   width: 2.25rem !important;
   height: 2.25rem !important;
   font-size: 0.875rem !important;
+}
+
+/* ──────────────────────────────
+   VERIFY SECTION — elevated emphasis
+   ────────────────────────────── */
+.verify-panel {
+  background: linear-gradient(
+    135deg,
+    rgba(15, 18, 25, 0.80) 0%,
+    rgba(30, 40, 60, 0.60) 100%
+  );
+  border: 2px solid rgba(59, 130, 246, 0.30);
+  box-shadow: 0 0 80px rgba(59, 130, 246, 0.06);
+}
+.verify-panel h2 {
+  color: #fff !important;
+  font-size: 2rem !important;
+}
+.verify-panel p {
+  color: var(--color-muted) !important;
+}
+
+.verify-endpoint {
+  background: rgba(0, 0, 0, 0.40);
+  border: 1px solid rgba(59, 130, 246, 0.20);
 }
 
 /* ──────────────────────────────
@@ -257,7 +240,7 @@ section .bg-red-500\/5 p {
 .diagram-container svg .header-meta  { font-size: 14px !important; fill: #9CA3AF !important; }
 .diagram-container svg marker polygon { fill: #4B5563 !important; }
 
-/* Demo video: responsive full-bleed 16:9 */
+/* Demo video: responsive 16:9 */
 .demo-player { position: relative; border-radius: 1rem; overflow: hidden; aspect-ratio: 16 / 9; }
 .demo-player iframe { position: absolute; inset: 0; width: 100% !important; height: 100% !important; display: block; border: 0; }
 @supports not (aspect-ratio: 16 / 9) {
@@ -266,37 +249,23 @@ section .bg-red-500\/5 p {
 }
 
 /* ──────────────────────────────
-   TYPOGRAPHY — H1/H2/H3 scale
-   P1 — unified scale + line-height
+   TYPOGRAPHY — unified scale
    ────────────────────────────── */
 .logo-text { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.05em; color: #fff; text-decoration: none; }
 .headline-balance { text-wrap: balance; }
 
-h1, .text-4xl { line-height: 1.15 !important; letter-spacing: -0.02em; }
-h2, .text-3xl { line-height: 1.25 !important; }
-h3, .text-xl  { line-height: 1.4  !important; }
-
-/* Section headings — consistent spacing */
-section > div > div > h2 {
-  margin-bottom: 0.5rem;
-}
-section > div > div > h2 + p {
-  margin-top: 0.5rem;
-  margin-bottom: 2.5rem;
-}
-
-/* Body text — readable but not overpowering */
-.text-gray-400 { color: var(--color-muted) !important; }
-.text-gray-500 { color: var(--color-dim) !important; }
+h1 { line-height: 1.15 !important; letter-spacing: -0.02em; }
+h2 { line-height: 1.25 !important; }
+h3 { line-height: 1.4  !important; }
 
 /* ──────────────────────────────
-   BUTTONS & CHIPS
+   BUTTONS
    ────────────────────────────── */
 .btn { border-radius: 9999px; padding: .5rem 1rem; font-weight: 600; }
 .hero { padding-top: 5rem; padding-bottom: 5rem; }
 
 /* ──────────────────────────────
-   FOOTER — P1 contrast strengthened
+   FOOTER — readable contrast
    ────────────────────────────── */
 footer {
   border-top: 1px solid var(--color-border-s) !important;
@@ -305,66 +274,64 @@ footer {
 }
 footer p,
 footer a,
-footer span,
 footer div {
-  color: #a1a1aa !important;  /* zinc-400 — readable on black */
+  color: #a1a1aa !important;
 }
-footer .text-xs,
-footer .text-gray-500,
-footer .text-gray-600 {
-  color: #a1a1aa !important;  /* was gray-500/600 — too dim */
-  font-size: 0.8125rem !important;
-}
-footer a:hover {
-  color: #fff !important;
-}
+footer a:hover { color: #fff !important; }
 /* Separator dots stay subtler */
-footer .text-gray-600:not(a):not(p) {
-  color: #52525b !important;
+footer span.text-gray-600 { color: #52525b !important; }
+/* Legal disclaimer */
+footer .text-xs {
+  font-size: 0.8125rem !important;
+  color: #a1a1aa !important;
 }
-
-/* .site-footer (legacy class fallback) */
-.site-footer { border-top: 1px solid rgba(255,255,255,0.08); }
 
 /* ──────────────────────────────
-   LAYOUT — flex body + sections 
+   LAYOUT
    ────────────────────────────── */
 main, .page-main, .page, .content-wrap { flex: 1 0 auto; }
 main { padding-bottom: 3.5rem; }
-
 main > section:last-of-type,
 .page-main > section:last-of-type,
 .page > section:last-of-type,
 .content-wrap > section:last-of-type {
   margin-bottom: 2.5rem !important;
 }
+.site-footer { border-top: 1px solid rgba(255,255,255,0.08); }
 
 /* ──────────────────────────────
-   MOBILE — P1 spacing/padding
+   MOBILE — scoped spacing
    ────────────────────────────── */
 @media (max-width: 768px) {
-  /* Cards need breathing room on mobile */
-  section .bg-gray-900\/50,
-  section .bg-red-500\/5 {
-    padding: 1.5rem !important;
-  }
-  /* Capability grid gaps */
-  .grid { gap: 1rem !important; }
-  
-  /* Section vertical spacing — tighter on mobile */
-  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
-  
-  /* Hero adjustments */
-  .text-4xl { font-size: 2rem !important; }
-  .text-3xl { font-size: 1.5rem !important; }
-  .text-xl  { font-size: 1.125rem !important; }
-  
-  /* MAS Tier 1 Q&A cards */
-  #mas-tier1 .bg-gray-900\/50 { padding: 1.5rem !important; }
-  #mas-tier1 .grid { gap: 1rem !important; }
+  .card-panel { padding: 1.5rem !important; }
+  .card-risk  { padding: 1.25rem !important; }
+  .card-qa    { padding: 1.5rem !important; }
 
-  /* Verify emphasis maintained on mobile */
-  #verify .bg-gray-900\/50 { padding: 1.5rem !important; }
+  /* Section-scoped grid gaps (not global) */
+  #capabilities .grid { gap: 1rem !important; }
+  #governance .grid   { gap: 0.75rem !important; }
+  #operations .grid   { gap: 1rem !important; }
+  #mas-tier1 .space-y-6 > * + * { margin-top: 1rem !important; }
+
+  /* Section vertical spacing */
+  .py-20 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
+
+  /* Verify panel */
+  .verify-panel { padding: 1.5rem !important; }
+  /* Reduce glow on mobile for performance */
+  .verify-panel { box-shadow: none !important; }
+
+  /* Reduce blur intensity on mobile for scroll performance */
+  .primary-header,
+  #scroll-nav,
+  #scroll-nav-menu {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+
+  /* Responsive typography */
+  h1 { font-size: 2rem !important; }
+  h2 { font-size: 1.5rem !important; }
 }
 
 @media (min-width: 768px) {
@@ -381,7 +348,6 @@ main > section:last-of-type,
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border-width: 0; }
 .focus\:not-sr-only:focus { position: static; width: auto; height: auto; padding: 0; margin: 0; overflow: visible; clip: auto; white-space: normal; }
 :focus-visible { outline: 2px solid #60a5fa; outline-offset: 2px; border-radius: 4px; }
-
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto !important; } }
 
 /* Scroll header z-index helper */
