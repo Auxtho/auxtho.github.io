@@ -249,198 +249,163 @@
             <desc id="arch-desc">Six-stage pipeline: ThreadGuard, RBAC, Evidence Vault, HITL Approval, PDF Export, and
               Integrity Verification, with compliance profiles feeding into the pipeline.</desc>
             <defs>
-              <style>
-                .diagram-font {
-                  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-                }
-
-                .panel {
-                  fill: rgb(17 24 39 / 0.5);
-                  stroke: rgb(55 65 81);
-                  stroke-width: 1;
-                  rx: 14;
-                }
-
-                .title {
-                  font-size: 14px;
-                  font-weight: 600;
-                  fill: #E5E5EA;
-                }
-
-                .meta {
-                  font-size: 11px;
-                  fill: #9CA3AF;
-                }
-
-                .wire {
-                  stroke: #4B5563;
-                  stroke-width: 1.5;
-                  marker-end: url(#arrow);
-                  fill: none;
-                }
-
-                .pill {
-                  fill: rgb(55 65 81 / 0.5);
-                  stroke: rgb(75 85 99);
-                  stroke-width: 1;
-                  rx: 10;
-                }
-
-                .pillText {
-                  font-size: 10px;
-                  fill: #E5E5EA;
-                  text-anchor: middle;
-                }
-
-                .header-title {
-                  font-size: 18px;
-                  font-weight: 700;
-                  fill: #fff;
-                }
-
-                .header-meta {
-                  font-size: 12px;
-                  fill: #9CA3AF;
-                }
-
-                .stage-num {
-                  font-size: 10px;
-                  font-weight: 700;
-                  fill: #93C5FD;
-                  opacity: 0.9;
-                }
-              </style>
               <marker id="arrow" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
-                <polygon points="0 0, 8 3.5, 0 7" fill="#4B5563"></polygon>
+                <polygon points="0 0, 8 3.5, 0 7" fill="#6B7280" />
               </marker>
             </defs>
             <!-- Background -->
-            <rect x="0" y="0" width="980" height="520" fill="rgb(17 24 39 / 0.5)" stroke="rgb(55 65 81)" rx="14"></rect>
+            <rect x="0" y="0" width="980" height="520" fill="rgba(17,24,39,0.6)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
 
             <!-- Header -->
-            <g class="diagram-font" transform="translate(40, 36)">
-              <text class="header-title">Governance Pipeline</text>
-              <text class="header-meta" y="22">Request → Guard → Evidence → Approval → Export → Verify</text>
+            <g transform="translate(40, 36)" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#FFFFFF" font-size="18" font-weight="700">Governance Pipeline</text>
+              <text fill="#D1D5DB" font-size="12" y="22">Request → Guard → Evidence → Approval → Export → Verify</text>
             </g>
 
             <!-- Stage 1: ThreadGuard -->
-            <rect class="panel" x="30" y="90" width="140" height="190"></rect>
-            <g class="diagram-font">
-              <text class="stage-num" x="45" y="112">STAGE 1</text>
-              <text class="title" x="45" y="130">ThreadGuard</text>
-              <text class="meta" x="45" y="148">Access control gate</text>
-              <rect class="pill" x="42" y="162" width="116" height="24"></rect>
-              <text class="pillText" x="100" y="178">IDOR Protection</text>
-              <rect class="pill" x="42" y="192" width="116" height="24"></rect>
-              <text class="pillText" x="100" y="208">UUID Threads</text>
-              <rect class="pill" x="42" y="222" width="116" height="24"></rect>
-              <text class="pillText" x="100" y="238">JWT Validation</text>
+            <rect x="30" y="90" width="140" height="190" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#93C5FD" font-size="10" font-weight="700" x="45" y="112">STAGE 1</text>
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="45" y="130">ThreadGuard</text>
+              <text fill="#D1D5DB" font-size="11" x="45" y="148">Access control gate</text>
+              <rect x="42" y="162" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="100" y="178">IDOR Protection</text>
+              <rect x="42" y="192" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="100" y="208">UUID Threads</text>
+              <rect x="42" y="222" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="100" y="238">JWT Validation</text>
             </g>
 
             <!-- Stage 2: RBAC -->
-            <rect class="panel" x="195" y="90" width="140" height="190"></rect>
-            <g class="diagram-font">
-              <text class="stage-num" x="210" y="112">STAGE 2</text>
-              <text class="title" x="210" y="130">RBAC Engine</text>
-              <text class="meta" x="210" y="148">Role enforcement</text>
-              <rect class="pill" x="207" y="162" width="116" height="24"></rect>
-              <text class="pillText" x="265" y="178">Role: CO / Analyst</text>
-              <rect class="pill" x="207" y="192" width="116" height="24"></rect>
-              <text class="pillText" x="265" y="208">Admin Mode</text>
-              <rect class="pill" x="207" y="222" width="116" height="24"></rect>
-              <text class="pillText" x="265" y="238">Dual-Gate Export</text>
+            <rect x="195" y="90" width="140" height="190" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#93C5FD" font-size="10" font-weight="700" x="210" y="112">STAGE 2</text>
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="210" y="130">RBAC Engine</text>
+              <text fill="#D1D5DB" font-size="11" x="210" y="148">Role enforcement</text>
+              <rect x="207" y="162" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="265" y="178">Role: CO / Analyst</text>
+              <rect x="207" y="192" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="265" y="208">Admin Mode</text>
+              <rect x="207" y="222" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="265" y="238">Dual-Gate Export</text>
             </g>
 
             <!-- Stage 3: Evidence Vault -->
-            <rect class="panel" x="360" y="90" width="140" height="190"></rect>
-            <g class="diagram-font">
-              <text class="stage-num" x="375" y="112">STAGE 3</text>
-              <text class="title" x="375" y="130">Evidence Vault</text>
-              <text class="meta" x="375" y="148">Source retrieval</text>
-              <rect class="pill" x="372" y="162" width="116" height="24"></rect>
-              <text class="pillText" x="430" y="178">RAG Pipeline</text>
-              <rect class="pill" x="372" y="192" width="116" height="24"></rect>
-              <text class="pillText" x="430" y="208">Tiered Evidence</text>
-              <rect class="pill" x="372" y="222" width="116" height="24"></rect>
-              <text class="pillText" x="430" y="238">Trust Scoring</text>
+            <rect x="360" y="90" width="140" height="190" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#93C5FD" font-size="10" font-weight="700" x="375" y="112">STAGE 3</text>
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="375" y="130">Evidence Vault</text>
+              <text fill="#D1D5DB" font-size="11" x="375" y="148">Source retrieval</text>
+              <rect x="372" y="162" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="430" y="178">RAG Pipeline</text>
+              <rect x="372" y="192" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="430" y="208">Tiered Evidence</text>
+              <rect x="372" y="222" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="430" y="238">Trust Scoring</text>
             </g>
 
             <!-- Stage 4: HITL Approval -->
-            <rect class="panel" x="525" y="90" width="140" height="190"></rect>
-            <g class="diagram-font">
-              <text class="stage-num" x="540" y="112">STAGE 4</text>
-              <text class="title" x="540" y="130">HITL Approval</text>
-              <text class="meta" x="540" y="148">Human review gate</text>
-              <rect class="pill" x="537" y="162" width="116" height="24"></rect>
-              <text class="pillText" x="595" y="178">CO Sign-off</text>
-              <rect class="pill" x="537" y="192" width="116" height="24"></rect>
-              <text class="pillText" x="595" y="208">Decision Audit</text>
-              <rect class="pill" x="537" y="222" width="116" height="24"></rect>
-              <text class="pillText" x="595" y="238">Release Record</text>
+            <rect x="525" y="90" width="140" height="190" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#93C5FD" font-size="10" font-weight="700" x="540" y="112">STAGE 4</text>
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="540" y="130">HITL Approval</text>
+              <text fill="#D1D5DB" font-size="11" x="540" y="148">Human review gate</text>
+              <rect x="537" y="162" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="595" y="178">CO Sign-off</text>
+              <rect x="537" y="192" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="595" y="208">Decision Audit</text>
+              <rect x="537" y="222" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="595" y="238">Release Record</text>
             </g>
 
-            <!-- Stage 5: PDF Export -->
-            <rect class="panel" x="690" y="90" width="140" height="190"></rect>
-            <g class="diagram-font">
-              <text class="stage-num" x="705" y="112">STAGE 5</text>
-              <text class="title" x="705" y="130">Export Engine</text>
-              <text class="meta" x="705" y="148">Artifact generation</text>
-              <rect class="pill" x="702" y="162" width="116" height="24"></rect>
-              <text class="pillText" x="760" y="178">PDF + Evidence</text>
-              <rect class="pill" x="702" y="192" width="116" height="24"></rect>
-              <text class="pillText" x="760" y="208">SHA-256 Hash</text>
-              <rect class="pill" x="702" y="222" width="116" height="24"></rect>
-              <text class="pillText" x="760" y="238">Verify Reference</text>
+            <!-- Stage 5: Export Engine -->
+            <rect x="690" y="90" width="140" height="190" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#93C5FD" font-size="10" font-weight="700" x="705" y="112">STAGE 5</text>
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="705" y="130">Export Engine</text>
+              <text fill="#D1D5DB" font-size="11" x="705" y="148">Artifact generation</text>
+              <rect x="702" y="162" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="760" y="178">PDF + Evidence</text>
+              <rect x="702" y="192" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="760" y="208">SHA-256 Hash</text>
+              <rect x="702" y="222" width="116" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="760" y="238">Verify Reference</text>
             </g>
 
             <!-- Stage 6: Verify -->
-            <rect class="panel" x="855" y="90" width="100" height="190"></rect>
-            <g class="diagram-font">
-              <text class="stage-num" x="868" y="112">STAGE 6</text>
-              <text class="title" x="868" y="130">Verify</text>
-              <text class="meta" x="868" y="148">Independent</text>
-              <rect class="pill" x="862" y="168" width="86" height="24"></rect>
-              <text class="pillText" x="905" y="184">Hash Check</text>
-              <rect class="pill" x="862" y="198" width="86" height="24"></rect>
-              <text class="pillText" x="905" y="214">Tamper Flag</text>
-              <rect class="pill" x="862" y="228" width="86" height="24"></rect>
-              <text class="pillText" x="905" y="244">Verify Ref</text>
+            <rect x="855" y="90" width="100" height="190" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#93C5FD" font-size="10" font-weight="700" x="868" y="112">STAGE 6</text>
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="868" y="130">Verify</text>
+              <text fill="#D1D5DB" font-size="11" x="868" y="148">Independent</text>
+              <rect x="862" y="168" width="86" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="905" y="184">Hash Check</text>
+              <rect x="862" y="198" width="86" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="905" y="214">Tamper Flag</text>
+              <rect x="862" y="228" width="86" height="24" fill="rgba(55,65,81,0.5)" stroke="rgba(75,85,99,0.6)"
+                stroke-width="1" rx="10" />
+              <text fill="#E5E7EB" font-size="10" text-anchor="middle" x="905" y="244">Verify Ref</text>
             </g>
 
             <!-- Wires -->
             <g>
-              <path class="wire" d="M170,185 H 195"></path>
-              <path class="wire" d="M335,185 H 360"></path>
-              <path class="wire" d="M500,185 H 525"></path>
-              <path class="wire" d="M665,185 H 690"></path>
-              <path class="wire" d="M830,185 H 855"></path>
+              <path d="M170,185 H 195" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+              <path d="M335,185 H 360" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+              <path d="M500,185 H 525" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+              <path d="M665,185 H 690" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+              <path d="M830,185 H 855" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
             </g>
 
             <!-- Compliance Profiles (bottom) -->
-            <rect class="panel" x="195" y="330" width="300" height="70"></rect>
-            <g class="diagram-font">
-              <text class="title" x="210" y="358">Compliance Profiles</text>
-              <text class="meta" x="210" y="378">SG-MAS-TRM-2024 · EU-DORA/AI Act · KR-FSC-2024</text>
+            <rect x="195" y="330" width="300" height="70" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="210" y="358">Compliance Profiles</text>
+              <text fill="#D1D5DB" font-size="11" x="210" y="378">SG-MAS-TRM-2024 · EU-DORA/AI Act · KR-FSC-2024</text>
             </g>
 
             <!-- Audit Log (bottom) -->
-            <rect class="panel" x="525" y="330" width="300" height="70"></rect>
-            <g class="diagram-font">
-              <text class="title" x="540" y="358">Immutable Audit Log</text>
-              <text class="meta" x="540" y="378">All actions logged · Up to 7yr · PII per policy</text>
+            <rect x="525" y="330" width="300" height="70" fill="rgba(17,24,39,0.5)" stroke="rgba(75,85,99,0.5)"
+              stroke-width="1" rx="14" />
+            <g font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">
+              <text fill="#F3F4F6" font-size="14" font-weight="600" x="540" y="358">Immutable Audit Log</text>
+              <text fill="#D1D5DB" font-size="11" x="540" y="378">All actions logged · Up to 7yr · PII per policy</text>
             </g>
 
             <!-- Vertical wires from bottom boxes -->
             <g>
-              <path class="wire" d="M345,330 V 280"></path>
-              <path class="wire" d="M675,330 V 280"></path>
+              <path d="M345,330 V 280" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
+              <path d="M675,330 V 280" stroke="#6B7280" stroke-width="1.5" fill="none" marker-end="url(#arrow)" />
             </g>
 
             <!-- Pipeline version label -->
-            <g class="diagram-font">
-              <text x="40" y="510" style="font-size:10px; fill:#9CA3AF;">Pipeline v5.2 · Policy-bound · SHA-256 verified
-                · Deterministic governance controls</text>
-            </g>
+            <text x="40" y="500" fill="#D1D5DB" font-size="10"
+              font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif">Pipeline v5.2 · Policy-bound ·
+              SHA-256 verified · Deterministic governance controls</text>
           </svg>
         </div>
       </div>
