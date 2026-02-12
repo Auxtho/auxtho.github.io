@@ -40,7 +40,7 @@ body.nav-open { overflow: hidden; }
 
 /* Enforce white headings on dark bg */
 h1, h2, h3, h4, h5, h6 { color: #fff; }
-/* Readable body text — scope to elements that inherit black from UA */
+/* Readable body text — scoped to key contexts, not global */
 p, li, td, th { color: var(--color-text); }
 /* NOTE: span excluded to preserve Tailwind accent classes (text-emerald-400 etc) */
 /* NOTE: a excluded to preserve link colors */
@@ -48,6 +48,24 @@ p, li, td, th { color: var(--color-text); }
 /* Explicit link defaults for dark theme */
 a { color: inherit; text-decoration: none; }
 a:hover { color: #fff; }
+
+/* Preserve accent colors on interactive elements inside semantic cards */
+.card-panel a,
+.card-qa a,
+.card-detail a,
+.verify-panel a { color: var(--color-accent); }
+.card-panel a:hover,
+.card-qa a:hover,
+.card-detail a:hover,
+.verify-panel a:hover { color: #60a5fa; }
+
+.card-panel code,
+.card-qa code,
+.card-detail code { color: #60a5fa; font-size: 0.875em; }
+
+.card-panel strong,
+.card-qa strong { color: #fff; }
+.card-detail strong { color: inherit; }
 
 /* ──────────────────────────────
    HEADER
@@ -193,13 +211,6 @@ body.resizing .primary-navigation { transition: none !important; }
 /* Preserve accent colors inside detail boxes */
 .card-detail strong { color: inherit !important; }
 
-/* Q badge */
-.card-qa .w-8 {
-  width: 2.25rem !important;
-  height: 2.25rem !important;
-  font-size: 0.875rem !important;
-}
-
 /* ──────────────────────────────
    VERIFY SECTION — elevated emphasis
    ────────────────────────────── */
@@ -318,8 +329,12 @@ main > section:last-of-type,
 
   /* Verify panel */
   .verify-panel { padding: 1.5rem !important; }
-  /* Reduce glow on mobile for performance */
+  /* Reduce glow + shadow on mobile for performance */
   .verify-panel { box-shadow: none !important; }
+  .card-panel,
+  .card-qa {
+    box-shadow: none !important;
+  }
 
   /* Reduce blur intensity on mobile for scroll performance */
   .primary-header,
