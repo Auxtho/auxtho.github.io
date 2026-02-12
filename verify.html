@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auxtho — Artifact Verification</title>
     <meta name="description"
-        content="Verify the integrity of an Auxtho-generated audit artifact using its SHA-256 hash.">
+        content="Verify the integrity of an Auxtho-generated audit artifact using its integrity hash.">
     <meta name="robots" content="noindex">
     <meta name="color-scheme" content="dark light">
     <link rel="icon" href="/assets/favicon.svg">
@@ -47,7 +47,7 @@
                 <span class="qr-label">Report ID</span>
                 <p id="qr-report-id" class="qr-value">—</p>
 
-                <span class="qr-label">SHA-256 Artifact Hash</span>
+                <span class="qr-label">Artifact Integrity Hash</span>
                 <p id="qr-hash" class="qr-value">—</p>
 
                 <p class="qr-description">
@@ -68,7 +68,7 @@
                 <ol class="step-list">
                     <li class="step-row">
                         <span class="step-circle">1</span>
-                        <span class="step-text">Locate the <strong>SHA-256 artifact hash</strong>
+                        <span class="step-text">Locate the <strong>artifact integrity hash</strong>
                             printed on the last page of your Auxtho artifact (or scan the QR code).</span>
                     </li>
                     <li class="step-row">
@@ -95,7 +95,7 @@
                     <div class="label-row">
                         <span class="label-production">Production</span>
                         <div class="label-description">
-                            <div>Active: <strong class="active">SHA-256 artifact hash
+                            <div>Active: <strong class="active">artifact integrity hash
                                     verification</strong></div>
                             <div class="label-description-sub">Production: <strong class="production">hash
                                     + PKCS#7 CMS signature + RFC 3161 timestamp verification</strong></div>
@@ -107,7 +107,7 @@
                 <div class="section-divider">
                     <p class="stack-header">VERIFICATION STANDARD STACK</p>
                     <div class="stack-items">
-                        <div>✅ SHA-256 Artifact Hash <span class="active">· Active</span></div>
+                        <div>✅ Artifact Integrity Hash <span class="active">· Active</span></div>
                         <div>⚙️ PKCS#7 CMS Detached Signature <span class="production">· Production</span></div>
                         <div>⚙️ RFC 3161 Timestamp Authority <span class="production">· Production</span></div>
                     </div>

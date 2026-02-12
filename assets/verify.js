@@ -35,7 +35,7 @@
         var subject = encodeURIComponent('Audit Verification Request');
         var body = encodeURIComponent(
             'Please verify the following artifact:\n\nReport ID: ' + reportId +
-            '\nSHA-256 Hash: ' + hash + '\n\nThank you.'
+            '\nArtifact Integrity Hash: ' + hash + '\n\nThank you.'
         );
         var mailto = 'mailto:hello@auxtho.com?subject=' + subject + '&body=' + body;
 
