@@ -15,9 +15,9 @@
 
         if (!reportId || !hash) return;
 
-        // Show QR card
+        // Show QR card (use class toggle — CSP blocks element.style)
         var card = document.getElementById('qr-verify');
-        if (card) card.style.display = 'block';
+        if (card) card.classList.add('qr-card-visible');
 
         // Set Report ID
         var reportEl = document.getElementById('qr-report-id');

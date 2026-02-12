@@ -13,6 +13,11 @@
     margin: 36px 0 8px 0;
 }
 
+.qr-card-visible {
+    display: block;
+}
+
+
 .qr-card-title {
     color: #34d399;
     font-weight: 600;
