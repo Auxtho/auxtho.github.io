@@ -37,7 +37,7 @@
             'Please verify the following artifact:\n\nReport ID: ' + reportId +
             '\nArtifact Integrity Hash: ' + hash + '\n\nThank you.'
         );
-        var mailto = 'mailto:hello@auxtho.com?subject=' + subject + '&body=' + body;
+        var mailto = 'mailto:verify@auxtho.com?subject=' + subject + '&body=' + body;
 
         var mailtoEl = document.getElementById('qr-mailto');
         if (mailtoEl) mailtoEl.href = mailto;
