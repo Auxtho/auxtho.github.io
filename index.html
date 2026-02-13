@@ -510,7 +510,7 @@
                   action type. PII minimized and redacted per policy (including hashing where applicable).</p>
                 <p class="text-gray-300 mt-2"><strong class="text-emerald-400">Integrity:</strong> Exported PDF
                   artifacts carry a SHA-256 artifact hash that can be independently verified. PKCS#7 CMS detached
-                  signing + RFC 3161 timestamp is a production milestone.</p>
+                  signing + RFC 3161 timestamp is a planned milestone.</p>
               </div>
             </div>
             <div class="mt-3 flex justify-end gap-2 flex-wrap">
@@ -519,7 +519,7 @@
                 Implemented</span>
               <span
                 class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/8 text-blue-400/50">⚙️
-                Production Milestone</span>
+                Planned Milestone</span>
             </div>
           </div>
 
@@ -539,7 +539,7 @@
             Every exported artifact carries a SHA-256 artifact hash — verifiable independently, by anyone.
           </p>
           <p class="text-gray-400 mb-4">
-            Production milestone: automated hash + PKCS#7 CMS signature + RFC 3161 timestamp verification.
+            Planned milestone: automated hash + PKCS#7 CMS signature + RFC 3161 timestamp verification.
           </p>
 
           <!-- Verification Standard Stack -->
@@ -548,8 +548,8 @@
             <p class="text-gray-400 font-mono text-xs mb-2 tracking-wide">VERIFICATION STANDARD STACK</p>
             <div class="space-y-1.5 text-gray-300 text-xs font-mono">
               <div>✅ Artifact Integrity Hash <span class="text-emerald-400/70">· Active</span></div>
-              <div>⚙️ PKCS#7 CMS Detached Signature <span class="text-blue-400/70">· Production</span></div>
-              <div>⚙️ RFC 3161 Timestamp Authority <span class="text-blue-400/70">· Production</span></div>
+              <div>⚙️ PKCS#7 CMS Detached Signature <span class="text-blue-400/70">· Planned</span></div>
+              <div>⚙️ RFC 3161 Timestamp Authority <span class="text-blue-400/70">· Planned</span></div>
             </div>
             <p class="text-gray-600 text-xs mt-3">PKCS#7 / RFC 3161 verification is defined in VERIFY_SYSTEM_DESIGN.md
               and becomes active upon HSM deployment milestone.</p>
@@ -560,13 +560,13 @@
             <p class="text-xl text-blue-400 font-mono font-bold mt-1">verify.auxtho.com</p>
 
             <div class="grid sm:grid-cols-2 gap-4 mt-5 text-left">
-              <!-- Production-first: lead with the destination -->
+              <!-- Planned-first: lead with the destination -->
               <div class="rounded-lg p-4"
                 style="background:rgba(59,130,246,0.06); border:1px solid rgba(59,130,246,0.20)">
-                <p class="text-blue-400 font-semibold text-sm mb-1">Production — Automated</p>
+                <p class="text-blue-400 font-semibold text-sm mb-1">Planned — Automated</p>
                 <p class="text-sm text-gray-400">Real-time hash + PKCS#7 CMS signature + RFC 3161 timestamp
                   verification.
-                  API access for third-party auditors. Per-export detached signature (Production milestone).</p>
+                  API access for third-party auditors. Per-export detached signature (planned milestone).</p>
               </div>
               <div class="rounded-lg p-4"
                 style="background:rgba(16,185,129,0.04); border:1px solid rgba(16,185,129,0.15)">
