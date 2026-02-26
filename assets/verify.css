@@ -192,6 +192,13 @@
     line-height: 1.6;
 }
 
+.status-meta-line {
+    margin: 0.45rem 0 0;
+    color: #8f99a8;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
 .status-footnote {
     margin-top: 0.9rem;
     color: #8f99a8;

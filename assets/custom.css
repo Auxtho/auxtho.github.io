@@ -341,6 +341,14 @@ a:hover {
   margin-top: 2rem;
 }
 
+.hero-control-line {
+  margin-top: 0.85rem;
+  color: var(--dim);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
 /* Value and control cards */
 .value-grid {
   display: grid;
