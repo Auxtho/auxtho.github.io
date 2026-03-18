@@ -883,3 +883,183 @@ main {
     padding: 1.2rem;
   }
 }
+
+/* -------------------------------------------------------
+   Homepage depth pass: spacing, hover states, control cards
+   ------------------------------------------------------- */
+main > section {
+  position: relative;
+}
+
+#problem,
+#solution,
+#overview,
+#verify,
+#contact {
+  scroll-margin-top: 7rem;
+}
+
+#problem,
+#solution,
+#overview,
+#verify {
+  padding-top: 6.25rem !important;
+  padding-bottom: 6.25rem !important;
+}
+
+#contact {
+  padding-top: 6rem !important;
+  padding-bottom: 6.25rem !important;
+}
+
+#solution .control-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.35rem;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+#solution .control-card {
+  --card-accent: 59, 130, 246;
+  grid-column: span 6;
+  position: relative;
+  overflow: hidden;
+  min-height: 220px;
+  border-radius: 1.3rem;
+  padding: 1.55rem 1.45rem 1.35rem;
+  background: linear-gradient(180deg, rgba(18, 22, 29, 0.96), rgba(12, 15, 21, 0.94));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.18);
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+
+#solution .control-card:nth-child(1) { --card-accent: 52, 211, 153; }
+#solution .control-card:nth-child(2) { --card-accent: 96, 165, 250; }
+#solution .control-card:nth-child(3) { --card-accent: 251, 191, 36; }
+#solution .control-card:nth-child(4) { --card-accent: 56, 189, 248; }
+
+#solution .control-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(var(--card-accent), 0.95), transparent);
+}
+
+#solution .control-card::after {
+  content: "";
+  position: absolute;
+  right: -2rem;
+  top: -2.5rem;
+  width: 9rem;
+  height: 9rem;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(var(--card-accent), 0.16) 0%, rgba(var(--card-accent), 0.04) 42%, transparent 72%);
+  pointer-events: none;
+}
+
+#solution .control-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(var(--card-accent), 0.34);
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(180deg, rgba(20, 25, 34, 0.98), rgba(13, 17, 24, 0.96));
+}
+
+#solution .control-kicker {
+  margin-bottom: 0.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: rgba(var(--card-accent), 0.95);
+}
+
+#solution .control-card h3 {
+  font-size: 1.22rem;
+  line-height: 1.25;
+  margin-bottom: 0.7rem;
+  max-width: 16ch;
+}
+
+#solution .control-card p:not(.control-kicker) {
+  color: #b3bcc8;
+  font-size: 0.95rem;
+  line-height: 1.72;
+  max-width: 36ch;
+}
+
+.workflow-stage-card,
+.state-panel,
+.artifact-meta-card,
+.artifact-note,
+.artifact-side-card,
+.artifact-frame {
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+
+.workflow-stage-card:hover,
+.state-panel:hover,
+.artifact-meta-card:hover,
+.artifact-note:hover,
+.artifact-side-card:hover,
+.artifact-frame:hover {
+  transform: translateY(-4px);
+  border-color: rgba(96, 165, 250, 0.24);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.26);
+}
+
+.workflow-stage-card:hover {
+  background: linear-gradient(180deg, rgba(22, 27, 36, 0.98), rgba(15, 19, 26, 0.96));
+}
+
+.state-panel:hover,
+.artifact-side-card:hover,
+.artifact-meta-card:hover,
+.artifact-note:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.workflow-stage-card h3,
+.artifact-header h3,
+#solution .control-card h3 {
+  text-wrap: balance;
+}
+
+@media (max-width: 1080px) {
+  #solution .control-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #solution .control-card {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  #problem,
+  #solution,
+  #overview,
+  #verify,
+  #contact {
+    padding-top: 4.2rem !important;
+    padding-bottom: 4.2rem !important;
+  }
+
+  #solution .control-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  #solution .control-card {
+    min-height: auto;
+    padding: 1.2rem 1.1rem 1.05rem;
+  }
+
+  .workflow-stage-card {
+    min-height: auto;
+  }
+}
