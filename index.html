@@ -107,7 +107,7 @@
           controls, and verifiable integrity.
         </p>
         <p class="hero-note">
-          Aligned with MAS TRM expectations for institutional audit readiness.
+          Public site scope is intentionally narrow: one governed workflow, one release boundary, and one artifact path that can later be verified or reconstructed.
         </p>
         <div class="hero-actions">
           <a href="mailto:hello@auxtho.com?subject=Request%20Pilot%20Briefing%20(Singapore)" class="btn-primary">
@@ -198,81 +198,24 @@
       </div>
     </section>
 
-    <section id="verify" class="py-20">
+        <section id="verify" class="py-20">
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <p class="hero-kicker">MAS TRM-ALIGNED EXPECTATIONS</p>
-          <h2 class="text-3xl md:text-4xl font-bold">Audit Readiness Responses</h2>
-          <p class="text-lg text-gray-400 mt-2">Condensed answers to the controls audit teams usually test first.</p>
+          <h2 class="text-3xl md:text-4xl font-bold">Verification posture</h2>
+          <p class="text-lg text-gray-400 mt-2">Export is not the end of the workflow. Artifacts should remain reviewable, checkable, and reconstructable after generation.</p>
         </div>
-
-        <div class="qa-list">
-          <article class="card-qa">
-            <h3>"How do you prevent non-approved sources from influencing outputs?"</h3>
-            <p>Evidence is restricted to indexed sources under policy-bound retrieval rules. Out-of-scope content is not
-              treated as supporting evidence.</p>
-            <div class="card-detail">
-              <p><strong class="text-emerald-400">Control:</strong> Indexed evidence scope, versioned policy binding, and
-                audit logging on retrieval events.</p>
-            </div>
-            <div class="status-row"><span class="chip-active">Active</span></div>
-          </article>
-
-          <article class="card-qa">
-            <h3>"Can scoring logic be altered silently at runtime?"</h3>
-            <p>Scoring and threshold behavior is tied to policy versions. Changes require a policy update event and audit
-              record.</p>
-            <div class="card-detail">
-              <p><strong class="text-emerald-400">Control:</strong> Policy version identifiers are stamped on exported
-                artifacts for reproducibility checks.</p>
-            </div>
-            <div class="status-row"><span class="chip-active">Active</span></div>
-          </article>
-
-          <article class="card-qa">
-            <h3>"How is chain-of-custody maintained over retention periods?"</h3>
-            <p>System actions are logged with actor and timestamp metadata, and artifact hashes support post-export
-              integrity checks.</p>
-            <div class="card-detail">
-              <p><strong class="text-emerald-400">Control:</strong> SHA-256 artifact integrity is active. PKCS#7 CMS and
-                RFC 3161 timestamp verification remain planned milestones.</p>
-            </div>
-            <div class="status-row"><span class="chip-active">Active</span><span class="chip-planned">Planned
-                milestone</span></div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section id="verify" class="py-20">
-      <div class="container mx-auto px-6">
-        <div class="trust-panel max-w-4xl mx-auto">
-          <h2 class="text-3xl md:text-4xl font-bold">Verification Trust Layer</h2>
-          <p class="text-lg text-gray-400 mt-4">
-            Each exported artifact includes an integrity hash for independent checking.
-          </p>
-
-          <div class="trust-grid">
-            <div class="trust-card">
-              <p class="trust-label">Active now</p>
-              <ul class="trust-list">
-                <li>Artifact integrity hash</li>
-                <li>Email-based verification workflow</li>
-                <li>Traceable report reference metadata</li>
-              </ul>
-            </div>
-            <div class="trust-card">
-              <p class="trust-label">Planned milestone</p>
-              <ul class="trust-list">
-                <li>PKCS#7 CMS detached signature</li>
-                <li>RFC 3161 trusted timestamp</li>
-                <li>Automated API verification endpoint</li>
-              </ul>
-            </div>
+        <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <h3 class="text-xl font-bold mb-2">Release record</h3>
+            <p class="text-gray-400">Approval remains visible at the point of release, not hidden behind generation.</p>
           </div>
-
-          <div class="mt-8">
-            <a href="/verify.html" class="btn-primary">Open Verification Console</a>
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <h3 class="text-xl font-bold mb-2">Integrity check</h3>
+            <p class="text-gray-400">Artifacts retain a reference that can later be checked if tampering or mismatch is suspected.</p>
+          </div>
+          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
+            <h3 class="text-xl font-bold mb-2">Reconstruction</h3>
+            <p class="text-gray-400">The workflow is designed so a reviewer can later understand what evidence and approval state produced the artifact.</p>
           </div>
         </div>
       </div>
@@ -319,5 +262,6 @@
 </body>
 
 </html>
+
 
 
