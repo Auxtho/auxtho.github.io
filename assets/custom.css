@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    Auxtho custom.css
    Visual direction: minimal, audit-first, low-noise interface
    ============================================================ */
@@ -645,5 +645,241 @@ main {
   * {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* Trust sections */
+.workflow-stage-rail {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.workflow-stage-rail::before {
+  content: "";
+  position: absolute;
+  top: 1.2rem;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(59,130,246,0.08), rgba(59,130,246,0.45), rgba(59,130,246,0.08));
+}
+
+.workflow-stage-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(18,22,29,0.96), rgba(14,17,23,0.92));
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 1.35rem;
+  padding: 1.5rem 1.2rem 1.3rem;
+  min-height: 220px;
+  box-shadow: 0 18px 48px rgba(0,0,0,0.22);
+}
+
+.workflow-stage-index {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  background: rgba(59,130,246,0.14);
+  border: 1px solid rgba(59,130,246,0.3);
+  color: #bfdbfe;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.workflow-stage-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.6rem;
+}
+
+.workflow-stage-card p {
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 0.94rem;
+}
+
+.state-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.state-panel {
+  border-radius: 1.4rem;
+  padding: 1.75rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 18px 48px rgba(0,0,0,0.18);
+}
+
+.state-panel-live {
+  background: linear-gradient(180deg, rgba(15,28,22,0.95), rgba(12,19,17,0.9));
+  border-color: rgba(52,211,153,0.24);
+}
+
+.state-panel-scope {
+  background: linear-gradient(180deg, rgba(30,24,15,0.95), rgba(24,20,14,0.9));
+  border-color: rgba(251,191,36,0.22);
+}
+
+.state-label {
+  color: #cfe3ff;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.85rem;
+  font-weight: 700;
+}
+
+.state-list {
+  margin: 0;
+  padding-left: 1rem;
+}
+
+.state-list li {
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 0.35rem;
+}
+
+.artifact-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.artifact-frame {
+  background: linear-gradient(180deg, rgba(18,22,29,0.98), rgba(14,17,23,0.94));
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 1.6rem;
+  padding: 1.8rem;
+  box-shadow: 0 22px 60px rgba(0,0,0,0.22);
+}
+
+.artifact-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.4rem;
+}
+
+.artifact-eyebrow {
+  color: #9fc5ff;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.artifact-header h3 {
+  font-size: 1.75rem;
+  line-height: 1.15;
+}
+
+.artifact-subhead {
+  color: var(--muted);
+  margin-top: 0.6rem;
+  max-width: 38rem;
+}
+
+.artifact-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  background: rgba(52,211,153,0.12);
+  border: 1px solid rgba(52,211,153,0.26);
+  color: #d1fae5;
+  padding: 0.42rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.artifact-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.artifact-meta-card,
+.artifact-note,
+.artifact-side-card {
+  background: rgba(0,0,0,0.24);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.15rem;
+  padding: 1rem 1.05rem;
+}
+
+.artifact-note {
+  margin-top: 0.95rem;
+}
+
+.artifact-meta-title {
+  color: var(--dim);
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.45rem;
+}
+
+.artifact-meta-text {
+  color: var(--text);
+  font-size: 0.96rem;
+  line-height: 1.7;
+}
+
+.artifact-sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.artifact-steps {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.artifact-steps li {
+  color: var(--text);
+  line-height: 1.7;
+  font-size: 0.94rem;
+  margin-bottom: 0.35rem;
+}
+
+@media (max-width: 1100px) {
+  .workflow-stage-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-stage-rail::before {
+    display: none;
+  }
+
+  .artifact-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .state-grid,
+  .artifact-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .artifact-header {
+    flex-direction: column;
+  }
+
+  .artifact-frame,
+  .state-panel,
+  .workflow-stage-card {
+    padding: 1.2rem;
   }
 }
