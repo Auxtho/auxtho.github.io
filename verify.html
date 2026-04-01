@@ -1,12 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auxtho - Artifact Verification</title>
-    <meta name="description"
-        content="Verify whether an Auxtho artifact integrity hash matches the original export record.">
+    <meta name="description" content="Verify whether an Auxtho artifact integrity hash matches the original export record.">
     <meta name="robots" content="noindex">
     <meta name="color-scheme" content="dark light">
     <link rel="icon" href="/assets/favicon.svg">
@@ -14,14 +12,11 @@
     <meta name="theme-color" content="#0f1014">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-
-    <link rel="stylesheet" href="/assets/style.css?v=2026-03-19d">
-  <link rel="stylesheet" href="/assets/custom.css?v=2026-03-19d">
-    
-  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-03-19e">
-    <link rel="stylesheet" href="/assets/verify.css?v=2026-03-19d">
+    <link rel="stylesheet" href="/assets/style.css?v=2026-04-02a">
+    <link rel="stylesheet" href="/assets/custom.css?v=2026-04-02a">
+    <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-02a">
+    <link rel="stylesheet" href="/assets/verify.css?v=2026-04-02a">
 </head>
-
 <body class="antialiased">
     <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
         <div class="container mx-auto px-6 py-5 flex justify-between items-center">
@@ -44,26 +39,42 @@
 
             <div id="qr-verify" class="qr-card">
                 <p class="qr-card-title">QR Verification Detected</p>
-
                 <span class="qr-label">Report ID</span>
                 <p id="qr-report-id" class="qr-value">-</p>
-
                 <span class="qr-label">Artifact Integrity Hash</span>
                 <p id="qr-hash" class="qr-value">-</p>
-
                 <p class="qr-description">
-                    Send this hash to
-                    <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" id="qr-mailto">
-                        verify@auxtho.com
-                    </a>
-                    to validate whether the artifact has changed after export.
+                    This QR link can trigger automated verification. If API verification is unavailable, use
+                    <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" id="qr-mailto">verify@auxtho.com</a>
+                    as the pilot fallback.
                 </p>
                 <div class="qr-btn-area">
-                    <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" id="qr-verify-btn"
-                        class="btn-primary">
-                        Verify This Artifact
-                    </a>
+                    <button id="qr-verify-btn" class="btn-primary" type="button">Run Verification</button>
                 </div>
+            </div>
+
+            <div id="verify-result" class="verify-result-card" hidden>
+                <p id="verify-result-kicker" class="verify-result-kicker">Verification Result</p>
+                <h2 id="verify-result-title">Awaiting Verification</h2>
+                <p id="verify-result-message" class="verify-result-message">Submit a report ID and artifact hash to verify this artifact.</p>
+                <div id="verify-result-grid" class="verify-result-grid"></div>
+            </div>
+
+            <div class="manual-verify-panel mt-8">
+                <h2>Manual Verification</h2>
+                <p class="manual-verify-copy">Paste the report ID and artifact integrity hash from the exported artifact to run API-backed verification.</p>
+                <div class="manual-verify-form">
+                    <div class="manual-field">
+                        <label for="manual-report-id">Report ID</label>
+                        <input id="manual-report-id" type="text" placeholder="e.g. RPT-20260320-E5A23B">
+                    </div>
+                    <div class="manual-field">
+                        <label for="manual-artifact-hash">Artifact Integrity Hash</label>
+                        <input id="manual-artifact-hash" type="text" placeholder="e.g. 53fe69cf3f1371a7">
+                    </div>
+                    <button id="manual-verify-btn" class="btn-primary" type="button">Verify Artifact</button>
+                </div>
+                <p id="verify-error" class="verify-error" hidden></p>
             </div>
 
             <div class="verify-layout mt-12">
@@ -72,66 +83,52 @@
                     <ol class="step-list">
                         <li class="step-row">
                             <span class="step-circle">1</span>
-                            <span class="step-text">Locate the <strong>artifact integrity hash</strong> from the last
-                                page of the exported artifact or QR link.</span>
+                            <span class="step-text">Locate the <strong>artifact integrity hash</strong> from the last page of the exported artifact or QR link.</span>
                         </li>
                         <li class="step-row">
                             <span class="step-circle">2</span>
-                            <span class="step-text">Send report ID and hash to <a
-                                    href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request">verify@auxtho.com</a>
-                                with subject <strong>Audit Verification Request</strong>.</span>
+                            <span class="step-text">Run API verification here. If API verification is unavailable, use <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request">verify@auxtho.com</a> as the pilot fallback.</span>
                         </li>
                         <li class="step-row">
                             <span class="step-circle">3</span>
-                            <span class="step-text">Receive confirmation on whether the submitted hash matches the
-                                original export record.</span>
+                            <span class="step-text">For signed production artifacts, confirm <strong>hash, signature, and timestamp</strong>. For pilot artifacts, confirm the registry hash match.</span>
                         </li>
                     </ol>
                 </div>
 
                 <aside class="status-panel">
                     <h2>Verification Status</h2>
-
                     <div class="status-block">
                         <p class="status-title active">Active now</p>
-                        <ul>
+                        <ul id="status-active-items">
                             <li>Artifact integrity hash</li>
-                            <li>Email-based verification</li>
+                            <li>Automated API verification</li>
+                            <li>Pilot email fallback</li>
                         </ul>
                         <p class="status-meta-line">Policy version: SG-MAS-TRM-2024</p>
                         <p class="status-meta-line">Artifact hashing: SHA-256 (Active)</p>
                     </div>
-
-                    <div class="status-block">
+                    <div id="planned-milestone-block" class="status-block">
                         <p class="status-title planned">Planned milestone</p>
                         <ul>
                             <li>PKCS#7 CMS detached signature</li>
                             <li>RFC 3161 trusted timestamp</li>
-                            <li>Automated API verification</li>
                         </ul>
                     </div>
-
-                    <p class="status-footnote">
-                        Response target for pilot verification requests: within 1 business day.
-                    </p>
+                    <p id="status-footnote" class="status-footnote">Response target for pilot verification requests: within 1 business day.</p>
                 </aside>
             </div>
 
             <div class="verify-cta-area">
-                <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" class="btn-primary">
-                    Verify via Email
-                </a>
-                <a href="mailto:hello@auxtho.com?subject=Request%20Pilot%20Briefing%20(Singapore)" class="btn-secondary">
-                    Request Pilot Briefing
-                </a>
+                <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" class="btn-primary">Verify via Email</a>
+                <a href="mailto:hello@auxtho.com?subject=Request%20Pilot%20Briefing%20(Singapore)" class="btn-secondary">Request Pilot Briefing</a>
             </div>
         </section>
     </main>
 
     <footer class="border-t border-gray-800">
-        <div
-            class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
-            <p class="text-center md:text-left order-1">&copy; 2025??026 Auxtho. All rights reserved.</p>
+        <div class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+            <p class="text-center md:text-left order-1">&copy; 2025-2026 Auxtho. All rights reserved.</p>
             <div class="space-x-4 order-2">
                 <a href="/privacy.html" class="hover:text-white">Privacy</a>
                 <span class="text-gray-600">.</span>
@@ -139,23 +136,13 @@
                 <span class="text-gray-600">.</span>
                 <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
                 <span class="text-gray-600">.</span>
-                <a href="https://www.linkedin.com/company/auxtho" target="_blank" rel="noopener noreferrer"
-                    class="hover:text-white">Company LinkedIn (Official)</a>
+                <a href="https://www.linkedin.com/company/auxtho" target="_blank" rel="noopener noreferrer" class="hover:text-white">Company LinkedIn (Official)</a>
             </div>
-            <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">
-                Pilot artifacts are for evaluation and do not constitute production regulatory submission materials.
-            </p>
+            <p class="text-center md:text-right order-3 max-w-md text-xs text-gray-500">Pilot artifacts are for evaluation and do not constitute production regulatory submission materials.</p>
         </div>
     </footer>
 
     <script src="/assets/tw-init.js" defer></script>
-    <script src="/assets/verify.js?v=2026-03-19d"></script>
+    <script src="/assets/verify.js?v=2026-04-02a"></script>
 </body>
-
 </html>
-
-
-
-
-
-
