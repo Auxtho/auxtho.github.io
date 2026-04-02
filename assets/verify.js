@@ -1,5 +1,5 @@
 (function () {
-    var API_BASE = (window.location.origin.indexOf('127.0.0.1') >= 0 || window.location.origin.indexOf('localhost') >= 0) ? 'http://127.0.0.1:8000/api/verify' : '/api/verify';
+    var API_BASE = (window.location.origin.indexOf('127.0.0.1') >= 0 || window.location.origin.indexOf('localhost') >= 0) ? 'http://127.0.0.1:8000/api/verify' : 'https://api.auxtho.com/api/verify';
 
     function byId(id) {
         return document.getElementById(id);
