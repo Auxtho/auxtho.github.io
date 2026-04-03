@@ -1,0 +1,44 @@
+{
+  "version": "v2025.1",
+  "status": "shadow",
+  "title": "Auxtho Core Overview",
+  "page_title": "Auxtho Core",
+  "description": "Auxtho Core is the internal architecture used to control and verify how AI-generated plans move toward execution.",
+  "updated_at": "2026-04-04",
+  "public_note": "This page documents core architectural concepts of Auxtho Core as of 2025. Detailed implementations and proprietary components are not publicly disclosed.",
+  "intro": [
+    "Auxtho Core is the internal architecture used to control and verify how AI-generated work moves toward execution.",
+    "The goal is not to let AI produce a result and hope that later review will catch problems. The goal is to ensure that execution passes through a defined verification path before it is allowed to proceed.",
+    "In practice, this means the system separates intent, planning, verification, and execution into distinct stages so that a plan can be assessed before it becomes an action."
+  ],
+  "core_flow": [
+    {"label": "Input", "detail": "A request enters the system with user context and operating constraints."},
+    {"label": "Intent", "detail": "The requested outcome is interpreted into a bounded intent that can be checked."},
+    {"label": "Plan", "detail": "The system produces an execution plan rather than acting immediately."},
+    {"label": "Verification", "detail": "The plan is checked against user intent and control criteria before execution."},
+    {"label": "Execution", "detail": "Only verified plans are allowed to proceed to the execution path."},
+    {"label": "Output", "detail": "The resulting output remains tied to the verified path that produced it."}
+  ],
+  "isp": [
+    "ISP, or Intent Synchronization Protocol, is the control protocol used to determine whether an AI-generated execution plan remains aligned with what the user actually intended.",
+    "The protocol is designed to intercept planning before execution. A plan that does not satisfy the defined intent criteria is not treated as executable simply because it was generated successfully.",
+    "The point is not execution after review. The point is verification before execution."
+  ],
+  "execution_control": [
+    "AI does not hold direct execution authority.",
+    "AI generates a plan, while a separate verification layer evaluates that plan.",
+    "Execution is permitted only when the plan passes the verification criteria.",
+    "System behavior is therefore determined by the verification result rather than by generation alone."
+  ],
+  "policy_structure": [
+    "Behavior criteria are managed as policy data rather than being embedded only as hard-coded assumptions.",
+    "This allows versioning, controlled change history, and later review of what standard was active at the time of execution.",
+    "The intended direction is a verification structure that remains reproducible under the same conditions."
+  ],
+  "timeline": [
+    {"year": "2025", "event": "ISP defined as an internal control concept for intent-aligned execution."},
+    {"year": "2025", "event": "Auxtho Core designed as the architecture that separates planning, verification, and execution."},
+    {"year": "2025", "event": "Execution control and verification structure implemented as part of the governed workflow foundation."}
+  ],
+  "note": "This page describes architectural concepts and control intent. It does not publish detailed algorithms, code, or proprietary implementation structure."
+}
