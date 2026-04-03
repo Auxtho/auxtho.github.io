@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Project configuration for the Auxtho website.",
   "scripts": {
-    "build": "npx tailwindcss -i ./src/input.css -o ./assets/style.css --minify"
+    "build": "npx tailwindcss -i ./src/input.css -o ./assets/style.css --minify",
+    "build:core": "node ./src/build-core-overview.js"
   },
   "devDependencies": {
     "tailwindcss": "^3.4.1"
   }
 }
-
