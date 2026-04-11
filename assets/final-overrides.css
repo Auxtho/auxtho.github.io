@@ -1024,3 +1024,35 @@ footer > div {
     transform: translateY(-3px) !important;
   }
 }
+
+.auxtho-subtle-bridge {
+  margin-top: 0.85rem;
+  color: rgba(255,255,255,0.56) !important;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.auxtho-subtle-link {
+  color: #b8d3ff !important;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  text-decoration-color: rgba(96,165,250,0.38);
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+.auxtho-subtle-link:hover {
+  color: #ffffff !important;
+  text-decoration-color: rgba(255,255,255,0.55);
+}
+
+@media (max-width: 768px) {
+  .auxtho-subtle-bridge {
+    font-size: 0.84rem;
+    line-height: 1.6;
+    max-width: 28rem;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
