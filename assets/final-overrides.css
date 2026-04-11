@@ -1,9 +1,9 @@
-/* =============================================================
-   EP07 DESIGN PASS — final-overrides.css
+﻿/* =============================================================
+   EP07 DESIGN PASS ??final-overrides.css
    Pure visual/layout changes. Zero copy changes.
    ============================================================= */
 
-/* ── Fix stale leaked CSS from custom.css ── */
+/* ?? Fix stale leaked CSS from custom.css ?? */
 #solution .control-grid {
   grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
   gap: 1.35rem !important;
@@ -14,12 +14,12 @@
   min-height: 220px !important;
 }
 
-/* ── Global section rhythm ── */
+/* ?? Global section rhythm ?? */
 main > section + section {
   border-top: 1px solid rgba(255,255,255,0.04);
 }
 
-/* ── Hero section ── */
+/* ?? Hero section ?? */
 .hero-section {
   padding-top: 7.5rem !important;
   padding-bottom: 5rem !important;
@@ -75,7 +75,7 @@ main > section + section {
   opacity: 0.7;
 }
 
-/* ── Problem section (flat → elevated) ── */
+/* ?? Problem section (flat ??elevated) ?? */
 #problem {
   padding-top: 7rem !important;
   padding-bottom: 7rem !important;
@@ -138,7 +138,7 @@ main > section + section {
   background: linear-gradient(90deg, transparent, rgba(251,191,36,0.5), transparent);
 }
 
-/* ── Governance controls section ── */
+/* ?? Governance controls section ?? */
 #solution {
   padding-top: 7rem !important;
   padding-bottom: 7rem !important;
@@ -173,7 +173,7 @@ main > section + section {
   box-shadow: 0 28px 64px rgba(0,0,0,0.35) !important;
 }
 
-/* ── Workflow section (01-05 step cards) ── */
+/* ?? Workflow section (01-05 step cards) ?? */
 #overview {
   padding-top: 7rem !important;
   padding-bottom: 7rem !important;
@@ -281,7 +281,7 @@ main > section + section {
   font-size: 0.95rem !important;
 }
 
-/* ── Trust boundary / verify section ── */
+/* ?? Trust boundary / verify section ?? */
 #verify {
   padding-top: 7.5rem !important;
   padding-bottom: 7.5rem !important;
@@ -360,7 +360,7 @@ main > section + section {
   color: #fbbf24;
 }
 
-/* ── Artifact example (premium treatment) ── */
+/* ?? Artifact example (premium treatment) ?? */
 #verify .artifact-shell {
   display: grid !important;
   grid-template-columns: minmax(0, 1.22fr) minmax(340px, 0.78fr) !important;
@@ -446,7 +446,7 @@ main > section + section {
   gap: 1.25rem !important;
 }
 
-/* ── Contact section ── */
+/* ?? Contact section ?? */
 #contact {
   padding-top: 6.5rem !important;
   padding-bottom: 7rem !important;
@@ -457,13 +457,13 @@ main > section + section {
   letter-spacing: -0.03em !important;
 }
 
-/* ── Section heading kicker uniformity ── */
+/* ?? Section heading kicker uniformity ?? */
 .hero-kicker {
   font-size: 0.74rem !important;
   padding: 0.4rem 0.85rem !important;
 }
 
-/* ── Footer breathing ── */
+/* ?? Footer breathing ?? */
 footer {
   margin-top: 0 !important;
   border-top-color: rgba(255,255,255,0.06) !important;
@@ -502,7 +502,7 @@ footer > div {
   font-size: 0.84rem;
 }
 
-/* ── Responsive: tablet ── */
+/* ?? Responsive: tablet ?? */
 @media (max-width: 1080px) {
   #overview .workflow-stage-rail {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -523,7 +523,7 @@ footer > div {
   }
 }
 
-/* ── Responsive: mobile ── */
+/* ?? Responsive: mobile ?? */
 @media (max-width: 768px) {
   .hero-section {
     padding-top: 5rem !important;
@@ -607,13 +607,13 @@ footer > div {
   }
 }
 
-/* ── Smooth transition baseline ── */
+/* ?? Smooth transition baseline ?? */
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── (5) Story.html card effects ── */
+/* ?? (5) Story.html card effects ?? */
 /* Story heading-to-card spacing */
 .story-cards {
   margin-top: 3rem !important;
@@ -998,4 +998,11 @@ footer > div {
   .hero-note {
     max-width: 100% !important;
   }
+}
+
+
+/* Force center alignment for What's new cards */
+#whats-new .control-grid {
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
