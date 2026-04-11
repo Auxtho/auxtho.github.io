@@ -1006,3 +1006,21 @@ footer > div {
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+/* What\'s new cards: match sitewide hover rhythm */
+#whats-new .control-card {
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease !important;
+}
+
+#whats-new .control-card:hover {
+  transform: translateY(-8px) !important;
+  border-color: rgba(96,165,250,0.26) !important;
+  box-shadow: 0 28px 64px rgba(0,0,0,0.32) !important;
+  background: linear-gradient(180deg, rgba(22,27,36,0.98), rgba(15,19,26,0.96)) !important;
+}
+
+@media (max-width: 768px) {
+  #whats-new .control-card:hover {
+    transform: translateY(-3px) !important;
+  }
+}
