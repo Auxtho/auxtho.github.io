@@ -1,0 +1,480 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ardamire Defense Layer | Auxtho Security</title>
+  <meta name="description"
+    content="Ardamire is an Auxtho-scoped closed-loop defense layer designed to strengthen runtime, evidence, artifact integrity, and release-boundary protection inside the Auxtho-managed workflow boundary.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="/assets/favicon.svg">
+  <link rel="canonical" href="https://auxtho.com/security/ardamire/">
+  <meta name="theme-color" content="#0d6efd">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ardamire Defense Layer | Auxtho Security">
+  <meta property="og:description"
+    content="Auxtho-scoped closed-loop defense for runtime, evidence, artifact integrity, and release-boundary protection.">
+  <meta property="og:image" content="https://auxtho.com/assets/og-image.png">
+  <meta property="og:image:alt" content="Ardamire Defense Layer under Auxtho Security">
+  <meta property="og:url" content="https://auxtho.com/security/ardamire/">
+  <meta property="og:site_name" content="Auxtho">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@auxtho">
+  <meta name="twitter:title" content="Ardamire Defense Layer | Auxtho Security">
+  <meta name="twitter:description"
+    content="Auxtho-scoped closed-loop defense for runtime, evidence, artifact integrity, and release-boundary protection.">
+  <meta name="twitter:image" content="https://auxtho.com/assets/og-image.png">
+
+  <script type="application/ld+json">
+    {
+      "@context":"https://schema.org",
+      "@type":"WebPage",
+      "name":"Ardamire Defense Layer",
+      "url":"https://auxtho.com/security/ardamire/",
+      "description":"Auxtho-scoped closed-loop defense layer designed to strengthen runtime, evidence chain, and release-boundary protection.",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Auxtho",
+        "url": "https://auxtho.com"
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "Auxtho Security"
+      }
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/style.css?v=2026-03-19d">
+  <link rel="stylesheet" href="/assets/custom.css?v=2026-03-19d">
+  <link rel="stylesheet" href="/assets/final-overrides.css?v=ep07-design-pass">
+  <style>
+    #ardamire-page .ardamire-hero-note {
+      max-width: 52rem;
+      margin: 1.5rem auto 0;
+      padding: 1.1rem 1.2rem;
+      border-radius: 1.25rem;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: linear-gradient(180deg, rgba(18,22,30,0.98), rgba(12,15,22,0.95));
+      color: #cbd5e1;
+      line-height: 1.78;
+      box-shadow: 0 26px 64px rgba(0,0,0,0.22);
+    }
+
+    #ardamire-page .ardamire-grid {
+      display: grid;
+      gap: 1.6rem;
+    }
+
+    @media (min-width: 768px) {
+      #ardamire-page .ardamire-grid.cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #ardamire-page .ardamire-grid.cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    #ardamire-page .ardamire-card,
+    #ardamire-page .ardamire-panel,
+    #ardamire-page .ardamire-cta-shell {
+      border: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(180deg, rgba(16,20,28,0.99), rgba(11,14,20,0.96));
+      border-radius: 1.5rem;
+      padding: 1.5rem 1.35rem;
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    }
+
+    #ardamire-page .ardamire-card:hover,
+    #ardamire-page .ardamire-panel:hover,
+    #ardamire-page .ardamire-cta-shell:hover {
+      transform: translateY(-6px);
+      border-color: rgba(96,165,250,0.26);
+      box-shadow: 0 30px 72px rgba(0,0,0,0.3);
+      background: linear-gradient(180deg, rgba(20,25,35,0.99), rgba(13,17,24,0.97));
+    }
+
+    #ardamire-page .ardamire-card h3,
+    #ardamire-page .ardamire-panel h3 {
+      font-size: 1.12rem;
+      line-height: 1.3;
+      margin-bottom: 0.72rem;
+      color: #ffffff;
+    }
+
+    #ardamire-page .ardamire-card p,
+    #ardamire-page .ardamire-panel p,
+    #ardamire-page .ardamire-panel li {
+      color: #c4ccd7;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    #ardamire-page .ardamire-kicker {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      margin-bottom: 1rem;
+      padding: 0.42rem 0.78rem;
+      border-radius: 999px;
+      border: 1px solid rgba(96,165,250,0.24);
+      background: rgba(22,39,72,0.35);
+      color: #93c5fd;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    #ardamire-page .ardamire-section-copy {
+      max-width: 46rem;
+      margin: 0.85rem auto 0;
+      color: #c4ccd7;
+      font-size: 1.04rem;
+      line-height: 1.82;
+    }
+
+    #ardamire-page .ardamire-list {
+      list-style: disc;
+      padding-left: 1.2rem;
+      margin-top: 0.65rem;
+    }
+
+    #ardamire-page .ardamire-list li + li {
+      margin-top: 0.45rem;
+    }
+
+    #ardamire-page .ardamire-stage-index {
+      width: 2.1rem;
+      height: 2.1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 0.9rem;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(37,99,235,0.85));
+      box-shadow: 0 16px 36px rgba(37,99,235,0.2);
+    }
+
+    #ardamire-page .ardamire-panel-label {
+      color: #93c5fd;
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.65rem;
+    }
+
+    #ardamire-page .ardamire-panel.future .ardamire-panel-label {
+      color: #fcd34d;
+    }
+
+    #ardamire-page .ardamire-panel.current {
+      background: linear-gradient(165deg, rgba(13,27,22,0.98), rgba(10,18,15,0.94));
+    }
+
+    #ardamire-page .ardamire-panel.future {
+      background: linear-gradient(165deg, rgba(30,24,15,0.97), rgba(21,17,11,0.94));
+    }
+
+    #ardamire-page .ardamire-cta-shell {
+      max-width: 56rem;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    #ardamire-page .ardamire-mini {
+      color: #9aa6b2;
+      font-size: 0.96rem;
+      line-height: 1.75;
+      max-width: 42rem;
+      margin: 1rem auto 0;
+    }
+
+    @media (max-width: 768px) {
+      #ardamire-page .ardamire-card:hover,
+      #ardamire-page .ardamire-panel:hover,
+      #ardamire-page .ardamire-cta-shell:hover {
+        transform: translateY(-3px);
+      }
+
+      #ardamire-page .ardamire-section-copy,
+      #ardamire-page .ardamire-mini,
+      #ardamire-page .ardamire-hero-note {
+        font-size: 0.98rem;
+      }
+    }
+  </style>
+</head>
+
+<body id="ardamire-page" class="antialiased">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 bg-white text-black p-3 rounded-lg z-50">Skip to content</a>
+
+  <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
+    <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+      <a href="/" class="z-50" aria-label="Auxtho Home">
+        <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+      </a>
+      <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
+        <span class="sr-only">Menu</span><span class="nav-icon-line line-1"></span><span class="nav-icon-line line-2"></span>
+      </button>
+      <nav>
+        <ul id="primary-navigation" data-visible="false" class="primary-navigation flex items-center space-x-8">
+          <li><a href="/" class="text-gray-300 hover:text-white transition-colors">Home</a></li>
+          <li><a href="/verify.html" class="text-gray-300 hover:text-white transition-colors">Verify</a></li>
+          <li><a href="/story.html" class="text-gray-300 hover:text-white transition-colors">Our Story</a></li>
+          <li><a href="mailto:hello@auxtho.com?subject=Ask%20about%20Ardamire%20within%20Auxtho" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Contact</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main-content" class="pt-24 md:pt-28 pb-20">
+    <section class="hero-section text-center pt-24 pb-16">
+      <div class="container mx-auto px-6">
+        <p class="ardamire-kicker">Auxtho Security / Scoped Defense Add-On</p>
+        <h1 class="hero-title">Ardamire Defense Layer</h1>
+        <p class="hero-copy">
+          A closed-loop defense layer designed to strengthen the Auxtho-managed runtime, evidence chain, and release boundary.
+        </p>
+        <p class="hero-note">
+          It is built for workflows where review, approval, and later reconstruction must remain intact under review or challenge.
+        </p>
+        <div class="ardamire-hero-note">
+          Ardamire is being designed to protect the Auxtho-managed workflow boundary. It does not replace the customer's broader security stack.
+        </div>
+        <div class="hero-actions mt-8">
+          <a href="mailto:hello@auxtho.com?subject=Ask%20how%20Ardamire%20fits%20one%20governed%20workflow" class="btn-primary">
+            Ask How This Fits One Governed Workflow
+          </a>
+        </div>
+        <p class="hero-control-line">Auxtho-scoped defense | Runtime, evidence, artifact integrity, and release-boundary protection</p>
+      </div>
+    </section>
+
+    <section class="py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <p class="ardamire-kicker">Protected Surfaces</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">What Ardamire protects</h2>
+          <p class="ardamire-section-copy">Ardamire is scoped to the Auxtho-controlled workflow boundary. Its job is to make suspicious activity harder to push through runtime, evidence, and release surfaces.</p>
+        </div>
+        <div class="ardamire-grid cols-3 mt-10 text-left max-w-6xl mx-auto">
+          <article class="ardamire-card">
+            <h3>Operator runtime</h3>
+            <p>Observe suspicious operator activity inside the Auxtho-managed runtime before it reaches release surfaces.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Retry and worker execution</h3>
+            <p>Hold retry and worker behavior that looks unsafe before it can move further through the governed path.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Evidence chain</h3>
+            <p>Keep evidence-linked records harder to misuse, drift, or sever from the governed workflow path.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Artifact integrity</h3>
+            <p>Preserve integrity references around governed artifacts so later checking remains possible under scrutiny.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Approval and release boundary</h3>
+            <p>Keep suspicious activity from crossing the approval boundary into release without being stopped first.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Tenant, workflow, and reviewer scope</h3>
+            <p>Constrain actions to the correct tenant, workflow, and reviewer scope inside the Auxtho boundary.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <p class="ardamire-kicker">Scope Boundary</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">What it is not</h2>
+          <p class="ardamire-section-copy">Ardamire is narrow by design. It strengthens the Auxtho boundary, not the customer's entire environment.</p>
+        </div>
+        <div class="ardamire-grid cols-2 mt-10 text-left max-w-5xl mx-auto">
+          <article class="ardamire-card">
+            <h3>Not a customer-wide security platform</h3>
+            <p>It does not claim to secure the customer's entire environment, estate, or operating model.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Not a SOC replacement</h3>
+            <p>It does not replace a security operations function or wider incident response process.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Not a network or endpoint defense tool</h3>
+            <p>It is not positioned as endpoint security, perimeter protection, or network monitoring.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Not a bank-wide IDS or IPS</h3>
+            <p>Its scope stays inside the Auxtho-managed workflow boundary, not across the whole bank.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Not a generic cyber-defense platform</h3>
+            <p>It exists to strengthen one governed workflow boundary, not to become a separate security universe.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <p class="ardamire-kicker">Why This Exists</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">Why this layer exists</h2>
+          <p class="ardamire-section-copy">If a customer environment is under pressure, the Auxtho-managed workflow boundary should still be harder to misuse, easier to quarantine, and easier to reconstruct later.</p>
+          <p class="ardamire-mini">The goal is not to promise perfect security. The goal is to make suspicious activity inside the Auxtho boundary harder to push forward into release, and easier to isolate before damage spreads.</p>
+        </div>
+        <div class="ardamire-grid cols-3 mt-10 text-left max-w-6xl mx-auto">
+          <article class="ardamire-card">
+            <h3>Quarantine before release</h3>
+            <p>Suspicious activity should be held before it crosses the release boundary, not cleaned up afterward.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>Reconstruction from system evidence</h3>
+            <p>Incidents should remain explainable later from Auxtho records, evidence links, and boundary events.</p>
+          </article>
+          <article class="ardamire-card">
+            <h3>A harder path to unsafe release</h3>
+            <p>The release path should remain the hardest surface to misuse inside the Auxtho-managed workflow.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <p class="ardamire-kicker">Closed Loop</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">Closed-loop defense model</h2>
+          <p class="ardamire-section-copy">Ardamire is being designed around a closed-loop model inside the Auxtho boundary.</p>
+        </div>
+        <div class="ardamire-grid cols-3 mt-10 text-left max-w-6xl mx-auto">
+          <article class="ardamire-card">
+            <div class="ardamire-stage-index">01</div>
+            <h3>Detect</h3>
+            <p>Observe suspicious runtime, auth, export, and artifact events inside Auxtho.</p>
+          </article>
+          <article class="ardamire-card">
+            <div class="ardamire-stage-index">02</div>
+            <h3>Quarantine</h3>
+            <p>Hold suspicious activity before release by freezing export, retry, or artifact movement.</p>
+          </article>
+          <article class="ardamire-card">
+            <div class="ardamire-stage-index">03</div>
+            <h3>Analyze</h3>
+            <p>Review the affected workflow state, runtime events, and evidence-linked records.</p>
+          </article>
+          <article class="ardamire-card">
+            <div class="ardamire-stage-index">04</div>
+            <h3>Profile</h3>
+            <p>Classify exact and family-level attack patterns so repeated behavior becomes easier to spot.</p>
+          </article>
+          <article class="ardamire-card">
+            <div class="ardamire-stage-index">05</div>
+            <h3>Harden</h3>
+            <p>Propose tighter protections around the Auxtho-managed boundary after the incident is understood.</p>
+          </article>
+          <article class="ardamire-card">
+            <div class="ardamire-stage-index">06</div>
+            <h3>Verify before rollout</h3>
+            <p>Validate defensive changes before broader enablement inside the Auxtho boundary.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-24 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <p class="ardamire-kicker">Scope Today</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">Current focus and future direction</h2>
+          <p class="ardamire-section-copy">This page describes an Auxtho-scoped defense direction, not a customer-wide security rollout.</p>
+        </div>
+        <div class="ardamire-grid cols-2 mt-10 max-w-5xl mx-auto text-left">
+          <section class="ardamire-panel current">
+            <p class="ardamire-panel-label">Current focus</p>
+            <h3>Auxtho boundary first</h3>
+            <ul class="ardamire-list">
+              <li>Auxtho-scoped boundary only</li>
+              <li>Runtime, evidence, and release-boundary protection</li>
+              <li>Quarantine before release</li>
+              <li>Incident records that remain reconstructable later</li>
+            </ul>
+          </section>
+          <section class="ardamire-panel future">
+            <p class="ardamire-panel-label">Future direction</p>
+            <h3>Deeper protection inside the same boundary</h3>
+            <ul class="ardamire-list">
+              <li>Deeper adaptive protection inside the Auxtho boundary</li>
+              <li>Stronger sandbox and replay defense</li>
+              <li>Repeat-attack hardening</li>
+              <li>Tighter verification before broader enablement</li>
+            </ul>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="ardamire-cta-shell">
+          <p class="ardamire-kicker">Add-On Positioning</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">How it fits Auxtho</h2>
+          <p class="ardamire-section-copy">Ardamire is being designed as an Auxtho add-on. It is intended to strengthen the Auxtho-controlled workflow boundary around runtime, evidence, artifact integrity, and release discipline.</p>
+          <p class="ardamire-mini">It does not replace the customer's wider security controls. It exists to make the Auxtho-managed path harder to abuse, easier to quarantine, and easier to explain later.</p>
+          <div class="hero-actions mt-8">
+            <a href="mailto:hello@auxtho.com?subject=Ask%20how%20Ardamire%20fits%20one%20governed%20workflow" class="btn-primary">
+              See How Ardamire Fits the Auxtho Boundary
+            </a>
+            <a href="/" class="text-gray-300 hover:text-white transition-colors underline">Return to Auxtho release control</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-gray-800">
+    <div class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+      <p class="text-center md:text-left order-1">&copy; 2025-2026 Auxtho. All rights reserved.</p>
+      <div class="footer-product-bridge order-2">
+        <p class="footer-product-label">Auxtho family</p>
+        <a href="/" class="footer-product-link">Auxtho release control</a>
+        <span class="footer-product-copy">Ardamire stays scoped to the Auxtho-managed boundary</span>
+      </div>
+      <div class="space-x-4 order-3">
+        <a href="/privacy.html" class="hover:text-white">Privacy</a>
+        <span class="text-gray-600">•</span>
+        <a href="/terms.html" class="hover:text-white">Terms</a>
+        <span class="text-gray-600">•</span>
+        <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
+        <span class="text-gray-600">•</span>
+        <a href="https://www.linkedin.com/company/auxtho" target="_blank" rel="noopener noreferrer" class="hover:text-white">Company LinkedIn (Official)</a>
+      </div>
+      <p class="text-center md:text-right order-4 max-w-md text-xs text-gray-500">
+        Ardamire is described here as an Auxtho-scoped defense direction. It does not represent customer-wide protection claims.
+      </p>
+    </div>
+  </footer>
+
+  <script src="/assets/tw-init.js" defer></script>
+  <script src="/assets/app.js" defer></script>
+</body>
+
+</html>
