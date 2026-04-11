@@ -1,0 +1,283 @@
+﻿#ardamire-page {
+  overflow-x: hidden;
+}
+
+#ardamire-page section + section {
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+#ardamire-page .hero-section {
+  padding-top: 8.25rem !important;
+  padding-bottom: 5.75rem !important;
+}
+
+#ardamire-page .hero-title {
+  max-width: 13ch;
+  margin: 0 auto;
+  font-size: clamp(3rem, 6.2vw, 5.15rem) !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.045em !important;
+  text-wrap: balance;
+}
+
+#ardamire-page .hero-copy {
+  width: min(100%, 46rem);
+  max-width: 46rem;
+  margin: 1.35rem auto 0;
+  font-size: 1.22rem !important;
+  line-height: 1.82 !important;
+  color: #d7deea !important;
+}
+
+#ardamire-page .hero-note {
+  width: min(100%, 44rem);
+  max-width: 44rem;
+  margin: 1rem auto 0;
+  font-size: 1.02rem !important;
+  line-height: 1.8 !important;
+  color: #b8c3d1 !important;
+}
+
+#ardamire-page .hero-control-line {
+  width: min(100%, 52rem);
+  max-width: 52rem;
+  margin: 1.2rem auto 0;
+  color: rgba(255,255,255,0.48) !important;
+  font-size: 0.84rem !important;
+  line-height: 1.65 !important;
+}
+
+#ardamire-page .ardamire-hero-note {
+  width: min(100%, 52rem);
+  max-width: 52rem;
+  margin: 1.6rem auto 0;
+  padding: 1.18rem 1.28rem;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: linear-gradient(180deg, rgba(18,23,31,0.98), rgba(12,15,22,0.96));
+  color: #d2d9e4;
+  font-size: 1rem;
+  line-height: 1.82;
+  box-shadow: 0 26px 64px rgba(0,0,0,0.24);
+}
+
+#ardamire-page .ardamire-grid {
+  display: grid;
+  gap: 1.45rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  #ardamire-page .ardamire-grid.cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #ardamire-page .ardamire-grid.cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+#ardamire-page .ardamire-card,
+#ardamire-page .ardamire-panel,
+#ardamire-page .ardamire-cta-shell {
+  border: 1px solid rgba(255,255,255,0.09);
+  background: linear-gradient(180deg, rgba(17,22,31,0.99), rgba(11,15,21,0.97));
+  border-radius: 1.6rem;
+  padding: 1.55rem 1.35rem 1.3rem;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+}
+
+#ardamire-page .ardamire-card {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+#ardamire-page .ardamire-panel {
+  min-height: 286px;
+  text-align: left;
+}
+
+#ardamire-page .ardamire-card:hover,
+#ardamire-page .ardamire-panel:hover,
+#ardamire-page .ardamire-cta-shell:hover {
+  transform: translateY(-7px);
+  border-color: rgba(96,165,250,0.28);
+  box-shadow: 0 30px 78px rgba(0,0,0,0.31);
+  background: linear-gradient(180deg, rgba(20,25,35,0.99), rgba(13,17,24,0.97));
+}
+
+#ardamire-page .ardamire-card h3,
+#ardamire-page .ardamire-panel h3 {
+  font-size: 1.18rem;
+  line-height: 1.28;
+  margin-bottom: 0.78rem;
+  color: #ffffff;
+  letter-spacing: -0.015em;
+}
+
+#ardamire-page .ardamire-card p,
+#ardamire-page .ardamire-panel p,
+#ardamire-page .ardamire-panel li {
+  color: #cbd4df;
+  font-size: 1rem;
+  line-height: 1.78;
+}
+
+#ardamire-page .ardamire-kicker {
+  max-width: calc(100vw - 3rem);
+  white-space: normal;
+  line-height: 1.35;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 0.44rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(96,165,250,0.24);
+  background: rgba(22,39,72,0.35);
+  color: #93c5fd;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+#ardamire-page .headline-balance {
+  max-width: 18ch;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.035em !important;
+  text-wrap: balance;
+}
+
+#ardamire-page .ardamire-section-copy {
+  width: min(100%, 46rem);
+  max-width: 46rem;
+  margin: 0.95rem auto 0;
+  color: #c7d0db;
+  font-size: 1.08rem;
+  line-height: 1.84;
+  text-wrap: pretty;
+}
+
+#ardamire-page .ardamire-list {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-top: 0.72rem;
+}
+
+#ardamire-page .ardamire-list li + li {
+  margin-top: 0.48rem;
+}
+
+#ardamire-page .ardamire-stage-index {
+  width: 2.2rem;
+  height: 2.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-bottom: 0.9rem;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(59,130,246,0.95), rgba(37,99,235,0.85));
+  box-shadow: 0 16px 36px rgba(37,99,235,0.22);
+}
+
+#ardamire-page .ardamire-panel-label {
+  color: #93c5fd;
+  font-size: 0.74rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 0.65rem;
+}
+
+#ardamire-page .ardamire-panel.future .ardamire-panel-label {
+  color: #fcd34d;
+}
+
+#ardamire-page .ardamire-panel.current {
+  background: linear-gradient(165deg, rgba(13,27,22,0.98), rgba(10,18,15,0.94));
+}
+
+#ardamire-page .ardamire-panel.future {
+  background: linear-gradient(165deg, rgba(30,24,15,0.97), rgba(21,17,11,0.94));
+}
+
+#ardamire-page .ardamire-cta-shell {
+  max-width: 56rem;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem 1.45rem 1.7rem;
+}
+
+#ardamire-page .ardamire-mini {
+  width: min(100%, 44rem);
+  max-width: 44rem;
+  color: #a8b3c0;
+  font-size: 1rem;
+  line-height: 1.8;
+  margin: 1rem auto 0;
+  text-wrap: pretty;
+}
+
+@media (max-width: 768px) {
+  #ardamire-page .hero-section {
+    padding-top: 6rem !important;
+    padding-bottom: 4rem !important;
+  }
+
+  #ardamire-page .hero-title {
+    max-width: 10ch;
+    font-size: clamp(2rem, 9.2vw, 2.8rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  #ardamire-page .hero-copy {
+    width: 100%;
+    font-size: 1rem !important;
+    line-height: 1.8 !important;
+  }
+
+  #ardamire-page .hero-note,
+  #ardamire-page .ardamire-mini,
+  #ardamire-page .ardamire-hero-note,
+  #ardamire-page .ardamire-section-copy {
+    width: 100%;
+    font-size: 0.97rem !important;
+  }
+
+  #ardamire-page .headline-balance {
+    max-width: 12ch;
+    font-size: clamp(1.72rem, 7.4vw, 2.18rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  #ardamire-page .ardamire-grid.cols-2,
+  #ardamire-page .ardamire-grid.cols-3 {
+    grid-template-columns: 1fr;
+  }
+
+  #ardamire-page .ardamire-card,
+  #ardamire-page .ardamire-panel,
+  #ardamire-page .ardamire-cta-shell {
+    min-height: auto;
+    padding: 1.28rem 1.06rem 1.08rem;
+  }
+
+  #ardamire-page .ardamire-card:hover,
+  #ardamire-page .ardamire-panel:hover,
+  #ardamire-page .ardamire-cta-shell:hover {
+    transform: translateY(-3px);
+  }
+}
