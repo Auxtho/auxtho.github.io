@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ISP | Auxtho</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="/assets/favicon.svg">
+  <link rel="stylesheet" href="/assets/style.css?v=2026-03-19d">
+  <link rel="stylesheet" href="/assets/custom.css?v=2026-03-19d">
+  <link rel="stylesheet" href="/assets/final-overrides.css?v=ep07-design-pass">
+  <link rel="stylesheet" href="/assets/isp-lineage-preview.css?v=2026-04-19c">
+</head>
+<body class="antialiased isp-preview-page">
+  <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
+    <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+      <a href="/" class="z-50" aria-label="Auxtho Home">
+        <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+      </a>
+      <nav>
+        <ul class="primary-navigation flex items-center space-x-8">
+          <li><a href="#hero" class="text-gray-300 hover:text-white transition-colors">Hero</a></li>
+          <li><a href="#proof" class="text-gray-300 hover:text-white transition-colors">Proof</a></li>
+          <li><a href="#package" class="text-gray-300 hover:text-white transition-colors">Proof Package</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section id="hero" class="hero-section text-center pt-24 pb-16">
+      <div class="container mx-auto px-6">
+        <p class="hero-kicker">FROM THE DESIGN LINEAGE BEHIND AUXTHO</p>
+        <p class="isp-category">AI workflow verification layer</p>
+        <h1 class="hero-title">Make AI work easier to review.</h1>
+        <p class="hero-copy">
+          ISP is a separate prototype from the design lineage behind Auxtho. It shows how AI work can move from request to visible progress to a reviewable result.
+        </p>
+        <p class="hero-note">
+          It is shared as a proof-of-run, not as the current Auxtho production core.
+        </p>
+        <div class="hero-actions">
+          <a href="#proof" class="btn-primary">See the workflow</a>
+          <a href="#package" class="btn-secondary">View the proof run</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="isp-problem py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto">
+          <p class="hero-kicker">WHY THIS EXISTS</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">AI output is easy to generate. AI work is harder to keep oriented.</h2>
+          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">
+            A prompt can start the work, but longer tasks need visible progress, review state, and a clear next action. Without that, the result may look finished before it is ready to trust.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="isp-what-changes py-24" id="proof">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-14">
+          <p class="hero-kicker">WHAT CHANGES WITH ISP</p>
+          <h2 class="text-3xl md:text-5xl font-bold">From request to progress to review.</h2>
+          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">
+            ISP is not another coding agent. It is a separate prototype for keeping AI work visible while it runs and reviewable when it returns.
+          </p>
+        </div>
+
+        <div class="comparison-shell max-w-5xl mx-auto">
+          <div class="comparison-card comparison-card-weak">
+            <p class="comparison-label">Prompt-only flow</p>
+            <h3>Ask once, hope it stays on track.</h3>
+          </div>
+          <div class="comparison-card comparison-card-strong">
+            <p class="comparison-label">ISP flow</p>
+            <h3>Start the work, keep the run visible, review the result before closing the task.</h3>
+          </div>
+        </div>
+
+        <div class="proof-grid max-w-6xl mx-auto mt-12">
+          <article class="proof-shot">
+            <img src="/assets/proof-preview/isp/00-idle.png" alt="ISP idle state screenshot">
+            <div class="proof-copy">
+              <h3>Request</h3>
+              <p>Start from a plain request in a narrow workspace.</p>
+            </div>
+          </article>
+          <article class="proof-shot">
+            <img src="/assets/proof-preview/isp/fixed/01-first-running-fixed.png" alt="ISP running state screenshot">
+            <div class="proof-copy">
+              <h3>Progress</h3>
+              <p>The task stays visible while it moves instead of disappearing behind a black box.</p>
+            </div>
+          </article>
+          <article class="proof-shot">
+            <img src="/assets/proof-preview/isp/fixed/02-first-review-ready-fixed.png" alt="ISP review-ready state screenshot">
+            <div class="proof-copy">
+              <h3>Review</h3>
+              <p>The result returns to a review-ready surface with a clear next action.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="isp-example py-24 text-center">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-14 max-w-4xl mx-auto">
+          <p class="hero-kicker">ONE CONCRETE EXAMPLE</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">Two small proof runs, same review pattern.</h2>
+          <p class="text-lg text-gray-400 mt-4">
+            In the current proof set, one run creates a simple file. A second run creates a landing-page draft with real files in a real workspace. The point is not only that output was generated. The point is that the work stayed visible and returned to review.
+          </p>
+        </div>
+
+        <div class="example-grid max-w-6xl mx-auto">
+          <article class="example-card">
+            <img src="/assets/proof-preview/isp/fixed/03-second-running-fixed.png" alt="Second run in progress screenshot">
+            <div class="example-copy">
+              <p class="example-label">Second run</p>
+              <h3>Visible progress stays attached to the task.</h3>
+            </div>
+          </article>
+          <article class="example-card">
+            <img src="/assets/proof-preview/isp/fixed/04-second-review-ready-fixed.png" alt="Second run review-ready screenshot">
+            <div class="example-copy">
+              <p class="example-label">Review-ready</p>
+              <h3>The result returns with a closing decision.</h3>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="isp-trust py-24 text-center">
+      <div class="container mx-auto px-6">
+        <div class="max-w-4xl mx-auto mb-12">
+          <p class="hero-kicker">TRUST / REVIEWABILITY</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">A calmer path from AI work to human review.</h2>
+          <p class="text-lg text-gray-400 mt-4">
+            ISP keeps the current task, progress state, result, and next action visible in one place. The user can inspect the result before closing the work as Ready, Pass, Partial, or Blocked.
+          </p>
+        </div>
+        <div class="truth-grid max-w-6xl mx-auto text-left">
+          <article class="truth-card">
+            <h3>What ISP is</h3>
+            <ul>
+              <li>a separate prototype from the design lineage behind Auxtho</li>
+              <li>an AI workflow verification layer</li>
+              <li>a proof surface for request, progress, and review</li>
+              <li>a product experiment for visible, reviewable AI work</li>
+            </ul>
+          </article>
+          <article class="truth-card">
+            <h3>What ISP is not</h3>
+            <ul>
+              <li>not the current Auxtho production core</li>
+              <li>not a standalone product offering</li>
+              <li>not an orchestration platform</li>
+              <li>not an AI operating system</li>
+              <li>not a full protocol disclosure page</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="package" class="isp-github py-20 text-center">
+      <div class="container mx-auto px-6">
+        <div class="github-shell max-w-4xl mx-auto">
+          <p class="hero-kicker">PUBLIC PROOF PACKAGE</p>
+          <h2 class="text-3xl md:text-4xl font-bold headline-balance">Proof package, not protocol dump.</h2>
+          <p class="text-lg text-gray-400 mt-4">
+            The public proof package presents ISP as screenshots, generated files, and a proof-of-run note, not as the full current Auxtho implementation.
+          </p>
+          <p class="text-sm text-gray-500 mt-4">
+            A separate internal agent-assisted development example also exists, but it is treated as supporting proof only and is not part of this public page.
+          </p>
+          <div class="hero-actions mt-8">
+            <a href="/" class="btn-primary">Return to Auxtho</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
+
+
+

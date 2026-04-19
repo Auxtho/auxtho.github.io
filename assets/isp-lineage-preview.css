@@ -1,0 +1,136 @@
+.isp-preview-page .isp-category {
+  display: inline-flex;
+  margin-top: 1rem;
+  padding: 0.38rem 0.82rem;
+  border-radius: 999px;
+  border: 1px solid rgba(96,165,250,0.24);
+  background: rgba(22,39,72,0.28);
+  color: #b8d3ff;
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.isp-preview-page .comparison-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .isp-preview-page .comparison-shell {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.isp-preview-page .comparison-card,
+.isp-preview-page .proof-shot,
+.isp-preview-page .example-card,
+.isp-preview-page .truth-card,
+.isp-preview-page .github-shell {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 1.6rem;
+  background: linear-gradient(180deg, rgba(17,22,31,0.99), rgba(11,15,21,0.97));
+  box-shadow: 0 24px 60px rgba(0,0,0,0.22);
+}
+
+.isp-preview-page .comparison-card {
+  padding: 1.2rem 1.25rem;
+  text-align: left;
+}
+
+.isp-preview-page .comparison-label,
+.isp-preview-page .example-label {
+  color: #93c5fd;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  margin-bottom: 0.55rem;
+}
+
+.isp-preview-page .comparison-card h3,
+.isp-preview-page .proof-copy h3,
+.isp-preview-page .example-copy h3,
+.isp-preview-page .truth-card h3 {
+  color: #fff;
+  font-size: 1.12rem;
+  line-height: 1.34;
+}
+
+.isp-preview-page .comparison-card-weak {
+  background: linear-gradient(180deg, rgba(20,22,28,0.97), rgba(14,16,22,0.96));
+}
+
+.isp-preview-page .comparison-card-strong {
+  background: linear-gradient(180deg, rgba(16,26,39,0.99), rgba(12,17,26,0.97));
+  border-color: rgba(96,165,250,0.18);
+}
+
+.isp-preview-page .proof-grid,
+.isp-preview-page .example-grid,
+.isp-preview-page .truth-grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+@media (min-width: 900px) {
+  .isp-preview-page .proof-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .isp-preview-page .example-grid,
+  .isp-preview-page .truth-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.isp-preview-page .proof-shot,
+.isp-preview-page .example-card {
+  overflow: hidden;
+}
+
+.isp-preview-page .proof-shot img,
+.isp-preview-page .example-card img {
+  width: 100%;
+  display: block;
+}
+
+.isp-preview-page .proof-copy,
+.isp-preview-page .example-copy {
+  padding: 1rem 1rem 1.15rem;
+  text-align: left;
+}
+
+.isp-preview-page .proof-copy p,
+.isp-preview-page .example-copy p,
+.isp-preview-page .truth-card li {
+  color: #cbd4df;
+  font-size: 0.96rem;
+  line-height: 1.72;
+}
+
+.isp-preview-page .truth-card {
+  padding: 1.3rem 1.25rem;
+}
+
+.isp-preview-page .truth-card ul {
+  margin: 0.9rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.isp-preview-page .truth-card li + li {
+  margin-top: 0.4rem;
+}
+
+.isp-preview-page .github-shell {
+  padding: 1.5rem 1.4rem 1.35rem;
+}
+
+@media (max-width: 768px) {
+  .isp-preview-page .comparison-card,
+  .isp-preview-page .truth-card,
+  .isp-preview-page .github-shell {
+    padding: 1rem;
+  }
+}
+
+
