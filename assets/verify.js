@@ -43,6 +43,13 @@
         return signature.timestamp_valid ? 'PRESENT / VALID' : 'PRESENT / NOT VERIFIED';
     }
 
+    function certificateChainLabel(signature, mode) {
+        var status = signature.certificate_chain_status || '-';
+        if (mode === 'local_signed' && status === 'verified') return 'local chain verified';
+        if (mode === 'local_signed' && status !== '-') return status + ' in local signing mode';
+        return status;
+    }
+
     function setError(message) {
         var el = byId('verify-error');
         if (!el) return;
@@ -116,7 +123,7 @@
             ['Hash Match', result.artifact_hash_match ? 'YES' : 'NO'],
             ['PKCS#7 CMS Detached Signature', signatureLabel(signature, verificationMode)],
             ['Signature Format', signature.signature_format || '-'],
-            ['Certificate Chain', signature.certificate_chain_status || '-'],
+            ['Certificate Chain', certificateChainLabel(signature, verificationMode)],
             ['RFC 3161 Trusted Timestamp', timestampLabel(signature, verificationMode)],
             ['TSA / Timestamp', signature.tsa_signed_at || signature.tsa_name || '-'],
             ['Reason Code', signature.reason_code || result.reason || '-']
