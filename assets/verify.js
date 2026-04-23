@@ -2,6 +2,7 @@
     var API_ROOT = (window.location.origin.indexOf('127.0.0.1') >= 0 || window.location.origin.indexOf('localhost') >= 0) ? 'http://127.0.0.1:8000' : 'https://api.auxtho.com';
     var VERIFY_ENDPOINT = API_ROOT + '/api/verify';
     var STATUS_ENDPOINT = VERIFY_ENDPOINT + '/status';
+    var DEFAULT_BUTTON_TEXT = {};
 
     function byId(id) {
         return document.getElementById(id);
@@ -15,6 +16,27 @@
     function toggle(el, visible) {
         if (!el) return;
         el.hidden = !visible;
+    }
+
+    function setButtonLoading(id, isLoading, loadingText) {
+        var el = byId(id);
+        if (!el) return;
+        if (!DEFAULT_BUTTON_TEXT[id]) DEFAULT_BUTTON_TEXT[id] = el.textContent;
+        el.disabled = !!isLoading;
+        el.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+        el.classList.toggle('is-busy', !!isLoading);
+        el.textContent = isLoading ? loadingText : DEFAULT_BUTTON_TEXT[id];
+    }
+
+    function showVerificationPending() {
+        var card = byId('verify-result');
+        var grid = byId('verify-result-grid');
+        if (!card || !grid) return;
+        toggle(card, true);
+        setText('verify-result-kicker', 'Verification In Progress');
+        setText('verify-result-title', 'Verifying Artifact...');
+        setText('verify-result-message', 'Please wait while we verify the artifact. This can take a few seconds.');
+        grid.innerHTML = '';
     }
 
     function escapeHtml(value) {
@@ -72,9 +94,12 @@
         result = result || {};
         var signature = result.signature || {};
         var mode = result.verification_mode || result.signing_mode || 'pilot_hash_only';
+        var emptyState = !!result.empty_state;
         var signed = hasSignedControls(signature, mode);
         var items = ['Artifact integrity hash', 'Automated API verification'];
-        if (signed) {
+        if (emptyState) {
+            items.push('Manual verification support');
+        } else if (signed) {
             items.push('PKCS#7 CMS detached signature');
             if (signature.timestamp_present || mode === 'local_signed' || mode === 'production_signed') {
                 items.push('RFC 3161 trusted timestamp');
@@ -86,15 +111,24 @@
 
         if (cryptoBlock && cryptoItems) {
             toggle(cryptoBlock, true);
-            cryptoItems.innerHTML = [
-                'Verification mode: ' + formatMode(mode),
-                'PKCS#7 CMS detached signature: ' + signatureLabel(signature, mode),
-                'RFC 3161 trusted timestamp: ' + timestampLabel(signature, mode)
-            ].map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
+            cryptoItems.innerHTML = (emptyState
+                ? [
+                    'Verification mode will appear after artifact verification.',
+                    'PKCS#7 CMS detached signature status will appear after verification.',
+                    'RFC 3161 trusted timestamp status will appear after verification.'
+                ]
+                : [
+                    'Verification mode: ' + formatMode(mode),
+                    'PKCS#7 CMS detached signature: ' + signatureLabel(signature, mode),
+                    'RFC 3161 trusted timestamp: ' + timestampLabel(signature, mode)
+                ]
+            ).map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
         }
 
         if (footnote) {
-            footnote.textContent = signed
+            footnote.textContent = emptyState
+                ? 'Load an artifact to see its signature, timestamp, and release-package verification status.'
+                : signed
                 ? 'Signed artifacts verify the hash plus registry-stored signature and timestamp values.'
                 : 'Hash-only artifacts verify the registry hash. Signed exports return signature and timestamp values when attached.';
         }
@@ -149,8 +183,10 @@
         applyStatusPanel(result);
     }
 
-    async function runVerification(reportId, artifactHash, exportEventId) {
+    async function runVerification(reportId, artifactHash, exportEventId, buttonId) {
         setError('');
+        showVerificationPending();
+        if (buttonId) setButtonLoading(buttonId, true, 'Please wait...');
         var payload = { report_id: reportId, artifact_hash: artifactHash };
         if (exportEventId) payload.export_event_id = exportEventId;
 
@@ -169,6 +205,8 @@
             renderResult(result);
         } catch (err) {
             setError('Verification API unavailable. Use manual verification support.');
+        } finally {
+            if (buttonId) setButtonLoading(buttonId, false, '');
         }
     }
 
@@ -183,7 +221,7 @@
                 setError('Report ID and artifact integrity hash are required.');
                 return;
             }
-            runVerification(reportId, artifactHash, exportEventId || null);
+            runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn');
         });
     }
 
@@ -192,9 +230,9 @@
             var response = await fetch(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
             if (!response.ok) return;
             var result = await response.json();
-            applyStatusPanel(result);
+            applyStatusPanel({ ...result, empty_state: true });
         } catch (err) {
-            applyStatusPanel({ signing_mode: 'pilot_hash_only' });
+            applyStatusPanel({ signing_mode: 'pilot_hash_only', empty_state: true });
         }
     }
 
@@ -224,11 +262,11 @@
         var button = byId('qr-verify-btn');
         if (button) {
             button.addEventListener('click', function () {
-                runVerification(reportId, hash, exportEventId);
+                runVerification(reportId, hash, exportEventId, 'qr-verify-btn');
             });
         }
 
-        runVerification(reportId, hash, exportEventId);
+        runVerification(reportId, hash, exportEventId, 'qr-verify-btn');
     }
 
     function init() {

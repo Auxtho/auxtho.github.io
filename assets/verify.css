@@ -72,6 +72,11 @@
     margin-top: 1rem;
 }
 
+.btn-primary.is-busy {
+    opacity: 0.72;
+    cursor: wait;
+}
+
 /* Main verify layout */
 .verify-layout {
     display: grid;
