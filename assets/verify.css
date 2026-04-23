@@ -181,6 +181,10 @@
     color: rgba(147, 197, 253, 0.95);
 }
 
+.status-title.crypto {
+    color: rgba(251, 191, 36, 0.95);
+}
+
 .status-block ul {
     margin: 0;
     padding-left: 1rem;
@@ -311,7 +315,7 @@
 
 .manual-verify-form {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1fr auto;
     gap: 0.85rem;
     align-items: end;
 }
@@ -321,6 +325,11 @@
     margin-bottom: 0.35rem;
     color: #8f99a8;
     font-size: 0.78rem;
+}
+
+.optional-label {
+    color: #6f7886;
+    font-weight: 500;
 }
 
 .manual-field input {

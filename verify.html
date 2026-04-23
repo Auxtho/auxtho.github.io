@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/assets/style.css?v=2026-04-02a">
     <link rel="stylesheet" href="/assets/custom.css?v=2026-04-02a">
     <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-02a">
-    <link rel="stylesheet" href="/assets/verify.css?v=2026-04-02a">
+    <link rel="stylesheet" href="/assets/verify.css?v=2026-04-23a">
 </head>
 <body class="antialiased">
     <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
@@ -62,7 +62,7 @@
 
             <div class="manual-verify-panel mt-8">
                 <h2>Manual Verification</h2>
-                <p class="manual-verify-copy">Paste the report ID and artifact integrity hash from the exported artifact to run API-backed verification.</p>
+                <p class="manual-verify-copy">Paste the report ID and artifact integrity hash from the exported artifact to run API-backed verification. If the artifact has a QR export event ID, include it to bind the check to that exact export.</p>
                 <div class="manual-verify-form">
                     <div class="manual-field">
                         <label for="manual-report-id">Report ID</label>
@@ -71,6 +71,10 @@
                     <div class="manual-field">
                         <label for="manual-artifact-hash">Artifact Integrity Hash</label>
                         <input id="manual-artifact-hash" type="text" placeholder="e.g. 53fe69cf3f1371a7">
+                    </div>
+                    <div class="manual-field">
+                        <label for="manual-export-event-id">Export Event ID <span class="optional-label">optional</span></label>
+                        <input id="manual-export-event-id" type="text" placeholder="e.g. exp_20260423_...">
                     </div>
                     <button id="manual-verify-btn" class="btn-primary" type="button">Verify Artifact</button>
                 </div>
@@ -87,11 +91,11 @@
                         </li>
                         <li class="step-row">
                             <span class="step-circle">2</span>
-                            <span class="step-text">Run API verification here. If API verification is unavailable, use <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request">verify@auxtho.com</a> as the pilot fallback.</span>
+                            <span class="step-text">Run API verification here. Signed artifacts return registry-backed PKCS#7 signature and RFC 3161 timestamp values when those controls were attached at export.</span>
                         </li>
                         <li class="step-row">
                             <span class="step-circle">3</span>
-                            <span class="step-text">For signed production artifacts, confirm <strong>hash, signature, and timestamp</strong>. For pilot artifacts, confirm the registry hash match.</span>
+                            <span class="step-text">Confirm the <strong>hash match</strong>, then check signature and timestamp status for signed artifacts. Hash-only artifacts explicitly show that no signature was attached.</span>
                         </li>
                     </ol>
                 </div>
@@ -108,11 +112,12 @@
                         <p class="status-meta-line">Policy version: SG-MAS-TRM-2024</p>
                         <p class="status-meta-line">Artifact hashing: SHA-256 (Active)</p>
                     </div>
-                    <div id="planned-milestone-block" class="status-block">
-                        <p class="status-title planned">Planned milestone</p>
-                        <ul>
-                            <li>PKCS#7 CMS detached signature</li>
-                            <li>RFC 3161 trusted timestamp</li>
+                    <div id="artifact-crypto-block" class="status-block">
+                        <p class="status-title crypto">Artifact crypto</p>
+                        <ul id="artifact-crypto-items">
+                            <li>Verification mode: checking API...</li>
+                            <li>PKCS#7 CMS detached signature: checking artifact record...</li>
+                            <li>RFC 3161 trusted timestamp: checking artifact record...</li>
                         </ul>
                     </div>
                     <p id="status-footnote" class="status-footnote">Response target for pilot verification requests: within 1 business day.</p>
@@ -143,6 +148,6 @@
     </footer>
 
     <script src="/assets/tw-init.js" defer></script>
-    <script src="/assets/verify.js?v=2026-04-02a"></script>
+    <script src="/assets/verify.js?v=2026-04-23a"></script>
 </body>
 </html>
