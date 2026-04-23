@@ -80,7 +80,7 @@
                 items.push('RFC 3161 trusted timestamp');
             }
         } else {
-            items.push('Pilot email fallback');
+            items.push('Manual verification support');
         }
         list.innerHTML = items.map(function (item) { return '<li>' + item + '</li>'; }).join('');
 
@@ -116,7 +116,10 @@
         var rows = [
             ['Report ID', artifact.report_id || '-'],
             ['Export Event ID', artifact.export_event_id || '-'],
-            ['Policy Version', artifact.policy_version || '-'],
+            ['Artifact Policy Version', artifact.policy_version || '-'],
+            ['Release Package Hash', (artifact.release_package || {}).hash || '-'],
+            ['Release Package Trace ID', (artifact.release_package || {}).trace_id || '-'],
+            ['Verification Profile', 'SG-MAS-TRM-2024'],
             ['Trace ID', artifact.trace_id || '-'],
             ['Public Mode', (result.mode || 'pilot').toUpperCase()],
             ['Verification Mode', formatMode(verificationMode)],
@@ -165,7 +168,7 @@
             }
             renderResult(result);
         } catch (err) {
-            setError('Verification API unavailable. Use pilot email fallback.');
+            setError('Verification API unavailable. Use manual verification support.');
         }
     }
 
