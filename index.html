@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="/assets/style.css?v=2026-04-24b">
   <link rel="stylesheet" href="/assets/custom.css?v=2026-04-24b">
   
-  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-24c">
+  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-25a">
 </head>
 
 <body class="antialiased">
@@ -244,7 +244,8 @@
         <div class="control-grid-3">
           <article class="control-card sample-card">
             <a class="sample-card-media" href="/assets/sample/internal-advisory-note-sample.png" target="_blank"
-              rel="noopener noreferrer" aria-label="Open Internal Advisory Note sample image">
+              rel="noopener noreferrer" aria-label="Open Internal Advisory Note sample image"
+              data-lightbox-title="Internal Advisory Note" data-lightbox-caption="Human-readable advisory note">
               <img src="/assets/sample/internal-advisory-note-sample.png"
                 alt="Auxtho Internal Advisory Note sample showing review status, evidence count, and advisory points."
                 loading="lazy" decoding="async">
@@ -256,7 +257,8 @@
           </article>
           <article class="control-card sample-card">
             <a class="sample-card-media" href="/assets/sample/transparency-report-held-blocked-sample.png" target="_blank"
-              rel="noopener noreferrer" aria-label="Open Auxtho Transparency Report sample image">
+              rel="noopener noreferrer" aria-label="Open Auxtho Transparency Report sample image"
+              data-lightbox-title="Auxtho Transparency Report" data-lightbox-caption="Held and blocked claims remain visible">
               <img src="/assets/sample/transparency-report-held-blocked-sample.png"
                 alt="Auxtho Transparency Report sample showing held and blocked claims with evidence sources."
                 loading="lazy" decoding="async">
@@ -268,7 +270,8 @@
           </article>
           <article class="control-card sample-card">
             <a class="sample-card-media" href="/assets/sample/artifact-verification-sample.png" target="_blank"
-              rel="noopener noreferrer" aria-label="Open Artifact Verification sample image">
+              rel="noopener noreferrer" aria-label="Open Artifact Verification sample image"
+              data-lightbox-title="Verification Page" data-lightbox-caption="Artifact verification after export">
               <img src="/assets/sample/artifact-verification-sample.png"
                 alt="Auxtho Artifact Verification page sample showing verified artifact status and signature validation."
                 loading="lazy" decoding="async">
@@ -403,6 +406,21 @@
     </section>
   </main>
 
+  <dialog id="sample-lightbox" class="sample-lightbox" aria-labelledby="sample-lightbox-title">
+    <div class="sample-lightbox-panel">
+      <button type="button" class="sample-lightbox-close" aria-label="Close sample image">&times;</button>
+      <figure>
+        <div class="sample-lightbox-image-wrap">
+          <img id="sample-lightbox-image" alt="">
+        </div>
+        <figcaption class="sample-lightbox-caption">
+          <p id="sample-lightbox-title" class="sample-lightbox-title"></p>
+          <p id="sample-lightbox-caption" class="sample-lightbox-subtitle"></p>
+        </figcaption>
+      </figure>
+    </div>
+  </dialog>
+
   <footer class="border-t border-gray-800">
     <div
       class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
@@ -429,7 +447,7 @@
   </footer>
 
   <script src="/assets/tw-init.js" defer></script>
-  <script src="/assets/app.js" defer></script>
+  <script src="/assets/app.js?v=2026-04-25b" defer></script>
 </body>
 
 </html>

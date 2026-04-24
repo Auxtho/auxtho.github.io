@@ -109,6 +109,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Debounce resize events for performance. (이 코드는 변경 없음)
+    // Sample package lightbox. Falls back to normal links when dialog is unsupported.
+    const sampleLightbox = document.getElementById('sample-lightbox');
+    const sampleLightboxImage = document.getElementById('sample-lightbox-image');
+    const sampleLightboxTitle = document.getElementById('sample-lightbox-title');
+    const sampleLightboxCaption = document.getElementById('sample-lightbox-caption');
+    const sampleLightboxClose = document.querySelector('.sample-lightbox-close');
+    const sampleLightboxImageWrap = document.querySelector('.sample-lightbox-image-wrap');
+    const sampleLinks = document.querySelectorAll('.sample-card-media');
+
+    if (
+        sampleLightbox &&
+        typeof sampleLightbox.showModal === 'function' &&
+        sampleLightboxImage &&
+        sampleLightboxTitle &&
+        sampleLightboxCaption &&
+        sampleLightboxClose &&
+        sampleLightboxImageWrap &&
+        sampleLinks.length
+    ) {
+        const resetSampleLightboxScroll = () => {
+            sampleLightbox.scrollTop = 0;
+            sampleLightboxImageWrap.scrollTop = 0;
+        };
+
+        const closeSampleLightbox = () => {
+            if (sampleLightbox.open) {
+                sampleLightbox.close();
+            }
+        };
+
+        sampleLinks.forEach((link) => {
+            link.addEventListener('click', (event) => {
+                event.preventDefault();
+                const image = link.querySelector('img');
+                sampleLightboxImage.addEventListener('load', resetSampleLightboxScroll, { once: true });
+                sampleLightboxImage.src = link.href;
+                sampleLightboxImage.alt = image ? image.alt : '';
+                sampleLightboxTitle.textContent = link.dataset.lightboxTitle || '';
+                sampleLightboxCaption.textContent = link.dataset.lightboxCaption || '';
+                sampleLightbox.showModal();
+                document.body.classList.add('sample-lightbox-open');
+                sampleLightboxClose.focus({ preventScroll: true });
+                resetSampleLightboxScroll();
+                requestAnimationFrame(resetSampleLightboxScroll);
+            });
+        });
+
+        sampleLightboxClose.addEventListener('click', closeSampleLightbox);
+
+        sampleLightbox.addEventListener('click', (event) => {
+            if (event.target === sampleLightbox) {
+                closeSampleLightbox();
+            }
+        });
+
+        sampleLightbox.addEventListener('close', () => {
+            document.body.classList.remove('sample-lightbox-open');
+            sampleLightboxImage.removeAttribute('src');
+        });
+    }
+
+    // Debounce resize events for performance.
     let resizeTimer;
     window.addEventListener('resize', () => {
         document.body.classList.add('resizing');

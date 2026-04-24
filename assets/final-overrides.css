@@ -1079,6 +1079,101 @@ footer > div {
   background: linear-gradient(180deg, rgba(22,27,36,0.98), rgba(15,19,26,0.96)) !important;
 }
 
+.sample-lightbox {
+  width: min(1120px, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #f8fafc;
+  overflow: visible;
+}
+
+.sample-lightbox::backdrop {
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.sample-lightbox-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(15,19,26,0.98), rgba(7,10,15,0.98));
+  box-shadow: 0 34px 90px rgba(0,0,0,0.55);
+}
+
+.sample-lightbox-close {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  background: rgba(8,11,17,0.86);
+  color: #f8fafc;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+
+.sample-lightbox-close:hover {
+  transform: translateY(-1px);
+  border-color: rgba(96,165,250,0.35);
+  background: rgba(20,25,34,0.94);
+}
+
+.sample-lightbox figure {
+  margin: 0;
+}
+
+.sample-lightbox-image-wrap {
+  max-height: calc(100vh - 9rem);
+  overflow: auto;
+  background: #070a0f;
+}
+
+.sample-lightbox-image-wrap img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sample-lightbox-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem 1.15rem;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  background: rgba(10,14,20,0.92);
+}
+
+.sample-lightbox-title {
+  margin: 0;
+  color: #f8fafc;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.sample-lightbox-subtitle {
+  margin: 0;
+  color: #aeb8c7;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+body.sample-lightbox-open {
+  overflow: hidden;
+}
+
 @media (max-width: 768px) {
   #sample .control-grid-3 {
     grid-template-columns: 1fr !important;
@@ -1091,6 +1186,19 @@ footer > div {
   #whats-new .control-card:hover,
   #sample .control-card:hover {
     transform: translateY(-3px) !important;
+  }
+
+  .sample-lightbox {
+    width: calc(100vw - 1rem);
+    max-height: calc(100vh - 1rem);
+  }
+
+  .sample-lightbox-image-wrap {
+    max-height: calc(100vh - 8rem);
+  }
+
+  .sample-lightbox-caption {
+    padding: 0.85rem 1rem 1rem;
   }
 }
 
