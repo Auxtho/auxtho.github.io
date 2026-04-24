@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    Auxtho custom.css
    Visual direction: minimal, audit-first, low-noise interface
    ============================================================ */
@@ -375,8 +375,14 @@ a:hover {
 }
 
 .control-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 1rem;
+}
+
+.control-grid-3 {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 1rem;
 }
 
@@ -598,12 +604,13 @@ main {
   border-radius: 4px;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 700px) {
   .value-grid {
     grid-template-columns: 1fr;
   }
 
-  .control-grid {
+  .control-grid,
+  .control-grid-3 {
     grid-template-columns: 1fr;
   }
 
@@ -624,7 +631,6 @@ main {
     padding-bottom: 4.8rem !important;
   }
 
-  #solution .control-grid,
   #workflow-demo .workflow-stage-rail,
   .state-grid,
   .artifact-meta-grid,
@@ -649,6 +655,36 @@ main {
   .artifact-header {
     flex-direction: column;
   }
+}
+
+
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: clamp(1.85rem, 9.2vw, 2.6rem);
+  }
+
+  .hero-copy {
+    font-size: 1rem;
+  }
+
+  .trust-panel {
+    padding: 1.4rem;
+  }
+
+  .card-qa,
+  .control-card,
+  .value-card {
+    padding: 1.15rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  * {
+    transition: none !important;
 }
 
   .hero-title {
@@ -685,8 +721,15 @@ main {
 .workflow-stage-rail {
   position: relative;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(160px, 1fr));
   gap: 1rem;
+  overflow: visible;
+}
+
+@media (max-width: 640px) {
+  .workflow-stage-rail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .workflow-stage-rail::before {
