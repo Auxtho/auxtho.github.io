@@ -39,7 +39,7 @@
   <link rel="stylesheet" href="/assets/style.css?v=2026-04-24b">
   <link rel="stylesheet" href="/assets/custom.css?v=2026-04-24b">
   
-  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-24b">
+  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-24c">
 </head>
 
 <body class="antialiased">
@@ -181,7 +181,7 @@
           </article>
           <article class="control-card">
             <p class="control-kicker">Verification</p>
-            <h3>Later verification path</h3>
+            <h3>Approval and export record</h3>
             <p>Reviewer identity, decision state, timestamp, and export context are recorded and remain checkable after release.</p>
           </article>
         </div>
@@ -242,21 +242,41 @@
           </p>
         </div>
         <div class="control-grid-3">
-          <article class="control-card">
-            <p class="control-kicker">1. Internal Advisory Note</p>
-            <h3>Human-readable memo</h3>
-            <p>A one-page human-readable note for compliance, risk, or operations reviewers. Written for the person who needs to act on it.</p>
+          <article class="control-card sample-card">
+            <a class="sample-card-media" href="/assets/sample/internal-advisory-note-sample.png" target="_blank"
+              rel="noopener noreferrer" aria-label="Open Internal Advisory Note sample image">
+              <img src="/assets/sample/internal-advisory-note-sample.png"
+                alt="Auxtho Internal Advisory Note sample showing review status, evidence count, and advisory points."
+                loading="lazy" decoding="async">
+            </a>
+            <p class="control-kicker">1. Human-readable note</p>
+            <h3>Internal Advisory Note</h3>
+            <p class="sample-card-caption">Human-readable advisory note</p>
+            <p>A one-page summary for compliance, risk, or operations reviewers.</p>
           </article>
-          <article class="control-card">
-            <p class="control-kicker">2. Transparency Report</p>
-            <h3>Evidence &amp; approval record</h3>
-            <p>A detailed evidence, approval, blocked-claim, and integrity record for audit and reconstruction. Written for the reviewer who may challenge it later.</p>
+          <article class="control-card sample-card">
+            <a class="sample-card-media" href="/assets/sample/transparency-report-held-blocked-sample.png" target="_blank"
+              rel="noopener noreferrer" aria-label="Open Auxtho Transparency Report sample image">
+              <img src="/assets/sample/transparency-report-held-blocked-sample.png"
+                alt="Auxtho Transparency Report sample showing held and blocked claims with evidence sources."
+                loading="lazy" decoding="async">
+            </a>
+            <p class="control-kicker">2. Transparency report</p>
+            <h3>Auxtho Transparency Report</h3>
+            <p class="sample-card-caption">Held and blocked claims remain visible</p>
+            <p>Evidence, approval, held/blocked claims, and source locators remain recorded.</p>
           </article>
-          <article class="control-card">
-            <p class="control-kicker">3. Verification Page</p>
-            <h3>Later integrity check</h3>
-            <p>A later reviewer can verify whether the exported artifact matches the recorded release package using the Report ID and artifact hash.</p>
-            <p style="margin-top:0.75rem;"><a href="/verify.html" class="text-blue-400 hover:text-blue-300 text-sm">Open verification page &rarr;</a></p>
+          <article class="control-card sample-card">
+            <a class="sample-card-media" href="/assets/sample/artifact-verification-sample.png" target="_blank"
+              rel="noopener noreferrer" aria-label="Open Artifact Verification sample image">
+              <img src="/assets/sample/artifact-verification-sample.png"
+                alt="Auxtho Artifact Verification page sample showing verified artifact status and signature validation."
+                loading="lazy" decoding="async">
+            </a>
+            <p class="control-kicker">3. Independent verification</p>
+            <h3>Verification Page</h3>
+            <p class="sample-card-caption">Artifact verification after export</p>
+            <p>A later reviewer can verify the exported artifact against the recorded release package.</p>
           </article>
         </div>
         <p class="text-center text-xs text-gray-500 mt-6">Pilot sample only &mdash; shown to illustrate the workflow, not as a production regulatory submission artifact.</p>

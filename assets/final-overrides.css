@@ -1012,6 +1012,9 @@ footer > div {
 #sample .control-card {
   position: relative !important;
   overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 1rem 1rem 1.3rem !important;
   transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease !important;
 }
 
@@ -1025,6 +1028,50 @@ footer > div {
   pointer-events: none;
 }
 
+#sample .sample-card-media {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+}
+
+#sample .sample-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform 260ms ease, filter 260ms ease;
+}
+
+#sample .control-card:hover .sample-card-media img {
+  transform: scale(1.035);
+  filter: saturate(1.06) contrast(1.04);
+}
+
+#sample .control-card h3 {
+  font-size: 1.15rem !important;
+  line-height: 1.28 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+#sample .sample-card-caption {
+  color: #e5edf8 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.45 !important;
+  margin-bottom: 0.45rem !important;
+}
+
+#sample .control-card p:not(.control-kicker):not(.sample-card-caption) {
+  color: #b3bcc8 !important;
+  font-size: 0.95rem !important;
+  line-height: 1.68 !important;
+}
+
 #sample .control-card:hover {
   transform: translateY(-8px) !important;
   border-color: rgba(96,165,250,0.26) !important;
@@ -1033,6 +1080,14 @@ footer > div {
 }
 
 @media (max-width: 768px) {
+  #sample .control-grid-3 {
+    grid-template-columns: 1fr !important;
+  }
+
+  #sample .sample-card-media {
+    aspect-ratio: 16 / 9;
+  }
+
   #whats-new .control-card:hover,
   #sample .control-card:hover {
     transform: translateY(-3px) !important;
