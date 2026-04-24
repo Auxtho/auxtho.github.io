@@ -133,6 +133,40 @@ document.addEventListener('DOMContentLoaded', () => {
             sampleLightboxImageWrap.scrollTop = 0;
         };
 
+        const lockSampleLightboxPage = () => {
+            document.documentElement.classList.add('sample-lightbox-open');
+            document.body.classList.add('sample-lightbox-open');
+        };
+
+        const unlockSampleLightboxPage = () => {
+            document.documentElement.classList.remove('sample-lightbox-open');
+            document.body.classList.remove('sample-lightbox-open');
+        };
+
+        const containSampleLightboxWheel = (event) => {
+            if (!sampleLightbox.open) {
+                return;
+            }
+
+            const scrollTarget = event.target.closest('.sample-lightbox-image-wrap');
+            if (!scrollTarget) {
+                event.preventDefault();
+                return;
+            }
+
+            const maxScroll = scrollTarget.scrollHeight - scrollTarget.clientHeight;
+            if (maxScroll <= 0) {
+                event.preventDefault();
+                return;
+            }
+
+            const atTop = scrollTarget.scrollTop <= 0;
+            const atBottom = Math.ceil(scrollTarget.scrollTop) >= maxScroll;
+            if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+                event.preventDefault();
+            }
+        };
+
         const closeSampleLightbox = () => {
             if (sampleLightbox.open) {
                 sampleLightbox.close();
@@ -148,8 +182,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 sampleLightboxImage.alt = image ? image.alt : '';
                 sampleLightboxTitle.textContent = link.dataset.lightboxTitle || '';
                 sampleLightboxCaption.textContent = link.dataset.lightboxCaption || '';
+                link.blur();
                 sampleLightbox.showModal();
-                document.body.classList.add('sample-lightbox-open');
+                lockSampleLightboxPage();
                 sampleLightboxClose.focus({ preventScroll: true });
                 resetSampleLightboxScroll();
                 requestAnimationFrame(resetSampleLightboxScroll);
@@ -157,6 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         sampleLightboxClose.addEventListener('click', closeSampleLightbox);
+        sampleLightbox.addEventListener('wheel', containSampleLightboxWheel, { passive: false });
 
         sampleLightbox.addEventListener('click', (event) => {
             if (event.target === sampleLightbox) {
@@ -165,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         sampleLightbox.addEventListener('close', () => {
-            document.body.classList.remove('sample-lightbox-open');
+            unlockSampleLightboxPage();
             sampleLightboxImage.removeAttribute('src');
         });
     }

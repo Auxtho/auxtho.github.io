@@ -1088,6 +1088,7 @@ footer > div {
   background: transparent;
   color: #f8fafc;
   overflow: visible;
+  overscroll-behavior: contain;
 }
 
 .sample-lightbox::backdrop {
@@ -1138,6 +1139,7 @@ footer > div {
 .sample-lightbox-image-wrap {
   max-height: calc(100vh - 9rem);
   overflow: auto;
+  overscroll-behavior: contain;
   background: #070a0f;
 }
 
@@ -1170,8 +1172,14 @@ footer > div {
   line-height: 1.45;
 }
 
+html.sample-lightbox-open {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
 body.sample-lightbox-open {
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 @media (max-width: 768px) {
