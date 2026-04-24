@@ -1008,8 +1008,33 @@ footer > div {
   background: linear-gradient(180deg, rgba(22,27,36,0.98), rgba(15,19,26,0.96)) !important;
 }
 
+/* Sample package cards: match sitewide hover rhythm */
+#sample .control-card {
+  position: relative !important;
+  overflow: hidden !important;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease !important;
+}
+
+#sample .control-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(96,165,250,0.65), transparent);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+#sample .control-card:hover {
+  transform: translateY(-8px) !important;
+  border-color: rgba(96,165,250,0.26) !important;
+  box-shadow: 0 28px 64px rgba(0,0,0,0.32) !important;
+  background: linear-gradient(180deg, rgba(22,27,36,0.98), rgba(15,19,26,0.96)) !important;
+}
+
 @media (max-width: 768px) {
-  #whats-new .control-card:hover {
+  #whats-new .control-card:hover,
+  #sample .control-card:hover {
     transform: translateY(-3px) !important;
   }
 }
