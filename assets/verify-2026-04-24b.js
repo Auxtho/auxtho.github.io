@@ -1,7 +1,16 @@
 (function () {
-    var API_ROOT = (window.location.origin.indexOf('127.0.0.1') >= 0 || window.location.origin.indexOf('localhost') >= 0) ? 'http://127.0.0.1:8000' : 'https://api.auxtho.com';
-    var VERIFY_ENDPOINT = API_ROOT + '/api/verify';
-    var STATUS_ENDPOINT = VERIFY_ENDPOINT + '/status';
+    var LOCAL_HOSTS = ['127.0.0.1', 'localhost', '::1', '[::1]'];
+    var PRODUCTION_ORIGINS = ['https://auxtho.com'];
+
+    function resolveApiRoot() {
+        if (PRODUCTION_ORIGINS.indexOf(window.location.origin) >= 0) return 'https://api.auxtho.com';
+        if (LOCAL_HOSTS.indexOf(window.location.hostname) >= 0) return 'http://127.0.0.1:8000';
+        return null;
+    }
+
+    var API_ROOT = resolveApiRoot();
+    var VERIFY_ENDPOINT = API_ROOT ? API_ROOT + '/api/verify' : null;
+    var STATUS_ENDPOINT = VERIFY_ENDPOINT ? VERIFY_ENDPOINT + '/status' : null;
     var DEFAULT_BUTTON_TEXT = {};
     var CURRENT_STATUS = { signing_mode: 'not_reported', timestamp_provider: 'not_reported' };
     var SERVICE_AVAILABLE = false;
@@ -169,7 +178,10 @@
             controller.abort();
         }, FETCH_TIMEOUT_MS);
         try {
-            var response = await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+            var response = await fetch(url, Object.assign({}, options || {}, {
+                signal: controller.signal,
+                redirect: 'error'
+            }));
             var result = await response.json();
             return { response: response, result: result };
         } catch (err) {
@@ -216,18 +228,27 @@
         return String(value || 'not_reported').replace(/_/g, ' ').toUpperCase();
     }
 
+    function hasRegistryRecordBasis(signature) {
+        return !!(signature && signature.validation_basis === 'registry_record');
+    }
+
     function hasSignedControls(signature, mode) {
-        return !!(signature && (signature.present || signature.enabled)) || mode === 'local_signed' || mode === 'production_signed';
+        return !!(signature && (signature.present === true || signature.enabled === true)) || mode === 'local_signed' || mode === 'production_signed';
     }
 
     function signatureLabel(signature, mode) {
         if (!hasSignedControls(signature, mode)) return 'NOT ATTACHED TO THIS ARTIFACT';
-        if (signature.signature_valid) return 'PRESENT / VALID';
-        return signature.present ? 'PRESENT / NOT VERIFIED' : 'EXPECTED / NOT PRESENT';
+        if (signature.present === true && signature.signature_recorded_valid === true && hasRegistryRecordBasis(signature)) {
+            return 'RECORDED VALID / NOT REVALIDATED';
+        }
+        if (signature.present === true && hasRegistryRecordBasis(signature)) {
+            return 'RECORDED NOT VALID / NOT REVALIDATED';
+        }
+        return signature.present === true ? 'PRESENT / NOT REVALIDATED' : 'EXPECTED / NOT PRESENT';
     }
 
     function hasTimestamp(signature) {
-        return !!(signature && (signature.timestamp_present || signature.timestamp_valid || signature.tsa_signed_at));
+        return !!(signature && signature.timestamp_present === true);
     }
 
     function isLocalTimestamp(mode, provider) {
@@ -242,12 +263,14 @@
         if (!hasSignedControls(signature, mode)) return 'NOT ATTACHED TO THIS ARTIFACT';
         if (!hasTimestamp(signature)) return 'NOT ATTACHED';
         if (isLocalTimestamp(mode, provider)) {
-            return signature.timestamp_valid
-                ? 'LOCAL TEST TIMESTAMP / NOT EXTERNALLY TRUSTED'
-                : 'LOCAL TEST TIMESTAMP / NOT VERIFIED';
+            return signature.timestamp_recorded_valid === true && hasRegistryRecordBasis(signature)
+                ? 'LOCAL TEST TIMESTAMP / RECORDED VALID / NOT REVALIDATED'
+                : 'LOCAL TEST TIMESTAMP / RECORDED NOT VALID / NOT REVALIDATED';
         }
         if (isPublicTsa(mode, provider)) {
-            return signature.timestamp_valid ? 'PRESENT / VALID (PUBLIC TSA)' : 'PRESENT / NOT VERIFIED';
+            return signature.timestamp_recorded_valid === true && hasRegistryRecordBasis(signature)
+                ? 'RECORDED VALID (PUBLIC TSA) / NOT REVALIDATED'
+                : 'RECORDED NOT VALID / NOT REVALIDATED';
         }
         return 'PRESENT / PROVIDER NOT ESTABLISHED';
     }
@@ -259,10 +282,52 @@
     }
 
     function certificateChainLabel(signature, mode) {
-        var status = signature.certificate_chain_status || '-';
-        if (mode === 'local_signed' && status === 'verified') return 'local chain verified';
-        if (mode === 'local_signed' && status !== '-') return status + ' in local signing mode';
-        return status;
+        var status = signature.certificate_chain_recorded_status || '-';
+        if (signature.present !== true || !hasRegistryRecordBasis(signature)) return 'NOT REVALIDATED';
+        if (status === 'verified') {
+            return mode === 'local_signed'
+                ? 'LOCAL CHAIN RECORDED VERIFIED / NOT REVALIDATED'
+                : 'RECORDED VERIFIED / NOT REVALIDATED';
+        }
+        return status === '-' ? 'NOT REVALIDATED' : 'RECORDED ' + String(status).toUpperCase() + ' / NOT REVALIDATED';
+    }
+
+    function recordedControlsConsistent(result) {
+        var signature = (result && result.signature) || {};
+        var mode = (result && (result.verification_mode || result.signing_mode)) || 'not_reported';
+        if (!hasRegistryRecordBasis(signature)) return false;
+        if (mode === 'pilot_hash_only') {
+            return signature.enabled === false &&
+                signature.present === false &&
+                signature.signature_recorded_valid === false &&
+                signature.certificate_chain_recorded_status === 'not_enabled' &&
+                signature.timestamp_present === false &&
+                signature.timestamp_recorded_valid === false &&
+                signature.recorded_reason_code === 'SIGNATURE_NOT_ENABLED';
+        }
+        if (mode !== 'local_signed' && mode !== 'production_signed') return false;
+        return signature.enabled === (mode === 'production_signed') &&
+            signature.present === true &&
+            signature.signature_recorded_valid === true &&
+            signature.certificate_chain_recorded_status === 'verified' &&
+            signature.timestamp_present === true &&
+            signature.timestamp_recorded_valid === true &&
+            signature.recorded_reason_code === 'SIG_VALID';
+    }
+
+    function recordedReasonCodeLabel(signature, mode) {
+        var code = signature.recorded_reason_code || '-';
+        if (!hasSignedControls(signature, mode)) return code;
+        if (!hasRegistryRecordBasis(signature)) return 'NOT REVALIDATED';
+        return 'RECORDED ' + code + ' / NOT REVALIDATED';
+    }
+
+    function normalizeReportId(value) {
+        return String(value || '').trim().toUpperCase();
+    }
+
+    function normalizeExportEventId(value) {
+        return String(value || '').trim();
     }
 
     function setError(message) {
@@ -341,9 +406,9 @@
                     : 'Load an artifact to see its signature, timestamp, and release-package verification status.'
                 : signed
                 ? isLocalTimestamp(mode, provider)
-                    ? 'Local signing evidence is test-only and is not an externally trusted TSA result.'
-                    : 'Signed artifacts verify the hash plus registry-stored signature and timestamp values.'
-                : 'Hash-only artifacts verify the registry hash. Signed exports return signature and timestamp values when attached.';
+                    ? 'Local signing state is recorded test evidence; it is not revalidated or externally trusted.'
+                    : 'The registry lookup reports stored signature and timestamp states; it does not revalidate them.'
+                : 'The hash-only lookup confirms matching registry identifiers; no signature or timestamp is attached.';
         }
     }
 
@@ -356,24 +421,35 @@
         var artifact = (result && result.artifact) || {};
         requestContext = requestContext || {};
         var fileCheckRequested = requestContext.fileCheckRequested === true;
-        var responseFileVerified = !!(
+        var responseFileMatch = !!(
             result &&
             result.file_bytes_verified === true &&
-            result.verification_scope === 'record_and_file_bytes'
+            result.verification_scope === 'FILE'
         );
+        var responseIdentifierMatch = !!(
+            result &&
+            result.file_bytes_verified === false &&
+            result.verification_scope === 'IDENTIFIER'
+        );
+        var reportBindingMatches = normalizeReportId(artifact.report_id) === normalizeReportId(requestContext.reportId);
+        var exportBindingMatches = !requestContext.exportEventId ||
+            normalizeExportEventId(artifact.export_event_id) === normalizeExportEventId(requestContext.exportEventId);
+        var scopeMatchesRequest = fileCheckRequested ? responseFileMatch : responseIdentifierMatch;
         var confirmed = !!(
             result &&
-            result.verified === true &&
+            result.verification_outcome === 'RECORDED_MATCH' &&
             result.record_match_confirmed === true &&
             result.artifact_hash_match === true &&
-            artifact.report_id &&
-            (!fileCheckRequested || responseFileVerified)
+            reportBindingMatches &&
+            exportBindingMatches &&
+            recordedControlsConsistent(result) &&
+            scopeMatchesRequest
         );
         if (!confirmed) {
             setText('verify-result-kicker', 'Verification Result');
             setText('verify-result-title', 'Not confirmed');
-            setText('verify-result-message', 'The submitted identifiers did not produce a verified match. No record metadata is displayed for an unconfirmed result.');
-            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Outcome</span><span class="verify-result-value">NOT CONFIRMED</span></div>';
+            setText('verify-result-message', 'The submitted values did not produce a recorded match under the requested scope. No record metadata is displayed.');
+            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Verification Outcome</span><span class="verify-result-value">NO_MATCH</span></div>';
             applyStatusPanel({
                 signing_mode: CURRENT_STATUS.signing_mode,
                 timestamp_provider: CURRENT_STATUS.timestamp_provider,
@@ -382,12 +458,12 @@
             return;
         }
 
-        var fileBytesVerified = fileCheckRequested && responseFileVerified;
-        setText('verify-result-kicker', fileBytesVerified ? 'File Verification Passed' : 'Record Match Confirmed');
-        setText('verify-result-title', fileBytesVerified ? 'Artifact File Verified' : 'Artifact Record Match');
+        var fileBytesMatched = fileCheckRequested && responseFileMatch;
+        setText('verify-result-kicker', fileBytesMatched ? 'File Match Confirmed' : 'Recorded Match Confirmed');
+        setText('verify-result-title', fileBytesMatched ? 'Artifact File Match' : 'Artifact Record Match');
         setText(
             'verify-result-message',
-            fileBytesVerified
+            fileBytesMatched
                 ? 'The selected file bytes and submitted identifiers match the stored Auxtho artifact record.'
                 : 'The submitted identifiers match a stored Auxtho artifact record. The surrounding file was not checked.'
         );
@@ -398,17 +474,18 @@
         var rows = [
             ['Report ID', artifact.report_id || '-'],
             ['Export Event ID', artifact.export_event_id || '-'],
-            ['Verification Scope', 'Auxtho artifact record and integrity hash'],
-            ['Result Scope', fileBytesVerified ? 'RECORD + SELECTED FILE BYTES' : 'REGISTRY IDENTIFIERS ONLY'],
-            ['Selected File Bytes Match', fileBytesVerified ? 'YES' : 'NOT CHECKED'],
+            ['Verification Outcome', result.verification_outcome],
+            ['Verification Scope', result.verification_scope],
+            ['Record Match Confirmed', result.record_match_confirmed === true ? 'YES' : 'NO'],
+            ['Artifact Hash Match', result.artifact_hash_match === true ? 'YES' : 'NO'],
+            ['Selected File Bytes Match', fileBytesMatched ? 'YES' : 'NOT CHECKED'],
             ['Public Mode', formatMode(result.mode || 'not_reported')],
             ['Verification Mode', formatMode(verificationMode)],
-            ['Hash Match', result.artifact_hash_match ? 'YES' : 'NO'],
             ['PKCS#7 CMS Detached Signature', signatureLabel(signature, verificationMode)],
             ['Signature Format', signature.signature_format || '-'],
             ['Certificate Chain', certificateChainLabel(signature, verificationMode)],
             [timestampRowLabel(verificationMode, timestampProvider), timestampLabel(signature, verificationMode, timestampProvider)],
-            ['Reason Code', signature.reason_code || result.reason || '-']
+            ['Recorded Reason Code', recordedReasonCodeLabel(signature, verificationMode)]
         ];
 
         grid.innerHTML = rows.map(function (row) {
@@ -461,7 +538,11 @@
                 );
                 return;
             }
-            renderResult(result, { fileCheckRequested: !!artifactBytesSha256 });
+            renderResult(result, {
+                fileCheckRequested: !!artifactBytesSha256,
+                reportId: reportId,
+                exportEventId: exportEventId || null
+            });
         } catch (err) {
             if (!isActiveVerificationState(state)) return;
             if (err && err.name === 'TimeoutError') {
@@ -523,6 +604,10 @@
     async function loadStatusPanel() {
         setServiceStatus('checking');
         setVerificationButtonsEnabled(false);
+        if (!STATUS_ENDPOINT) {
+            setVerificationUnavailable();
+            return;
+        }
         try {
             var requestResult = await fetchJsonWithTimeout(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
             var response = requestResult.response;
@@ -546,11 +631,11 @@
         var reportId = params.get('report');
         var hash = params.get('h');
         var exportEventId = params.get('exp');
-        if (!reportId || !hash) return;
-
-        if (window.history && window.history.replaceState) {
+        var hasVerificationParams = params.has('report') || params.has('h') || params.has('exp');
+        if (hasVerificationParams && window.history && window.history.replaceState) {
             window.history.replaceState(null, document.title, window.location.pathname);
         }
+        if (!reportId || !hash) return;
 
         var card = byId('qr-verify');
         if (card) card.classList.add('qr-card-visible');
