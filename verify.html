@@ -50,7 +50,7 @@
                     for verification support. The support link does not prefill artifact identifiers.
                 </p>
                 <p class="verification-scope-warning">A QR-only check confirms a stored record match. It does not prove that the surrounding PDF or printed pages are unchanged, because a genuine QR can be copied.</p>
-                <p class="verification-disclosure">Selecting Run Verification sends these identifiers to Auxtho for comparison and records a verification/security audit event.</p>
+                <p class="verification-disclosure">Selecting Run Verification sends these identifiers to Auxtho for comparison. If the request reaches the instrumented comparison path and its audit write succeeds, a minimized application audit record is created. Validation, rate-limit, network, or service-unavailable paths may create no application audit record. Site, hosting, API, and security infrastructure may separately retain request and connection logs.</p>
                 <div class="qr-btn-area">
                     <button id="qr-verify-btn" class="btn-primary" type="button" disabled aria-disabled="true">Run Verification</button>
                 </div>
@@ -66,27 +66,27 @@
             <div class="manual-verify-panel mt-8">
                 <h2>Manual Verification</h2>
                 <p class="manual-verify-copy">Paste the report ID and artifact integrity hash from the exported artifact to run API-backed verification. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
-                <div class="manual-verify-form">
+                <form id="manual-verify-form" class="manual-verify-form">
                     <div class="manual-field manual-report-field">
                         <label for="manual-report-id">Report ID</label>
-                        <input id="manual-report-id" type="text" placeholder="e.g. RPT-20260320-E5A23B">
+                        <input id="manual-report-id" name="report_id" type="text" placeholder="e.g. RPT-20260320-E5A23B" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="manual-field manual-hash-field">
                         <label for="manual-artifact-hash">Artifact Integrity Hash</label>
-                        <input id="manual-artifact-hash" type="text" placeholder="Artifact record hash shown in the export" maxlength="71" autocomplete="off" spellcheck="false">
+                        <input id="manual-artifact-hash" name="artifact_hash" type="text" placeholder="Artifact record hash shown in the export" maxlength="71" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="manual-field manual-export-field">
                         <label for="manual-export-event-id">Export Event ID <span class="optional-label">optional</span></label>
-                        <input id="manual-export-event-id" type="text" placeholder="e.g. exp_20260423_...">
+                        <input id="manual-export-event-id" name="export_event_id" type="text" placeholder="e.g. exp_20260423_..." autocomplete="off" spellcheck="false">
                     </div>
                     <div class="manual-field manual-file-field">
                         <label for="manual-artifact-file">PDF file check <span class="optional-label">optional</span></label>
-                        <input id="manual-artifact-file" type="file" accept="application/pdf,.pdf">
-                        <p class="manual-field-hint">The PDF stays in this browser. Auxtho receives only its locally computed SHA-256 digest. Maximum file size: 25 MB.</p>
+                        <input id="manual-artifact-file" name="artifact_file" type="file" accept="application/pdf,.pdf" aria-describedby="manual-file-hint">
+                        <p id="manual-file-hint" class="manual-field-hint">The PDF stays in this browser. Auxtho receives only its locally computed SHA-256 digest. Maximum file size: 25 MB.</p>
                     </div>
-                    <button id="manual-verify-btn" class="btn-primary manual-submit-button" type="button" disabled aria-disabled="true">Verify Artifact</button>
-                </div>
-                <p class="verification-disclosure">Selecting Verify Artifact sends the submitted identifiers to Auxtho for comparison and records a verification/security audit event.</p>
+                    <button id="manual-verify-btn" class="btn-primary manual-submit-button" type="submit" disabled aria-disabled="true">Verify Artifact</button>
+                </form>
+                <p class="verification-disclosure">Submitting this form sends the entered identifiers to Auxtho for comparison. An application audit record is not guaranteed for every submit: client-side validation, request validation, rate limiting, network failure, or service unavailability may stop the request before an application audit write. Infrastructure access and security logs are separate from application audit records.</p>
                 <p id="verify-error" class="verify-error" role="alert" aria-live="assertive" hidden></p>
             </div>
 
@@ -104,7 +104,7 @@
                         </li>
                         <li class="step-row">
                             <span class="step-circle">3</span>
-                            <span class="step-text">Distinguish a <strong>record match</strong> from a <strong>file-bytes match</strong>, then review the reported control mode. Local test signing is labeled as non-production and is not presented as an externally trusted timestamp.</span>
+                            <span class="step-text">Distinguish a <strong>record match</strong> from a <strong>file-bytes match</strong>. Stored cryptographic metadata appears only when the artifact response contains a complete, consistent field set, and this browser does not cryptographically revalidate it.</span>
                         </li>
                     </ol>
                 </div>
@@ -124,9 +124,9 @@
                     <div id="artifact-crypto-block" class="status-block">
                         <p class="status-title crypto">Artifact crypto</p>
                         <ul id="artifact-crypto-items">
-                            <li>Verification mode: checking API...</li>
-                            <li>PKCS#7 CMS detached signature: checking artifact record...</li>
-                            <li>Timestamp status: checking artifact record...</li>
+                            <li>Artifact cryptographic metadata is not yet available.</li>
+                            <li>Stored signature and timestamp fields appear only after a confirmed artifact response.</li>
+                            <li>This browser does not cryptographically revalidate stored metadata.</li>
                         </ul>
                     </div>
                     <p id="status-footnote" class="status-footnote">Verification controls remain disabled until service status is confirmed.</p>

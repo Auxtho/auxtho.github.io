@@ -11,8 +11,8 @@
     var API_ROOT = resolveApiRoot();
     var VERIFY_ENDPOINT = API_ROOT ? API_ROOT + '/api/verify' : null;
     var STATUS_ENDPOINT = VERIFY_ENDPOINT ? VERIFY_ENDPOINT + '/status' : null;
+    var RELEASE_METADATA_PATH = '/release.json';
     var DEFAULT_BUTTON_TEXT = {};
-    var CURRENT_STATUS = { signing_mode: 'not_reported', timestamp_provider: 'not_reported' };
     var SERVICE_AVAILABLE = false;
     var VERIFICATION_BUTTON_IDS = ['qr-verify-btn', 'manual-verify-btn'];
     var configuredTimeoutMs = Number(window.__AUXTHO_VERIFY_TIMEOUT_MS__);
@@ -29,6 +29,16 @@
 
     function isValidArtifactRecordHash(value) {
         return /^(?:sha256:)?(?:[0-9a-fA-F]{16}|[0-9a-fA-F]{64})$/.test((value || '').trim());
+    }
+
+    function isFortyHex(value) {
+        return typeof value === 'string' && /^[0-9a-f]{40}$/i.test(value);
+    }
+
+    function releaseMetadataUrl() {
+        var url = new URL(RELEASE_METADATA_PATH, window.location.origin);
+        url.searchParams.set('cache_bust', String(Date.now()));
+        return url.toString();
     }
 
     async function hashSelectedFile(file) {
@@ -228,98 +238,99 @@
         return String(value || 'not_reported').replace(/_/g, ' ').toUpperCase();
     }
 
-    function hasRegistryRecordBasis(signature) {
-        return !!(signature && signature.validation_basis === 'registry_record');
+    function hasOwn(object, key) {
+        return Object.prototype.hasOwnProperty.call(object, key);
     }
 
-    function hasSignedControls(signature, mode) {
-        return !!(signature && (signature.present === true || signature.enabled === true)) || mode === 'local_signed' || mode === 'production_signed';
-    }
+    function recordedControlProfile(result) {
+        if (!result || typeof result !== 'object' || Array.isArray(result)) return null;
+        var signature = result.signature;
+        if (!signature || typeof signature !== 'object' || Array.isArray(signature)) return null;
 
-    function signatureLabel(signature, mode) {
-        if (!hasSignedControls(signature, mode)) return 'NOT ATTACHED TO THIS ARTIFACT';
-        if (signature.present === true && signature.signature_recorded_valid === true && hasRegistryRecordBasis(signature)) {
-            return 'RECORDED VALID / NOT REVALIDATED';
+        var requiredSignatureFields = [
+            'enabled',
+            'present',
+            'signature_recorded_valid',
+            'signature_format',
+            'certificate_chain_recorded_status',
+            'timestamp_present',
+            'timestamp_recorded_valid',
+            'validation_basis',
+            'recorded_evidence_type',
+            'live_cryptographic_revalidation_performed',
+            'recorded_reason_code'
+        ];
+        if (!requiredSignatureFields.every(function (field) { return hasOwn(signature, field); })) return null;
+        if (!hasOwn(result, 'mode') || !hasOwn(result, 'verification_mode') || !hasOwn(result, 'timestamp_provider')) return null;
+        if (signature.validation_basis !== 'registry_record') return null;
+
+        if (
+            result.mode === 'pilot' &&
+            result.verification_mode === 'pilot_hash_only' &&
+            result.timestamp_provider === 'none' &&
+            signature.enabled === false &&
+            signature.present === false &&
+            signature.signature_recorded_valid === false &&
+            signature.signature_format === null &&
+            signature.certificate_chain_recorded_status === 'not_enabled' &&
+            signature.timestamp_present === false &&
+            signature.timestamp_recorded_valid === false &&
+            signature.recorded_evidence_type === 'HASH_ONLY' &&
+            signature.live_cryptographic_revalidation_performed === false &&
+            signature.recorded_reason_code === 'SIGNATURE_NOT_ENABLED'
+        ) {
+            return { kind: 'hash_only', signature: signature };
         }
-        if (signature.present === true && hasRegistryRecordBasis(signature)) {
-            return 'RECORDED NOT VALID / NOT REVALIDATED';
-        }
-        return signature.present === true ? 'PRESENT / NOT REVALIDATED' : 'EXPECTED / NOT PRESENT';
-    }
 
-    function hasTimestamp(signature) {
-        return !!(signature && signature.timestamp_present === true);
-    }
-
-    function isLocalTimestamp(mode, provider) {
-        return mode === 'local_signed' || provider === 'local_mock';
-    }
-
-    function isPublicTsa(mode, provider) {
-        return mode === 'production_signed' && provider === 'public_tsa';
-    }
-
-    function timestampLabel(signature, mode, provider) {
-        if (!hasSignedControls(signature, mode)) return 'NOT ATTACHED TO THIS ARTIFACT';
-        if (!hasTimestamp(signature)) return 'NOT ATTACHED';
-        if (isLocalTimestamp(mode, provider)) {
-            return signature.timestamp_recorded_valid === true && hasRegistryRecordBasis(signature)
-                ? 'LOCAL TEST TIMESTAMP / RECORDED VALID / NOT REVALIDATED'
-                : 'LOCAL TEST TIMESTAMP / RECORDED NOT VALID / NOT REVALIDATED';
-        }
-        if (isPublicTsa(mode, provider)) {
-            return signature.timestamp_recorded_valid === true && hasRegistryRecordBasis(signature)
-                ? 'RECORDED VALID (PUBLIC TSA) / NOT REVALIDATED'
-                : 'RECORDED NOT VALID / NOT REVALIDATED';
-        }
-        return 'PRESENT / PROVIDER NOT ESTABLISHED';
-    }
-
-    function timestampRowLabel(mode, provider) {
-        if (isLocalTimestamp(mode, provider)) return 'Local Test Timestamp';
-        if (isPublicTsa(mode, provider)) return 'External TSA Timestamp';
-        return 'Timestamp Status';
-    }
-
-    function certificateChainLabel(signature, mode) {
-        var status = signature.certificate_chain_recorded_status || '-';
-        if (signature.present !== true || !hasRegistryRecordBasis(signature)) return 'NOT REVALIDATED';
-        if (status === 'verified') {
-            return mode === 'local_signed'
-                ? 'LOCAL CHAIN RECORDED VERIFIED / NOT REVALIDATED'
-                : 'RECORDED VERIFIED / NOT REVALIDATED';
-        }
-        return status === '-' ? 'NOT REVALIDATED' : 'RECORDED ' + String(status).toUpperCase() + ' / NOT REVALIDATED';
-    }
-
-    function recordedControlsConsistent(result) {
-        var signature = (result && result.signature) || {};
-        var mode = (result && (result.verification_mode || result.signing_mode)) || 'not_reported';
-        if (!hasRegistryRecordBasis(signature)) return false;
-        if (mode === 'pilot_hash_only') {
-            return signature.enabled === false &&
-                signature.present === false &&
-                signature.signature_recorded_valid === false &&
-                signature.certificate_chain_recorded_status === 'not_enabled' &&
-                signature.timestamp_present === false &&
-                signature.timestamp_recorded_valid === false &&
-                signature.recorded_reason_code === 'SIGNATURE_NOT_ENABLED';
-        }
-        if (mode !== 'local_signed' && mode !== 'production_signed') return false;
-        return signature.enabled === (mode === 'production_signed') &&
-            signature.present === true &&
+        var completeSignedFields = signature.present === true &&
             signature.signature_recorded_valid === true &&
+            signature.signature_format === 'PKCS7_CMS_DETACHED_DER' &&
             signature.certificate_chain_recorded_status === 'verified' &&
             signature.timestamp_present === true &&
             signature.timestamp_recorded_valid === true &&
+            signature.live_cryptographic_revalidation_performed === false &&
             signature.recorded_reason_code === 'SIG_VALID';
+        if (!completeSignedFields) return null;
+
+        if (
+            result.mode === 'pilot' &&
+            result.verification_mode === 'local_signed' &&
+            result.timestamp_provider === 'local_mock' &&
+            signature.enabled === false &&
+            signature.recorded_evidence_type === 'LOCAL_SIGNED_TEST'
+        ) {
+            return { kind: 'local_signed', signature: signature, timestampProvider: 'local_mock' };
+        }
+        if (
+            result.mode === 'production' &&
+            result.verification_mode === 'production_signed' &&
+            result.timestamp_provider === 'rfc3161_http' &&
+            signature.enabled === true &&
+            signature.recorded_evidence_type === 'PRODUCTION_SIGNED'
+        ) {
+            return { kind: 'production_signed', signature: signature, timestampProvider: 'rfc3161_http' };
+        }
+        return null;
     }
 
-    function recordedReasonCodeLabel(signature, mode) {
-        var code = signature.recorded_reason_code || '-';
-        if (!hasSignedControls(signature, mode)) return code;
-        if (!hasRegistryRecordBasis(signature)) return 'NOT REVALIDATED';
-        return 'RECORDED ' + code + ' / NOT REVALIDATED';
+    function recordedAtExportLabel(value) {
+        return 'API RECORDED AS ' + value + ' AT EXPORT / NOT REVALIDATED BY THIS BROWSER';
+    }
+
+    function recordedReasonCodeLabel(signature) {
+        return 'API RECORDED: ' + signature.recorded_reason_code + ' / NOT REVALIDATED BY THIS BROWSER';
+    }
+
+    function signatureFormatLabel(signature) {
+        return signature.signature_format === 'PKCS7_CMS_DETACHED_DER'
+            ? 'PKCS#7 CMS DETACHED DER (API RECORD)'
+            : 'NOT ATTACHED';
+    }
+
+    function timestampRowLabel(profile) {
+        return profile.kind === 'local_signed'
+            ? 'Local Test Timestamp Stored Status'
+            : 'RFC 3161 Timestamp Stored Status';
     }
 
     function normalizeReportId(value) {
@@ -350,65 +361,54 @@
         if (!list) return;
 
         result = result || {};
-        var signature = result.signature || {};
-        var mode = result.verification_mode || result.signing_mode || CURRENT_STATUS.signing_mode || 'not_reported';
-        var provider = result.timestamp_provider || signature.timestamp_provider || CURRENT_STATUS.timestamp_provider || 'not_reported';
         var emptyState = !!result.empty_state;
-        var signed = hasSignedControls(signature, mode);
+        var profile = emptyState ? null : recordedControlProfile(result);
         var items = ['Artifact record hash', 'Verification endpoint configured'];
-        if (emptyState) {
-            if (isLocalTimestamp(mode, provider)) {
-                items.push('Local test signing mode');
-                items.push('Local test timestamp (not externally trusted)');
-            } else {
-                items.push('Manual verification support');
-            }
-        } else if (signed) {
-            items.push('PKCS#7 CMS detached signature');
-            if (hasTimestamp(signature) || mode === 'local_signed' || mode === 'production_signed') {
-                items.push(isLocalTimestamp(mode, provider)
-                    ? 'Local test timestamp (not externally trusted)'
-                    : isPublicTsa(mode, provider)
-                    ? 'External TSA timestamp'
-                    : 'Timestamp status');
-            }
-        } else {
+        if (!profile) {
             items.push('Manual verification support');
+        } else if (profile.kind === 'hash_only') {
+            items.push('Hash-only artifact record');
+        } else {
+            items.push('Signature metadata returned by the artifact API');
+            items.push('Timestamp metadata returned by the artifact API');
         }
         setListItems('status-active-items', items);
 
         if (cryptoBlock && cryptoItems) {
             toggle(cryptoBlock, true);
-            setListItems('artifact-crypto-items', emptyState
-                ? isLocalTimestamp(mode, provider)
-                    ? [
-                        'Verification mode: LOCAL SIGNED TEST MODE',
-                        'Signature status will appear after artifact verification.',
-                        'Timestamp provider: LOCAL MOCK / NOT EXTERNALLY TRUSTED'
-                    ]
-                    : [
-                    'Verification mode will appear after artifact verification.',
-                    'PKCS#7 CMS detached signature status will appear after verification.',
-                    'Timestamp provider and trust status will appear after verification.'
-                    ]
-                : [
-                    'Verification mode: ' + formatMode(mode),
-                    'PKCS#7 CMS detached signature: ' + signatureLabel(signature, mode),
-                    timestampRowLabel(mode, provider) + ': ' + timestampLabel(signature, mode, provider)
-                ]
-            );
+            if (!profile) {
+                setListItems('artifact-crypto-items', [
+                    'Artifact cryptographic metadata appears only after a confirmed artifact response.',
+                    'Signature and timestamp claims require a complete, consistent API field set.',
+                    'This browser does not cryptographically revalidate stored metadata.'
+                ]);
+            } else if (profile.kind === 'hash_only') {
+                setListItems('artifact-crypto-items', [
+                    'Verification mode (API record): PILOT HASH ONLY',
+                    'Evidence type (API record): HASH ONLY',
+                    'Signature metadata (API record): NOT ATTACHED',
+                    'Timestamp metadata (API record): NOT ATTACHED',
+                    'Live cryptographic revalidation: NOT PERFORMED'
+                ]);
+            } else {
+                setListItems('artifact-crypto-items', [
+                    'Verification mode (API record): ' + formatMode(result.verification_mode),
+                    'Evidence type (API record): ' + formatMode(profile.signature.recorded_evidence_type),
+                    'Signature format (API record): ' + signatureFormatLabel(profile.signature),
+                    'Signature stored status: ' + recordedAtExportLabel('VALID'),
+                    'Timestamp provider (API record): ' + formatMode(profile.timestampProvider),
+                    'Timestamp stored status: ' + recordedAtExportLabel('VALID'),
+                    'Live cryptographic revalidation: NOT PERFORMED'
+                ]);
+            }
         }
 
         if (footnote) {
-            footnote.textContent = emptyState
-                ? isLocalTimestamp(mode, provider)
-                    ? 'Current service status reports local test signing. It is not an externally trusted TSA result.'
-                    : 'Load an artifact to see its signature, timestamp, and release-package verification status.'
-                : signed
-                ? isLocalTimestamp(mode, provider)
-                    ? 'Local signing state is recorded test evidence; it is not revalidated or externally trusted.'
-                    : 'The registry lookup reports stored signature and timestamp states; it does not revalidate them.'
-                : 'The hash-only lookup confirms matching registry identifiers; no signature or timestamp is attached.';
+            footnote.textContent = !profile
+                ? 'Load an artifact to see only the complete cryptographic metadata returned for that stored record.'
+                : profile.kind === 'hash_only'
+                ? 'The hash-only API record reports no attached signature or timestamp.'
+                : 'The browser displays historical API-recorded cryptographic metadata and does not revalidate the signature, certificate chain, or timestamp.';
         }
     }
 
@@ -435,6 +435,7 @@
         var exportBindingMatches = !requestContext.exportEventId ||
             normalizeExportEventId(artifact.export_event_id) === normalizeExportEventId(requestContext.exportEventId);
         var scopeMatchesRequest = fileCheckRequested ? responseFileMatch : responseIdentifierMatch;
+        var controlProfile = recordedControlProfile(result);
         var confirmed = !!(
             result &&
             result.verification_outcome === 'RECORDED_MATCH' &&
@@ -442,7 +443,7 @@
             result.artifact_hash_match === true &&
             reportBindingMatches &&
             exportBindingMatches &&
-            recordedControlsConsistent(result) &&
+            controlProfile &&
             scopeMatchesRequest
         );
         if (!confirmed) {
@@ -450,11 +451,7 @@
             setText('verify-result-title', 'Not confirmed');
             setText('verify-result-message', 'The submitted values did not produce a recorded match under the requested scope. No record metadata is displayed.');
             grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Verification Outcome</span><span class="verify-result-value">NO_MATCH</span></div>';
-            applyStatusPanel({
-                signing_mode: CURRENT_STATUS.signing_mode,
-                timestamp_provider: CURRENT_STATUS.timestamp_provider,
-                empty_state: true
-            });
+            applyStatusPanel({ empty_state: true });
             return;
         }
 
@@ -468,9 +465,6 @@
                 : 'The submitted identifiers match a stored Auxtho artifact record. The surrounding file was not checked.'
         );
 
-        var signature = result.signature || {};
-        var verificationMode = result.verification_mode || result.signing_mode || 'record_not_reported';
-        var timestampProvider = result.timestamp_provider || signature.timestamp_provider || 'not_reported';
         var rows = [
             ['Report ID', artifact.report_id || '-'],
             ['Export Event ID', artifact.export_event_id || '-'],
@@ -480,19 +474,34 @@
             ['Artifact Hash Match', result.artifact_hash_match === true ? 'YES' : 'NO'],
             ['Selected File Bytes Match', fileBytesMatched ? 'YES' : 'NOT CHECKED'],
             ['Public Mode', formatMode(result.mode || 'not_reported')],
-            ['Verification Mode', formatMode(verificationMode)],
-            ['PKCS#7 CMS Detached Signature', signatureLabel(signature, verificationMode)],
-            ['Signature Format', signature.signature_format || '-'],
-            ['Certificate Chain', certificateChainLabel(signature, verificationMode)],
-            [timestampRowLabel(verificationMode, timestampProvider), timestampLabel(signature, verificationMode, timestampProvider)],
-            ['Recorded Reason Code', recordedReasonCodeLabel(signature, verificationMode)]
+            ['Verification Mode', formatMode(result.verification_mode)]
         ];
+
+        if (controlProfile.kind === 'hash_only') {
+            rows.push(
+                ['Cryptographic Controls (API Record)', 'NOT ATTACHED'],
+                ['Evidence Type (API Record)', formatMode(controlProfile.signature.recorded_evidence_type)],
+                ['Live Cryptographic Revalidation', 'NOT PERFORMED'],
+                ['Recorded Reason Code', recordedReasonCodeLabel(controlProfile.signature)]
+            );
+        } else {
+            rows.push(
+                ['Evidence Type (API Record)', formatMode(controlProfile.signature.recorded_evidence_type)],
+                ['Signature Format (API Record)', signatureFormatLabel(controlProfile.signature)],
+                ['Signature Stored Status', recordedAtExportLabel('VALID')],
+                ['Certificate Chain Stored Status', recordedAtExportLabel('VERIFIED')],
+                ['Timestamp Provider (API Record)', formatMode(controlProfile.timestampProvider)],
+                [timestampRowLabel(controlProfile), recordedAtExportLabel('VALID')],
+                ['Live Cryptographic Revalidation', 'NOT PERFORMED'],
+                ['Recorded Reason Code', recordedReasonCodeLabel(controlProfile.signature)]
+            );
+        }
 
         grid.innerHTML = rows.map(function (row) {
             return '<div class="verify-result-row"><span class="verify-result-key">' + escapeHtml(row[0]) + '</span><span class="verify-result-value">' + escapeHtml(row[1]) + '</span></div>';
         }).join('');
 
-        applyStatusPanel({ ...result, signing_mode: verificationMode, timestamp_provider: timestampProvider });
+        applyStatusPanel(result);
     }
 
     async function runVerification(reportId, artifactHash, exportEventId, buttonId, artifactBytesSha256, requestState) {
@@ -566,15 +575,18 @@
     }
 
     function bindManualForm() {
+        var form = byId('manual-verify-form');
         var button = byId('manual-verify-btn');
-        if (!button) return;
+        if (!form || !button) return;
         ['manual-report-id', 'manual-artifact-hash', 'manual-export-event-id'].forEach(function (id) {
             var input = byId(id);
             if (input) input.addEventListener('input', invalidateVerificationResult);
         });
         var fileInput = byId('manual-artifact-file');
         if (fileInput) fileInput.addEventListener('change', invalidateVerificationResult);
-        button.addEventListener('click', async function () {
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (ACTIVE_VERIFICATION) return;
             clearVerificationResult();
             var reportId = ((byId('manual-report-id') || {}).value || '').trim();
             var artifactHash = ((byId('manual-artifact-hash') || {}).value || '').trim();
@@ -597,7 +609,7 @@
                 return;
             }
             if (!isCurrentVerification(requestState)) return;
-            runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn', fileHash, requestState);
+            await runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn', fileHash, requestState);
         });
     }
 
@@ -614,11 +626,22 @@
             if (!response.ok) throw new Error('Verification status request failed.');
             var result = requestResult.result;
             if (!result || result.status !== 'operational') throw new Error('Verification status was not operational.');
-            CURRENT_STATUS = {
-                signing_mode: result.signing_mode || 'not_reported',
-                timestamp_provider: result.timestamp_provider || 'not_reported'
-            };
-            applyStatusPanel({ ...result, empty_state: true });
+            var releaseRequest = await fetchJsonWithTimeout(releaseMetadataUrl(), {
+                method: 'GET',
+                credentials: 'same-origin',
+                cache: 'no-store'
+            });
+            if (!releaseRequest.response.ok) throw new Error('Public site release metadata was unavailable.');
+            var release = releaseRequest.result;
+            if (
+                !release ||
+                !isFortyHex(release.source_sha) ||
+                !isFortyHex(result.public_site_source_sha) ||
+                release.source_sha !== result.public_site_source_sha
+            ) {
+                throw new Error('Public site release identity was not confirmed.');
+            }
+            applyStatusPanel({ empty_state: true });
             setServiceStatus('active');
             setVerificationButtonsEnabled(true);
         } catch (err) {
@@ -655,6 +678,7 @@
         var button = byId('qr-verify-btn');
         if (button) {
             button.addEventListener('click', async function () {
+                if (ACTIVE_VERIFICATION) return;
                 clearVerificationResult();
                 var requestState = beginVerification();
                 setButtonLoading('qr-verify-btn', true, 'Hashing locally...');
@@ -670,7 +694,7 @@
                     return;
                 }
                 if (!isCurrentVerification(requestState)) return;
-                runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash, requestState);
+                await runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash, requestState);
             });
         }
     }

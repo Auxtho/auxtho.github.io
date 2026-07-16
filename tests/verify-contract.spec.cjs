@@ -8,6 +8,15 @@ test.describe.configure({ mode: 'serial' });
 const root = path.resolve(__dirname, '..');
 let server;
 let baseUrl;
+const MATCHED_SITE_SHA = 'a'.repeat(40);
+
+test('site CI watches release identity and requires committed build output', async () => {
+  const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'site-ci.yml'), 'utf8');
+  const releaseTemplate = fs.readFileSync(path.join(root, 'release.json'), 'utf8');
+  expect(workflow).toContain('- "release.json"');
+  expect(workflow).toContain('git diff --exit-code');
+  expect(releaseTemplate).toContain('site.github.build_revision');
+});
 
 function contentType(filePath) {
   if (filePath.endsWith('.html')) return 'text/html; charset=utf-8';
@@ -17,13 +26,16 @@ function contentType(filePath) {
   return 'application/octet-stream';
 }
 
-function statusPayload(status = 'operational') {
+function statusPayload(status = 'operational', overrides = {}) {
+  const signingMode = overrides.signing_mode || 'pilot_hash_only';
   return {
     status,
-    mode: 'pilot',
-    signing_mode: 'pilot_hash_only',
-    timestamp_provider: 'none',
+    mode: signingMode === 'production_signed' ? 'production' : 'pilot',
+    signing_mode: signingMode,
+    timestamp_provider: signingMode === 'production_signed' ? 'public_tsa' : (signingMode === 'local_signed' ? 'local_mock' : 'none'),
     registry_configured: status === 'operational',
+    public_site_source_sha: MATCHED_SITE_SHA,
+    ...overrides,
   };
 }
 
@@ -33,6 +45,8 @@ function successPayload({
   exportEventId = 'EXP-VERIFY-001',
   verificationMode = 'pilot_hash_only',
   signature = {},
+  publicMode,
+  timestampProvider,
 } = {}) {
   const defaultSignature = {
     enabled: false,
@@ -43,6 +57,10 @@ function successPayload({
     timestamp_present: false,
     timestamp_recorded_valid: false,
     validation_basis: 'registry_record',
+    recorded_evidence_type: verificationMode === 'production_signed'
+      ? 'PRODUCTION_SIGNED'
+      : (verificationMode === 'local_signed' ? 'LOCAL_SIGNED_TEST' : 'HASH_ONLY'),
+    live_cryptographic_revalidation_performed: false,
     recorded_reason_code: 'SIGNATURE_NOT_ENABLED',
   };
   return {
@@ -57,15 +75,30 @@ function successPayload({
       exported_at: '2026-07-16T00:00:00Z',
     },
     signature: { ...defaultSignature, ...signature },
-    mode: 'pilot',
+    mode: publicMode || (verificationMode === 'production_signed' ? 'production' : 'pilot'),
     verification_mode: verificationMode,
-    timestamp_provider: verificationMode === 'production_signed' ? 'public_tsa' : (verificationMode === 'local_signed' ? 'local_mock' : 'none'),
+    timestamp_provider: timestampProvider || (verificationMode === 'production_signed' ? 'rfc3161_http' : (verificationMode === 'local_signed' ? 'local_mock' : 'none')),
   };
 }
 
-async function mockStatus(page, status = 'operational') {
+async function mockStatus(page, status = 'operational', options = {}) {
+  const statusOverrides = options.statusOverrides || {};
   await page.route('http://127.0.0.1:8000/api/verify/status', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(statusPayload(status)) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(statusPayload(status, statusOverrides)) });
+  });
+  await page.route('**/release.json*', async (route) => {
+    if (options.onReleaseRequest) options.onReleaseRequest(route.request());
+    const releasePayload = Object.prototype.hasOwnProperty.call(options, 'releasePayload')
+      ? options.releasePayload
+      : { source_sha: statusOverrides.public_site_source_sha || MATCHED_SITE_SHA };
+    const body = Object.prototype.hasOwnProperty.call(options, 'releaseBody')
+      ? options.releaseBody
+      : JSON.stringify(releasePayload);
+    await route.fulfill({
+      status: options.releaseStatus || 200,
+      contentType: options.releaseContentType || 'application/json',
+      body,
+    });
   });
 }
 
@@ -114,6 +147,83 @@ test('QR parameters prefill but never submit before an explicit click', async ({
   await expect(page.locator('#verify-result-grid')).toContainText('RECORDED_MATCH');
   await expect(page.locator('#verify-result-grid')).toContainText('IDENTIFIER');
   expect(postCount).toBe(1);
+});
+
+test('manual controls use form semantics and one Enter action submits exactly once', async ({ page }) => {
+  let postCount = 0;
+  await mockStatus(page);
+  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    if (route.request().method() === 'POST') postCount += 1;
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload()) });
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-form')).toHaveJSProperty('tagName', 'FORM');
+  await expect(page.locator('#manual-verify-btn')).toHaveAttribute('type', 'submit');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await page.locator('#manual-report-id').fill('RPT-VERIFY-001');
+  await page.locator('#manual-artifact-hash').fill('8'.repeat(64));
+  await page.locator('#manual-artifact-hash').press('Enter');
+
+  await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
+  expect(postCount).toBe(1);
+});
+
+test('matching rendered release identity enables verification with a cache-busted same-origin fetch', async ({ page }) => {
+  let releaseRequest;
+  await mockStatus(page, 'operational', {
+    onReleaseRequest(request) {
+      releaseRequest = request;
+    },
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  expect(releaseRequest).toBeTruthy();
+  const releaseUrl = new URL(releaseRequest.url());
+  expect(releaseUrl.origin).toBe(baseUrl);
+  expect(releaseUrl.pathname).toBe('/release.json');
+  expect(releaseUrl.searchParams.get('cache_bust')).toMatch(/^\d+$/);
+});
+
+test('release identity mismatch fails closed', async ({ page }) => {
+  await mockStatus(page, 'operational', { releasePayload: { source_sha: 'b'.repeat(40) } });
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#manual-verify-btn')).toBeDisabled();
+  await expect(page.locator('#qr-verify-btn')).toBeDisabled();
+});
+
+test('malformed release metadata fails closed', async ({ page }) => {
+  await mockStatus(page, 'operational', { releaseBody: 'not-json' });
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#manual-verify-btn')).toBeDisabled();
+});
+
+test('missing release or backend source metadata fails closed', async ({ browser }) => {
+  const cases = [
+    { releasePayload: {} },
+    { statusOverrides: { public_site_source_sha: undefined } },
+  ];
+  for (const options of cases) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await mockStatus(page, 'operational', options);
+    await page.goto(`${baseUrl}/verify.html`);
+    await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+    await expect(page.locator('#manual-verify-btn')).toBeDisabled();
+    await context.close();
+  }
+});
+
+test('verifier disclosure does not promise an application audit record for every submit', async ({ page }) => {
+  await mockStatus(page);
+  await page.goto(`${baseUrl}/verify.html`);
+  const disclosure = page.locator('.manual-verify-panel .verification-disclosure');
+  await expect(disclosure).toContainText('not guaranteed for every submit');
+  await expect(disclosure).toContainText('Infrastructure access and security logs are separate');
+  await expect(disclosure).not.toContainText('records a verification/security audit event');
 });
 
 test('changing identifiers or the selected file invalidates a prior success result', async ({ page }) => {
@@ -282,6 +392,7 @@ test('contradictory recorded signature evidence fails closed', async ({ page }) 
           timestamp_present: false,
           timestamp_recorded_valid: true,
           validation_basis: 'registry_record',
+          live_cryptographic_revalidation_performed: true,
           recorded_reason_code: 'SIG_VALID',
         },
       })),
@@ -293,8 +404,55 @@ test('contradictory recorded signature evidence fails closed', async ({ page }) 
   await page.locator('#manual-export-event-id').fill('EXP-VERIFY-001');
   await page.locator('#manual-verify-btn').click();
   await expect(page.locator('#verify-result-title')).toHaveText('Not confirmed');
-  await expect(page.locator('#verify-result-grid')).not.toContainText('RECORDED VALID');
+  await expect(page.locator('#verify-result-grid')).not.toContainText('AT EXPORT');
   await expect(page.locator('#verify-result-grid')).toContainText('NO_MATCH');
+});
+
+test('readiness hints alone never produce PKCS7 or public TSA claims', async ({ page }) => {
+  await mockStatus(page, 'operational', {
+    statusOverrides: {
+      mode: 'production',
+      signing_mode: 'production_signed',
+      timestamp_provider: 'public_tsa',
+    },
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await expect(page.locator('body')).not.toContainText('PKCS#7');
+  await expect(page.locator('body')).not.toContainText('PUBLIC TSA');
+});
+
+test('incomplete signed metadata fails closed without crypto capability labels', async ({ page }) => {
+  await mockStatus(page);
+  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    const payload = successPayload({
+      verificationMode: 'production_signed',
+      signature: {
+        enabled: true,
+        present: true,
+        signature_recorded_valid: true,
+        signature_format: 'PKCS7_CMS_DETACHED_DER',
+        certificate_chain_recorded_status: 'verified',
+        timestamp_present: true,
+        timestamp_recorded_valid: true,
+        validation_basis: 'registry_record',
+        recorded_reason_code: 'SIG_VALID',
+      },
+    });
+    delete payload.signature.live_cryptographic_revalidation_performed;
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await page.locator('#manual-report-id').fill('RPT-VERIFY-001');
+  await page.locator('#manual-artifact-hash').fill('6'.repeat(64));
+  await page.locator('#manual-export-event-id').fill('EXP-VERIFY-001');
+  await page.locator('#manual-verify-btn').click();
+
+  await expect(page.locator('#verify-result-title')).toHaveText('Not confirmed');
+  await expect(page.locator('body')).not.toContainText('PKCS#7');
+  await expect(page.locator('body')).not.toContainText('PUBLIC TSA');
 });
 
 test('complete signed registry state is labeled recorded and not revalidated', async ({ page }) => {
@@ -327,12 +485,18 @@ test('complete signed registry state is labeled recorded and not revalidated', a
   await page.locator('#manual-verify-btn').click();
 
   await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
-  await expect(page.locator('#verify-result-grid')).toContainText('RECORDED VALID / NOT REVALIDATED');
-  await expect(page.locator('#verify-result-grid')).toContainText('RECORDED VERIFIED / NOT REVALIDATED');
-  await expect(page.locator('#verify-result-grid')).toContainText('RECORDED SIG_VALID / NOT REVALIDATED');
+  await expect(page.locator('#verify-result-grid')).toContainText('PKCS#7 CMS DETACHED DER (API RECORD)');
+  await expect(page.locator('#verify-result-grid')).toContainText('API RECORDED AS VALID AT EXPORT / NOT REVALIDATED BY THIS BROWSER');
+  await expect(page.locator('#verify-result-grid')).toContainText('API RECORDED AS VERIFIED AT EXPORT / NOT REVALIDATED BY THIS BROWSER');
+  await expect(page.locator('#verify-result-grid')).toContainText('API RECORDED: SIG_VALID / NOT REVALIDATED BY THIS BROWSER');
+  await expect(page.locator('#verify-result-grid')).toContainText('PRODUCTION SIGNED');
+  await expect(page.locator('#verify-result-grid')).toContainText('RFC3161 HTTP');
+  const liveRevalidationRow = page.locator('#verify-result-grid .verify-result-row').filter({ hasText: 'Live Cryptographic Revalidation' });
+  await expect(liveRevalidationRow).toContainText('NOT PERFORMED');
+  await expect(page.locator('#verify-result-grid')).not.toContainText('PUBLIC TSA');
   const validClaims = await page.locator('#verify-result-grid .verify-result-value').allTextContents();
-  expect(validClaims.filter((value) => value.includes('VALID')).every(
-    (value) => value.includes('RECORDED') && value.includes('NOT REVALIDATED')
+  expect(validClaims.filter((value) => value.includes('RECORDED AS VALID')).every(
+    (value) => value.includes('AT EXPORT') && value.includes('NOT REVALIDATED BY THIS BROWSER')
   )).toBe(true);
 });
 
