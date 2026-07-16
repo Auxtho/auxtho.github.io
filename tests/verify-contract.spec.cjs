@@ -204,6 +204,35 @@ test('verification-unavailable response disables controls and removes prior meta
   await expect(page.locator('#verify-result-title')).toHaveText('Verification not completed');
 });
 
+test('a bounded timeout restores the button and permits a successful retry', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__AUXTHO_VERIFY_TIMEOUT_MS__ = 100;
+  });
+  await mockStatus(page);
+  let attempts = 0;
+  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    attempts += 1;
+    if (attempts === 1) await new Promise((resolve) => setTimeout(resolve, 300));
+    try {
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload()) });
+    } catch (error) {
+      // The timed-out request may already be canceled by AbortController.
+    }
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await page.locator('#manual-report-id').fill('RPT-TIMEOUT-001');
+  await page.locator('#manual-artifact-hash').fill('e'.repeat(64));
+  await page.locator('#manual-verify-btn').click();
+  await expect(page.locator('#verify-result-title')).toHaveText('Verification timed out');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+
+  await page.locator('#manual-verify-btn').click();
+  await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
+  expect(attempts).toBe(2);
+});
+
 test('non-operational readiness keeps verification disabled', async ({ page }) => {
   await mockStatus(page, 'unavailable');
   await page.goto(`${baseUrl}/verify.html`);

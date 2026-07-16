@@ -6,7 +6,10 @@
     var CURRENT_STATUS = { signing_mode: 'not_reported', timestamp_provider: 'not_reported' };
     var SERVICE_AVAILABLE = false;
     var VERIFICATION_BUTTON_IDS = ['qr-verify-btn', 'manual-verify-btn'];
-    var FETCH_TIMEOUT_MS = 10000;
+    var configuredTimeoutMs = Number(window.__AUXTHO_VERIFY_TIMEOUT_MS__);
+    var FETCH_TIMEOUT_MS = Number.isFinite(configuredTimeoutMs) && configuredTimeoutMs >= 50
+        ? configuredTimeoutMs
+        : 20000;
     var MAX_LOCAL_FILE_BYTES = 25 * 1024 * 1024;
     var VERIFICATION_GENERATION = 0;
     var ACTIVE_VERIFICATION = null;
@@ -108,13 +111,16 @@
         return state;
     }
 
-    function isCurrentVerification(state) {
+    function isActiveVerificationState(state) {
         return !!(
             state &&
             ACTIVE_VERIFICATION === state &&
-            state.generation === VERIFICATION_GENERATION &&
-            !state.controller.signal.aborted
+            state.generation === VERIFICATION_GENERATION
         );
+    }
+
+    function isCurrentVerification(state) {
+        return isActiveVerificationState(state) && !state.controller.signal.aborted;
     }
 
     function finishVerification(state) {
@@ -155,13 +161,24 @@
         grid.innerHTML = '';
     }
 
-    async function fetchWithTimeout(url, options, suppliedController) {
+    async function fetchJsonWithTimeout(url, options, suppliedController) {
         var controller = suppliedController || new AbortController();
+        var didTimeout = false;
         var timeoutId = window.setTimeout(function () {
+            didTimeout = true;
             controller.abort();
         }, FETCH_TIMEOUT_MS);
         try {
-            return await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+            var response = await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+            var result = await response.json();
+            return { response: response, result: result };
+        } catch (err) {
+            if (didTimeout) {
+                var timeoutError = new Error('Verification request timed out.');
+                timeoutError.name = 'TimeoutError';
+                throw timeoutError;
+            }
+            throw err;
         } finally {
             window.clearTimeout(timeoutId);
         }
@@ -422,15 +439,15 @@
         if (artifactBytesSha256) payload.artifact_bytes_sha256 = artifactBytesSha256;
 
         try {
-            var response = await fetchWithTimeout(VERIFY_ENDPOINT, {
+            var requestResult = await fetchJsonWithTimeout(VERIFY_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
                 credentials: 'same-origin'
             }, state.controller);
             if (!isCurrentVerification(state)) return;
-            var result = await response.json();
-            if (!isCurrentVerification(state)) return;
+            var response = requestResult.response;
+            var result = requestResult.result;
             if (!response.ok) {
                 var detail = result && result.detail;
                 var errorCode = (detail && detail.error) || (result && result.error);
@@ -446,7 +463,15 @@
             }
             renderResult(result, { fileCheckRequested: !!artifactBytesSha256 });
         } catch (err) {
-            if (!isCurrentVerification(state)) return;
+            if (!isActiveVerificationState(state)) return;
+            if (err && err.name === 'TimeoutError') {
+                setError('Verification timed out. You can retry this request.');
+                showVerificationTerminal(
+                    'Verification timed out',
+                    'The service did not respond within the bounded wait. No record metadata is displayed.'
+                );
+                return;
+            }
             setVerificationUnavailable();
             setError('Verification API unavailable. Use manual verification support.');
             showVerificationTerminal(
@@ -454,7 +479,7 @@
                 'The verification service could not complete this request. No record metadata is displayed.'
             );
         } finally {
-            if (isCurrentVerification(state) && buttonId) setButtonLoading(buttonId, false, '');
+            if (isActiveVerificationState(state) && buttonId) setButtonLoading(buttonId, false, '');
             finishVerification(state);
         }
     }
@@ -499,9 +524,10 @@
         setServiceStatus('checking');
         setVerificationButtonsEnabled(false);
         try {
-            var response = await fetchWithTimeout(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
+            var requestResult = await fetchJsonWithTimeout(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
+            var response = requestResult.response;
             if (!response.ok) throw new Error('Verification status request failed.');
-            var result = await response.json();
+            var result = requestResult.result;
             if (!result || result.status !== 'operational') throw new Error('Verification status was not operational.');
             CURRENT_STATUS = {
                 signing_mode: result.signing_mode || 'not_reported',
