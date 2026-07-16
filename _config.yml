@@ -1,0 +1,8 @@
+exclude:
+  - node_modules
+  - src
+  - tests
+  - test-results
+  - package.json
+  - package-lock.json
+  - tailwind.config.js

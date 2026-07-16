@@ -28,7 +28,7 @@ function statusPayload(status = 'operational') {
   };
 }
 
-function successPayload({ fileVerified = false } = {}) {
+function successPayload({ fileVerified = false, reportId = 'RPT-VERIFY-001' } = {}) {
   return {
     verified: true,
     record_match_confirmed: true,
@@ -36,7 +36,7 @@ function successPayload({ fileVerified = false } = {}) {
     file_bytes_verified: fileVerified,
     verification_scope: fileVerified ? 'record_and_file_bytes' : 'registry_identifiers_only',
     artifact: {
-      report_id: 'RPT-VERIFY-001',
+      report_id: reportId,
       export_event_id: 'EXP-VERIFY-001',
       exported_at: '2026-07-16T00:00:00Z',
     },
@@ -135,6 +135,44 @@ test('changing identifiers or the selected file invalidates a prior success resu
   await expect(page.locator('#verify-result-title')).toHaveText('Artifact File Verified');
   await page.locator('#manual-artifact-file').setInputFiles({ name: 'b.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-test-b') });
   await expect(page.locator('#verify-result')).toBeHidden();
+});
+
+test('an aborted stale response cannot restore an invalidated or older result', async ({ page }) => {
+  await mockStatus(page);
+  let requestCount = 0;
+  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    requestCount += 1;
+    const body = route.request().postDataJSON();
+    if (requestCount === 1) await new Promise((resolve) => setTimeout(resolve, 300));
+    try {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(successPayload({ reportId: body.report_id })),
+      });
+    } catch (error) {
+      // The first route may already be canceled by the browser-side AbortController.
+    }
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await page.locator('#manual-report-id').fill('RPT-STALE-ONE');
+  await page.locator('#manual-artifact-hash').fill('d'.repeat(64));
+  await page.locator('#manual-verify-btn').click();
+  await expect(page.locator('#verify-result-title')).toHaveText('Verifying Artifact...');
+
+  await page.locator('#manual-report-id').fill('RPT-CURRENT-TWO');
+  await expect(page.locator('#verify-result')).toBeHidden();
+  await page.locator('#manual-verify-btn').click();
+  await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
+  await expect(page.locator('#verify-result-grid')).toContainText('RPT-CURRENT-TWO');
+
+  await page.waitForTimeout(400);
+  await expect(page.locator('#verify-result-grid')).toContainText('RPT-CURRENT-TWO');
+  await expect(page.locator('#verify-result-grid')).not.toContainText('RPT-STALE-ONE');
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  expect(requestCount).toBe(2);
 });
 
 test('verification-unavailable response disables controls and removes prior metadata', async ({ page }) => {

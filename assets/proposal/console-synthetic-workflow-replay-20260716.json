@@ -29,5 +29,5 @@
     "GET https://fonts.googleapis.com/css2"
   ],
   "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",
-  "claim_boundary": "The DashboardMetricCards product component rendered a deterministic development-only fixture in a network-isolated controlled local capture. This does not prove live telemetry, customer adoption, production runtime, or completed operational work."
+  "claim_boundary": "A controlled local rendering of the Console metric interface used a deterministic development-only fixture in a network-isolated capture. This does not prove source revision, deployment identity, live telemetry, customer adoption, production runtime, or completed operational work."
 }

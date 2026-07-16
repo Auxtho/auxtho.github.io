@@ -8,6 +8,8 @@
     var VERIFICATION_BUTTON_IDS = ['qr-verify-btn', 'manual-verify-btn'];
     var FETCH_TIMEOUT_MS = 10000;
     var MAX_LOCAL_FILE_BYTES = 25 * 1024 * 1024;
+    var VERIFICATION_GENERATION = 0;
+    var ACTIVE_VERIFICATION = null;
 
     function byId(id) {
         return document.getElementById(id);
@@ -85,7 +87,42 @@
         if (grid) grid.innerHTML = '';
     }
 
+    function cancelActiveVerification() {
+        VERIFICATION_GENERATION += 1;
+        if (ACTIVE_VERIFICATION && ACTIVE_VERIFICATION.controller) {
+            ACTIVE_VERIFICATION.controller.abort();
+        }
+        ACTIVE_VERIFICATION = null;
+        VERIFICATION_BUTTON_IDS.forEach(function (id) {
+            setButtonLoading(id, false, '');
+        });
+    }
+
+    function beginVerification() {
+        cancelActiveVerification();
+        var state = {
+            generation: VERIFICATION_GENERATION,
+            controller: new AbortController()
+        };
+        ACTIVE_VERIFICATION = state;
+        return state;
+    }
+
+    function isCurrentVerification(state) {
+        return !!(
+            state &&
+            ACTIVE_VERIFICATION === state &&
+            state.generation === VERIFICATION_GENERATION &&
+            !state.controller.signal.aborted
+        );
+    }
+
+    function finishVerification(state) {
+        if (ACTIVE_VERIFICATION === state) ACTIVE_VERIFICATION = null;
+    }
+
     function invalidateVerificationResult() {
+        cancelActiveVerification();
         clearVerificationResult();
         setError('');
     }
@@ -118,8 +155,8 @@
         grid.innerHTML = '';
     }
 
-    async function fetchWithTimeout(url, options) {
-        var controller = new AbortController();
+    async function fetchWithTimeout(url, options, suppliedController) {
+        var controller = suppliedController || new AbortController();
         var timeoutId = window.setTimeout(function () {
             controller.abort();
         }, FETCH_TIMEOUT_MS);
@@ -364,14 +401,17 @@
         applyStatusPanel({ ...result, signing_mode: verificationMode, timestamp_provider: timestampProvider });
     }
 
-    async function runVerification(reportId, artifactHash, exportEventId, buttonId, artifactBytesSha256) {
+    async function runVerification(reportId, artifactHash, exportEventId, buttonId, artifactBytesSha256, requestState) {
+        var state = requestState || beginVerification();
         clearVerificationResult();
         if (!isValidArtifactRecordHash(artifactHash)) {
-            setError('Enter the complete artifact record hash exactly as shown in the export.');
+            if (isCurrentVerification(state)) setError('Enter the complete artifact record hash exactly as shown in the export.');
+            finishVerification(state);
             return;
         }
         if (!SERVICE_AVAILABLE) {
-            setError('Verification unavailable. Use manual email support.');
+            if (isCurrentVerification(state)) setError('Verification unavailable. Use manual email support.');
+            finishVerification(state);
             return;
         }
         setError('');
@@ -387,8 +427,10 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
                 credentials: 'same-origin'
-            });
+            }, state.controller);
+            if (!isCurrentVerification(state)) return;
             var result = await response.json();
+            if (!isCurrentVerification(state)) return;
             if (!response.ok) {
                 var detail = result && result.detail;
                 var errorCode = (detail && detail.error) || (result && result.error);
@@ -404,6 +446,7 @@
             }
             renderResult(result, { fileCheckRequested: !!artifactBytesSha256 });
         } catch (err) {
+            if (!isCurrentVerification(state)) return;
             setVerificationUnavailable();
             setError('Verification API unavailable. Use manual verification support.');
             showVerificationTerminal(
@@ -411,7 +454,8 @@
                 'The verification service could not complete this request. No record metadata is displayed.'
             );
         } finally {
-            if (buttonId) setButtonLoading(buttonId, false, '');
+            if (isCurrentVerification(state) && buttonId) setButtonLoading(buttonId, false, '');
+            finishVerification(state);
         }
     }
 
@@ -433,14 +477,21 @@
                 setError('Report ID and artifact integrity hash are required.');
                 return;
             }
+            var requestState = beginVerification();
+            setButtonLoading('manual-verify-btn', true, 'Hashing locally...');
             var fileHash = null;
             try {
                 fileHash = await selectedFileHash();
             } catch (err) {
-                setError(err.message || 'The selected file could not be hashed locally.');
+                if (isCurrentVerification(requestState)) {
+                    setButtonLoading('manual-verify-btn', false, '');
+                    setError(err.message || 'The selected file could not be hashed locally.');
+                }
+                finishVerification(requestState);
                 return;
             }
-            runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn', fileHash);
+            if (!isCurrentVerification(requestState)) return;
+            runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn', fileHash, requestState);
         });
     }
 
@@ -494,14 +545,21 @@
         if (button) {
             button.addEventListener('click', async function () {
                 clearVerificationResult();
+                var requestState = beginVerification();
+                setButtonLoading('qr-verify-btn', true, 'Hashing locally...');
                 var fileHash = null;
                 try {
                     fileHash = await selectedFileHash();
                 } catch (err) {
-                    setError(err.message || 'The selected file could not be hashed locally.');
+                    if (isCurrentVerification(requestState)) {
+                        setButtonLoading('qr-verify-btn', false, '');
+                        setError(err.message || 'The selected file could not be hashed locally.');
+                    }
+                    finishVerification(requestState);
                     return;
                 }
-                runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash);
+                if (!isCurrentVerification(requestState)) return;
+                runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash, requestState);
             });
         }
     }

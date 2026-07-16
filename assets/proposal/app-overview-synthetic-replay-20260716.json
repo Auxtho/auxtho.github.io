@@ -35,5 +35,5 @@
   "policy_profile": "The product UI rendered a development-only Synthetic QA profile for this local fixture.",
   "synthetic_identity_presentation": "The product UI omitted the person-like avatar and rendered a Synthetic reviewer label; no person or customer identity is represented.",
   "capture_tooling_removed": "The Next.js development toolbar portal was removed because it is capture-environment tooling, not product UI.",
-  "claim_boundary": "The OverviewView product component rendered deterministic synthetic responses in a network-isolated controlled local capture. This does not prove live usage, backend aggregation, deployment identity, or completed customer releases."
+  "claim_boundary": "A controlled local rendering of the App overview interface used deterministic synthetic responses in a network-isolated capture. This does not prove source revision, deployment identity, live usage, backend aggregation, or completed customer releases."
 }
