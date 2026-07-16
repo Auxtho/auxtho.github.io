@@ -1,4 +1,1 @@
-﻿{"@context":"https://schema.org","@type":"Organization","name":"Auxtho Inc.","url":"https://auxtho.com","logo":"https://auxtho.com/assets/og-image.png","description":"Governed workflow for human-reviewed, evidence-linked AI artifacts","founder":{"@type":"Person","name":"Jin Sung"},"sameAs":["https://www.linkedin.com/company/auxtho","https://github.com/auxtho"],"contactPoint":[{"@type":"ContactPoint","email":"hello@auxtho.com","contactType":"inquiries"}]}
-
-
-
+{"@context":"https://schema.org","@type":"Organization","name":"Auxtho Inc.","url":"https://auxtho.com","logo":"https://auxtho.com/assets/og-image-v2-16.png","description":"Human review interface for selected AI-assisted work and visible release boundaries","founder":{"@type":"Person","name":"Jin Sung"},"sameAs":["https://www.linkedin.com/company/auxtho"],"contactPoint":[{"@type":"ContactPoint","email":"hello@auxtho.com","contactType":"inquiries"}]}

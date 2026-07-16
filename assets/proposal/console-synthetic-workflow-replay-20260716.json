@@ -1,0 +1,31 @@
+{
+  "decision": "PUBLIC_SYNTHETIC_CONSOLE_CAPTURE_READY",
+  "output_path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
+  "source_revision": "bffbaddfb6c7732922f6e57a55d196ef61455aaf",
+  "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
+  "clip_css_px": {
+    "x": 80,
+    "y": 32,
+    "width": 1280,
+    "height": 509.78125
+  },
+  "dimensions_physical_px": [
+    1280,
+    509
+  ],
+  "device_scale_factor": 1,
+  "fixture_summary": {
+    "review_attention": 4,
+    "critical_signals": 2,
+    "synthetic_customer_records": 3,
+    "active_synthetic_bootstraps": 1
+  },
+  "shared_component": "DashboardMetricCards",
+  "customer_data_used": false,
+  "external_network_requests": 0,
+  "intercepted_external_dependencies": [
+    "GET https://fonts.googleapis.com/css2"
+  ],
+  "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",
+  "claim_boundary": "The product-source DashboardMetricCards component rendered a deterministic development-only fixture in a network-isolated, source-bound local checkout. This does not prove live telemetry, customer adoption, production runtime, or completed operational work."
+}
