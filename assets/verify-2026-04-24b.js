@@ -3,9 +3,39 @@
     var VERIFY_ENDPOINT = API_ROOT + '/api/verify';
     var STATUS_ENDPOINT = VERIFY_ENDPOINT + '/status';
     var DEFAULT_BUTTON_TEXT = {};
+    var CURRENT_STATUS = { signing_mode: 'not_reported', timestamp_provider: 'not_reported' };
+    var SERVICE_AVAILABLE = false;
+    var VERIFICATION_BUTTON_IDS = ['qr-verify-btn', 'manual-verify-btn'];
+    var FETCH_TIMEOUT_MS = 10000;
+    var MAX_LOCAL_FILE_BYTES = 25 * 1024 * 1024;
 
     function byId(id) {
         return document.getElementById(id);
+    }
+
+    function isValidArtifactRecordHash(value) {
+        return /^(?:sha256:)?(?:[0-9a-fA-F]{16}|[0-9a-fA-F]{64})$/.test((value || '').trim());
+    }
+
+    async function hashSelectedFile(file) {
+        if (!file) return null;
+        if (file.size > MAX_LOCAL_FILE_BYTES) {
+            throw new Error('The selected file exceeds the 25 MB local verification limit.');
+        }
+        if (!window.crypto || !window.crypto.subtle) {
+            throw new Error('Local file hashing is unavailable in this browser.');
+        }
+        var bytes = await file.arrayBuffer();
+        var digest = await window.crypto.subtle.digest('SHA-256', bytes);
+        return Array.from(new Uint8Array(digest)).map(function (value) {
+            return value.toString(16).padStart(2, '0');
+        }).join('');
+    }
+
+    async function selectedFileHash() {
+        var input = byId('manual-artifact-file');
+        var file = input && input.files && input.files[0];
+        return hashSelectedFile(file || null);
     }
 
     function setText(id, value) {
@@ -18,11 +48,94 @@
         el.hidden = !visible;
     }
 
+    function setVerificationButtonsEnabled(enabled) {
+        SERVICE_AVAILABLE = !!enabled;
+        VERIFICATION_BUTTON_IDS.forEach(function (id) {
+            var el = byId(id);
+            if (!el) return;
+            el.disabled = !SERVICE_AVAILABLE;
+            el.setAttribute('aria-disabled', SERVICE_AVAILABLE ? 'false' : 'true');
+        });
+    }
+
+    function setServiceStatus(state) {
+        var el = byId('verification-service-status');
+        if (!el) return;
+        el.classList.remove('checking', 'active', 'unavailable');
+        el.classList.add(state);
+        el.textContent = state === 'active'
+            ? 'Endpoint ready / request not yet checked'
+            : state === 'unavailable'
+            ? 'Verification unavailable'
+            : 'Checking / Not confirmed';
+    }
+
+    function setListItems(id, items) {
+        var el = byId(id);
+        if (!el) return;
+        el.innerHTML = items.map(function (item) {
+            return '<li>' + escapeHtml(item) + '</li>';
+        }).join('');
+    }
+
+    function clearVerificationResult() {
+        var card = byId('verify-result');
+        var grid = byId('verify-result-grid');
+        toggle(card, false);
+        if (grid) grid.innerHTML = '';
+    }
+
+    function invalidateVerificationResult() {
+        clearVerificationResult();
+        setError('');
+    }
+
+    function setVerificationUnavailable() {
+        clearVerificationResult();
+        setServiceStatus('unavailable');
+        setVerificationButtonsEnabled(false);
+        setListItems('status-active-items', [
+            'Verification service status not confirmed',
+            'Automated verification disabled',
+            'Manual email support available'
+        ]);
+        setListItems('artifact-crypto-items', [
+            'Verification mode unavailable.',
+            'Signature status unavailable.',
+            'Timestamp status unavailable.'
+        ]);
+        setText('status-footnote', 'Automated verification is disabled because service status could not be confirmed. Use email support instead.');
+    }
+
+    function showVerificationTerminal(title, message) {
+        var card = byId('verify-result');
+        var grid = byId('verify-result-grid');
+        if (!card || !grid) return;
+        toggle(card, true);
+        setText('verify-result-kicker', 'Verification Result');
+        setText('verify-result-title', title);
+        setText('verify-result-message', message);
+        grid.innerHTML = '';
+    }
+
+    async function fetchWithTimeout(url, options) {
+        var controller = new AbortController();
+        var timeoutId = window.setTimeout(function () {
+            controller.abort();
+        }, FETCH_TIMEOUT_MS);
+        try {
+            return await fetch(url, Object.assign({}, options || {}, { signal: controller.signal }));
+        } finally {
+            window.clearTimeout(timeoutId);
+        }
+    }
+
     function setButtonLoading(id, isLoading, loadingText) {
         var el = byId(id);
         if (!el) return;
         if (!DEFAULT_BUTTON_TEXT[id]) DEFAULT_BUTTON_TEXT[id] = el.textContent;
-        el.disabled = !!isLoading;
+        el.disabled = !!isLoading || !SERVICE_AVAILABLE;
+        el.setAttribute('aria-disabled', el.disabled ? 'true' : 'false');
         el.setAttribute('aria-busy', isLoading ? 'true' : 'false');
         el.classList.toggle('is-busy', !!isLoading);
         el.textContent = isLoading ? loadingText : DEFAULT_BUTTON_TEXT[id];
@@ -46,7 +159,7 @@
     }
 
     function formatMode(value) {
-        return String(value || 'pilot_hash_only').replace(/_/g, ' ').toUpperCase();
+        return String(value || 'not_reported').replace(/_/g, ' ').toUpperCase();
     }
 
     function hasSignedControls(signature, mode) {
@@ -59,10 +172,36 @@
         return signature.present ? 'PRESENT / NOT VERIFIED' : 'EXPECTED / NOT PRESENT';
     }
 
-    function timestampLabel(signature, mode) {
+    function hasTimestamp(signature) {
+        return !!(signature && (signature.timestamp_present || signature.timestamp_valid || signature.tsa_signed_at));
+    }
+
+    function isLocalTimestamp(mode, provider) {
+        return mode === 'local_signed' || provider === 'local_mock';
+    }
+
+    function isPublicTsa(mode, provider) {
+        return mode === 'production_signed' && provider === 'public_tsa';
+    }
+
+    function timestampLabel(signature, mode, provider) {
         if (!hasSignedControls(signature, mode)) return 'NOT ATTACHED TO THIS ARTIFACT';
-        if (!signature.timestamp_present) return 'NOT ATTACHED';
-        return signature.timestamp_valid ? 'PRESENT / VALID' : 'PRESENT / NOT VERIFIED';
+        if (!hasTimestamp(signature)) return 'NOT ATTACHED';
+        if (isLocalTimestamp(mode, provider)) {
+            return signature.timestamp_valid
+                ? 'LOCAL TEST TIMESTAMP / NOT EXTERNALLY TRUSTED'
+                : 'LOCAL TEST TIMESTAMP / NOT VERIFIED';
+        }
+        if (isPublicTsa(mode, provider)) {
+            return signature.timestamp_valid ? 'PRESENT / VALID (PUBLIC TSA)' : 'PRESENT / NOT VERIFIED';
+        }
+        return 'PRESENT / PROVIDER NOT ESTABLISHED';
+    }
+
+    function timestampRowLabel(mode, provider) {
+        if (isLocalTimestamp(mode, provider)) return 'Local Test Timestamp';
+        if (isPublicTsa(mode, provider)) return 'External TSA Timestamp';
+        return 'Timestamp Status';
     }
 
     function certificateChainLabel(signature, mode) {
@@ -93,105 +232,157 @@
 
         result = result || {};
         var signature = result.signature || {};
-        var mode = result.verification_mode || result.signing_mode || 'pilot_hash_only';
+        var mode = result.verification_mode || result.signing_mode || CURRENT_STATUS.signing_mode || 'not_reported';
+        var provider = result.timestamp_provider || signature.timestamp_provider || CURRENT_STATUS.timestamp_provider || 'not_reported';
         var emptyState = !!result.empty_state;
         var signed = hasSignedControls(signature, mode);
-        var items = ['Artifact integrity hash', 'Automated API verification'];
+        var items = ['Artifact record hash', 'Verification endpoint configured'];
         if (emptyState) {
-            items.push('Manual verification support');
+            if (isLocalTimestamp(mode, provider)) {
+                items.push('Local test signing mode');
+                items.push('Local test timestamp (not externally trusted)');
+            } else {
+                items.push('Manual verification support');
+            }
         } else if (signed) {
             items.push('PKCS#7 CMS detached signature');
-            if (signature.timestamp_present || mode === 'local_signed' || mode === 'production_signed') {
-                items.push('RFC 3161 trusted timestamp');
+            if (hasTimestamp(signature) || mode === 'local_signed' || mode === 'production_signed') {
+                items.push(isLocalTimestamp(mode, provider)
+                    ? 'Local test timestamp (not externally trusted)'
+                    : isPublicTsa(mode, provider)
+                    ? 'External TSA timestamp'
+                    : 'Timestamp status');
             }
         } else {
             items.push('Manual verification support');
         }
-        list.innerHTML = items.map(function (item) { return '<li>' + item + '</li>'; }).join('');
+        setListItems('status-active-items', items);
 
         if (cryptoBlock && cryptoItems) {
             toggle(cryptoBlock, true);
-            cryptoItems.innerHTML = (emptyState
-                ? [
+            setListItems('artifact-crypto-items', emptyState
+                ? isLocalTimestamp(mode, provider)
+                    ? [
+                        'Verification mode: LOCAL SIGNED TEST MODE',
+                        'Signature status will appear after artifact verification.',
+                        'Timestamp provider: LOCAL MOCK / NOT EXTERNALLY TRUSTED'
+                    ]
+                    : [
                     'Verification mode will appear after artifact verification.',
                     'PKCS#7 CMS detached signature status will appear after verification.',
-                    'RFC 3161 trusted timestamp status will appear after verification.'
-                ]
+                    'Timestamp provider and trust status will appear after verification.'
+                    ]
                 : [
                     'Verification mode: ' + formatMode(mode),
                     'PKCS#7 CMS detached signature: ' + signatureLabel(signature, mode),
-                    'RFC 3161 trusted timestamp: ' + timestampLabel(signature, mode)
+                    timestampRowLabel(mode, provider) + ': ' + timestampLabel(signature, mode, provider)
                 ]
-            ).map(function (item) { return '<li>' + escapeHtml(item) + '</li>'; }).join('');
+            );
         }
 
         if (footnote) {
             footnote.textContent = emptyState
-                ? 'Load an artifact to see its signature, timestamp, and release-package verification status.'
+                ? isLocalTimestamp(mode, provider)
+                    ? 'Current service status reports local test signing. It is not an externally trusted TSA result.'
+                    : 'Load an artifact to see its signature, timestamp, and release-package verification status.'
                 : signed
-                ? 'Signed artifacts verify the hash plus registry-stored signature and timestamp values.'
+                ? isLocalTimestamp(mode, provider)
+                    ? 'Local signing evidence is test-only and is not an externally trusted TSA result.'
+                    : 'Signed artifacts verify the hash plus registry-stored signature and timestamp values.'
                 : 'Hash-only artifacts verify the registry hash. Signed exports return signature and timestamp values when attached.';
         }
     }
 
-    function renderResult(result) {
+    function renderResult(result, requestContext) {
         var card = byId('verify-result');
         var grid = byId('verify-result-grid');
         if (!card || !grid) return;
 
         toggle(card, true);
-        setText('verify-result-kicker', result.verified ? 'Verification Passed' : 'Verification Review');
-        setText('verify-result-title', result.verified ? 'Artifact Verified' : 'Verification Incomplete');
-        setText('verify-result-message', result.message || 'Verification response received.');
+        var artifact = (result && result.artifact) || {};
+        requestContext = requestContext || {};
+        var fileCheckRequested = requestContext.fileCheckRequested === true;
+        var responseFileVerified = !!(
+            result &&
+            result.file_bytes_verified === true &&
+            result.verification_scope === 'record_and_file_bytes'
+        );
+        var confirmed = !!(
+            result &&
+            result.verified === true &&
+            result.record_match_confirmed === true &&
+            result.artifact_hash_match === true &&
+            artifact.report_id &&
+            (!fileCheckRequested || responseFileVerified)
+        );
+        if (!confirmed) {
+            setText('verify-result-kicker', 'Verification Result');
+            setText('verify-result-title', 'Not confirmed');
+            setText('verify-result-message', 'The submitted identifiers did not produce a verified match. No record metadata is displayed for an unconfirmed result.');
+            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Outcome</span><span class="verify-result-value">NOT CONFIRMED</span></div>';
+            applyStatusPanel({
+                signing_mode: CURRENT_STATUS.signing_mode,
+                timestamp_provider: CURRENT_STATUS.timestamp_provider,
+                empty_state: true
+            });
+            return;
+        }
 
-        var artifact = result.artifact || {};
+        var fileBytesVerified = fileCheckRequested && responseFileVerified;
+        setText('verify-result-kicker', fileBytesVerified ? 'File Verification Passed' : 'Record Match Confirmed');
+        setText('verify-result-title', fileBytesVerified ? 'Artifact File Verified' : 'Artifact Record Match');
+        setText(
+            'verify-result-message',
+            fileBytesVerified
+                ? 'The selected file bytes and submitted identifiers match the stored Auxtho artifact record.'
+                : 'The submitted identifiers match a stored Auxtho artifact record. The surrounding file was not checked.'
+        );
+
         var signature = result.signature || {};
-        var verificationMode = result.verification_mode || result.mode || 'pilot_hash_only';
+        var verificationMode = result.verification_mode || result.signing_mode || 'record_not_reported';
+        var timestampProvider = result.timestamp_provider || signature.timestamp_provider || 'not_reported';
         var rows = [
             ['Report ID', artifact.report_id || '-'],
             ['Export Event ID', artifact.export_event_id || '-'],
-            ['Artifact Policy Version', artifact.policy_version || '-'],
-            ['Release Package Hash', (artifact.release_package || {}).hash || '-'],
-            ['Release Package Trace ID', (artifact.release_package || {}).trace_id || '-'],
-            ['Verification Profile', 'SG-MAS-TRM-2024'],
-            ['Trace ID', artifact.trace_id || '-'],
-            ['Public Mode', (result.mode || 'pilot').toUpperCase()],
+            ['Verification Scope', 'Auxtho artifact record and integrity hash'],
+            ['Result Scope', fileBytesVerified ? 'RECORD + SELECTED FILE BYTES' : 'REGISTRY IDENTIFIERS ONLY'],
+            ['Selected File Bytes Match', fileBytesVerified ? 'YES' : 'NOT CHECKED'],
+            ['Public Mode', formatMode(result.mode || 'not_reported')],
             ['Verification Mode', formatMode(verificationMode)],
             ['Hash Match', result.artifact_hash_match ? 'YES' : 'NO'],
             ['PKCS#7 CMS Detached Signature', signatureLabel(signature, verificationMode)],
             ['Signature Format', signature.signature_format || '-'],
             ['Certificate Chain', certificateChainLabel(signature, verificationMode)],
-            ['RFC 3161 Trusted Timestamp', timestampLabel(signature, verificationMode)],
-            ['TSA / Timestamp', signature.tsa_signed_at || signature.tsa_name || '-'],
+            [timestampRowLabel(verificationMode, timestampProvider), timestampLabel(signature, verificationMode, timestampProvider)],
             ['Reason Code', signature.reason_code || result.reason || '-']
         ];
-
-        if (signature.signer_dn) {
-            rows.push(['Signer DN', signature.signer_dn]);
-        }
-        if (signature.signer_cert_serial) {
-            rows.push(['Signer Certificate Serial', signature.signer_cert_serial]);
-        }
-        if (signature.tsa_name && signature.tsa_signed_at) {
-            rows.push(['Timestamp Authority', signature.tsa_name]);
-        }
 
         grid.innerHTML = rows.map(function (row) {
             return '<div class="verify-result-row"><span class="verify-result-key">' + escapeHtml(row[0]) + '</span><span class="verify-result-value">' + escapeHtml(row[1]) + '</span></div>';
         }).join('');
 
-        applyStatusPanel(result);
+        applyStatusPanel({ ...result, signing_mode: verificationMode, timestamp_provider: timestampProvider });
     }
 
-    async function runVerification(reportId, artifactHash, exportEventId, buttonId) {
+    async function runVerification(reportId, artifactHash, exportEventId, buttonId, artifactBytesSha256) {
+        clearVerificationResult();
+        if (!isValidArtifactRecordHash(artifactHash)) {
+            setError('Enter the complete artifact record hash exactly as shown in the export.');
+            return;
+        }
+        if (!SERVICE_AVAILABLE) {
+            setError('Verification unavailable. Use manual email support.');
+            return;
+        }
         setError('');
         showVerificationPending();
         if (buttonId) setButtonLoading(buttonId, true, 'Please wait...');
         var payload = { report_id: reportId, artifact_hash: artifactHash };
         if (exportEventId) payload.export_event_id = exportEventId;
+        if (artifactBytesSha256) payload.artifact_bytes_sha256 = artifactBytesSha256;
 
         try {
-            var response = await fetch(VERIFY_ENDPOINT, {
+            var response = await fetchWithTimeout(VERIFY_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload),
@@ -199,12 +390,26 @@
             });
             var result = await response.json();
             if (!response.ok) {
+                var detail = result && result.detail;
+                var errorCode = (detail && detail.error) || (result && result.error);
+                if (response.status === 503 || errorCode === 'VERIFICATION_UNAVAILABLE') {
+                    setVerificationUnavailable();
+                }
                 setError((result.detail && result.detail.message) || result.message || 'Verification failed.');
+                showVerificationTerminal(
+                    'Verification not completed',
+                    'The verification request did not complete successfully. No record metadata is displayed.'
+                );
                 return;
             }
-            renderResult(result);
+            renderResult(result, { fileCheckRequested: !!artifactBytesSha256 });
         } catch (err) {
+            setVerificationUnavailable();
             setError('Verification API unavailable. Use manual verification support.');
+            showVerificationTerminal(
+                'Verification unavailable',
+                'The verification service could not complete this request. No record metadata is displayed.'
+            );
         } finally {
             if (buttonId) setButtonLoading(buttonId, false, '');
         }
@@ -213,26 +418,49 @@
     function bindManualForm() {
         var button = byId('manual-verify-btn');
         if (!button) return;
-        button.addEventListener('click', function () {
-            var reportId = (byId('manual-report-id') || {}).value || '';
-            var artifactHash = (byId('manual-artifact-hash') || {}).value || '';
-            var exportEventId = (byId('manual-export-event-id') || {}).value || '';
+        ['manual-report-id', 'manual-artifact-hash', 'manual-export-event-id'].forEach(function (id) {
+            var input = byId(id);
+            if (input) input.addEventListener('input', invalidateVerificationResult);
+        });
+        var fileInput = byId('manual-artifact-file');
+        if (fileInput) fileInput.addEventListener('change', invalidateVerificationResult);
+        button.addEventListener('click', async function () {
+            clearVerificationResult();
+            var reportId = ((byId('manual-report-id') || {}).value || '').trim();
+            var artifactHash = ((byId('manual-artifact-hash') || {}).value || '').trim();
+            var exportEventId = ((byId('manual-export-event-id') || {}).value || '').trim();
             if (!reportId || !artifactHash) {
                 setError('Report ID and artifact integrity hash are required.');
                 return;
             }
-            runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn');
+            var fileHash = null;
+            try {
+                fileHash = await selectedFileHash();
+            } catch (err) {
+                setError(err.message || 'The selected file could not be hashed locally.');
+                return;
+            }
+            runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn', fileHash);
         });
     }
 
     async function loadStatusPanel() {
+        setServiceStatus('checking');
+        setVerificationButtonsEnabled(false);
         try {
-            var response = await fetch(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
-            if (!response.ok) return;
+            var response = await fetchWithTimeout(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
+            if (!response.ok) throw new Error('Verification status request failed.');
             var result = await response.json();
+            if (!result || result.status !== 'operational') throw new Error('Verification status was not operational.');
+            CURRENT_STATUS = {
+                signing_mode: result.signing_mode || 'not_reported',
+                timestamp_provider: result.timestamp_provider || 'not_reported'
+            };
             applyStatusPanel({ ...result, empty_state: true });
+            setServiceStatus('active');
+            setVerificationButtonsEnabled(true);
         } catch (err) {
-            applyStatusPanel({ signing_mode: 'pilot_hash_only', empty_state: true });
+            setVerificationUnavailable();
         }
     }
 
@@ -242,6 +470,10 @@
         var hash = params.get('h');
         var exportEventId = params.get('exp');
         if (!reportId || !hash) return;
+
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, document.title, window.location.pathname);
+        }
 
         var card = byId('qr-verify');
         if (card) card.classList.add('qr-card-visible');
@@ -254,25 +486,30 @@
         if (hashInput) hashInput.value = hash;
         if (exportInput && exportEventId) exportInput.value = exportEventId;
 
-        var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Audit Verification Request') + '&body=' +
-            encodeURIComponent('Please verify the following artifact:\n\nReport ID: ' + reportId + '\nArtifact Integrity Hash: ' + hash + (exportEventId ? '\nExport Event ID: ' + exportEventId : '') + '\n\nThank you.');
+        var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Artifact Verification Support');
         var mailtoEl = byId('qr-mailto');
         if (mailtoEl) mailtoEl.href = mailto;
 
         var button = byId('qr-verify-btn');
         if (button) {
-            button.addEventListener('click', function () {
-                runVerification(reportId, hash, exportEventId, 'qr-verify-btn');
+            button.addEventListener('click', async function () {
+                clearVerificationResult();
+                var fileHash = null;
+                try {
+                    fileHash = await selectedFileHash();
+                } catch (err) {
+                    setError(err.message || 'The selected file could not be hashed locally.');
+                    return;
+                }
+                runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash);
             });
         }
-
-        runVerification(reportId, hash, exportEventId, 'qr-verify-btn');
     }
 
     function init() {
         bindManualForm();
-        loadStatusPanel();
         initQrFlow();
+        loadStatusPanel();
     }
 
     if (document.readyState === 'loading') {

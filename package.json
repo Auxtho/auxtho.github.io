@@ -4,9 +4,10 @@
   "description": "Project configuration for the Auxtho website.",
   "scripts": {
     "build": "npx tailwindcss -i ./src/input.css -o ./assets/style.css --minify",
-    "build:core": "node ./src/build-core-overview.js"
+    "test:verify": "playwright test tests/verify-contract.spec.cjs --reporter=line --workers=1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "tailwindcss": "^3.4.1"
   }
 }

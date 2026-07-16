@@ -1,7 +1,9 @@
 {
   "decision": "PUBLIC_SYNTHETIC_CONSOLE_CAPTURE_READY",
   "output_path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
-  "source_revision": "bffbaddfb6c7732922f6e57a55d196ef61455aaf",
+  "source_revision": null,
+  "source_revision_publicly_resolvable": false,
+  "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
   "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
   "clip_css_px": {
     "x": 80,
@@ -27,5 +29,5 @@
     "GET https://fonts.googleapis.com/css2"
   ],
   "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",
-  "claim_boundary": "The product-source DashboardMetricCards component rendered a deterministic development-only fixture in a network-isolated, source-bound local checkout. This does not prove live telemetry, customer adoption, production runtime, or completed operational work."
+  "claim_boundary": "The DashboardMetricCards product component rendered a deterministic development-only fixture in a network-isolated controlled local capture. This does not prove live telemetry, customer adoption, production runtime, or completed operational work."
 }

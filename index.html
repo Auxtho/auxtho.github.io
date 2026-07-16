@@ -200,36 +200,36 @@
         <div class="text-center mb-12">
           <p class="hero-kicker">PRODUCT EVIDENCE</p>
           <h2 class="text-3xl md:text-5xl font-bold">Two bounded product surfaces.</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">Product-source App and Console components are rendered in separate source-bound local builds with deterministic synthetic state. They are independent fixtures, not live telemetry or a correlated customer run.</p>
+          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">App and Console product components are rendered in separate controlled local captures with deterministic synthetic state. They are independent fixtures, not live telemetry or a correlated customer run.</p>
         </div>
 
         <div class="evidence-surface-grid">
           <article class="evidence-surface-card">
             <div class="evidence-surface-copy">
-              <p class="proposal-surface-label">Auxtho App &middot; independent synthetic fixture &middot; source-bound local capture &middot; 16 Jul 2026 &middot; source 4ea020ea</p>
+              <p class="proposal-surface-label">Auxtho App &middot; independent synthetic fixture &middot; controlled local capture &middot; 16 Jul 2026</p>
               <h3>Governed review states rendered in the App</h3>
               <p>The product-source Overview component renders a coherent 12-packet fixture: four need review, two are blocked, three are ready for release, one was released today, and two remain in progress.</p>
             </div>
             <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png"
               data-lightbox-mode="app-overview"
               data-lightbox-title="Auxtho App synthetic workflow replay"
-              data-lightbox-caption="Product-source OverviewView rendered from 12 deterministic synthetic session records in a network-isolated, source-bound local checkout. The top-right synthetic replay badge is a capture annotation, not native product UI. This independent fixture is not live usage, adoption, or completed customer releases."
+              data-lightbox-caption="The OverviewView product component rendered 12 deterministic synthetic session records in a network-isolated local capture. The top-right synthetic replay badge is a capture annotation, not native product UI. This independent fixture is not live usage, adoption, or completed customer releases."
               aria-label="Open a larger view of the Auxtho App deterministic synthetic workflow replay">
               <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png" alt="Auxtho App product-source Overview component rendering an independent deterministic synthetic fixture with four items needing review, two blocked, three ready for release, and one released today." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> actual OverviewView component, source-bound local server, fixed GET responses, no customer data, and no external network requests. The top-right badge is a capture annotation; the Next.js development toolbar is excluded as capture-environment tooling. This fixture is independent from the Console capture; the counters do not establish live use, backend aggregation, deployment identity, or completed customer releases.</p>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> the OverviewView product component, controlled local server, fixed GET responses, no customer data, and no external network requests. The top-right badge is a capture annotation; the Next.js development toolbar is excluded as capture-environment tooling. This fixture is independent from the Console capture; the counters do not establish live use, backend aggregation, deployment identity, or completed customer releases.</p>
           </article>
 
           <article class="evidence-surface-card">
             <div class="evidence-surface-copy">
-            <p class="proposal-surface-label">Auxtho Console &middot; independent synthetic fixture &middot; source-bound local capture &middot; 16 Jul 2026 &middot; source bffbaddf</p>
+            <p class="proposal-surface-label">Auxtho Console &middot; independent synthetic fixture &middot; controlled local capture &middot; 16 Jul 2026</p>
               <h3>Operator attention rendered in the Console</h3>
               <p>The product-source shared metric component renders four review-attention events, two critical signals, three invented customer records, and one invented active bootstrap from a fixed local fixture.</p>
             </div>
             <a class="sample-card-media proposal-surface-media proposal-surface-media-wide" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png"
               data-lightbox-mode="console-wide"
               data-lightbox-title="Auxtho Console synthetic workflow replay"
-              data-lightbox-caption="Product-source DashboardMetricCards rendered from an independent deterministic development-only fixture in a network-isolated, source-bound local checkout. Synthetic only; not deployed, live telemetry, customer adoption, or correlated with the App capture."
+              data-lightbox-caption="The DashboardMetricCards product component rendered an independent deterministic development-only fixture in a network-isolated local capture. Synthetic only; not deployed, live telemetry, customer adoption, or correlated with the App capture."
               aria-label="Open a larger view of the Auxtho Console synthetic QA fixture">
               <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png" alt="Auxtho Console product-source shared metric component rendering an independent deterministic synthetic fixture with review attention four, critical signals two, three synthetic customer records, and one active synthetic bootstrap." loading="lazy" decoding="async">
             </a>
@@ -283,9 +283,9 @@
           <section class="state-panel state-panel-live">
             <p class="state-label">Visible in this bounded evidence set</p>
             <ul class="state-list">
-              <li>Product-source App OverviewView rendered in a source-bound local build from 12 deterministic synthetic sessions</li>
-              <li>Product-source Console DashboardMetricCards rendered in a source-bound local build from fixed synthetic records</li>
-              <li>Source revisions, image hashes, values, and capture limits recorded in a public manifest</li>
+              <li>App OverviewView product component rendered in a controlled local capture from 12 deterministic synthetic sessions</li>
+              <li>Console DashboardMetricCards product component rendered in a controlled local capture from fixed synthetic records</li>
+              <li>Image hashes, fixture values, and capture limits recorded in a public manifest</li>
               <li>No customer data, provider runtime, export path, or production mutation in either capture</li>
             </ul>
           </section>

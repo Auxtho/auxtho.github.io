@@ -72,6 +72,18 @@
     margin-top: 1rem;
 }
 
+.verification-disclosure {
+    margin: 0.75rem 0 0;
+    color: #8f99a8;
+    font-size: 0.8rem;
+    line-height: 1.55;
+}
+
+.btn-primary:disabled {
+    opacity: 0.52;
+    cursor: not-allowed;
+}
+
 .btn-primary.is-busy {
     opacity: 0.72;
     cursor: wait;
@@ -180,6 +192,14 @@
 
 .status-title.active {
     color: rgba(52, 211, 153, 0.96);
+}
+
+.status-title.checking {
+    color: rgba(251, 191, 36, 0.95);
+}
+
+.status-title.unavailable {
+    color: #fca5a5;
 }
 
 .status-title.planned {
@@ -320,9 +340,30 @@
 
 .manual-verify-form {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: 0.85rem;
     align-items: end;
+}
+
+.manual-report-field {
+    grid-column: span 3;
+}
+
+.manual-hash-field {
+    grid-column: span 5;
+}
+
+.manual-export-field {
+    grid-column: span 4;
+}
+
+.manual-file-field {
+    grid-column: span 9;
+}
+
+.manual-submit-button {
+    grid-column: span 3;
+    min-height: 3rem;
 }
 
 .manual-field label {
@@ -335,6 +376,24 @@
 .optional-label {
     color: #6f7886;
     font-weight: 500;
+}
+
+.manual-field-hint,
+.verification-scope-warning {
+    color: #9ca3af;
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.manual-field-hint {
+    margin: 0.5rem 0 0;
+}
+
+.verification-scope-warning {
+    margin: 1rem 0 0;
+    padding: 0.8rem 0.9rem;
+    border-left: 2px solid rgba(250, 204, 21, 0.7);
+    background: rgba(250, 204, 21, 0.06);
 }
 
 .manual-field input {
@@ -356,5 +415,13 @@
     .verify-result-grid,
     .manual-verify-form {
         grid-template-columns: 1fr;
+    }
+
+    .manual-report-field,
+    .manual-hash-field,
+    .manual-export-field,
+    .manual-file-field,
+    .manual-submit-button {
+        grid-column: 1 / -1;
     }
 }
