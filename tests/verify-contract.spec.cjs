@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, '..');
 let server;
 let baseUrl;
 const MATCHED_SITE_SHA = 'a'.repeat(40);
-const ROLLBACK_SITE_SHA = 'b'.repeat(40);
+const ROLLBACK_SITE_SHA = '1'.repeat(40);
 
 test('site CI watches release identity and requires committed build output', async () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'site-ci.yml'), 'utf8');
@@ -94,7 +94,7 @@ function successPayloadForRequest(request, overrides = {}) {
 
 async function mockStatus(page, status = 'operational', options = {}) {
   const statusOverrides = options.statusOverrides || {};
-  await page.route('http://127.0.0.1:8000/api/verify/status', async (route) => {
+  await page.route(`${baseUrl}/api/verify/status`, async (route) => {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(statusPayload(status, statusOverrides)) });
   });
   await page.route('**/release.json*', async (route) => {
@@ -168,7 +168,7 @@ test('verifier CSP allows reviewed endpoints and blocks an unlisted connection',
 test('QR parameters prefill but never submit before an explicit click', async ({ page }) => {
   let postCount = 0;
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     if (route.request().method() === 'POST') postCount += 1;
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayloadForRequest(route.request())) });
   });
@@ -190,7 +190,7 @@ test('QR parameters prefill but never submit before an explicit click', async ({
 test('manual controls use form semantics and one Enter action submits exactly once', async ({ page }) => {
   let postCount = 0;
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     if (route.request().method() === 'POST') postCount += 1;
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayloadForRequest(route.request())) });
   });
@@ -210,7 +210,7 @@ test('manual controls use form semantics and one Enter action submits exactly on
 test('invalid non-legacy artifact hashes never leave manual or QR controls busy', async ({ page }) => {
   let postCount = 0;
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     postCount += 1;
     await route.fulfill({
       status: 200,
@@ -249,7 +249,7 @@ test('legacy 16-character bindings render a tombstone and never reach the API', 
   page.on('request', (request) => {
     if (request.url().includes('/api/verify/status')) statusCount += 1;
   });
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     postCount += 1;
     await route.fulfill({
       status: 200,
@@ -313,7 +313,7 @@ test('matching rendered release identity enables verification with a cache-buste
   expect(releaseUrl.searchParams.get('cache_bust')).toMatch(/^\d+$/);
 });
 
-test('reviewed old/new backend site SHAs remain exact-match compatible during 90/10 and rollback', async ({ browser }) => {
+test('canonical legacy/candidate site SHAs remain exact-match compatible through bridge and final backend phases', async ({ browser }) => {
   const compatible = [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA];
   for (const backendSiteSha of compatible) {
     const context = await browser.newContext();
@@ -337,6 +337,7 @@ test('unreviewed, wildcard, duplicate, oversized, and non-current compatibility 
     },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, '*'] } },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, MATCHED_SITE_SHA] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA] } },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA, 'c'.repeat(40)] } },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA] } },
     { releasePayload: { source_sha: MATCHED_SITE_SHA.toUpperCase(), compatible_backend_site_shas: [MATCHED_SITE_SHA.toUpperCase()] } },
@@ -397,7 +398,7 @@ test('verifier disclosure does not promise an application audit record for every
 
 test('changing identifiers or the selected file invalidates a prior success result', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -428,7 +429,7 @@ test('changing identifiers or the selected file invalidates a prior success resu
 test('an aborted stale response cannot restore an invalidated or older result', async ({ page }) => {
   await mockStatus(page);
   let requestCount = 0;
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     requestCount += 1;
     const body = route.request().postDataJSON();
     if (requestCount === 1) await new Promise((resolve) => setTimeout(resolve, 300));
@@ -466,7 +467,7 @@ test('an aborted stale response cannot restore an invalidated or older result', 
 test('verification-unavailable response disables controls and removes prior metadata', async ({ page }) => {
   await mockStatus(page);
   let attempts = 0;
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     attempts += 1;
     if (attempts === 1) {
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayloadForRequest(route.request())) });
@@ -498,7 +499,7 @@ test('a bounded timeout restores the button and permits a successful retry', asy
   });
   await mockStatus(page);
   let attempts = 0;
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     attempts += 1;
     const body = route.request().postDataJSON();
     if (attempts === 1) await new Promise((resolve) => setTimeout(resolve, 300));
@@ -546,7 +547,7 @@ test('unknown preview origins fail closed instead of contacting production', asy
 
 test('contradictory recorded signature evidence fails closed', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -593,7 +594,7 @@ test('readiness hints alone never produce PKCS7 or public TSA claims', async ({ 
 
 test('incomplete signed metadata fails closed without crypto capability labels', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     const payload = successPayloadForRequest(route.request(), {
       verificationMode: 'production_signed',
       signature: {
@@ -625,7 +626,7 @@ test('incomplete signed metadata fails closed without crypto capability labels',
 
 test('complete signed registry state is labeled recorded and not revalidated', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -670,7 +671,7 @@ test('complete signed registry state is labeled recorded and not revalidated', a
 
 test('legacy bare verified true cannot authorize a displayed match', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     const legacy = successPayloadForRequest(route.request());
     delete legacy.verification_outcome;
     legacy.verified = true;
@@ -713,7 +714,7 @@ test('missing, mismatched, or normalized artifact hash echoes fail closed', asyn
     const context = await browser.newContext();
     const page = await context.newPage();
     await mockStatus(page);
-    await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    await page.route(`${baseUrl}/api/verify`, async (route) => {
       const payload = successPayloadForRequest(route.request());
       contractCase.mutate(payload);
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
@@ -741,7 +742,7 @@ test('missing or mismatched uploaded-file SHA-256 echoes fail closed', async ({ 
     const page = await context.newPage();
     let submittedFileHash;
     await mockStatus(page);
-    await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    await page.route(`${baseUrl}/api/verify`, async (route) => {
       const requestBody = route.request().postDataJSON();
       submittedFileHash = requestBody.artifact_bytes_sha256;
       const payload = successPayloadForRequest(route.request());
@@ -767,7 +768,7 @@ test('missing or mismatched uploaded-file SHA-256 echoes fail closed', async ({ 
 
 test('response scope must match whether file bytes were requested', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -791,7 +792,7 @@ test('response scope must match whether file bytes were requested', async ({ pag
 
 test('a mismatched response record identifier fails closed', async ({ page }) => {
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
@@ -821,7 +822,7 @@ test('verifier fetches reject redirects instead of forwarding identifiers', asyn
   page.on('request', (request) => {
     if (request.url().startsWith('https://example.invalid/')) externalRequests.push(request.url());
   });
-  await page.route('http://127.0.0.1:8000/api/verify/status', async (route) => {
+  await page.route(`${baseUrl}/api/verify/status`, async (route) => {
     await route.fulfill({
       status: 302,
       headers: { Location: 'https://example.invalid/collect' },
@@ -841,7 +842,7 @@ test('identifier-bearing verification POST rejects redirects', async ({ page }) 
     if (request.url().startsWith('https://example.invalid/')) externalRequests.push(request.url());
   });
   await mockStatus(page);
-  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
     await route.fulfill({ status: 302, headers: { Location: 'https://example.invalid/collect' }, body: '' });
   });
   await page.goto(`${baseUrl}/verify.html`);

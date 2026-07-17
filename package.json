@@ -4,12 +4,16 @@
   "description": "Project configuration for the Auxtho website.",
   "scripts": {
     "build": "tailwindcss -i ./src/input.css -o ./assets/style.css --minify",
-    "test:release": "node --test tests/release-contract.spec.cjs",
+    "test:js": "node scripts/release/validate-js.cjs",
+    "test:yaml": "node scripts/release/validate-workflows.cjs",
+    "test:release": "node --test tests/release-contract.spec.cjs tests/release-controls.spec.cjs",
     "test:verify": "playwright test tests/verify-contract.spec.cjs --reporter=line --workers=1",
     "test:verify:deployed": "playwright test tests/post-deploy-verifier-smoke.spec.cjs --reporter=line --workers=1"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
-    "tailwindcss": "^3.4.1"
+    "parse5": "^7.3.0",
+    "tailwindcss": "^3.4.1",
+    "yaml": "^2.9.0"
   }
 }

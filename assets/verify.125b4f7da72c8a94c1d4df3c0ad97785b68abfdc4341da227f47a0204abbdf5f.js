@@ -4,7 +4,7 @@
 
     function resolveApiRoot() {
         if (PRODUCTION_ORIGINS.indexOf(window.location.origin) >= 0) return 'https://api.auxtho.com';
-        if (LOCAL_HOSTS.indexOf(window.location.hostname) >= 0) return 'http://127.0.0.1:8000';
+        if (LOCAL_HOSTS.indexOf(window.location.hostname) >= 0) return window.location.origin;
         return null;
     }
 
@@ -51,6 +51,7 @@
         if (!release || !isFortyHex(release.source_sha) || !isFortyHex(backendSiteSha)) return false;
         var compatible = release.compatible_backend_site_shas;
         if (!Array.isArray(compatible) || compatible.length < 1 || compatible.length > 2) return false;
+        if (JSON.stringify(compatible) !== JSON.stringify(compatible.slice().sort())) return false;
         var seen = Object.create(null);
         for (var index = 0; index < compatible.length; index += 1) {
             var siteSha = compatible[index];

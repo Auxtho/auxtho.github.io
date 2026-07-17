@@ -16,4 +16,5 @@ Thumbs.dbnode_modules/
 
 # Browser test output
 /test-results/
+/test-results-*/
 /playwright-report/
