@@ -2,7 +2,7 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const https = require('node:https');
 const path = require('node:path');
-const { findScriptSources } = require('./public-artifact.cjs');
+const { findImageSources, findScriptSources, findStylesheetSources } = require('./public-artifact.cjs');
 const { validateBackendStatus } = require('./platform-controls.cjs');
 
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
@@ -29,15 +29,16 @@ function resolveHttpsRedirect(currentUrl, location, allowedOrigins) {
   return assertHttpsUrl(new URL(location, currentUrl), allowedOrigins, 'redirect chain');
 }
 
-function requestOnce(url) {
+function requestOnce(url, options = {}) {
+  const headers = {
+    'Accept-Encoding': 'identity',
+    'User-Agent': 'auxtho-release-readback/2',
+  };
+  if (options.bypassCache === true) headers['Cache-Control'] = 'no-cache';
   return new Promise((resolve, reject) => {
     const request = https.request(url, {
       method: 'GET',
-      headers: {
-        'Accept-Encoding': 'identity',
-        'Cache-Control': 'no-cache',
-        'User-Agent': 'auxtho-release-readback/2',
-      },
+      headers,
       timeout: 30_000,
     }, (response) => {
       const chunks = [];
@@ -54,11 +55,11 @@ function requestOnce(url) {
   });
 }
 
-async function fetchHttps(value, allowedOrigins, maxRedirects = 5) {
+async function fetchHttps(value, allowedOrigins, maxRedirects = 5, requestOptions = {}) {
   let url = assertHttpsUrl(value, allowedOrigins, 'readback URL');
   const chain = [];
   for (let index = 0; index <= maxRedirects; index += 1) {
-    const response = await requestOnce(url);
+    const response = await requestOnce(url, requestOptions);
     chain.push({ url: url.toString(), status: response.status, location: response.headers.location || null });
     if (!REDIRECT_STATUSES.has(response.status)) return { ...response, url, chain };
     if (index === maxRedirects) fail('HTTPS redirect chain exceeded the reviewed limit');
@@ -104,6 +105,25 @@ function validateVerifierSecurity(response, document) {
   if (/127\.0\.0\.1|localhost|http:/i.test(metaCsp)) fail('published verifier meta CSP contains loopback or HTTP');
   if (!/(?:^|;)\s*connect-src\s+'self'\s+https:\/\/api\.auxtho\.com\s*(?:;|$)/i.test(metaCsp)) {
     fail('published verifier meta CSP connect-src is not the exact production policy');
+  }
+}
+
+function validatePublicPageSecurity(response, document, publicPath) {
+  function requireHeader(name, pattern) {
+    const value = headerValue(response.headers, name);
+    if (!value || !pattern.test(value)) fail(`${publicPath} required ${name} response header is missing or invalid`);
+  }
+  requireHeader('content-type', /^text\/html\b/i);
+  requireHeader('strict-transport-security', /(?:^|;)\s*max-age=\d+/i);
+  requireHeader('x-content-type-options', /^nosniff$/i);
+  requireHeader('referrer-policy', /\S+/);
+  requireHeader('content-security-policy', /(?:^|;)\s*frame-ancestors\s+'none'\s*(?:;|$)/i);
+  const csp = headerValue(response.headers, 'content-security-policy');
+  if (/127\.0\.0\.1|localhost|(?:^|\s)http:/i.test(csp)) fail(`${publicPath} response CSP contains loopback or HTTP`);
+  if (/(?:^|\s)'unsafe-eval'(?:\s|;|$)/i.test(csp)) fail(`${publicPath} response CSP permits unsafe-eval`);
+  if (/(?:^|\s)\*(?:\s|;|$)/.test(csp)) fail(`${publicPath} response CSP contains a wildcard source`);
+  if (/<script\b(?![^>]*\bsrc=)[^>]*>/i.test(document)) {
+    fail(`${publicPath} contains an inline script that cannot be bound to package bytes`);
   }
 }
 
@@ -214,7 +234,7 @@ async function waitForExactRelease(options, allowedOrigins, provenance) {
     try {
       const url = new URL('/release.json', options.origin);
       url.searchParams.set('cache_bust', `${options.cacheToken}-identity-${attempt}`);
-      const response = await fetchHttps(url, allowedOrigins);
+      const response = await fetchHttps(url, allowedOrigins, 5, { bypassCache: variant === 'cache_busted' });
       if (response.status !== 200) fail(`release readback returned HTTP ${response.status}`);
       const release = JSON.parse(response.body.toString('utf8'));
       validateRelease(release, provenance, options);
@@ -294,6 +314,55 @@ async function verifyDeployment(options) {
       chain: referencedResponse.chain,
     });
   }
+  for (const reference of releaseManifest.stylesheet_references || []) {
+    if (digestByPath.get(reference.path) !== reference.sha256) fail(`stylesheet reference is not bound to package digest: ${reference.url}`);
+    const html = canonicalBodies.get(reference.html_path.slice(1))?.body?.toString('utf8');
+    if (!html || !findStylesheetSources(html).includes(reference.url)) {
+      fail(`deployed HTML does not reference exact stylesheet URL: ${reference.html_path}`);
+    }
+    if (options.mode === 'candidate' && reference.content_addressed !== true) {
+      fail(`candidate stylesheet reference is not content-addressed: ${reference.url}`);
+    }
+    const referencedResponse = await fetchHttps(new URL(reference.url, options.origin), allowedOrigins);
+    if (referencedResponse.status !== 200 || sha256(referencedResponse.body) !== reference.sha256) {
+      fail(`exact referenced stylesheet URL bytes mismatch: ${reference.url}`);
+    }
+    records.push({
+      type: 'published',
+      variant: 'exact_stylesheet_reference',
+      path: reference.url,
+      status: referencedResponse.status,
+      sha256: reference.sha256,
+      chain: referencedResponse.chain,
+    });
+  }
+  for (const reference of releaseManifest.image_references || []) {
+    if (digestByPath.get(reference.path) !== reference.sha256) fail(`image reference is not bound to package digest: ${reference.url}`);
+    const html = canonicalBodies.get(reference.html_path.slice(1))?.body?.toString('utf8');
+    if (!html || !findImageSources(html).includes(reference.url)) {
+      fail(`deployed HTML does not reference exact image URL: ${reference.html_path}`);
+    }
+    if (options.mode === 'candidate' && reference.content_addressed !== true) {
+      fail(`candidate image reference is not content-addressed: ${reference.url}`);
+    }
+    const referencedResponse = await fetchHttps(new URL(reference.url, options.origin), allowedOrigins);
+    if (referencedResponse.status !== 200 || sha256(referencedResponse.body) !== reference.sha256) {
+      fail(`exact referenced image URL bytes mismatch: ${reference.url}`);
+    }
+    records.push({
+      type: 'published',
+      variant: 'exact_image_reference',
+      path: reference.url,
+      status: referencedResponse.status,
+      sha256: reference.sha256,
+      chain: referencedResponse.chain,
+    });
+  }
+  if (options.mode === 'candidate') {
+    for (const [relative, value] of canonicalBodies) {
+      if (relative.endsWith('.html')) validatePublicPageSecurity(value.response, value.body.toString('utf8'), `/${relative}`);
+    }
+  }
   const verifier = canonicalBodies.get('verify.html');
   if (!verifier) fail('canonical verifier readback is absent');
   if (options.mode === 'candidate') validateVerifierSecurity(verifier.response, verifier.body.toString('utf8'));
@@ -363,6 +432,7 @@ module.exports = {
   parseDigestManifest,
   resolveHttpsRedirect,
   validateRelease,
+  validatePublicPageSecurity,
   validateVerifierSecurity,
   verifyDeployment,
   writeFailureEvidence,

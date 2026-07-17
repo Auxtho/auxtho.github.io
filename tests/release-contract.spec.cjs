@@ -3,11 +3,14 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
+const { spawnSync } = require('node:child_process');
 const test = require('node:test');
 
 const {
   buildArtifact,
+  findImageSources,
   findScriptSources,
+  findStylesheetSources,
 } = require('../scripts/release/public-artifact.cjs');
 const {
   validateGeneratedRelease,
@@ -18,6 +21,7 @@ const root = path.resolve(__dirname, '..');
 const LEGACY_SHA = '1'.repeat(40);
 const SITE_SHA = 'a'.repeat(40);
 const COMPATIBILITY = [LEGACY_SHA, SITE_SHA].sort();
+const ACTUAL_LEGACY_SHA = '4b2f476c741b771519745930a6ebf244cf5d6433';
 
 function sha256(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
@@ -57,7 +61,8 @@ test('CI and deploy workflows bind pre-merge bootstrap, fresh package authorizat
   assert.match(site, /name: Verify Site Contract/);
   assert.match(site, /assert-pages-bootstrap/);
   assert.match(site, /\.github\/workflows\/deploy-pages\.yml/);
-  assert.equal((deploy.match(/capture-and-validate/g) || []).length, 2);
+  assert.equal((deploy.match(/capture-and-validate/g) || []).length, 3);
+  assert.equal((deploy.match(/deployment: false/g) || []).length, 2);
   assert.match(deploy, /APPROVED_ENVIRONMENT_REVIEWER_IDS/);
   assert.match(deploy, /PRODUCTION_VERIFY_FINAL_BACKEND_SHA/);
   assert.match(deploy, /artifact_name: github-pages-candidate/);
@@ -67,6 +72,7 @@ test('CI and deploy workflows bind pre-merge bootstrap, fresh package authorizat
   assert.match(deploy, /steps\.final_backend_readback\.outcome != 'success'/);
   assert.match(deploy, /BACKEND_FINALIZE_REQUIRED/);
   assert.match(deploy, /BACKEND_ROLLBACK_REQUIRED/);
+  assert.match(deploy, /Hold without site rollback when the final backend transition is not yet proven/);
   assert.match(deploy, /Keep the release failed after deterministic restoration/);
 });
 
@@ -119,6 +125,19 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
       const bytes = fs.readFileSync(path.join(output, ...reference.url.slice(1).split('/')));
       assert.equal(sha256(bytes), reference.sha256);
       assert.equal(reference.url.includes(reference.sha256), true);
+    }
+    for (const reference of result.releaseManifest.stylesheet_references) {
+      assert.match(reference.url, /^\/assets\/[A-Za-z0-9._/-]+\.css\?sha256=[0-9a-f]{64}$/);
+      assert.equal(reference.content_addressed, true);
+      const bytes = fs.readFileSync(path.join(output, ...reference.path.slice(1).split('/')));
+      assert.equal(sha256(bytes), reference.sha256);
+      assert.equal(reference.url.endsWith(reference.sha256), true);
+    }
+    for (const reference of result.releaseManifest.image_references) {
+      assert.match(reference.url, /^\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg)\?sha256=[0-9a-f]{64}$/);
+      assert.equal(reference.content_addressed, true);
+      const bytes = fs.readFileSync(path.join(output, ...reference.path.slice(1).split('/')));
+      assert.equal(sha256(bytes), reference.sha256);
     }
     assert.equal(fs.existsSync(path.join(output, 'assets', 'app.js')), false);
     assert.equal(fs.existsSync(path.join(output, 'assets', 'tw-init.js')), false);
@@ -217,6 +236,55 @@ test('rollback artifact preserves and hashes an approved legacy script URL exact
   }
 });
 
+test('bootstrap rollback packages the actual approved legacy tree without inventing a candidate evidence manifest', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-actual-legacy-rollback-'));
+  try {
+    const archive = path.join(temporary, 'legacy.tar');
+    const source = path.join(temporary, 'legacy');
+    const previous = path.join(temporary, 'previous');
+    fs.mkdirSync(source);
+    fs.mkdirSync(previous);
+    createSourceFixture(previous);
+    const archived = spawnSync('git', ['archive', '--format=tar', `--output=${archive}`, ACTUAL_LEGACY_SHA], {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+    });
+    assert.equal(archived.status, 0, archived.stderr);
+    const extracted = spawnSync('tar', ['-xf', archive, '-C', source], { encoding: 'utf8', windowsHide: true });
+    assert.equal(extracted.status, 0, extracted.stderr);
+    assert.equal(fs.existsSync(path.join(source, 'assets', 'proposal', 'evidence-manifest-20260716.json')), false);
+
+    const result = buildArtifact({
+      sourceRoot: source,
+      previousSourceRoot: previous,
+      outputRoot: path.join(temporary, 'site'),
+      provenanceRoot: path.join(temporary, 'provenance'),
+      sourceSha: ACTUAL_LEGACY_SHA,
+      previousSha: ACTUAL_LEGACY_SHA,
+      compatibleJson: JSON.stringify([ACTUAL_LEGACY_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      legacyBootstrap: true,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    });
+
+    assert.equal(result.release.privacy_manifest.legacy_absent, true);
+    assert.equal(result.releaseManifest.evidence_boundaries.reviewed_candidate_claims_present, false);
+    assert.equal(fs.existsSync(path.join(temporary, 'site', 'assets', 'pdf', 'auxtho-core-overview-v2025.1.pdf')), true);
+    assert.equal(fs.existsSync(path.join(temporary, 'site', 'archive', 'core', 'v2025.1', 'index.html')), true);
+    assert.equal(fs.existsSync(path.join(temporary, 'site', 'core', 'index.html')), true);
+    assert.equal(fs.existsSync(path.join(temporary, 'site', 'lineage', 'isp', 'index.html')), true);
+    assert.equal(fs.existsSync(path.join(temporary, 'site', 'release.json')), true);
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test('every HTML script reference is query-free and bound to exact SHA-256 bytes', () => {
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html',
@@ -234,6 +302,35 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
     }
   }
   assert.equal(referenced.size, 3);
+});
+
+test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', () => {
+  const htmlFiles = [
+    '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html', 'verify.html',
+    'security/ardamire/index.html',
+  ];
+  for (const relative of htmlFiles) {
+    const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
+    for (const source of findStylesheetSources(document)) {
+      const match = source.match(/^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/);
+      assert.ok(match, `${relative} -> ${source}`);
+      const bytes = fs.readFileSync(path.join(root, ...match[1].slice(1).split('/')));
+      assert.equal(sha256(bytes), match[2]);
+    }
+  }
+});
+
+test('every candidate-rendered image URL carries the exact SHA-256 of its bytes', () => {
+  const htmlFiles = ['404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html'];
+  for (const relative of htmlFiles) {
+    const document = fs.readFileSync(path.join(root, relative), 'utf8');
+    for (const source of findImageSources(document)) {
+      const match = source.match(/^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/);
+      assert.ok(match, `${relative} -> ${source}`);
+      const bytes = fs.readFileSync(path.join(root, ...match[1].slice(1).split('/')));
+      assert.equal(sha256(bytes), match[2]);
+    }
+  }
 });
 
 test('verifier production CSP has no loopback and local tests use same-origin API routing', () => {

@@ -6,6 +6,8 @@ const parse5 = require('parse5');
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
 const SCRIPT_PATH_PATTERN = /^\/assets\/[A-Za-z0-9._/-]+\.([0-9a-f]{64})\.js$/;
+const STYLESHEET_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/;
+const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/;
 const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.png', '.svg']);
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
 
@@ -108,13 +110,20 @@ function copyFile(sourceRoot, outputRoot, relative) {
   fs.copyFileSync(source, target, fs.constants.COPYFILE_EXCL);
 }
 
-function stageExplicitPublicFiles(sourceRoot, outputRoot) {
+function stageExplicitPublicFiles(sourceRoot, outputRoot, options = {}) {
   if (fs.existsSync(outputRoot)) fail(`artifact output already exists: ${outputRoot}`);
   fs.mkdirSync(outputRoot, { recursive: false });
   const sourceFiles = relativeFiles(sourceRoot);
   const staged = [];
 
   for (const relative of sourceFiles) {
+    const legacyBootstrapRollback = options.mode === 'rollback' && options.legacyBootstrap === true;
+    if (legacyBootstrapRollback) {
+      if (relative.split('/').some((segment) => segment.startsWith('.'))) continue;
+      copyFile(sourceRoot, outputRoot, relative);
+      staged.push(relative);
+      continue;
+    }
     const isRootHtml = !relative.includes('/') && relative.endsWith('.html');
     const isRootStatic = ['CNAME', 'robots.txt', 'sitemap.xml'].includes(relative);
     const isSecurityTombstone = relative === 'security/ardamire/index.html';
@@ -150,13 +159,45 @@ function findScriptSources(document) {
   return sources;
 }
 
-function validateScriptReferences(outputRoot, mode = 'candidate') {
+function findStylesheetSources(document) {
+  const parsed = parse5.parse(document);
+  const sources = [];
+  function visit(node) {
+    if (node.nodeName === 'link') {
+      const attributes = Object.fromEntries((node.attrs || []).map((attribute) => [attribute.name, attribute.value]));
+      if (String(attributes.rel || '').split(/\s+/).includes('stylesheet') && attributes.href) {
+        sources.push(attributes.href);
+      }
+    }
+    for (const child of node.childNodes || []) visit(child);
+  }
+  visit(parsed);
+  return sources;
+}
+
+function findImageSources(document) {
+  const parsed = parse5.parse(document);
+  const sources = [];
+  function visit(node) {
+    const attributes = Object.fromEntries((node.attrs || []).map((attribute) => [attribute.name, attribute.value]));
+    if (node.nodeName === 'img' && attributes.src) sources.push(attributes.src);
+    if (node.nodeName === 'a' && attributes.href && /^\/assets\/.+\.(?:png|svg)(?:\?|$)/i.test(attributes.href)) {
+      sources.push(attributes.href);
+    }
+    for (const child of node.childNodes || []) visit(child);
+  }
+  visit(parsed);
+  return sources;
+}
+
+function validateScriptReferences(outputRoot, mode = 'candidate', legacyBootstrap = false) {
   const references = [];
   const htmlFiles = relativeFiles(outputRoot).filter((relative) => relative.endsWith('.html'));
   for (const htmlPath of htmlFiles) {
     const document = fs.readFileSync(path.join(outputRoot, ...htmlPath.split('/')), 'utf8');
     for (const source of findScriptSources(document)) {
       const url = new URL(source, 'https://auxtho.invalid');
+      if (legacyBootstrap && !url.pathname.endsWith('.js')) continue;
       if (url.origin !== 'https://auxtho.invalid' || !source.startsWith('/') || url.hash) {
         fail(`script reference must be an absolute local URL without a fragment: ${htmlPath} -> ${source}`);
       }
@@ -185,15 +226,91 @@ function validateScriptReferences(outputRoot, mode = 'candidate') {
   const publishedScripts = relativeFiles(outputRoot).filter((relative) => relative.endsWith('.js'));
   const referenced = new Set(references.map((entry) => decodeURIComponent(entry.path.slice(1))));
   for (const relative of publishedScripts) {
-    if (!referenced.has(relative)) fail(`published JavaScript is not referenced by HTML: ${relative}`);
+    if (!legacyBootstrap && !referenced.has(relative)) fail(`published JavaScript is not referenced by HTML: ${relative}`);
   }
   return references.sort((left, right) => (
     `${left.html_path}\0${left.url}`.localeCompare(`${right.html_path}\0${right.url}`)
   ));
 }
 
-function validatePrivacyAndClaims(outputRoot, mode) {
+function validateStylesheetReferences(outputRoot, mode = 'candidate') {
+  const references = [];
+  const htmlFiles = relativeFiles(outputRoot).filter((relative) => relative.endsWith('.html'));
+  for (const htmlPath of htmlFiles) {
+    const document = fs.readFileSync(path.join(outputRoot, ...htmlPath.split('/')), 'utf8');
+    for (const source of findStylesheetSources(document)) {
+      const url = new URL(source, 'https://auxtho.invalid');
+      if (url.origin !== 'https://auxtho.invalid' || !source.startsWith('/') || url.hash) {
+        fail(`stylesheet reference must be an absolute local URL without a fragment: ${htmlPath} -> ${source}`);
+      }
+      if (!/^\/assets\/[A-Za-z0-9._/-]+\.css$/.test(url.pathname)) {
+        fail(`stylesheet URL path is outside the reviewed assets namespace: ${htmlPath} -> ${source}`);
+      }
+      const relative = decodeURIComponent(url.pathname.slice(1));
+      const stylesheetPath = path.join(outputRoot, ...relative.split('/'));
+      if (!fs.existsSync(stylesheetPath)) fail(`referenced stylesheet is absent: ${source}`);
+      const actualHash = sha256(fs.readFileSync(stylesheetPath));
+      const match = source.match(STYLESHEET_URL_PATTERN);
+      const contentAddressed = Boolean(match && actualHash === match[2]);
+      if (mode === 'candidate' && !contentAddressed) {
+        fail(`candidate stylesheet URL must contain the exact SHA-256 bytes: ${htmlPath} -> ${source}`);
+      }
+      references.push({
+        html_path: publicPathFromRelative(htmlPath),
+        url: source,
+        path: url.pathname,
+        sha256: actualHash,
+        content_addressed: contentAddressed,
+      });
+    }
+  }
+  return references.sort((left, right) => (
+    `${left.html_path}\0${left.url}`.localeCompare(`${right.html_path}\0${right.url}`)
+  ));
+}
+
+function validateImageReferences(outputRoot, mode = 'candidate') {
+  const references = [];
+  const htmlFiles = relativeFiles(outputRoot).filter((relative) => relative.endsWith('.html'));
+  for (const htmlPath of htmlFiles) {
+    const document = fs.readFileSync(path.join(outputRoot, ...htmlPath.split('/')), 'utf8');
+    for (const source of findImageSources(document)) {
+      const url = new URL(source, 'https://auxtho.invalid');
+      if (url.origin !== 'https://auxtho.invalid' || !source.startsWith('/') || url.hash) {
+        fail(`image reference must be an absolute local URL without a fragment: ${htmlPath} -> ${source}`);
+      }
+      const relative = decodeURIComponent(url.pathname.slice(1));
+      const imagePath = path.join(outputRoot, ...relative.split('/'));
+      if (!fs.existsSync(imagePath)) fail(`referenced image is absent: ${source}`);
+      const actualHash = sha256(fs.readFileSync(imagePath));
+      const match = source.match(IMAGE_URL_PATTERN);
+      const contentAddressed = Boolean(match && actualHash === match[2]);
+      if (mode === 'candidate' && !contentAddressed) {
+        fail(`candidate image URL must contain the exact SHA-256 bytes: ${htmlPath} -> ${source}`);
+      }
+      references.push({
+        html_path: publicPathFromRelative(htmlPath),
+        url: source,
+        path: url.pathname,
+        sha256: actualHash,
+        content_addressed: contentAddressed,
+      });
+    }
+  }
+  return references.sort((left, right) => (
+    `${left.html_path}\0${left.url}`.localeCompare(`${right.html_path}\0${right.url}`)
+  ));
+}
+
+function validatePrivacyAndClaims(outputRoot, mode, legacyBootstrap = false) {
   const manifestPath = path.join(outputRoot, ...PRIVACY_MANIFEST_PATH.slice(1).split('/'));
+  if (!fs.existsSync(manifestPath)) {
+    if (mode === 'rollback' && legacyBootstrap) {
+      return { path: null, sha256: null, legacy_absent: true };
+    }
+    fail('public evidence manifest is absent');
+  }
+  if (legacyBootstrap) fail('legacy bootstrap rollback unexpectedly contains the candidate evidence manifest');
   const manifestBytes = fs.readFileSync(manifestPath);
   const manifest = JSON.parse(manifestBytes.toString('utf8'));
   if (
@@ -278,9 +395,13 @@ function buildArtifact(options) {
   if (options.mode === 'candidate' && JSON.stringify(compatible) !== JSON.stringify([previousSha, sourceSha].sort())) {
     fail('candidate compatibility must be the canonical sorted legacy/candidate SHA pair');
   }
-  const staged = stageExplicitPublicFiles(sourceRoot, outputRoot);
-  const scriptReferences = validateScriptReferences(outputRoot, options.mode);
-  const privacyManifest = validatePrivacyAndClaims(outputRoot, options.mode);
+  const legacyBootstrap = options.legacyBootstrap === true;
+  if (legacyBootstrap && options.mode !== 'rollback') fail('legacy bootstrap packaging is allowed only for rollback');
+  const staged = stageExplicitPublicFiles(sourceRoot, outputRoot, { mode: options.mode, legacyBootstrap });
+  const scriptReferences = validateScriptReferences(outputRoot, options.mode, legacyBootstrap);
+  const stylesheetReferences = legacyBootstrap ? [] : validateStylesheetReferences(outputRoot, options.mode);
+  const imageReferences = legacyBootstrap ? [] : validateImageReferences(outputRoot, options.mode);
+  const privacyManifest = validatePrivacyAndClaims(outputRoot, options.mode, legacyBootstrap);
 
   const generatedPaths = new Set(['/release.json', '/assets/release-manifest.json']);
   const publishedRoutes = pathsWithIndexAliases(staged);
@@ -306,12 +427,15 @@ function buildArtifact(options) {
     previous_approved_source_sha: previousSha,
     rollback_of_source_sha: rollbackOfSha,
     script_references: scriptReferences,
+    stylesheet_references: stylesheetReferences,
+    image_references: imageReferences,
     privacy_manifest: privacyManifest,
     evidence_boundaries: {
-      synthetic_only: true,
+      synthetic_only: !legacyBootstrap,
       customer_data_claimed: false,
       live_telemetry_claimed: false,
       production_readiness_claimed: false,
+      reviewed_candidate_claims_present: !legacyBootstrap,
     },
     backend_site_sha_transition: {
       bridge_reported_site_sha: options.mode === 'candidate' ? previousSha : sourceSha,
@@ -373,6 +497,7 @@ function parseArguments(argv) {
     compatibleJson: options['compatible-json'],
     mode: options.mode,
     rollbackOfSha: options['rollback-of-sha'],
+    legacyBootstrap: options['legacy-bootstrap'] === 'true',
     retiredManifestPath: options['retired-manifest'],
     artifactName: options['artifact-name'],
     repository: process.env.GITHUB_REPOSITORY || 'local/auxtho-site',
@@ -396,8 +521,12 @@ if (require.main === module) {
 module.exports = {
   buildArtifact,
   findScriptSources,
+  findStylesheetSources,
+  findImageSources,
   normalizeManifestPath,
   sha256,
   sourceCandidatePaths,
   validateScriptReferences,
+  validateStylesheetReferences,
+  validateImageReferences,
 };

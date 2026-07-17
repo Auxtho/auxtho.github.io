@@ -45,6 +45,14 @@ function parseReviewerIds(value) {
 }
 
 function assertBindings(bindings) {
+  const siteContractMode = String(bindings.siteContractMode || '');
+  const approvedSiteContractMode = String(bindings.approvedSiteContractMode || '');
+  if (!['bootstrap', 'normal'].includes(siteContractMode)) {
+    fail('requested site contract mode must be bootstrap or normal');
+  }
+  if (siteContractMode !== approvedSiteContractMode) {
+    fail('requested site contract mode does not exactly match the protected approved mode');
+  }
   const sourceSha = assertSha('requested site SHA', bindings.sourceSha);
   const approvedSha = assertSha('approved site SHA', bindings.approvedSha);
   if (sourceSha !== approvedSha) fail('requested site SHA does not exactly match the protected approved SHA');
@@ -77,6 +85,9 @@ function assertBindings(bindings) {
     fail('rollback compatibility must be canonical SHA sort order');
   }
   if (!rollbackCompatible.includes(rollbackSha)) fail('rollback compatibility must include the rollback site SHA');
+  if (JSON.stringify(rollbackCompatible) !== JSON.stringify([rollbackSha])) {
+    fail('rollback compatibility must contain only the rollback site SHA');
+  }
 
   const backendBridgeSha = assertSha('requested backend bridge SHA', bindings.backendBridgeSha);
   if (backendBridgeSha !== assertSha('approved backend bridge SHA', bindings.approvedBackendBridgeSha)) {
@@ -93,6 +104,7 @@ function assertBindings(bindings) {
   if (finalBackendSha === backendBridgeSha) fail('final backend SHA must be distinct from the migration bridge SHA');
 
   return {
+    siteContractMode,
     sourceSha,
     compatible,
     rollbackSha,
@@ -130,6 +142,17 @@ function validateBranchProtection(protection) {
   if (protection.enforce_admins?.enabled !== true) fail('branch protection must enforce controls for administrators');
   const reviewBypass = protection.required_pull_request_reviews?.bypass_pull_request_allowances;
   if (!listIsEmpty(reviewBypass)) fail('branch protection must not grant pull-request bypass allowances');
+  const reviews = protection.required_pull_request_reviews;
+  if (
+    Number(reviews?.required_approving_review_count) < 1
+    || reviews?.dismiss_stale_reviews !== true
+    || reviews?.require_last_push_approval !== true
+  ) {
+    fail('branch protection must require an independent approving review after the latest push');
+  }
+  if (protection.required_conversation_resolution?.enabled !== true) {
+    fail('branch protection must require conversation resolution');
+  }
   return true;
 }
 
@@ -163,6 +186,15 @@ function validateRulesets(rulesets) {
     ))
   ));
   if (!exactCheckRequired) fail(`active main-branch rulesets must strictly require ${EXACT_VERIFY_CHECK} from GitHub Actions`);
+  const pullRequestRules = rules.filter((rule) => rule?.type === 'pull_request');
+  if (!pullRequestRules.some((rule) => (
+    Number(rule.parameters?.required_approving_review_count) >= 1
+    && rule.parameters?.dismiss_stale_reviews_on_push === true
+    && rule.parameters?.require_last_push_approval === true
+    && rule.parameters?.required_review_thread_resolution === true
+  ))) {
+    fail('active main-branch rulesets must require independent review after the latest push and thread resolution');
+  }
   return true;
 }
 
@@ -204,14 +236,22 @@ function validateSuccessfulCheck(checkRuns, sourceSha) {
 }
 
 function validateRollbackDeployment(deployments, rollbackSha) {
-  const latest = Array.isArray(deployments) ? deployments[0] : null;
-  const latestStatus = Array.isArray(latest?.statuses) ? latest.statuses[0] : null;
+  const successful = (Array.isArray(deployments) ? deployments : []).filter((deployment) => (
+    deployment?.environment === 'github-pages'
+    && Array.isArray(deployment?.statuses)
+    && deployment.statuses.some((status) => status?.state === 'success')
+  ));
+  const latest = successful[0] || null;
   if (
     latest?.sha !== rollbackSha
-    || latest?.environment !== 'github-pages'
-    || latestStatus?.state !== 'success'
   ) {
     fail('rollback SHA must be the latest successful github-pages deployment');
+  }
+}
+
+function validateLatestPagesBuild(latestPagesBuild, rollbackSha) {
+  if (latestPagesBuild?.commit !== rollbackSha || latestPagesBuild?.status !== 'built') {
+    fail('latest successful Pages build must exactly match the rollback SHA');
   }
 }
 
@@ -241,8 +281,20 @@ function validatePlatformState(snapshot, bindings) {
   }
   validateSuccessfulCheck(snapshot.checkRuns, approved.sourceSha);
   validateRollbackDeployment(snapshot.rollbackDeployments, approved.rollbackSha);
-  if (snapshot?.currentLiveRelease?.source_sha !== approved.rollbackSha) {
-    fail('rollback SHA must match the current live release.json source SHA');
+  validateLatestPagesBuild(snapshot.latestPagesBuild, approved.rollbackSha);
+  if (approved.siteContractMode === 'bootstrap') {
+    if (
+      snapshot?.currentLiveRelease?.missing !== true
+      || snapshot?.currentLiveRelease?.status_code !== 404
+      || Object.prototype.hasOwnProperty.call(snapshot.currentLiveRelease, 'source_sha')
+    ) {
+      fail('bootstrap mode requires the reviewed legacy site to return release.json 404');
+    }
+  } else if (
+    snapshot?.currentLiveRelease?.missing === true
+    || snapshot?.currentLiveRelease?.source_sha !== approved.rollbackSha
+  ) {
+    fail('normal mode requires release.json to exactly match the rollback SHA');
   }
   validateBackendStatus(snapshot.currentBackendStatus, approved.rollbackSha, approved.backendBridgeSha);
   return approved;
@@ -280,10 +332,32 @@ function readExactJsonUrl(url, label) {
 
 function readCurrentLiveRelease(publicOrigin, cacheToken) {
   if (publicOrigin !== 'https://auxtho.com') fail('public site origin must be exactly https://auxtho.com');
-  const release = readExactJsonUrl(
-    `${publicOrigin}/release.json?authorization_cache_bust=${encodeURIComponent(cacheToken)}`,
-    'current live release.json',
-  );
+  const url = `${publicOrigin}/release.json?authorization_cache_bust=${encodeURIComponent(cacheToken)}`;
+  const result = spawnSync('curl', [
+    '--silent', '--show-error',
+    '--proto', '=https', '--tlsv1.2',
+    '--connect-timeout', '10', '--max-time', '30', '--max-redirs', '0',
+    '--header', 'Accept-Encoding: identity',
+    '--write-out', '\n%{http_code}',
+    url,
+  ], { encoding: 'utf8', windowsHide: true });
+  if (result.status !== 0) fail(`current live release.json readback failed without redirects: ${result.stderr.trim()}`);
+  return parseCurrentLiveReleaseResponse(result.stdout);
+}
+
+function parseCurrentLiveReleaseResponse(rawResponse) {
+  const separator = String(rawResponse || '').lastIndexOf('\n');
+  if (separator < 0) fail('current live release.json response did not include an HTTP status');
+  const body = rawResponse.slice(0, separator);
+  const statusCode = Number(rawResponse.slice(separator + 1).trim());
+  if (statusCode === 404) return { missing: true, status_code: 404 };
+  if (statusCode !== 200) fail(`current live release.json returned unexpected HTTP ${statusCode}`);
+  let release;
+  try {
+    release = JSON.parse(body);
+  } catch {
+    fail('current live release.json is not valid JSON');
+  }
   assertSha('current live release source SHA', release?.source_sha);
   return release;
 }
@@ -321,6 +395,7 @@ function capturePlatformState({ repository, sourceSha, rollbackSha, publicOrigin
     branchProtection: ghApi(`repos/${repository}/branches/main/protection`, { allowMissing: true }),
     rulesets,
     checkRuns: ghApi(`repos/${repository}/commits/${sourceSha}/check-runs?per_page=100`),
+    latestPagesBuild: ghApi(`repos/${repository}/pages/builds/latest`),
     rollbackDeployments,
     currentLiveRelease: readCurrentLiveRelease(publicOrigin, `${sourceSha}-${process.env.GITHUB_RUN_ID || 'local'}`),
     currentBackendStatus: readCurrentBackendStatus(`${sourceSha}-${process.env.GITHUB_RUN_ID || 'local'}`),
@@ -330,6 +405,8 @@ function capturePlatformState({ repository, sourceSha, rollbackSha, publicOrigin
 function bindingsFromEnvironment() {
   return {
     repository: process.env.GITHUB_REPOSITORY,
+    siteContractMode: process.env.REQUESTED_SITE_CONTRACT_MODE,
+    approvedSiteContractMode: process.env.APPROVED_SITE_CONTRACT_MODE,
     sourceSha: process.env.REQUESTED_SITE_SHA,
     approvedSha: process.env.APPROVED_SITE_SHA,
     compatibleShas: process.env.REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS,
@@ -392,8 +469,10 @@ module.exports = {
   GITHUB_ACTIONS_APP_ID,
   assertBindings,
   capturePlatformState,
+  parseCurrentLiveReleaseResponse,
   validateBranchProtection,
   validateBackendStatus,
+  validateLatestPagesBuild,
   validatePlatformState,
   validateRulesets,
 };

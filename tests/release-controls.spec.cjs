@@ -5,6 +5,7 @@ const {
   EXACT_VERIFY_CHECK,
   GITHUB_ACTIONS_APP_ID,
   assertBindings,
+  parseCurrentLiveReleaseResponse,
   validateBackendStatus,
   validatePlatformState,
   validateRulesets,
@@ -29,6 +30,8 @@ const COMPATIBILITY = [L, S].sort();
 function bindings(overrides = {}) {
   return {
     repository: 'auxtho/auxtho.github.io',
+    siteContractMode: 'bootstrap',
+    approvedSiteContractMode: 'bootstrap',
     sourceSha: S,
     approvedSha: S,
     compatibleShas: JSON.stringify(COMPATIBILITY),
@@ -59,7 +62,11 @@ function validBranchProtection() {
     enforce_admins: { enabled: true },
     required_pull_request_reviews: {
       bypass_pull_request_allowances: { users: [], teams: [], apps: [] },
+      required_approving_review_count: 1,
+      dismiss_stale_reviews: true,
+      require_last_push_approval: true,
     },
+    required_conversation_resolution: { enabled: true },
   };
 }
 
@@ -94,7 +101,8 @@ function snapshot() {
       environment: 'github-pages',
       statuses: [{ state: 'success' }],
     }],
-    currentLiveRelease: { source_sha: L },
+    latestPagesBuild: { commit: L, status: 'built' },
+    currentLiveRelease: { missing: true, status_code: 404 },
     currentBackendStatus: { status: 'operational', backend_source_sha: B, public_site_source_sha: L },
   };
 }
@@ -115,11 +123,20 @@ function validRuleset() {
           required_status_checks: [{ context: EXACT_VERIFY_CHECK, integration_id: GITHUB_ACTIONS_APP_ID }],
         },
       },
+      {
+        type: 'pull_request',
+        parameters: {
+          required_approving_review_count: 1,
+          dismiss_stale_reviews_on_push: true,
+          require_last_push_approval: true,
+          required_review_thread_resolution: true,
+        },
+      },
     ],
   };
 }
 
-test('authorization accepts only exact S with canonical [L,S], bridge B -> L, and live L', () => {
+test('bootstrap authorization accepts only exact S with canonical [L,S], bridge B -> L, and legacy release 404 at L', () => {
   const approved = validatePlatformState(snapshot(), bindings());
   assert.equal(approved.sourceSha, S);
   assert.equal(approved.rollbackSha, L);
@@ -129,6 +146,14 @@ test('authorization accepts only exact S with canonical [L,S], bridge B -> L, an
 });
 
 test('candidate compatibility is exactly the canonical distinct legacy/candidate pair', () => {
+  assert.throws(() => assertBindings(bindings({
+    siteContractMode: 'bootstrap',
+    approvedSiteContractMode: 'normal',
+  })), /protected approved mode/);
+  assert.throws(() => assertBindings(bindings({
+    rollbackCompatibleShas: JSON.stringify([L, S].sort()),
+    approvedRollbackCompatibleShas: JSON.stringify([L, S].sort()),
+  })), /rollback compatibility/);
   assert.throws(() => assertBindings(bindings({
     compatibleShas: JSON.stringify([S]),
     approvedCompatibleShas: JSON.stringify([S]),
@@ -148,11 +173,18 @@ test('branch, environment, Pages HTTPS, live release, and backend controls fail 
     [(state) => { state.branchProtection.allow_deletions.enabled = true; }, /block branch deletion/],
     [(state) => { state.branchProtection.enforce_admins.enabled = false; }, /administrators/],
     [(state) => { state.branchProtection.required_status_checks.checks[0].context = 'Other Check'; }, /strictly require/],
+    [(state) => { state.branchProtection.required_pull_request_reviews.required_approving_review_count = 0; }, /independent approving review/],
+    [(state) => { state.branchProtection.required_pull_request_reviews.dismiss_stale_reviews = false; }, /independent approving review/],
+    [(state) => { state.branchProtection.required_pull_request_reviews.require_last_push_approval = false; }, /independent approving review/],
+    [(state) => { state.branchProtection.required_conversation_resolution.enabled = false; }, /conversation resolution/],
     [(state) => { state.environment.can_admins_bypass = true; }, /administrator bypass/],
     [(state) => { state.environment.protection_rules[0].reviewers[0].reviewer.id = 102; }, /reviewer IDs/],
     [(state) => { state.deploymentBranchPolicies.branch_policies[0].name = 'release/*'; }, /exactly the main branch/],
     [(state) => { state.rollbackDeployments[0].sha = '2'.repeat(40); }, /latest successful/],
-    [(state) => { state.currentLiveRelease.source_sha = '2'.repeat(40); }, /current live/],
+    [(state) => { state.latestPagesBuild.commit = '2'.repeat(40); }, /latest successful Pages build/],
+    [(state) => { state.latestPagesBuild.status = 'building'; }, /latest successful Pages build/],
+    [(state) => { state.currentLiveRelease = { source_sha: L }; }, /bootstrap mode requires/],
+    [(state) => { state.currentLiveRelease.status_code = 500; }, /bootstrap mode requires/],
     [(state) => { delete state.currentBackendStatus.backend_source_sha; }, /exactly match/],
     [(state) => { state.currentBackendStatus.public_site_source_sha = S; }, /exactly match/],
   ];
@@ -161,6 +193,39 @@ test('branch, environment, Pages HTTPS, live release, and backend controls fail 
     mutate(state);
     assert.throws(() => validatePlatformState(state, bindings()), expected);
   }
+
+  assert.throws(() => validatePlatformState(snapshot(), bindings({
+    siteContractMode: 'normal',
+    approvedSiteContractMode: 'normal',
+  })), /normal mode requires/);
+
+  const normalState = snapshot();
+  normalState.currentLiveRelease = { source_sha: L };
+  assert.equal(validatePlatformState(normalState, bindings({
+    siteContractMode: 'normal',
+    approvedSiteContractMode: 'normal',
+  })).siteContractMode, 'normal');
+
+  const withPendingCurrentJob = snapshot();
+  withPendingCurrentJob.rollbackDeployments.unshift({
+    sha: S,
+    environment: 'github-pages',
+    statuses: [{ state: 'in_progress' }],
+  });
+  assert.equal(validatePlatformState(withPendingCurrentJob, bindings()).rollbackSha, L);
+});
+
+test('legacy release readback accepts exact 404 or valid JSON 200 and rejects every other status', () => {
+  assert.deepEqual(parseCurrentLiveReleaseResponse('<html>missing</html>\n404'), {
+    missing: true,
+    status_code: 404,
+  });
+  assert.deepEqual(parseCurrentLiveReleaseResponse(`${JSON.stringify({ source_sha: L })}\n200`), {
+    source_sha: L,
+  });
+  assert.throws(() => parseCurrentLiveReleaseResponse('redirect\n302'), /unexpected HTTP 302/);
+  assert.throws(() => parseCurrentLiveReleaseResponse('not-json\n200'), /not valid JSON/);
+  assert.throws(() => parseCurrentLiveReleaseResponse('missing-status'), /did not include an HTTP status/);
 });
 
 test('active no-bypass rulesets can supply exact deletion, force-push, and verify protections', () => {
@@ -172,6 +237,10 @@ test('active no-bypass rulesets can supply exact deletion, force-push, and verif
   const bypassed = validRuleset();
   bypassed.bypass_actors = [{ actor_id: 1, actor_type: 'Team', bypass_mode: 'always' }];
   assert.throws(() => validateRulesets([bypassed]), /must not grant bypass actors/);
+
+  const noReview = validRuleset();
+  noReview.rules = noReview.rules.filter((rule) => rule.type !== 'pull_request');
+  assert.throws(() => validateRulesets([noReview]), /independent review/);
 });
 
 test('backend status accepts bridge B -> L, final F -> S, and rollback RL -> L only exactly', () => {

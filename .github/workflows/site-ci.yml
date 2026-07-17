@@ -63,6 +63,7 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
           persist-credentials: false
       - name: Bind the checkout to the exact event SHA
         run: test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"

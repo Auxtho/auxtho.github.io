@@ -33,15 +33,11 @@
     content="Review selected AI-assisted work, available evidence, decision state, and release boundaries before work moves forward.">
   <meta name="twitter:image" content="https://auxtho.com/assets/og-image-v2-16.png">
 
-  <script type="application/ld+json">
-    {"@context":"https://schema.org","@type":"WebSite","name":"Auxtho","url":"https://auxtho.com/","description":"Public information about a bounded human-review workflow for selected AI-assisted work."}
-  </script>
-
-  <link rel="stylesheet" href="/assets/style.css?v=2026-04-24b">
-  <link rel="stylesheet" href="/assets/custom.css?v=2026-04-24b">
+  <link rel="stylesheet" href="/assets/style.css?sha256=de6e49fedb56d12c7c7c8ec96db326ae66ad4f1de98a5973d25f71bfb7507b2b">
+  <link rel="stylesheet" href="/assets/custom.css?sha256=a516532a555a23cddd4e7f4633e6ef02e9c6da35e18b9cc8ae2629320add87f3">
   
-  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-25d">
-  <link rel="stylesheet" href="/assets/proposal-v2-1.css?v=proposal-2026-07-16-c">
+  <link rel="stylesheet" href="/assets/final-overrides.css?sha256=f605bd0c13de11f86e3af9ada4f7e0dbc42be139bd87ccd1ecdeb490396c2f8c">
+  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=08eda7518534d1d3352be8490640d200465ccc3f5826ac98f4de28e0cf7b575a">
 </head>
 
 <body class="antialiased">
@@ -53,7 +49,7 @@
   <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
     <div class="container mx-auto px-6 py-5 flex justify-between items-center">
       <a href="/" class="z-50" aria-label="Auxtho Home">
-        <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+        <img src="/assets/logo-white.svg?sha256=857fc66796910dd2105764f35c56c2630ede4b8748b0435de341b46e2d8a0096" alt="Auxtho Logo" class="h-6 w-auto">
       </a>
       <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
         <span class="sr-only">Menu</span>
@@ -78,7 +74,7 @@
 
   <nav id="scroll-nav" aria-label="In-page navigation" aria-hidden="true" inert>
     <div class="scroll-nav-content">
-      <img src="/assets/logo-white.svg" alt="Auxtho" class="h-6 w-auto">
+      <img src="/assets/logo-white.svg?sha256=857fc66796910dd2105764f35c56c2630ede4b8748b0435de341b46e2d8a0096" alt="Auxtho" class="h-6 w-auto">
       <button id="scroll-nav-toggle" class="scroll-nav-toggle" aria-expanded="false" aria-controls="scroll-nav-menu">
         <span class="sr-only">Menu</span>
         <span class="auxtho-toggle-mark" aria-hidden="true">
@@ -212,12 +208,12 @@
               <h3>Governed review states rendered in the App</h3>
               <p>A controlled local rendering of the App Overview component shows a coherent 12-packet fixture: four need review, two are blocked, three are ready for release, one was released today, and two remain in progress.</p>
             </div>
-            <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png"
+              <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1"
               data-lightbox-mode="app-overview"
               data-lightbox-title="Auxtho App synthetic workflow replay"
               data-lightbox-caption="A controlled local rendering of the Overview component used 12 deterministic synthetic records. The top-right synthetic replay badge is a capture annotation, not native product UI. This fixture is not proof of a deployed build, live usage, adoption, or completed customer releases."
               aria-label="Open a larger view of the Auxtho App deterministic synthetic workflow replay">
-              <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png" alt="Controlled local rendering of an Auxtho App Overview component with deterministic synthetic review states." loading="lazy" decoding="async">
+                  <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1" alt="Controlled local rendering of an Auxtho App Overview component with deterministic synthetic review states." loading="lazy" decoding="async">
             </a>
             <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, fixed responses, no customer data, and zero external network egress. One external dependency request was attempted and intercepted locally; no external request completed. The capture does not establish source revision, deployment identity, live use, backend aggregation, or completed customer releases.</p>
           </article>
@@ -228,12 +224,12 @@
               <h3>Operator attention rendered in the Console</h3>
               <p>A controlled local rendering of the Console metric component shows four review-attention events, two critical signals, three invented customer records, and one invented active bootstrap from a fixed fixture.</p>
             </div>
-            <a class="sample-card-media proposal-surface-media proposal-surface-media-wide" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png"
+              <a class="sample-card-media proposal-surface-media proposal-surface-media-wide" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712"
               data-lightbox-mode="console-wide"
               data-lightbox-title="Auxtho Console synthetic workflow replay"
               data-lightbox-caption="A controlled local rendering of the Console metric component used a deterministic development-only fixture. Synthetic only; not proof of a deployed build, live telemetry, customer adoption, or a correlated App run."
               aria-label="Open a larger view of the Auxtho Console synthetic QA fixture">
-              <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png" alt="Controlled local rendering of an Auxtho Console metric component with deterministic synthetic operator signals." loading="lazy" decoding="async">
+                  <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712" alt="Controlled local rendering of an Auxtho Console metric component with deterministic synthetic operator signals." loading="lazy" decoding="async">
             </a>
             <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, invented records, no customer data, no application or external request completed, no provider or export path, and no production mutation. One stylesheet dependency request was attempted and intercepted locally, producing zero external network egress. The capture does not establish source revision or deployment identity and is not the continuation of the App fixture.</p>
           </article>

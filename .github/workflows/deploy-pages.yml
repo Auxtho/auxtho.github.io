@@ -9,6 +9,14 @@ name: Deploy Approved Pages Release
 on:
   workflow_dispatch:
     inputs:
+      site_contract_mode:
+        description: One-time legacy bootstrap or normal release.json-bound publication
+        required: true
+        default: normal
+        type: choice
+        options:
+          - normal
+          - bootstrap
       approved_sha:
         description: Exact merged site SHA approved for publication
         required: true
@@ -58,9 +66,12 @@ jobs:
       pages: read
     environment:
       name: github-pages
+      deployment: false
     env: &release_authorization
       GH_TOKEN: ${{ github.token }}
       PUBLIC_SITE_ORIGIN: https://auxtho.com
+      REQUESTED_SITE_CONTRACT_MODE: ${{ inputs.site_contract_mode }}
+      APPROVED_SITE_CONTRACT_MODE: ${{ vars.PRODUCTION_VERIFY_SITE_CONTRACT_MODE }}
       REQUESTED_SITE_SHA: ${{ inputs.approved_sha }}
       APPROVED_SITE_SHA: ${{ vars.PRODUCTION_VERIFY_SITE_APPROVED_SHA }}
       REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
@@ -113,6 +124,7 @@ jobs:
       pages: read
     environment:
       name: github-pages
+      deployment: false
     env: *release_authorization
     steps:
       - name: Check out the exact candidate workflow source
@@ -166,6 +178,7 @@ jobs:
           --previous-sha "${REQUESTED_ROLLBACK_SITE_SHA}"
           --compatible-json "${REQUESTED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS}"
           --mode rollback
+          --legacy-bootstrap "${{ inputs.site_contract_mode == 'bootstrap' && 'true' || 'false' }}"
           --rollback-of-sha "${REQUESTED_SITE_SHA}"
           --retired-manifest scripts/release/retired-public-paths.json
           --artifact-name github-pages-rollback
@@ -227,12 +240,14 @@ jobs:
     permissions:
       actions: read
       contents: read
+      deployments: read
       id-token: write
       pages: write
     environment:
       name: github-pages
       url: ${{ steps.candidate_deployment.outputs.page_url }}
     env:
+      <<: *release_authorization
       PUBLIC_SITE_ORIGIN: https://auxtho.com
       EXPECTED_SITE_SHA: ${{ inputs.approved_sha }}
       EXPECTED_BACKEND_SHA: ${{ inputs.backend_bridge_sha }}
@@ -254,6 +269,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Recapture authorization immediately before the first publication mutation
+        run: node scripts/release/platform-controls.cjs capture-and-validate predeploy-authorization-evidence/platform-state.json
       - name: Download exact candidate package provenance
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -335,8 +352,7 @@ jobs:
         if: >-
           always() &&
           (steps.candidate_deployment.outcome != 'success' ||
-          steps.candidate_readback.outcome != 'success' ||
-          steps.final_backend_readback.outcome != 'success')
+          steps.candidate_readback.outcome != 'success')
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
         with:
           artifact_name: github-pages-rollback
@@ -344,8 +360,7 @@ jobs:
         if: >-
           always() &&
           (steps.candidate_deployment.outcome != 'success' ||
-          steps.candidate_readback.outcome != 'success' ||
-          steps.final_backend_readback.outcome != 'success')
+          steps.candidate_readback.outcome != 'success')
         run: |
           mkdir -p post-deploy-evidence/rollback-signal
           cp rollback-release-provenance/backend-rollback-signal.json post-deploy-evidence/rollback-signal/
@@ -356,8 +371,7 @@ jobs:
         if: >-
           always() &&
           (steps.candidate_deployment.outcome != 'success' ||
-          steps.candidate_readback.outcome != 'success' ||
-          steps.final_backend_readback.outcome != 'success')
+          steps.candidate_readback.outcome != 'success')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: backend-rollback-required-${{ github.run_id }}-${{ github.run_attempt }}
@@ -387,16 +401,24 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: site-post-deploy-readback-${{ github.sha }}
-          path: post-deploy-evidence
+          path: |
+            predeploy-authorization-evidence
+            post-deploy-evidence
           if-no-files-found: warn
           retention-days: 90
           compression-level: 0
+      - name: Hold without site rollback when the final backend transition is not yet proven
+        if: >-
+          steps.candidate_readback.outcome == 'success' &&
+          steps.final_backend_readback.outcome != 'success'
+        run: |
+          echo "Candidate site remains on the verified bridge-compatible state; backend finalization is not proven." >&2
+          exit 1
       - name: Keep the release failed after deterministic restoration
         if: >-
           always() &&
           (steps.candidate_deployment.outcome != 'success' ||
-          steps.candidate_readback.outcome != 'success' ||
-          steps.final_backend_readback.outcome != 'success')
+          steps.candidate_readback.outcome != 'success')
         run: |
           test "${{ steps.rollback_deployment.outcome }}" = "success"
           test "${{ steps.rollback_readback.outcome }}" = "success"

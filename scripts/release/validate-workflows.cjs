@@ -45,10 +45,24 @@ function validate() {
   }
 
   const deploy = parsed['.github/workflows/deploy-pages.yml'];
+  if (!JSON.stringify(deploy.on?.workflow_dispatch?.inputs || {}).includes('site_contract_mode')) {
+    fail('manual deploy must require an explicit bootstrap or normal site contract mode');
+  }
   const packageText = JSON.stringify(deploy.jobs?.package);
   const deployText = JSON.stringify(deploy.jobs?.deploy_and_verify);
-  if ((JSON.stringify(deploy).match(/capture-and-validate/g) || []).length !== 2) {
-    fail('authorize and package must independently capture and validate platform state');
+  if ((JSON.stringify(deploy).match(/capture-and-validate/g) || []).length !== 3) {
+    fail('authorize, package, and immediate predeploy must independently capture and validate platform state');
+  }
+  for (const jobName of ['authorize_release', 'package']) {
+    if (deploy.jobs?.[jobName]?.environment?.deployment !== false) {
+      fail(`${jobName} must consume environment approval without creating a deployment object`);
+    }
+  }
+  if (!deployText.includes('predeploy-authorization-evidence/platform-state.json')) {
+    fail('deploy job must recapture authorization immediately before the first publication mutation');
+  }
+  for (const required of ['REQUESTED_SITE_CONTRACT_MODE', 'APPROVED_SITE_CONTRACT_MODE']) {
+    if (!JSON.stringify(deploy).includes(required)) fail(`site bootstrap mode binding is missing: ${required}`);
   }
   for (const artifactName of ['github-pages-candidate', 'github-pages-rollback']) {
     if (!packageText.includes(artifactName) || !deployText.includes(artifactName)) {
@@ -65,6 +79,7 @@ function validate() {
     'backend-finalize-required',
     'backend-rollback-required',
     'steps.final_backend_readback.outcome',
+    'Hold without site rollback when the final backend transition is not yet proven',
   ]) {
     if (!deployText.includes(required)) fail(`migration/rollback control is missing: ${required}`);
   }
