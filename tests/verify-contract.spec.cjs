@@ -244,7 +244,11 @@ test('invalid non-legacy artifact hashes never leave manual or QR controls busy'
 
 test('legacy 16-character bindings render a tombstone and never reach the API', async ({ page }) => {
   let postCount = 0;
+  let statusCount = 0;
   await mockStatus(page);
+  page.on('request', (request) => {
+    if (request.url().includes('/api/verify/status')) statusCount += 1;
+  });
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
     postCount += 1;
     await route.fulfill({
@@ -264,15 +268,32 @@ test('legacy 16-character bindings render a tombstone and never reach the API', 
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   expect(postCount).toBe(0);
 
-  await page.goto(`${baseUrl}/verify.html?case=legacy#report=RPT-LEGACY-16&h=${retiredHash}`);
+  const priorStatusCount = statusCount;
+  await page.goto(`${baseUrl}/verify.html?report=RPT-LEGACY-16&h=${retiredHash}&exp=EXP-LEGACY-16`);
   await expect(page).toHaveURL(`${baseUrl}/verify.html`);
   await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
-  await expect(page.locator('#legacy-binding-tombstone')).toContainText('retained only as a tombstone');
+  await expect(page.locator('#legacy-binding-tombstone')).toContainText('retained only as a local tombstone');
   await expect(page.locator('#qr-verify-btn')).toBeDisabled();
   await expect(page.locator('#qr-verify-btn')).toHaveText('Legacy Binding Retired');
-  await expect(page.locator('#manual-artifact-hash')).toHaveValue(retiredHash);
-  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await expect(page.locator('#qr-report-id')).toHaveText('Retired legacy link');
+  await expect(page.locator('#qr-hash')).toHaveText('16-character binding retired');
+  await expect(page.locator('#manual-report-id')).toHaveValue('');
+  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
+  await expect(page.locator('#manual-export-event-id')).toHaveValue('');
+  await expect(page.locator('#manual-verify-btn')).toBeDisabled();
+  await expect(page.locator('#verification-service-status')).toHaveText('Legacy link retired / no request sent');
   expect(postCount).toBe(0);
+  expect(statusCount).toBe(priorStatusCount);
+
+  await page.goto(`${baseUrl}/verify.html#report=RPT-LEGACY-FRAGMENT&h=${retiredHash}&exp=EXP-LEGACY-FRAGMENT`);
+  await page.reload();
+  await expect(page).toHaveURL(`${baseUrl}/verify.html`);
+  await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
+  await expect(page.locator('#manual-report-id')).toHaveValue('');
+  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
+  await expect(page.locator('#verification-service-status')).toHaveText('Legacy link retired / no request sent');
+  expect(postCount).toBe(0);
+  expect(statusCount).toBe(priorStatusCount);
 });
 
 test('matching rendered release identity enables verification with a cache-busted same-origin fetch', async ({ page }) => {

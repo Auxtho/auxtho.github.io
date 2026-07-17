@@ -113,9 +113,11 @@
         var el = byId('verification-service-status');
         if (!el) return;
         el.classList.remove('checking', 'active', 'unavailable');
-        el.classList.add(state);
+        el.classList.add(state === 'retired' ? 'unavailable' : state);
         el.textContent = state === 'active'
             ? 'Endpoint ready / request not yet checked'
+            : state === 'retired'
+            ? 'Legacy link retired / no request sent'
             : state === 'unavailable'
             ? 'Verification unavailable'
             : 'Checking / Not confirmed';
@@ -711,10 +713,13 @@
         var queryParams = new URLSearchParams(window.location.search || '');
         var fragmentHasVerificationParams = fragmentParams.has('report') || fragmentParams.has('h') || fragmentParams.has('exp');
         var legacyQueryParamsPresent = queryParams.has('report') || queryParams.has('h') || queryParams.has('exp');
-        // Identifier tuples are accepted only from the fragment so they never
-        // reach the public site's CDN or origin. Direct query parsing retired
-        // on 2026-07-17; the legacy API route redirects old links to a fragment.
-        var params = fragmentParams;
+        var legacyQueryHash = queryParams.get('h');
+        var retiredLegacyQuery = legacyQueryParamsPresent && isRetiredLegacyArtifactRecordHash(legacyQueryHash);
+        // Current identifier tuples are accepted only from the fragment so they
+        // never reach the public site's CDN or origin. A retired query-form
+        // 16-character link is recognized only to render a local tombstone. Its
+        // identifiers are scrubbed before any readiness or comparison request.
+        var params = retiredLegacyQuery ? queryParams : fragmentParams;
         var reportId = params.get('report');
         var hash = params.get('h');
         var exportEventId = params.get('exp');
@@ -722,21 +727,22 @@
         if (hasVerificationParams && window.history && window.history.replaceState) {
             window.history.replaceState(null, document.title, window.location.pathname);
         }
-        if (!reportId || !hash) return;
+        if (legacyQueryParamsPresent && !retiredLegacyQuery) return 'ignored-query';
+        if (!reportId || !hash) return 'none';
 
         RETIRED_LEGACY_QR_BINDING = isRetiredLegacyArtifactRecordHash(hash);
 
         var card = byId('qr-verify');
         if (card) card.classList.add('qr-card-visible');
         toggle(byId('legacy-binding-tombstone'), RETIRED_LEGACY_QR_BINDING);
-        setText('qr-report-id', reportId);
-        setText('qr-hash', hash);
+        setText('qr-report-id', RETIRED_LEGACY_QR_BINDING ? 'Retired legacy link' : reportId);
+        setText('qr-hash', RETIRED_LEGACY_QR_BINDING ? '16-character binding retired' : hash);
         var reportInput = byId('manual-report-id');
         var hashInput = byId('manual-artifact-hash');
         var exportInput = byId('manual-export-event-id');
-        if (reportInput) reportInput.value = reportId;
-        if (hashInput) hashInput.value = hash;
-        if (exportInput && exportEventId) exportInput.value = exportEventId;
+        if (reportInput) reportInput.value = RETIRED_LEGACY_QR_BINDING ? '' : reportId;
+        if (hashInput) hashInput.value = RETIRED_LEGACY_QR_BINDING ? '' : hash;
+        if (exportInput) exportInput.value = RETIRED_LEGACY_QR_BINDING ? '' : (exportEventId || '');
 
         var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Artifact Verification Support');
         var mailtoEl = byId('qr-mailto');
@@ -749,7 +755,7 @@
                 button.setAttribute('aria-disabled', 'true');
                 button.textContent = 'Legacy Binding Retired';
                 setError(artifactRecordHashError(hash));
-                return;
+                return 'retired';
             }
             button.addEventListener('click', async function () {
                 if (ACTIVE_VERIFICATION) return;
@@ -776,11 +782,17 @@
                 await runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash, requestState);
             });
         }
+        return 'current';
     }
 
     function init() {
         bindManualForm();
-        initQrFlow();
+        var qrFlowState = initQrFlow();
+        if (qrFlowState === 'retired') {
+            setServiceStatus('retired');
+            setVerificationButtonsEnabled(false);
+            return;
+        }
         loadStatusPanel();
     }
 

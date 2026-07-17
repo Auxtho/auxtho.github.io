@@ -159,12 +159,16 @@ jobs:
           const environment = JSON.parse(fs.readFileSync('/tmp/github-pages-environment.json', 'utf8'));
           const rules = Array.isArray(environment.protection_rules) ? environment.protection_rules : [];
           const reviewerRule = rules.find((rule) => rule && rule.type === 'required_reviewers');
+          if (environment.can_admins_bypass !== false) {
+            throw new Error('HOLD: github-pages must disable administrator bypass');
+          }
           if (!reviewerRule || !Array.isArray(reviewerRule.reviewers) || reviewerRule.reviewers.length < 1) {
             throw new Error('HOLD: github-pages must have at least one platform-enforced required reviewer');
           }
           if (reviewerRule.prevent_self_review !== true && environment.prevent_self_review !== true) {
             throw new Error('HOLD: github-pages must prevent self-review');
           }
+          console.log('administrator-bypass=false');
           console.log(`required-reviewers=${reviewerRule.reviewers.length}`);
           console.log('prevent-self-review=true');
           NODE
@@ -177,6 +181,9 @@ jobs:
     timeout-minutes: 10
     permissions:
       contents: read
+      id-token: write
+      attestations: write
+      artifact-metadata: write
     env:
       SOURCE_SHA: ${{ github.sha }}
       COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
@@ -288,6 +295,9 @@ jobs:
             .trim()
             .split('\n')
             .filter(Boolean);
+          if (digestLines.length < 1 || digestLines.length > 1024) {
+            throw new Error('public file attestation subject count must be between 1 and 1024');
+          }
           const provenance = {
             schema_version: 1,
             source_sha: process.env.SOURCE_SHA,
@@ -311,6 +321,14 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           compression-level: 0
+      - name: Create durable signed provenance for every packaged public file
+        id: attest-public-files
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6 # v4.2.0
+        with:
+          subject-checksums: site-release-provenance/public-files-sha256.txt
+        # Failure is a release HOLD. This requires GitHub artifact attestations
+        # plus id-token, attestations, and artifact-metadata write permissions;
+        # the signed record is not limited to the 90-day workflow artifact.
       - name: Upload the verified Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
@@ -347,6 +365,7 @@ jobs:
     env:
       DEPLOYMENT_PAGE_URL: ${{ needs.deploy.outputs.page_url }}
       PUBLIC_SITE_ORIGIN: https://auxtho.com
+      EXPECTED_PAGES_DEPLOYMENT_ORIGINS: '["https://auxtho.com","https://auxtho.github.io"]'
       EXPECTED_SITE_SHA: ${{ github.sha }}
       EXPECTED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
     steps:
@@ -360,13 +379,21 @@ jobs:
           node-version: 22.17.0
           cache: npm
       - run: npm ci
+      - name: Download the exact package digest manifest from this release run
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: site-public-file-provenance-${{ github.sha }}
+          path: site-release-provenance
       - name: Cache-busted exact-SHA and compatibility readback
         run: |
           set -Eeuo pipefail
-          case "${DEPLOYMENT_PAGE_URL}" in
-            https://*) ;;
-            *) echo "HOLD: Pages deployment did not report an HTTPS URL" >&2; exit 1 ;;
-          esac
+          node - <<'NODE'
+          const allowed = JSON.parse(process.env.EXPECTED_PAGES_DEPLOYMENT_ORIGINS);
+          const deployment = new URL(process.env.DEPLOYMENT_PAGE_URL);
+          if (deployment.protocol !== 'https:' || !allowed.includes(deployment.origin)) {
+            throw new Error('HOLD: Pages deployment URL is not an exact reviewed HTTPS origin');
+          }
+          NODE
           case "${PUBLIC_SITE_ORIGIN}" in
             https://*) ;;
             *) echo "HOLD: public readback origin must use HTTPS" >&2; exit 1 ;;
@@ -409,6 +436,92 @@ jobs:
             sleep 10
           done
           test "${readback_confirmed}" = true
+      - name: Read back and hash every deployed public HTML, JavaScript, and release byte
+        run: |
+          set -Eeuo pipefail
+          test -s site-release-provenance/public-files-sha256.txt
+          test -s site-release-provenance/provenance.json
+          mkdir -p post-deploy-evidence/public-readback
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const provenance = JSON.parse(fs.readFileSync('site-release-provenance/provenance.json', 'utf8'));
+          if (provenance.source_sha !== process.env.EXPECTED_SITE_SHA) {
+            throw new Error('package provenance source SHA mismatch');
+          }
+          if (provenance.repository !== process.env.GITHUB_REPOSITORY) {
+            throw new Error('package provenance repository mismatch');
+          }
+          if (String(provenance.workflow_run_id) !== process.env.GITHUB_RUN_ID) {
+            throw new Error('package provenance workflow run mismatch');
+          }
+          if (Number(provenance.workflow_run_attempt) !== Number(process.env.GITHUB_RUN_ATTEMPT)) {
+            throw new Error('package provenance workflow attempt mismatch');
+          }
+          const entries = fs.readFileSync('site-release-provenance/public-files-sha256.txt', 'utf8')
+            .trim()
+            .split(/\r?\n/)
+            .filter(Boolean)
+            .map((line) => {
+              const match = line.match(/^([0-9a-f]{64})  \.\/(.+)$/);
+              if (!match) throw new Error(`invalid package digest line: ${line}`);
+              const relative = match[2];
+              if (!/^[A-Za-z0-9._/-]+$/.test(relative) || relative.includes('..') || path.posix.isAbsolute(relative)) {
+                throw new Error(`unsafe public path in package digest: ${relative}`);
+              }
+              return { sha256: match[1], relative };
+            });
+          if (entries.length !== provenance.public_file_count) {
+            throw new Error('package provenance file count mismatch');
+          }
+          const critical = entries.filter(({ relative }) => (
+            relative.endsWith('.html') || relative.endsWith('.js') || relative === 'release.json'
+          ));
+          const required = [
+            'index.html',
+            'verify.html',
+            'privacy.html',
+            'story.html',
+            'security/ardamire/index.html',
+            'assets/verify-2026-04-24b.js',
+            'release.json',
+          ];
+          const found = new Set(critical.map(({ relative }) => relative));
+          for (const relative of required) {
+            if (!found.has(relative)) throw new Error(`critical public file is absent from package digest: ${relative}`);
+          }
+          fs.writeFileSync(
+            'post-deploy-evidence/critical-public-files.tsv',
+            `${critical.map(({ sha256, relative }) => `${sha256}\t${relative}`).join('\n')}\n`,
+          );
+          NODE
+          while IFS=$'\t' read -r expected_sha relative_path; do
+            test -n "${expected_sha}"
+            test -n "${relative_path}"
+            output_path="post-deploy-evidence/public-readback/${relative_path}"
+            mkdir -p "$(dirname "${output_path}")"
+            cache_bust="${EXPECTED_SITE_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-bytes"
+            curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+              --connect-timeout 10 --max-time 30 --max-redirs 0 \
+              --header 'Accept-Encoding: identity' \
+              --output "${output_path}" \
+              "${PUBLIC_SITE_ORIGIN}/${relative_path}?cache_bust=${cache_bust}"
+            actual_sha="$(sha256sum "${output_path}" | cut -d' ' -f1)"
+            if test "${actual_sha}" != "${expected_sha}"; then
+              echo "HOLD: deployed public byte mismatch for ${relative_path}" >&2
+              exit 1
+            fi
+          done < post-deploy-evidence/critical-public-files.tsv
+          ld_org_status="$(curl --silent --show-error --proto '=https' --tlsv1.2 \
+            --connect-timeout 10 --max-time 30 --max-redirs 0 \
+            --header 'Accept-Encoding: identity' \
+            --output post-deploy-evidence/retired-ld-org-response.txt \
+            --write-out '%{http_code}' \
+            "${PUBLIC_SITE_ORIGIN}/assets/ld-org.json?cache_bust=${EXPECTED_SITE_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-retired")"
+          case "${ld_org_status}" in
+            404|410) ;;
+            *) echo "HOLD: retired assets/ld-org.json is still publicly retrievable (HTTP ${ld_org_status})" >&2; exit 1 ;;
+          esac
       - name: Verify Cloudflare HTTPS and security response headers
         run: |
           set -Eeuo pipefail

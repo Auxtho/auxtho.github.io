@@ -51,3 +51,45 @@ test('deployed verifier loads over HTTPS and performs no identifier-bearing requ
     page_errors: pageErrors,
   }, null, 2)}\n`);
 });
+
+test('deployed query-form legacy binding is scrubbed into a tombstone without any API request', async ({ page }) => {
+  expect(origin).toBe('https://auxtho.com');
+  expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
+
+  const apiRequests = [];
+  const pageErrors = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).pathname.startsWith('/api/verify')) apiRequests.push(request.url());
+  });
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+
+  const retiredHash = 'a'.repeat(16);
+  const response = await page.goto(
+    `${origin}/verify.html?report=RPT-RETIRED-QUERY&h=${retiredHash}&exp=EXP-RETIRED-QUERY`,
+    { waitUntil: 'domcontentloaded', timeout: 20_000 },
+  );
+
+  expect(response).not.toBeNull();
+  expect(response.status()).toBe(200);
+  await expect(page).toHaveURL(`${origin}/verify.html`);
+  await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
+  await expect(page.locator('#legacy-binding-tombstone')).toContainText('start readiness or comparison API requests');
+  await expect(page.locator('#qr-verify-btn')).toBeDisabled();
+  await expect(page.locator('#manual-report-id')).toHaveValue('');
+  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
+  await expect(page.locator('#manual-export-event-id')).toHaveValue('');
+  await expect(page.locator('#verification-service-status')).toHaveText('Legacy link retired / no request sent');
+  expect(apiRequests).toEqual([]);
+  expect(pageErrors).toEqual([]);
+
+  fs.mkdirSync(evidenceDirectory, { recursive: true });
+  fs.writeFileSync(path.join(evidenceDirectory, 'legacy-query-tombstone-smoke.json'), `${JSON.stringify({
+    checked_at: new Date().toISOString(),
+    source_sha: sourceSha,
+    url_after_scrub: page.url(),
+    response_status: response.status(),
+    tombstone_visible: true,
+    api_request_count: apiRequests.length,
+    page_errors: pageErrors,
+  }, null, 2)}\n`);
+});

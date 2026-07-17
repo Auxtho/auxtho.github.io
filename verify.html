@@ -50,7 +50,7 @@
                     <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" id="qr-mailto">verify@auxtho.com</a>
                     for verification support. The support link does not prefill artifact identifiers.
                 </p>
-                <p id="legacy-binding-tombstone" class="verification-scope-warning" role="status" hidden>This legacy 16-character artifact binding is retired. This link is retained only as a tombstone and cannot run API verification. Request a current export with a 64-character record binding checksum or use manual verification support.</p>
+                <p id="legacy-binding-tombstone" class="verification-scope-warning" role="status" hidden>This legacy 16-character artifact binding is retired. Fragment-form and old query-form links are retained only as a local tombstone: their identifiers are removed from the visible URL, are not copied into the manual form, and cannot start readiness or comparison API requests. Request a current export with a 64-character record binding checksum or use manual verification support.</p>
                 <p class="verification-scope-warning">A QR-only check confirms a stored record match. It does not prove that the surrounding PDF or printed pages are unchanged, because a genuine QR can be copied.</p>
                 <p class="verification-disclosure">Selecting Run Verification sends these identifiers to Auxtho for comparison. If the request reaches the instrumented comparison path and its audit write succeeds, a minimized application audit record is created. Validation, rate-limit, network, or service-unavailable paths may create no application audit record. Site, hosting, API, and security infrastructure may separately retain request and connection logs.</p>
                 <div class="qr-btn-area">
@@ -68,7 +68,7 @@
             <div class="manual-verify-panel mt-8">
                 <h2>Manual Verification</h2>
                 <p class="manual-verify-copy">Paste the report ID and complete 64-character record binding checksum from the exported artifact to run API-backed verification. This checksum covers selected canonical registry fields, not every PDF byte. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
-                <p class="verification-scope-warning">Legacy 16-character artifact bindings were retired on July 17, 2026. They are not accepted. Legacy QR links open only a tombstone notice; request a current export or use manual verification support.</p>
+                <p class="verification-scope-warning">Legacy 16-character artifact bindings were retired on July 17, 2026. They are not accepted. Legacy fragment-form or query-form QR links open only a local tombstone and start no API request; request a current export or use manual verification support.</p>
                 <form id="manual-verify-form" class="manual-verify-form">
                     <div class="manual-field manual-report-field">
                         <label for="manual-report-id">Report ID</label>
