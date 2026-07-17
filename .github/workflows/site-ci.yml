@@ -49,7 +49,7 @@ concurrency:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     permissions:
       contents: read
@@ -84,7 +84,7 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 22
+          node-version: 22.17.0
           cache: npm
       - run: npm ci
       - run: npm audit --audit-level=high
@@ -94,16 +94,69 @@ jobs:
           git ls-files --error-unmatch -- assets/style.css
           git diff --exit-code
       - run: npm run test:release
-      - run: npx playwright install --with-deps chromium
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
       - run: npm run test:verify
-      - name: Build exact-SHA GitHub Pages output
-        uses: actions/jekyll-build-pages@44a6e6beabd48582f863aeeb6cb2151cc1716697 # v1
+
+  package:
+    name: Package Exact Committed Pages Bytes
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+    steps:
+      - name: Check out the exact package source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          source: ./
-          destination: ./_site
-          build_revision: ${{ github.sha }}
-      - name: Verify generated Pages release identity
-        run: node scripts/verify-release-contract.cjs _site/release.json "$SOURCE_SHA"
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Set up exact Node runtime for release identity validation
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.17.0
+      - name: Stage only explicit public paths from exact committed bytes
+        run: |
+          set -Eeuo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          mkdir -p _release_source _site
+          git archive --format=tar "${SOURCE_SHA}" | tar -xf - -C _release_source
+          find _release_source -type l -print -quit | grep -q . && exit 1 || true
+          test -d _release_source/assets
+          while IFS= read -r -d '' asset; do
+            case "${asset}" in
+              *.css|*.js|*.json|*.png|*.svg) ;;
+              *) echo "HOLD: unreviewed public asset type: ${asset}" >&2; exit 1 ;;
+            esac
+          done < <(find _release_source/assets -type f -print0)
+          find _release_source -maxdepth 1 -type f -name '*.html' -exec cp --preserve=mode,timestamps '{}' _site/ ';'
+          for path in CNAME robots.txt sitemap.xml; do
+            test -f "_release_source/${path}"
+            cp --preserve=mode,timestamps "_release_source/${path}" "_site/${path}"
+          done
+          cp -a _release_source/assets _site/assets
+          printf '{"source_sha":"%s"}\n' "${SOURCE_SHA}" > _site/release.json
+          test -z "$(find _site -type l -print -quit)"
+          test "$(find _site -maxdepth 1 -type f -name '*.html' | wc -l)" -gt 0
+          EXPECTED_FILE_COUNT=$((
+            $(find _release_source -maxdepth 1 -type f -name '*.html' | wc -l) +
+            $(find _release_source/assets -type f | wc -l) +
+            4
+          ))
+          test "$(find _site -type f | wc -l)" -eq "${EXPECTED_FILE_COUNT}"
+      - name: Verify every packaged committed byte and generated release identity
+        run: |
+          set -Eeuo pipefail
+          diff -qr _release_source/assets _site/assets
+          for path in _site/*.html _site/CNAME _site/robots.txt _site/sitemap.xml; do
+            relative="${path#_site/}"
+            cmp "_release_source/${relative}" "${path}"
+          done
+          node scripts/verify-release-contract.cjs _site/release.json "${SOURCE_SHA}"
+          find _site -type f -print0 | sort -z | xargs -0 sha256sum > site-artifact-sha256.txt
+          cat site-artifact-sha256.txt
       - name: Upload the verified Pages artifact
         if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
@@ -113,8 +166,8 @@ jobs:
 
   deploy:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-    needs: verify
-    runs-on: ubuntu-latest
+    needs: package
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read

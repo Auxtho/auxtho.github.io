@@ -1,6 +1,8 @@
 {
   "version": "2026-07-16",
   "scope": "Auxtho homepage public-safe product evidence",
+  "attestation_class": "publisher_self_attestation",
+  "attestation_limit": "The manifest binds published bytes and records the publisher's capture assertions; it is not an independently reproducible build or operating-effectiveness attestation.",
   "evidence_policy": {
     "surfaces_are_independent": true,
     "matching_display_sequence_is_deliberate_synthetic_fixture": true,
@@ -13,6 +15,7 @@
     {
       "path": "/assets/proposal/app-overview-synthetic-replay-20260716.png",
       "sidecar": "/assets/proposal/app-overview-synthetic-replay-20260716.json",
+      "sidecar_sha256": "6e6771076a868c607bf5626c3fa772624e0040ec967db39b143e63d322bba16a",
       "sha256": "0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",
@@ -22,6 +25,7 @@
       "source_revision": null,
       "source_revision_publicly_resolvable": false,
       "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
+      "provenance_class": "publisher_self_attestation",
       "rendered_component": "OverviewView",
       "capture_method": "controlled local Next server started and stopped by the capture harness; browser time fixed to UTC; locally rendered interface supplied with deterministic synthetic GET responses; all external requests blocked",
       "fixture_relationship": "independent synthetic fixture; not correlated with the Console capture or a customer run",
@@ -60,6 +64,7 @@
     {
       "path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
       "sidecar": "/assets/proposal/console-synthetic-workflow-replay-20260716.json",
+      "sidecar_sha256": "4699b90de2d2517744a7628af8508418b13a99bf1a4c2fb5693ed710debb7014",
       "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",
@@ -69,6 +74,7 @@
       "source_revision": null,
       "source_revision_publicly_resolvable": false,
       "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
+      "provenance_class": "publisher_self_attestation",
       "rendered_component": "DashboardMetricCards",
       "capture_method": "controlled local Next server started and stopped by the capture harness; development-only fixture route; locally rendered interface; unapproved external requests blocked",
       "fixture_relationship": "independent synthetic fixture; not correlated with the App capture or a customer run",

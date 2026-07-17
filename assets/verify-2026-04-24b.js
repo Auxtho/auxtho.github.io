@@ -363,7 +363,7 @@
         result = result || {};
         var emptyState = !!result.empty_state;
         var profile = emptyState ? null : recordedControlProfile(result);
-        var items = ['Artifact record hash', 'Verification endpoint configured'];
+        var items = ['Record binding checksum', 'Verification endpoint configured'];
         if (!profile) {
             items.push('Manual verification support');
         } else if (profile.kind === 'hash_only') {
@@ -491,7 +491,7 @@
             ['Verification Outcome', result.verification_outcome],
             ['Verification Scope', result.verification_scope],
             ['Record Match Confirmed', result.record_match_confirmed === true ? 'YES' : 'NO'],
-            ['Artifact Hash Match', result.artifact_hash_match === true ? 'YES' : 'NO'],
+            ['Record Binding Checksum Match', result.artifact_hash_match === true ? 'YES' : 'NO'],
             ['Selected File Bytes Match', fileBytesMatched ? 'YES' : 'NOT CHECKED'],
             ['Public Mode', formatMode(result.mode || 'not_reported')],
             ['Verification Mode', formatMode(result.verification_mode)]
@@ -530,7 +530,7 @@
         if (!isValidArtifactRecordHash(artifactHash)) {
             if (isCurrentVerification(state)) {
                 if (buttonId) setButtonLoading(buttonId, false, '');
-                setError('Enter the complete artifact record hash exactly as shown in the export.');
+                setError('Enter the complete record binding checksum exactly as shown in the export.');
             }
             finishVerification(state);
             return;
@@ -620,12 +620,12 @@
             var artifactHash = ((byId('manual-artifact-hash') || {}).value || '').trim();
             var exportEventId = ((byId('manual-export-event-id') || {}).value || '').trim();
             if (!reportId || !artifactHash) {
-                setError('Report ID and artifact integrity hash are required.');
+                setError('Report ID and record binding checksum are required.');
                 return;
             }
             if (!isValidArtifactRecordHash(artifactHash)) {
                 setButtonLoading('manual-verify-btn', false, '');
-                setError('Enter the complete artifact record hash exactly as shown in the export.');
+                setError('Enter the complete record binding checksum exactly as shown in the export.');
                 return;
             }
             var requestState = beginVerification();
@@ -683,11 +683,18 @@
     }
 
     function initQrFlow() {
-        var params = new URLSearchParams(window.location.search || '');
+        var fragmentParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
+        var queryParams = new URLSearchParams(window.location.search || '');
+        var fragmentHasVerificationParams = fragmentParams.has('report') || fragmentParams.has('h') || fragmentParams.has('exp');
+        var legacyQueryParamsPresent = queryParams.has('report') || queryParams.has('h') || queryParams.has('exp');
+        // Identifier tuples are accepted only from the fragment so they never
+        // reach the public site's CDN or origin. Direct query parsing retired
+        // on 2026-07-17; the legacy API route redirects old links to a fragment.
+        var params = fragmentParams;
         var reportId = params.get('report');
         var hash = params.get('h');
         var exportEventId = params.get('exp');
-        var hasVerificationParams = params.has('report') || params.has('h') || params.has('exp');
+        var hasVerificationParams = fragmentHasVerificationParams || legacyQueryParamsPresent;
         if (hasVerificationParams && window.history && window.history.replaceState) {
             window.history.replaceState(null, document.title, window.location.pathname);
         }
@@ -715,7 +722,7 @@
                 clearVerificationResult();
                 if (!isValidArtifactRecordHash(hash)) {
                     setButtonLoading('qr-verify-btn', false, '');
-                    setError('Enter the complete artifact record hash exactly as shown in the export.');
+                    setError('Enter the complete record binding checksum exactly as shown in the export.');
                     return;
                 }
                 var requestState = beginVerification();

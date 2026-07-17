@@ -27,13 +27,8 @@ function contentType(filePath) {
 }
 
 function statusPayload(status = 'operational', overrides = {}) {
-  const signingMode = overrides.signing_mode || 'pilot_hash_only';
   return {
     status,
-    mode: signingMode === 'production_signed' ? 'production' : 'pilot',
-    signing_mode: signingMode,
-    timestamp_provider: signingMode === 'production_signed' ? 'public_tsa' : (signingMode === 'local_signed' ? 'local_mock' : 'none'),
-    registry_configured: status === 'operational',
     public_site_source_sha: MATCHED_SITE_SHA,
     ...overrides,
   };
@@ -152,10 +147,11 @@ test('QR parameters prefill but never submit before an explicit click', async ({
   });
 
   const hash = 'a'.repeat(64);
-  await page.goto(`${baseUrl}/verify.html?report=RPT-VERIFY-001&h=${hash}&exp=EXP-VERIFY-001`);
+  await page.goto(`${baseUrl}/verify.html#report=RPT-VERIFY-001&h=${hash}&exp=EXP-VERIFY-001`);
   await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
   expect(postCount).toBe(0);
   await expect(page.locator('#manual-report-id')).toHaveValue('RPT-VERIFY-001');
+  expect(page.url()).toBe(`${baseUrl}/verify.html`);
 
   await page.locator('#qr-verify-btn').click();
   await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
@@ -201,15 +197,18 @@ test('invalid artifact hashes never leave manual or QR controls busy', async ({ 
   await page.locator('#manual-report-id').fill('RPT-INVALID-HASH');
   await page.locator('#manual-artifact-hash').fill('not-a-hash');
   await page.locator('#manual-verify-btn').click();
-  await expect(page.locator('#verify-error')).toContainText('complete artifact record hash');
+  await expect(page.locator('#verify-error')).toContainText('complete record binding checksum');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   await expect(page.locator('#manual-verify-btn')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('#manual-verify-btn')).toHaveText('Verify Artifact');
 
-  await page.goto(`${baseUrl}/verify.html?report=RPT-INVALID-HASH&h=still-not-a-hash`);
+  await page.goto(`${baseUrl}/verify.html#report=RPT-INVALID-HASH&h=still-not-a-hash`);
+  // Fragment-only navigation on the same document does not rerun the page
+  // bootstrap. Reload to model a QR link opening the verifier document.
+  await page.reload();
   await expect(page.locator('#qr-verify-btn')).toBeEnabled();
   await page.locator('#qr-verify-btn').click();
-  await expect(page.locator('#verify-error')).toContainText('complete artifact record hash');
+  await expect(page.locator('#verify-error')).toContainText('complete record binding checksum');
   await expect(page.locator('#qr-verify-btn')).toBeEnabled();
   await expect(page.locator('#qr-verify-btn')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('#qr-verify-btn')).toHaveText('Run Verification');
@@ -685,11 +684,13 @@ test('a mismatched response record identifier fails closed', async ({ page }) =>
   await expect(page.locator('#verify-result-grid')).not.toContainText('RPT-OTHER');
 });
 
-test('partial verification parameters are removed from browser history', async ({ page }) => {
+test('retired direct query identifiers are scrubbed and never prefetched', async ({ page }) => {
   await mockStatus(page);
-  await page.goto(`${baseUrl}/verify.html?report=RPT-PARTIAL`);
+  await page.goto(`${baseUrl}/verify.html?report=RPT-LEGACY&h=${'a'.repeat(64)}&exp=EXP-LEGACY`);
   await expect(page).toHaveURL(`${baseUrl}/verify.html`);
   await expect(page.locator('#manual-report-id')).toHaveValue('');
+  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
+  await expect(page.locator('#qr-verify')).not.toHaveClass(/qr-card-visible/);
 });
 
 test('verifier fetches reject redirects instead of forwarding identifiers', async ({ page }) => {
@@ -705,7 +706,7 @@ test('verifier fetches reject redirects instead of forwarding identifiers', asyn
     });
   });
 
-  await page.goto(`${baseUrl}/verify.html?report=RPT-REDIRECT&h=${'a'.repeat(64)}`);
+  await page.goto(`${baseUrl}/verify.html#report=RPT-REDIRECT&h=${'a'.repeat(64)}`);
   await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
   expect(externalRequests).toEqual([]);

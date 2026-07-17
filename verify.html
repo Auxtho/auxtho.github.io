@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auxtho - Artifact Verification</title>
-    <meta name="description" content="Check whether an Auxtho artifact integrity hash matches a stored Auxtho artifact record.">
+    <meta name="description" content="Check whether a truncated Auxtho record binding checksum matches a stored Auxtho artifact record.">
     <meta name="robots" content="noindex">
     <meta name="color-scheme" content="dark light">
     <link rel="icon" href="/assets/favicon.svg">
@@ -33,7 +33,7 @@
                 <p class="hero-kicker">ARTIFACT RECORD CHECK</p>
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Artifact Verification</h1>
                 <p class="text-lg text-gray-400 verify-subtitle">
-                    Check whether an exported artifact hash matches a stored Auxtho artifact record.
+                    Check whether a record binding checksum matches a stored Auxtho artifact record.
                 </p>
             </div>
 
@@ -41,7 +41,7 @@
                 <p class="qr-card-title">QR Verification Detected</p>
                 <span class="qr-label">Report ID</span>
                 <p id="qr-report-id" class="qr-value">-</p>
-                <span class="qr-label">Artifact Integrity Hash</span>
+                <span class="qr-label">Record Binding Checksum (truncated SHA-256)</span>
                 <p id="qr-hash" class="qr-value">-</p>
                 <p class="qr-description">
                     Opening this QR link prefills the identifiers shown here but does not start an artifact comparison request. The page may check service readiness without sending artifact identifiers. Verification runs only after
@@ -59,21 +59,21 @@
             <div id="verify-result" class="verify-result-card" role="status" aria-live="polite" aria-atomic="true" hidden>
                 <p id="verify-result-kicker" class="verify-result-kicker">Verification Result</p>
                 <h2 id="verify-result-title">Awaiting Verification</h2>
-                <p id="verify-result-message" class="verify-result-message">Submit a report ID and artifact hash to verify this artifact.</p>
+                <p id="verify-result-message" class="verify-result-message">Submit a report ID and record binding checksum to check the stored record.</p>
                 <div id="verify-result-grid" class="verify-result-grid"></div>
             </div>
 
             <div class="manual-verify-panel mt-8">
                 <h2>Manual Verification</h2>
-                <p class="manual-verify-copy">Paste the report ID and artifact integrity hash from the exported artifact to run API-backed verification. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
+                <p class="manual-verify-copy">Paste the report ID and truncated record binding checksum from the exported artifact to run API-backed verification. This checksum covers selected canonical registry fields, not every PDF byte. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
                 <form id="manual-verify-form" class="manual-verify-form">
                     <div class="manual-field manual-report-field">
                         <label for="manual-report-id">Report ID</label>
                         <input id="manual-report-id" name="report_id" type="text" placeholder="e.g. RPT-20260320-E5A23B" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="manual-field manual-hash-field">
-                        <label for="manual-artifact-hash">Artifact Integrity Hash</label>
-                        <input id="manual-artifact-hash" name="artifact_hash" type="text" placeholder="Artifact record hash shown in the export" maxlength="71" autocomplete="off" spellcheck="false" required>
+                        <label for="manual-artifact-hash">Record Binding Checksum (truncated SHA-256)</label>
+                        <input id="manual-artifact-hash" name="artifact_hash" type="text" placeholder="Record binding checksum shown in the export" maxlength="71" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="manual-field manual-export-field">
                         <label for="manual-export-event-id">Export Event ID <span class="optional-label">optional</span></label>
@@ -96,7 +96,7 @@
                     <ol class="step-list">
                         <li class="step-row">
                             <span class="step-circle">1</span>
-                            <span class="step-text">Locate the <strong>artifact integrity hash</strong> from the last page of the exported artifact or QR link.</span>
+                            <span class="step-text">Locate the <strong>record binding checksum</strong> from the last page of the exported artifact or QR link.</span>
                         </li>
                         <li class="step-row">
                             <span class="step-circle">2</span>
@@ -114,12 +114,12 @@
                     <div class="status-block">
                         <p id="verification-service-status" class="status-title checking" aria-live="polite">Checking / Not confirmed</p>
                         <ul id="status-active-items">
-                            <li>Artifact integrity hash</li>
+                            <li>Record binding checksum</li>
                             <li>Verification service status pending</li>
                             <li>Manual verification support</li>
                         </ul>
-                        <p class="status-meta-line">Verification scope: Auxtho artifact record and integrity hash</p>
-                        <p class="status-meta-line">Artifact record hash: SHA-256-derived format shown in the export</p>
+                        <p class="status-meta-line">Verification scope: selected canonical registry fields</p>
+                        <p class="status-meta-line">Record binding checksum: truncated SHA-256-derived value shown in the export</p>
                     </div>
                     <div id="artifact-crypto-block" class="status-block">
                         <p class="status-title crypto">Artifact crypto</p>
