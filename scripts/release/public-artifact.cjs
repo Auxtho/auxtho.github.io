@@ -437,6 +437,11 @@ function writeProvenance(outputRoot, provenanceRoot, releaseManifest, metadata) 
     `${sha256(fs.readFileSync(path.join(outputRoot, ...relative.split('/'))))}  ./${relative}`
   ));
   fs.writeFileSync(path.join(provenanceRoot, 'public-files-sha256.txt'), `${digestLines.join('\n')}\n`, { flag: 'wx' });
+  fs.copyFileSync(
+    path.join(outputRoot, 'robots.txt'),
+    path.join(provenanceRoot, 'robots.txt'),
+    fs.constants.COPYFILE_EXCL,
+  );
   writeJson(path.join(provenanceRoot, 'release-manifest.json'), releaseManifest);
   fs.writeFileSync(
     path.join(provenanceRoot, 'must-be-absent-public-paths.txt'),

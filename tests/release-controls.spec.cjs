@@ -1,4 +1,7 @@
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
+const { EventEmitter } = require('node:events');
+const { performance } = require('node:perf_hooks');
 const test = require('node:test');
 
 const {
@@ -10,9 +13,13 @@ const {
   validateRulesets,
 } = require('../scripts/release/platform-controls.cjs');
 const {
+  boundedRequestTimeoutMs,
+  isManagedRobotsOverlay,
   parseDigestManifest,
+  requestOnce,
   resolveHttpsRedirect,
   validateRelease,
+  waitForExpectedPublicFile,
 } = require('../scripts/release/verify-deployment.cjs');
 const L = '1'.repeat(40);
 const S = 'a'.repeat(40);
@@ -362,4 +369,218 @@ test('digest parser is exact and deterministic', () => {
   assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./../secret\n`), /invalid digest/);
   assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./archive/ trailing.html \n`), /invalid digest/);
 
+});
+
+test('managed robots overlay preserves the exact reviewed source and no-training policy', () => {
+  const expected = Buffer.from('User-agent: *\nAllow: /\nSitemap: https://auxtho.com/sitemap.xml\n');
+  const prefix = Buffer.from([
+    '# Cloudflare content-signal notice',
+    '',
+    '# BEGIN Cloudflare Managed content',
+    '',
+    'Content-Signal: search=yes,ai-train=no,use=reference',
+    'User-agent: *',
+    'Content-Signal: search=yes,ai-train=no,use=reference',
+    'Allow: /',
+    '',
+    'User-agent: Amazonbot',
+    'Disallow: /',
+    '',
+    'User-agent: Applebot-Extended',
+    'Disallow: /',
+    '',
+    'User-agent: Bytespider',
+    'Disallow: /',
+    '',
+    'User-agent: CCBot',
+    'Disallow: /',
+    '',
+    'User-agent: ClaudeBot',
+    'Disallow: /',
+    '',
+    'User-agent: CloudflareBrowserRenderingCrawler',
+    'Disallow: /',
+    '',
+    'User-agent: Google-Extended',
+    'Disallow: /',
+    '',
+    'User-agent: GPTBot',
+    'Disallow: /',
+    '',
+    'User-agent: meta-externalagent',
+    'Disallow: /',
+    '',
+    '# END Cloudflare Managed Content',
+    '',
+    '',
+  ].join('\n'));
+  const response = {
+    url: new URL('https://auxtho.com/robots.txt?cache_bust=test'),
+    headers: {
+      server: 'cloudflare',
+      'cf-ray': 'a1ccea65eef92f4b-LAX',
+      'content-type': 'text/plain; charset=utf-8',
+    },
+    body: Buffer.concat([prefix, expected]),
+  };
+  assert.equal(isManagedRobotsOverlay(response, expected), false);
+  const exactPrefix = Buffer.from(prefix.toString('utf8').replace(
+    'Content-Signal: search=yes,ai-train=no,use=reference\nUser-agent: *\n',
+    'User-agent: *\n',
+  ));
+  const exactResponse = { ...response, body: Buffer.concat([exactPrefix, expected]) };
+  assert.equal(isManagedRobotsOverlay(exactResponse, expected), true);
+  assert.equal(isManagedRobotsOverlay(exactResponse, Buffer.from('User-agent: *\nDisallow: /\n')), false);
+  assert.equal(isManagedRobotsOverlay({
+    ...exactResponse,
+    body: Buffer.concat([Buffer.from(exactPrefix.toString('utf8').replace('ai-train=no', 'ai-train=yes')), expected]),
+  }, expected), false);
+  assert.equal(isManagedRobotsOverlay({
+    ...exactResponse,
+    body: Buffer.concat([
+      Buffer.from(exactPrefix.toString('utf8').replace('ai-train=no', 'ai-train=no,ai-train=yes')),
+      expected,
+    ]),
+  }, expected), false);
+  assert.equal(isManagedRobotsOverlay({
+    ...exactResponse,
+    body: Buffer.concat([Buffer.from(`Disallow: /private\n${exactPrefix.toString('utf8')}`), expected]),
+  }, expected), false);
+  assert.equal(isManagedRobotsOverlay({
+    ...exactResponse,
+    headers: { ...exactResponse.headers, server: 'cloudflare-proxy' },
+  }, expected), false);
+  assert.equal(isManagedRobotsOverlay({
+    ...exactResponse,
+    headers: { server: 'cloudflare', 'content-type': 'text/plain' },
+  }, expected), false);
+  assert.equal(isManagedRobotsOverlay({
+    ...exactResponse,
+    url: new URL('https://auxtho.com/assets/not-robots.css'),
+  }, expected), false);
+});
+
+test('public file readback retries bounded stale bytes before accepting the exact artifact', async () => {
+  const expected = Buffer.from('reviewed artifact bytes\n');
+  const stale = Buffer.from('stale edge bytes\n');
+  const expectedHash = crypto.createHash('sha256').update(expected).digest('hex');
+  let calls = 0;
+  const result = await waitForExpectedPublicFile({
+    url: new URL('https://auxtho.com/assets/example.css'),
+    allowedOrigins: ['https://auxtho.com'],
+    expectedHash,
+    attempts: 2,
+    statusMessage: 'public path returned',
+    mismatchMessage: 'public byte mismatch',
+    fetcher: async () => {
+      calls += 1;
+      return { status: 200, headers: {}, body: calls === 1 ? stale : expected, chain: [] };
+    },
+    sleeper: async () => {},
+  });
+  assert.equal(calls, 2);
+  assert.equal(result.attempt, 2);
+  assert.equal(result.actualHash, expectedHash);
+  assert.equal(result.edgeTransform, null);
+});
+
+test('public file readback rejects unbounded attempts and preserves failed observations', async () => {
+  const expected = Buffer.from('reviewed artifact bytes\n');
+  const stale = Buffer.from('stale edge bytes\n');
+  const expectedHash = crypto.createHash('sha256').update(expected).digest('hex');
+  const base = {
+    url: new URL('https://auxtho.com/assets/example.css'),
+    allowedOrigins: ['https://auxtho.com'],
+    expectedHash,
+    statusMessage: 'public path returned',
+    mismatchMessage: 'public byte mismatch',
+    fetcher: async () => ({ status: 200, headers: {}, body: stale, chain: [] }),
+    sleeper: async () => {},
+  };
+  await assert.rejects(
+    waitForExpectedPublicFile({ ...base, attempts: Infinity }),
+    /readback attempts must be an integer from 1 to 24/,
+  );
+  await assert.rejects(
+    waitForExpectedPublicFile({ ...base, attempts: 2 }),
+    (error) => {
+      assert.match(error.message, /public byte mismatch/);
+      assert.equal(error.readbackObservations.length, 2);
+      assert.deepEqual(error.readbackObservations.map((item) => item.status), [200, 200]);
+      assert.deepEqual(error.readbackObservations.map((item) => item.actual_sha256), [
+        crypto.createHash('sha256').update(stale).digest('hex'),
+        crypto.createHash('sha256').update(stale).digest('hex'),
+      ]);
+      return true;
+    },
+  );
+});
+
+test('readback deadline rejects late exact bytes and constrains each HTTPS request', async () => {
+  assert.equal(boundedRequestTimeoutMs({ deadlineAt: 1000, now: () => 250 }), 750);
+  assert.equal(boundedRequestTimeoutMs({ deadlineAt: 100000, now: () => 0 }), 30000);
+  assert.throws(
+    () => boundedRequestTimeoutMs({ deadlineAt: 1000, now: () => 1000 }),
+    /HTTPS readback deadline exceeded/,
+  );
+
+  const expected = Buffer.from('reviewed artifact bytes\n');
+  const expectedHash = crypto.createHash('sha256').update(expected).digest('hex');
+  let now = 0;
+  await assert.rejects(
+    waitForExpectedPublicFile({
+      url: new URL('https://auxtho.com/assets/example.css'),
+      allowedOrigins: ['https://auxtho.com'],
+      expectedHash,
+      attempts: 2,
+      statusMessage: 'public path returned',
+      mismatchMessage: 'public byte mismatch',
+      fetcher: async () => {
+        now = 300001;
+        return { status: 200, headers: {}, body: expected, chain: [] };
+      },
+      sleeper: async () => {},
+      now: () => now,
+    }),
+    (error) => {
+      assert.match(error.message, /public file readback deadline exceeded/);
+      assert.equal(error.readbackObservations.length, 1);
+      assert.equal(error.readbackObservations[0].deadline_exceeded, true);
+      assert.equal(error.readbackObservations[0].actual_sha256, expectedHash);
+      return true;
+    },
+  );
+});
+
+test('absolute HTTPS deadline destroys a response that keeps trickling data', async () => {
+  let chunks = 0;
+  let destroyed = false;
+  await assert.rejects(
+    requestOnce(new URL('https://auxtho.com/robots.txt'), {
+      deadlineAt: performance.now() + 80,
+      requestFactory: (_url, _options, onResponse) => {
+        const request = new EventEmitter();
+        let interval;
+        request.end = () => {
+          const response = new EventEmitter();
+          response.statusCode = 200;
+          response.headers = { server: 'cloudflare' };
+          onResponse(response);
+          interval = setInterval(() => {
+            chunks += 1;
+            response.emit('data', Buffer.from('x'));
+          }, 5);
+        };
+        request.destroy = (error) => {
+          destroyed = true;
+          clearInterval(interval);
+          request.emit('error', error);
+        };
+        return request;
+      },
+    }),
+    /HTTPS readback absolute deadline exceeded/,
+  );
+  assert.equal(destroyed, true);
+  assert.ok(chunks > 1);
 });
