@@ -78,6 +78,7 @@ jobs:
         run: node scripts/release/platform-controls.cjs assert-pages-bootstrap site-ci-evidence/pages-bootstrap.json
       - run: npm run test:yaml
       - run: npm run test:release
+      - run: npm run test:js
       - run: npm run build
       - name: Require committed generated CSS to be tracked and current
         run: |

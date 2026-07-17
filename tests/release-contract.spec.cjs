@@ -16,6 +16,10 @@ const {
   validateGeneratedRelease,
   validateReleaseTemplate,
 } = require('../scripts/verify-release-contract.cjs');
+const {
+  collectJavaScriptFiles,
+  validateJavaScriptFiles,
+} = require('../scripts/release/validate-js.cjs');
 
 const root = path.resolve(__dirname, '..');
 const LEGACY_SHA = '1'.repeat(40);
@@ -38,7 +42,7 @@ function createSourceFixture(targetRoot) {
   for (const relative of [
     '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html', 'verify.html',
     'CNAME', 'robots.txt', 'sitemap.xml', 'security/ardamire/index.html', 'assets',
-    'package.json', 'scripts/release/BOOTSTRAP.md',
+    'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
 
@@ -156,6 +160,186 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
       sha256(fs.readFileSync(path.join(output, 'assets', 'release-manifest.json'))),
       result.release.release_manifest.sha256,
     );
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
+test('candidate and non-legacy rollback artifacts reject non-canonical Windows or mixed public text bytes', () => {
+  for (const fixture of [
+    {
+      name: 'CRLF stylesheet',
+      relative: 'assets/custom.css',
+      mutate: (text) => text.replace(/\n/g, '\r\n'),
+    },
+    {
+      name: 'mixed-EOL script',
+      relative: 'assets/tw-init.3a46d349f310cfb8aee19f2f69d6d2caf2393f7d975b1b386c5db6451f2a8dd5.js',
+      mutate: (text) => text.replace('\n', '\r\n'),
+    },
+  ]) {
+    for (const mode of ['candidate', 'rollback']) {
+      const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-release-eol-'));
+      try {
+        const source = path.join(temporary, 'source');
+        const previous = path.join(temporary, 'previous');
+        fs.mkdirSync(source);
+        fs.mkdirSync(previous);
+        createSourceFixture(source);
+        createSourceFixture(previous);
+        const target = path.join(source, ...fixture.relative.split('/'));
+        fs.writeFileSync(target, fixture.mutate(fs.readFileSync(target, 'utf8')), 'utf8');
+
+        assert.throws(() => buildArtifact({
+          sourceRoot: source,
+          previousSourceRoot: previous,
+          outputRoot: path.join(temporary, 'site'),
+          provenanceRoot: path.join(temporary, 'provenance'),
+          sourceSha: SITE_SHA,
+          previousSha: mode === 'candidate' ? LEGACY_SHA : SITE_SHA,
+          compatibleJson: JSON.stringify(mode === 'candidate' ? COMPATIBILITY : [SITE_SHA]),
+          mode,
+          rollbackOfSha: mode === 'rollback' ? LEGACY_SHA : undefined,
+          retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+          artifactName: mode === 'candidate' ? 'github-pages-candidate' : 'github-pages-rollback',
+          repository: 'auxtho/auxtho.github.io',
+          runId: '123',
+          runAttempt: '1',
+        }), new RegExp(`public text file must use LF-only bytes: ${fixture.relative.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`), `${mode}: ${fixture.name}`);
+      } finally {
+        fs.rmSync(temporary, { recursive: true, force: true });
+      }
+    }
+  }
+});
+
+test('candidate artifact rejects unreviewed assets and non-UTF-8 public text encodings', () => {
+  const fixtures = [
+    {
+      name: 'unreviewed JSON asset',
+      relative: 'assets/unreviewed-private-record.json',
+      bytes: Buffer.from('{"private":true}\n'),
+      expected: /unreviewed public source path: assets\/unreviewed-private-record\.json/,
+    },
+    {
+      name: 'unreviewed root HTML',
+      relative: 'private-record.html',
+      bytes: Buffer.from('<!doctype html><title>Private record</title>\n'),
+      expected: /unreviewed public source path: private-record\.html/,
+    },
+    {
+      name: 'UTF-16LE content-addressed script',
+      relative: 'assets/app.eb0dad8c9eb83e2e9ec71879749daea7fcad30d3ffee6fdc69fc6aba18139665.js',
+      bytes: Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from('window.test = true;\n', 'utf16le')]),
+      expected: /public text file must not contain a byte-order mark/,
+    },
+    {
+      name: 'NUL-bearing robots file',
+      relative: 'robots.txt',
+      bytes: Buffer.from('User\0-agent: *\n'),
+      expected: /public text file must not contain NUL bytes/,
+    },
+    {
+      name: 'invalid UTF-8 robots file',
+      relative: 'robots.txt',
+      bytes: Buffer.from([0x55, 0xff, 0x0a]),
+      expected: /public text file must be valid UTF-8/,
+    },
+  ];
+
+  for (const fixture of fixtures) {
+    const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-release-public-boundary-'));
+    try {
+      const source = path.join(temporary, 'source');
+      const previous = path.join(temporary, 'previous');
+      fs.mkdirSync(source);
+      fs.mkdirSync(previous);
+      createSourceFixture(source);
+      createSourceFixture(previous);
+      const target = path.join(source, ...fixture.relative.split('/'));
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(target, fixture.bytes);
+
+      assert.throws(() => buildArtifact({
+        sourceRoot: source,
+        previousSourceRoot: previous,
+        outputRoot: path.join(temporary, 'site'),
+        provenanceRoot: path.join(temporary, 'provenance'),
+        sourceSha: SITE_SHA,
+        previousSha: LEGACY_SHA,
+        compatibleJson: JSON.stringify(COMPATIBILITY),
+        mode: 'candidate',
+        retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+        artifactName: 'github-pages-candidate',
+        repository: 'auxtho/auxtho.github.io',
+        runId: '123',
+        runAttempt: '1',
+      }), fixture.expected, fixture.name);
+    } finally {
+      fs.rmSync(temporary, { recursive: true, force: true });
+    }
+  }
+});
+
+test('public file manifest rejects duplicate keys and non-canonical path aliases', () => {
+  for (const fixture of [
+    {
+      name: 'duplicate paths key',
+      mutate: (manifest) => `{"schema_version":1,"paths":${JSON.stringify(manifest.paths)},"paths":${JSON.stringify(manifest.paths)}}`,
+      expected: /must use exact canonical JSON without duplicate or unknown keys/,
+    },
+    {
+      name: 'percent-encoded alias',
+      mutate: (manifest) => `${JSON.stringify({
+        schema_version: 1,
+        paths: manifest.paths.map((value) => value === '/assets/custom.css' ? '/assets/custom%2Ecss' : value),
+      }, null, 2)}\n`,
+      expected: /public file manifest path is not canonical/,
+    },
+  ]) {
+    const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-release-manifest-boundary-'));
+    try {
+      const source = path.join(temporary, 'source');
+      const previous = path.join(temporary, 'previous');
+      fs.mkdirSync(source);
+      fs.mkdirSync(previous);
+      createSourceFixture(source);
+      createSourceFixture(previous);
+      const manifestPath = path.join(source, 'scripts', 'release', 'public-files.json');
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      fs.writeFileSync(manifestPath, fixture.mutate(manifest), 'utf8');
+
+      assert.throws(() => buildArtifact({
+        sourceRoot: source,
+        previousSourceRoot: previous,
+        outputRoot: path.join(temporary, 'site'),
+        provenanceRoot: path.join(temporary, 'provenance'),
+        sourceSha: SITE_SHA,
+        previousSha: LEGACY_SHA,
+        compatibleJson: JSON.stringify(COMPATIBILITY),
+        mode: 'candidate',
+        retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+        artifactName: 'github-pages-candidate',
+        repository: 'auxtho/auxtho.github.io',
+        runId: '123',
+        runAttempt: '1',
+      }), fixture.expected, fixture.name);
+    } finally {
+      fs.rmSync(temporary, { recursive: true, force: true });
+    }
+  }
+});
+
+test('JavaScript validation recursively rejects invalid nested public scripts', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-js-recursion-'));
+  try {
+    const nested = path.join(temporary, 'nested');
+    fs.mkdirSync(nested);
+    fs.writeFileSync(path.join(temporary, 'valid.js'), 'globalThis.valid = true;\n');
+    fs.writeFileSync(path.join(nested, 'invalid.js'), 'globalThis.invalid = ;\n');
+    const files = collectJavaScriptFiles(temporary);
+    assert.equal(files.length, 2);
+    assert.throws(() => validateJavaScriptFiles(files), /SyntaxError|Unexpected token/);
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });
   }

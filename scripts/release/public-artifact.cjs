@@ -1,6 +1,7 @@
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const { TextDecoder } = require('node:util');
 const parse5 = require('parse5');
 
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
@@ -9,7 +10,17 @@ const SCRIPT_PATH_PATTERN = /^\/assets\/[A-Za-z0-9._/-]+\.([0-9a-f]{64})\.js$/;
 const STYLESHEET_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/;
 const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/;
 const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.png', '.svg']);
+const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
+const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
+const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true });
+const BYTE_ORDER_MARKS = [
+  Buffer.from([0xef, 0xbb, 0xbf]),
+  Buffer.from([0xff, 0xfe, 0x00, 0x00]),
+  Buffer.from([0x00, 0x00, 0xfe, 0xff]),
+  Buffer.from([0xff, 0xfe]),
+  Buffer.from([0xfe, 0xff]),
+];
 
 function fail(message) {
   throw new Error(`HOLD: ${message}`);
@@ -81,6 +92,49 @@ function normalizeManifestPath(value) {
   return url.pathname;
 }
 
+function isReviewedPublicSourcePath(relative) {
+  const isRootHtml = !relative.includes('/') && relative.endsWith('.html');
+  const isRootStatic = ['CNAME', 'robots.txt', 'sitemap.xml'].includes(relative);
+  const isSecurityTombstone = relative === 'security/ardamire/index.html';
+  return isRootHtml || isRootStatic || isSecurityTombstone || relative.startsWith('assets/');
+}
+
+function readPublicSourcePaths(sourceRoot) {
+  const manifestPath = path.join(sourceRoot, ...PUBLIC_FILE_MANIFEST_RELATIVE.split('/'));
+  if (!fs.existsSync(manifestPath)) fail(`public file manifest is absent: ${PUBLIC_FILE_MANIFEST_RELATIVE}`);
+  const manifestBytes = fs.readFileSync(manifestPath);
+  const document = decodeCanonicalTextBytes(manifestBytes, PUBLIC_FILE_MANIFEST_RELATIVE);
+  let manifest;
+  try {
+    manifest = JSON.parse(document);
+  } catch {
+    fail('public file manifest must be valid JSON');
+  }
+  if (manifest.schema_version !== 1 || !Array.isArray(manifest.paths) || manifest.paths.length < 1) {
+    fail('public file manifest schema is invalid');
+  }
+  const canonicalDocument = `${JSON.stringify({ schema_version: 1, paths: manifest.paths }, null, 2)}\n`;
+  if (document !== canonicalDocument) {
+    fail('public file manifest must use exact canonical JSON without duplicate or unknown keys');
+  }
+  if (JSON.stringify(manifest.paths) !== JSON.stringify([...manifest.paths].sort())) {
+    fail('public file manifest paths must use canonical sort order');
+  }
+  const paths = manifest.paths.map((value) => {
+    const publicPath = normalizeManifestPath(value);
+    const relative = decodeURIComponent(publicPath.slice(1));
+    if (value !== publicPathFromRelative(relative)) fail(`public file manifest path is not canonical: ${value}`);
+    if (!isReviewedPublicSourcePath(relative)) fail(`public file path is outside reviewed namespaces: ${value}`);
+    if (relative.startsWith('assets/') && !ALLOWED_ASSET_EXTENSIONS.has(path.posix.extname(relative))) {
+      fail(`unreviewed public asset type in manifest: ${value}`);
+    }
+    if (relative === 'assets/release-manifest.json') fail('generated release manifest must not be source-approved');
+    return relative;
+  });
+  if (new Set(paths).size !== paths.length) fail('public file manifest contains duplicate paths');
+  return new Set(paths);
+}
+
 function pathsWithIndexAliases(relativePaths) {
   const paths = new Set();
   for (const relative of relativePaths) {
@@ -110,32 +164,60 @@ function copyFile(sourceRoot, outputRoot, relative) {
   fs.copyFileSync(source, target, fs.constants.COPYFILE_EXCL);
 }
 
+function decodeCanonicalTextBytes(bytes, relative) {
+  if (BYTE_ORDER_MARKS.some((mark) => bytes.subarray(0, mark.length).equals(mark))) {
+    fail(`public text file must not contain a byte-order mark: ${relative}`);
+  }
+  if (bytes.includes(0x00)) {
+    fail(`public text file must not contain NUL bytes: ${relative}`);
+  }
+  let document;
+  try {
+    document = UTF8_DECODER.decode(bytes);
+  } catch {
+    fail(`public text file must be valid UTF-8: ${relative}`);
+  }
+  if (bytes.includes(0x0d)) fail(`public text file must use LF-only bytes: ${relative}`);
+  return document;
+}
+
+function assertCanonicalPublicTextBytes(sourceRoot, relative) {
+  const extension = path.posix.extname(relative);
+  if (relative !== 'CNAME' && !CANONICAL_PUBLIC_TEXT_EXTENSIONS.has(extension)) return;
+  decodeCanonicalTextBytes(fs.readFileSync(path.join(sourceRoot, ...relative.split('/'))), relative);
+}
+
 function stageExplicitPublicFiles(sourceRoot, outputRoot, options = {}) {
   if (fs.existsSync(outputRoot)) fail(`artifact output already exists: ${outputRoot}`);
   fs.mkdirSync(outputRoot, { recursive: false });
   const sourceFiles = relativeFiles(sourceRoot);
   const staged = [];
+  const legacyBootstrapRollback = options.mode === 'rollback' && options.legacyBootstrap === true;
+  const approvedPublicFiles = legacyBootstrapRollback ? null : readPublicSourcePaths(sourceRoot);
 
   for (const relative of sourceFiles) {
-    const legacyBootstrapRollback = options.mode === 'rollback' && options.legacyBootstrap === true;
     if (legacyBootstrapRollback) {
       if (relative.split('/').some((segment) => segment.startsWith('.'))) continue;
       copyFile(sourceRoot, outputRoot, relative);
       staged.push(relative);
       continue;
     }
-    const isRootHtml = !relative.includes('/') && relative.endsWith('.html');
-    const isRootStatic = ['CNAME', 'robots.txt', 'sitemap.xml'].includes(relative);
-    const isSecurityTombstone = relative === 'security/ardamire/index.html';
+    const reviewedPublicSource = isReviewedPublicSourcePath(relative);
     const isAsset = relative.startsWith('assets/');
-    if (!isRootHtml && !isRootStatic && !isSecurityTombstone && !isAsset) continue;
+    if (!reviewedPublicSource) continue;
     if (relative === 'assets/ld-org.json') fail('assets/ld-org.json remains retired while legal identity is unresolved');
     if (relative === 'assets/release-manifest.json') fail('source must not pre-populate generated release manifest');
     if (isAsset && !ALLOWED_ASSET_EXTENSIONS.has(path.posix.extname(relative))) {
       fail(`unreviewed public asset type: ${relative}`);
     }
+    if (!approvedPublicFiles.has(relative)) fail(`unreviewed public source path: ${relative}`);
+    assertCanonicalPublicTextBytes(sourceRoot, relative);
     copyFile(sourceRoot, outputRoot, relative);
     staged.push(relative);
+  }
+
+  for (const approved of approvedPublicFiles || []) {
+    if (!staged.includes(approved)) fail(`approved public source file is absent: ${approved}`);
   }
 
   for (const required of ['index.html', 'verify.html', 'privacy.html', 'terms.html', '404.html', 'CNAME', 'robots.txt', 'sitemap.xml']) {
