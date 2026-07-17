@@ -353,10 +353,14 @@ function validatePlatformState(snapshot, bindings) {
   return approved;
 }
 
-function ghApi(endpoint, { allowMissing = false } = {}) {
+function ghApi(endpoint, { allowMissing = false, allowForbidden = false } = {}) {
   const result = spawnSync('gh', ['api', endpoint], { encoding: 'utf8', windowsHide: true });
   if (result.status !== 0) {
-    if (allowMissing && /404|Not Found/i.test(`${result.stderr}\n${result.stdout}`)) return { missing: true };
+    const output = `${result.stderr}\n${result.stdout}`;
+    if (allowMissing && /404|Not Found/i.test(output)) return { missing: true };
+    if (allowForbidden && /Resource not accessible by integration|HTTP 403|Forbidden/i.test(output)) {
+      return { missing: true, forbidden: true };
+    }
     fail(`read-only GitHub API request failed for ${endpoint}: ${(result.stderr || result.stdout).trim()}`);
   }
   try {
@@ -438,7 +442,10 @@ function capturePlatformState({ repository, sourceSha, rollbackSha, publicOrigin
     deploymentBranchPolicies: ghApi(
       `repos/${repository}/environments/github-pages/deployment-branch-policies?per_page=100`,
     ),
-    branchProtection: ghApi(`repos/${repository}/branches/main/protection`, { allowMissing: true }),
+    branchProtection: ghApi(`repos/${repository}/branches/main/protection`, {
+      allowMissing: true,
+      allowForbidden: true,
+    }),
     rulesets,
     checkRuns: ghApi(`repos/${repository}/commits/${sourceSha}/check-runs?per_page=100`),
     latestPagesBuild: ghApi(`repos/${repository}/pages/builds/latest`),
