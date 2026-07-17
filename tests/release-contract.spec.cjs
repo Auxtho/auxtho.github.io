@@ -104,9 +104,14 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.match(platformControls, /Resource not accessible by integration/);
   assert.match(
     deploymentVerifier,
-    /fetchHttps\(url, allowedOrigins, 5, \{ bypassCache: true \}\)/,
+    /fetcher\(url, allowedOrigins, 5, \{\s*bypassCache: true,\s*deadlineAt,\s*now,\s*\}\)/,
   );
-  assert.equal((deploymentVerifier.match(/\{ bypassCache: true \}/g) || []).length, 6);
+  assert.match(
+    deploymentVerifier,
+    /boundedRequestTimeoutMs\(requestOptions\);\s*const response = await requestOnce\(url, requestOptions\)/,
+  );
+  assert.match(deploymentVerifier, /timeout: timeoutMs/);
+  assert.doesNotMatch(deploymentVerifier, /timeout: 30_000/);
   assert.doesNotMatch(deploymentVerifier, /bypassCache: variant ===/);
 });
 
@@ -179,6 +184,10 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
     assert.equal(
       sha256(fs.readFileSync(path.join(output, 'assets', 'release-manifest.json'))),
       result.release.release_manifest.sha256,
+    );
+    assert.deepEqual(
+      fs.readFileSync(path.join(provenance, 'robots.txt')),
+      fs.readFileSync(path.join(output, 'robots.txt')),
     );
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });
