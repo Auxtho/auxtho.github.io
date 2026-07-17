@@ -21,6 +21,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "release.json"
+      - ".gitattributes"
       - ".github/workflows/site-ci.yml"
   push:
     branches: [main]
@@ -38,6 +39,7 @@ on:
       - "package.json"
       - "package-lock.json"
       - "release.json"
+      - ".gitattributes"
       - ".github/workflows/site-ci.yml"
 
 permissions:
@@ -55,12 +57,12 @@ jobs:
       contents: read
       pages: read
     env:
-      SOURCE_SHA: ${{ github.sha }}
+      SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Check out the exact workflow source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Require main for a manual Pages release
         if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
@@ -105,12 +107,12 @@ jobs:
     permissions:
       contents: read
     env:
-      SOURCE_SHA: ${{ github.sha }}
+      SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Check out the exact package source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Set up exact Node runtime for release identity validation
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -121,6 +123,20 @@ jobs:
           set -Eeuo pipefail
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          git ls-files -z | \
+            git check-attr --stdin -z export-ignore export-subst > /tmp/site-export-attrs
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const parts = fs.readFileSync('/tmp/site-export-attrs').toString('utf8').split('\0').filter(Boolean);
+          if (parts.length % 3 !== 0) throw new Error('invalid git check-attr output');
+          const invalid = [];
+          for (let index = 0; index < parts.length; index += 3) {
+            if (!['unspecified', 'unset'].includes(parts[index + 2])) {
+              invalid.push(parts.slice(index, index + 3));
+            }
+          }
+          if (invalid.length) throw new Error(`archive export attributes are forbidden: ${JSON.stringify(invalid)}`);
+          NODE
           mkdir -p _release_source _site
           git archive --format=tar "${SOURCE_SHA}" | tar -xf - -C _release_source
           find _release_source -type l -print -quit | grep -q . && exit 1 || true

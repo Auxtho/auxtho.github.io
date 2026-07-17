@@ -15,7 +15,7 @@
     {
       "path": "/assets/proposal/app-overview-synthetic-replay-20260716.png",
       "sidecar": "/assets/proposal/app-overview-synthetic-replay-20260716.json",
-      "sidecar_sha256": "6e6771076a868c607bf5626c3fa772624e0040ec967db39b143e63d322bba16a",
+      "sidecar_sha256": "0a4f84b801767b63173fd64ba9736f254b884c33716b6294ad3a6fe0711e6541",
       "sha256": "0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",
@@ -50,7 +50,7 @@
         "person-like profile avatar and Next.js development toolbar were absent",
         "all four KPI status badges rendered as equal-height single-line pills",
         "regulatory-alignment text was absent from the captured product surface",
-        "external network requests: zero",
+        "external network egress: zero; one external dependency request was intercepted locally",
         "customer data used: false"
       ],
       "does_not_establish": [
@@ -64,7 +64,7 @@
     {
       "path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
       "sidecar": "/assets/proposal/console-synthetic-workflow-replay-20260716.json",
-      "sidecar_sha256": "4699b90de2d2517744a7628af8508418b13a99bf1a4c2fb5693ed710debb7014",
+      "sidecar_sha256": "2bc291fc9201902c789b3a2e5e1ffcb27dcd37633f6b862547a18f03ab808883",
       "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",

@@ -24,8 +24,8 @@
   },
   "shared_component": "DashboardMetricCards",
   "customer_data_used": false,
-  "external_network_requests": 0,
-  "intercepted_external_dependencies": [
+  "external_network_egress_requests": 0,
+  "intercepted_external_dependency_requests": [
     "GET https://fonts.googleapis.com/css2"
   ],
   "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",

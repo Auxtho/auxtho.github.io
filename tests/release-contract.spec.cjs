@@ -1,4 +1,5 @@
 const assert = require('node:assert/strict');
+const childProcess = require('node:child_process');
 const crypto = require('node:crypto');
 const fs = require('fs');
 const path = require('path');
@@ -12,6 +13,28 @@ const {
 
 const root = path.resolve(__dirname, '..');
 const SOURCE_SHA = 'a'.repeat(40);
+
+function readCommittedPublicBytes(relativePath) {
+  const committedBlob = childProcess.execFileSync(
+    'git',
+    ['rev-parse', `HEAD:${relativePath}`],
+    { cwd: root, encoding: 'utf8' },
+  ).trim();
+  const filteredWorktreeBlob = childProcess.execFileSync(
+    'git',
+    ['hash-object', `--path=${relativePath}`, relativePath],
+    { cwd: root, encoding: 'utf8' },
+  ).trim();
+  assert.equal(
+    filteredWorktreeBlob,
+    committedBlob,
+    `${relativePath} differs from the exact committed public bytes`,
+  );
+  return childProcess.execFileSync('git', ['show', `HEAD:${relativePath}`], {
+    cwd: root,
+    encoding: null,
+  });
+}
 
 test('committed release metadata is the exact build revision template', () => {
   const releaseTemplate = fs.readFileSync(path.join(root, 'release.json'), 'utf8');
@@ -42,10 +65,19 @@ test('generated release metadata rejects weak or ambiguous bindings', () => {
 
 test('site CI covers generators and binds manual Pages release to verified output', () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'site-ci.yml'), 'utf8');
+  const attributes = fs.readFileSync(path.join(root, '.gitattributes'), 'utf8');
   assert.equal((workflow.match(/- "_config\.yml"/g) || []).length, 2);
   assert.equal((workflow.match(/- "tailwind\.config\.js"/g) || []).length, 2);
+  assert.equal((workflow.match(/- "\.gitattributes"/g) || []).length, 2);
   assert.match(workflow, /workflow_dispatch:/);
-  assert.match(workflow, /ref: \$\{\{ github\.sha \}\}/);
+  assert.equal(
+    (
+      workflow.match(
+        /ref: \$\{\{ github\.event_name == 'pull_request' && github\.event\.pull_request\.head\.sha \|\| github\.sha \}\}/g,
+      ) || []
+    ).length,
+    2,
+  );
   assert.match(workflow, /APPROVED_SITE_SHA: \$\{\{ vars\.PRODUCTION_VERIFY_SITE_APPROVED_SHA \}\}/);
   assert.match(workflow, /test "\$\{GITHUB_SHA\}" = "\$\{APPROVED_SITE_SHA\}"/);
   assert.match(workflow, /pages: read/);
@@ -53,6 +85,8 @@ test('site CI covers generators and binds manual Pages release to verified outpu
   assert.match(workflow, /test "\$pages_build_type" = "workflow"/);
   assert.match(workflow, /git ls-files --error-unmatch -- assets\/style\.css/);
   assert.match(workflow, /git diff --exit-code/);
+  assert.match(workflow, /git check-attr --stdin -z export-ignore export-subst/);
+  assert.match(workflow, /archive export attributes are forbidden/);
   assert.match(workflow, /git archive --format=tar "\$\{SOURCE_SHA\}" \| tar -xf - -C _release_source/);
   assert.doesNotMatch(workflow, /jekyll-build-pages/);
   assert.match(workflow, /Stage only explicit public paths from exact committed bytes/);
@@ -74,6 +108,8 @@ test('site CI covers generators and binds manual Pages release to verified outpu
   assert.match(workflow, /deploy:[\s\S]*needs: package/);
   assert.match(workflow, /actions\/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e/);
   assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
+  assert.match(attributes, /^\* text=auto eol=lf$/m);
+  assert.match(attributes, /^\* -export-ignore -export-subst$/m);
 });
 
 test('public evidence manifest is an explicit publisher self-attestation bound to exact bytes', () => {
@@ -108,11 +144,17 @@ test('public evidence manifest is an explicit publisher self-attestation bound t
     assert.equal(fs.existsSync(assetPath), true);
     assert.equal(fs.existsSync(sidecarPath), true);
     assert.equal(
-      crypto.createHash('sha256').update(fs.readFileSync(assetPath)).digest('hex'),
+      crypto
+        .createHash('sha256')
+        .update(readCommittedPublicBytes(asset.path.replace(/^\//, '')))
+        .digest('hex'),
       asset.sha256,
     );
     assert.equal(
-      crypto.createHash('sha256').update(fs.readFileSync(sidecarPath)).digest('hex'),
+      crypto
+        .createHash('sha256')
+        .update(readCommittedPublicBytes(asset.sidecar.replace(/^\//, '')))
+        .digest('hex'),
       asset.sidecar_sha256,
     );
   }
