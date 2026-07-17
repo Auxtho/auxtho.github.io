@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auxtho - Artifact Verification</title>
-    <meta name="description" content="Check whether a truncated Auxtho record binding checksum matches a stored Auxtho artifact record.">
+    <meta name="description" content="Check whether a 64-character Auxtho record binding checksum matches a stored Auxtho artifact record.">
     <meta name="robots" content="noindex">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src 'self' https://api.auxtho.com http://127.0.0.1:8000; style-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; manifest-src 'none'; media-src 'none'; worker-src 'none'">
     <meta name="color-scheme" content="dark light">
     <link rel="icon" href="/assets/favicon.svg">
     <link rel="canonical" href="https://auxtho.com/verify.html">
@@ -41,7 +42,7 @@
                 <p class="qr-card-title">QR Verification Detected</p>
                 <span class="qr-label">Report ID</span>
                 <p id="qr-report-id" class="qr-value">-</p>
-                <span class="qr-label">Record Binding Checksum (truncated SHA-256)</span>
+                <span class="qr-label">Record Binding Checksum (64-character SHA-256)</span>
                 <p id="qr-hash" class="qr-value">-</p>
                 <p class="qr-description">
                     Opening this QR link prefills the identifiers shown here but does not start an artifact comparison request. The page may check service readiness without sending artifact identifiers. Verification runs only after
@@ -49,6 +50,7 @@
                     <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" id="qr-mailto">verify@auxtho.com</a>
                     for verification support. The support link does not prefill artifact identifiers.
                 </p>
+                <p id="legacy-binding-tombstone" class="verification-scope-warning" role="status" hidden>This legacy 16-character artifact binding is retired. This link is retained only as a tombstone and cannot run API verification. Request a current export with a 64-character record binding checksum or use manual verification support.</p>
                 <p class="verification-scope-warning">A QR-only check confirms a stored record match. It does not prove that the surrounding PDF or printed pages are unchanged, because a genuine QR can be copied.</p>
                 <p class="verification-disclosure">Selecting Run Verification sends these identifiers to Auxtho for comparison. If the request reaches the instrumented comparison path and its audit write succeeds, a minimized application audit record is created. Validation, rate-limit, network, or service-unavailable paths may create no application audit record. Site, hosting, API, and security infrastructure may separately retain request and connection logs.</p>
                 <div class="qr-btn-area">
@@ -65,15 +67,16 @@
 
             <div class="manual-verify-panel mt-8">
                 <h2>Manual Verification</h2>
-                <p class="manual-verify-copy">Paste the report ID and truncated record binding checksum from the exported artifact to run API-backed verification. This checksum covers selected canonical registry fields, not every PDF byte. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
+                <p class="manual-verify-copy">Paste the report ID and complete 64-character record binding checksum from the exported artifact to run API-backed verification. This checksum covers selected canonical registry fields, not every PDF byte. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
+                <p class="verification-scope-warning">Legacy 16-character artifact bindings were retired on July 17, 2026. They are not accepted. Legacy QR links open only a tombstone notice; request a current export or use manual verification support.</p>
                 <form id="manual-verify-form" class="manual-verify-form">
                     <div class="manual-field manual-report-field">
                         <label for="manual-report-id">Report ID</label>
                         <input id="manual-report-id" name="report_id" type="text" placeholder="e.g. RPT-20260320-E5A23B" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="manual-field manual-hash-field">
-                        <label for="manual-artifact-hash">Record Binding Checksum (truncated SHA-256)</label>
-                        <input id="manual-artifact-hash" name="artifact_hash" type="text" placeholder="Record binding checksum shown in the export" maxlength="71" autocomplete="off" spellcheck="false" required>
+                        <label for="manual-artifact-hash">Record Binding Checksum (64-character SHA-256)</label>
+                        <input id="manual-artifact-hash" name="artifact_hash" type="text" placeholder="64-character checksum shown in the export" maxlength="71" autocomplete="off" spellcheck="false" required>
                     </div>
                     <div class="manual-field manual-export-field">
                         <label for="manual-export-event-id">Export Event ID <span class="optional-label">optional</span></label>
@@ -119,7 +122,7 @@
                             <li>Manual verification support</li>
                         </ul>
                         <p class="status-meta-line">Verification scope: selected canonical registry fields</p>
-                        <p class="status-meta-line">Record binding checksum: truncated SHA-256-derived value shown in the export</p>
+                        <p class="status-meta-line">Record binding checksum: complete 64-character SHA-256-derived value shown in the export</p>
                     </div>
                     <div id="artifact-crypto-block" class="status-block">
                         <p class="status-title crypto">Artifact crypto</p>
@@ -157,6 +160,6 @@
     </footer>
 
     <script src="/assets/tw-init.js" defer></script>
-    <script src="/assets/verify-2026-04-24b.js?v=2026-07-16c"></script>
+    <script src="/assets/verify-2026-04-24b.js?v=2026-07-17e"></script>
 </body>
 </html>

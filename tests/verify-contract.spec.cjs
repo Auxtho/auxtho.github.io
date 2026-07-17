@@ -9,6 +9,7 @@ const root = path.resolve(__dirname, '..');
 let server;
 let baseUrl;
 const MATCHED_SITE_SHA = 'a'.repeat(40);
+const ROLLBACK_SITE_SHA = 'b'.repeat(40);
 
 test('site CI watches release identity and requires committed build output', async () => {
   const workflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'site-ci.yml'), 'utf8');
@@ -98,9 +99,13 @@ async function mockStatus(page, status = 'operational', options = {}) {
   });
   await page.route('**/release.json*', async (route) => {
     if (options.onReleaseRequest) options.onReleaseRequest(route.request());
+    const releaseSourceSha = options.releaseSourceSha || MATCHED_SITE_SHA;
     const releasePayload = Object.prototype.hasOwnProperty.call(options, 'releasePayload')
       ? options.releasePayload
-      : { source_sha: statusOverrides.public_site_source_sha || MATCHED_SITE_SHA };
+      : {
+        source_sha: releaseSourceSha,
+        compatible_backend_site_shas: options.compatibleBackendSiteShas || [releaseSourceSha],
+      };
     const body = Object.prototype.hasOwnProperty.call(options, 'releaseBody')
       ? options.releaseBody
       : JSON.stringify(releasePayload);
@@ -136,6 +141,28 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   if (server) await new Promise((resolve) => server.close(resolve));
+});
+
+test('verifier CSP allows reviewed endpoints and blocks an unlisted connection', async ({ page }) => {
+  let unlistedRequestCount = 0;
+  await mockStatus(page);
+  await page.route('https://example.invalid/**', async (route) => {
+    unlistedRequestCount += 1;
+    await route.abort();
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  const blocked = await page.evaluate(async () => {
+    try {
+      await fetch('https://example.invalid/not-reviewed');
+      return false;
+    } catch (_error) {
+      return true;
+    }
+  });
+  expect(blocked).toBe(true);
+  expect(unlistedRequestCount).toBe(0);
 });
 
 test('QR parameters prefill but never submit before an explicit click', async ({ page }) => {
@@ -180,7 +207,7 @@ test('manual controls use form semantics and one Enter action submits exactly on
   expect(postCount).toBe(1);
 });
 
-test('invalid artifact hashes never leave manual or QR controls busy', async ({ page }) => {
+test('invalid non-legacy artifact hashes never leave manual or QR controls busy', async ({ page }) => {
   let postCount = 0;
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
@@ -197,7 +224,7 @@ test('invalid artifact hashes never leave manual or QR controls busy', async ({ 
   await page.locator('#manual-report-id').fill('RPT-INVALID-HASH');
   await page.locator('#manual-artifact-hash').fill('not-a-hash');
   await page.locator('#manual-verify-btn').click();
-  await expect(page.locator('#verify-error')).toContainText('complete record binding checksum');
+  await expect(page.locator('#verify-error')).toContainText('complete 64-character record binding checksum');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   await expect(page.locator('#manual-verify-btn')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('#manual-verify-btn')).toHaveText('Verify Artifact');
@@ -208,10 +235,43 @@ test('invalid artifact hashes never leave manual or QR controls busy', async ({ 
   await page.reload();
   await expect(page.locator('#qr-verify-btn')).toBeEnabled();
   await page.locator('#qr-verify-btn').click();
-  await expect(page.locator('#verify-error')).toContainText('complete record binding checksum');
+  await expect(page.locator('#verify-error')).toContainText('complete 64-character record binding checksum');
   await expect(page.locator('#qr-verify-btn')).toBeEnabled();
   await expect(page.locator('#qr-verify-btn')).toHaveAttribute('aria-busy', 'false');
   await expect(page.locator('#qr-verify-btn')).toHaveText('Run Verification');
+  expect(postCount).toBe(0);
+});
+
+test('legacy 16-character bindings render a tombstone and never reach the API', async ({ page }) => {
+  let postCount = 0;
+  await mockStatus(page);
+  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    postCount += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(successPayloadForRequest(route.request())),
+    });
+  });
+
+  const retiredHash = 'a'.repeat(16);
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await page.locator('#manual-report-id').fill('RPT-LEGACY-16');
+  await page.locator('#manual-artifact-hash').fill(retiredHash);
+  await page.locator('#manual-verify-btn').click();
+  await expect(page.locator('#verify-error')).toContainText('16-character legacy artifact binding was retired on July 17, 2026');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  expect(postCount).toBe(0);
+
+  await page.goto(`${baseUrl}/verify.html?case=legacy#report=RPT-LEGACY-16&h=${retiredHash}`);
+  await expect(page).toHaveURL(`${baseUrl}/verify.html`);
+  await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
+  await expect(page.locator('#legacy-binding-tombstone')).toContainText('retained only as a tombstone');
+  await expect(page.locator('#qr-verify-btn')).toBeDisabled();
+  await expect(page.locator('#qr-verify-btn')).toHaveText('Legacy Binding Retired');
+  await expect(page.locator('#manual-artifact-hash')).toHaveValue(retiredHash);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   expect(postCount).toBe(0);
 });
 
@@ -232,8 +292,49 @@ test('matching rendered release identity enables verification with a cache-buste
   expect(releaseUrl.searchParams.get('cache_bust')).toMatch(/^\d+$/);
 });
 
+test('reviewed old/new backend site SHAs remain exact-match compatible during 90/10 and rollback', async ({ browser }) => {
+  const compatible = [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA];
+  for (const backendSiteSha of compatible) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await mockStatus(page, 'operational', {
+      statusOverrides: { public_site_source_sha: backendSiteSha },
+      compatibleBackendSiteShas: compatible,
+    });
+    await page.goto(`${baseUrl}/verify.html`);
+    await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+    await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+    await context.close();
+  }
+});
+
+test('unreviewed, wildcard, duplicate, oversized, and non-current compatibility lists fail closed', async ({ browser }) => {
+  const invalidCases = [
+    {
+      statusOverrides: { public_site_source_sha: 'c'.repeat(40) },
+      releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA] },
+    },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, '*'] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, MATCHED_SITE_SHA] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA, 'c'.repeat(40)] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA.toUpperCase(), compatible_backend_site_shas: [MATCHED_SITE_SHA.toUpperCase()] } },
+  ];
+  for (const options of invalidCases) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await mockStatus(page, 'operational', options);
+    await page.goto(`${baseUrl}/verify.html`);
+    await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+    await expect(page.locator('#manual-verify-btn')).toBeDisabled();
+    await context.close();
+  }
+});
+
 test('release identity mismatch fails closed', async ({ page }) => {
-  await mockStatus(page, 'operational', { releasePayload: { source_sha: 'b'.repeat(40) } });
+  await mockStatus(page, 'operational', {
+    releasePayload: { source_sha: ROLLBACK_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA] },
+  });
   await page.goto(`${baseUrl}/verify.html`);
   await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
@@ -247,9 +348,10 @@ test('malformed release metadata fails closed', async ({ page }) => {
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
 });
 
-test('missing release or backend source metadata fails closed', async ({ browser }) => {
+test('missing release, compatibility allowlist, or backend source metadata fails closed', async ({ browser }) => {
   const cases = [
     { releasePayload: {} },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA } },
     { statusOverrides: { public_site_source_sha: undefined } },
   ];
   for (const options of cases) {

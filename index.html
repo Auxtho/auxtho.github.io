@@ -33,7 +33,9 @@
     content="Review selected AI-assisted work, available evidence, decision state, and release boundaries before work moves forward.">
   <meta name="twitter:image" content="https://auxtho.com/assets/og-image-v2-16.png">
 
-  <script type="application/ld+json" src="/assets/ld-org.json"></script>
+  <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebSite","name":"Auxtho","url":"https://auxtho.com/","description":"Public information about a bounded human-review workflow for selected AI-assisted work."}
+  </script>
 
   <link rel="stylesheet" href="/assets/style.css?v=2026-04-24b">
   <link rel="stylesheet" href="/assets/custom.css?v=2026-04-24b">
@@ -217,7 +219,7 @@
               aria-label="Open a larger view of the Auxtho App deterministic synthetic workflow replay">
               <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png" alt="Controlled local rendering of an Auxtho App Overview component with deterministic synthetic review states." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, fixed responses, no customer data, and no external network requests. The capture does not establish source revision, deployment identity, live use, backend aggregation, or completed customer releases.</p>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, fixed responses, no customer data, and zero external network egress. One external dependency request was attempted and intercepted locally; no external request completed. The capture does not establish source revision, deployment identity, live use, backend aggregation, or completed customer releases.</p>
           </article>
 
           <article class="evidence-surface-card">
@@ -233,7 +235,7 @@
               aria-label="Open a larger view of the Auxtho Console synthetic QA fixture">
               <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png" alt="Controlled local rendering of an Auxtho Console metric component with deterministic synthetic operator signals." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, invented records, no customer data, no application or external API call, no provider or export path, and no production mutation. The capture does not establish source revision or deployment identity and is not the continuation of the App fixture.</p>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, invented records, no customer data, no application or external request completed, no provider or export path, and no production mutation. One stylesheet dependency request was attempted and intercepted locally, producing zero external network egress. The capture does not establish source revision or deployment identity and is not the continuation of the App fixture.</p>
           </article>
         </div>
         <p class="proposal-scope-note">Evidence provenance and limits are recorded in the <a class="auxtho-subtle-link" href="/assets/proposal/evidence-manifest-20260716.json">public evidence manifest</a>.</p>

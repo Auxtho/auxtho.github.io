@@ -25,12 +25,13 @@
     "total": 12
   },
   "fixture_session_count": 12,
-  "observed_request_boundary": "Five first-party read-only GET requests; no mutation requests and no external network requests.",
+  "observed_request_boundary": "Five first-party read-only GET requests; no mutation request completed; one external dependency request was attempted, intercepted locally, and produced no external network egress.",
   "request_methods_allowed": [
     "GET"
   ],
   "customer_data_used": false,
-  "external_requests": 0,
+  "external_network_egress_requests": 0,
+  "intercepted_external_dependency_request_count": 1,
   "capture_annotation": "The visible synthetic replay badge is added by the capture harness and is not native product UI.",
   "policy_profile": "The product UI rendered a development-only Synthetic QA profile for this local fixture.",
   "synthetic_identity_presentation": "The product UI omitted the person-like avatar and rendered a Synthetic reviewer label; no person or customer identity is represented.",

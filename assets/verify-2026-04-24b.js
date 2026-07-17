@@ -22,17 +22,43 @@
     var MAX_LOCAL_FILE_BYTES = 25 * 1024 * 1024;
     var VERIFICATION_GENERATION = 0;
     var ACTIVE_VERIFICATION = null;
+    var RETIRED_LEGACY_QR_BINDING = false;
 
     function byId(id) {
         return document.getElementById(id);
     }
 
     function isValidArtifactRecordHash(value) {
-        return /^(?:sha256:)?(?:[0-9a-fA-F]{16}|[0-9a-fA-F]{64})$/.test((value || '').trim());
+        return /^(?:sha256:)?[0-9a-fA-F]{64}$/.test((value || '').trim());
+    }
+
+    function isRetiredLegacyArtifactRecordHash(value) {
+        return /^(?:sha256:)?[0-9a-fA-F]{16}$/.test((value || '').trim());
+    }
+
+    function artifactRecordHashError(value) {
+        if (isRetiredLegacyArtifactRecordHash(value)) {
+            return 'This 16-character legacy artifact binding was retired on July 17, 2026 and is not accepted. Request a current export with a 64-character record binding checksum or use manual verification support.';
+        }
+        return 'Enter the complete 64-character record binding checksum exactly as shown in the current export.';
     }
 
     function isFortyHex(value) {
-        return typeof value === 'string' && /^[0-9a-f]{40}$/i.test(value);
+        return typeof value === 'string' && /^[0-9a-f]{40}$/.test(value);
+    }
+
+    function isReviewedCompatibleBackendSiteSha(release, backendSiteSha) {
+        if (!release || !isFortyHex(release.source_sha) || !isFortyHex(backendSiteSha)) return false;
+        var compatible = release.compatible_backend_site_shas;
+        if (!Array.isArray(compatible) || compatible.length < 1 || compatible.length > 2) return false;
+        var seen = Object.create(null);
+        for (var index = 0; index < compatible.length; index += 1) {
+            var siteSha = compatible[index];
+            if (!isFortyHex(siteSha) || seen[siteSha]) return false;
+            seen[siteSha] = true;
+        }
+        if (!seen[release.source_sha]) return false;
+        return seen[backendSiteSha] === true;
     }
 
     function releaseMetadataUrl() {
@@ -77,8 +103,9 @@
         VERIFICATION_BUTTON_IDS.forEach(function (id) {
             var el = byId(id);
             if (!el) return;
-            el.disabled = !SERVICE_AVAILABLE;
-            el.setAttribute('aria-disabled', SERVICE_AVAILABLE ? 'false' : 'true');
+            var controlEnabled = SERVICE_AVAILABLE && !(id === 'qr-verify-btn' && RETIRED_LEGACY_QR_BINDING);
+            el.disabled = !controlEnabled;
+            el.setAttribute('aria-disabled', controlEnabled ? 'false' : 'true');
         });
     }
 
@@ -530,7 +557,7 @@
         if (!isValidArtifactRecordHash(artifactHash)) {
             if (isCurrentVerification(state)) {
                 if (buttonId) setButtonLoading(buttonId, false, '');
-                setError('Enter the complete record binding checksum exactly as shown in the export.');
+                setError(artifactRecordHashError(artifactHash));
             }
             finishVerification(state);
             return;
@@ -625,7 +652,7 @@
             }
             if (!isValidArtifactRecordHash(artifactHash)) {
                 setButtonLoading('manual-verify-btn', false, '');
-                setError('Enter the complete record binding checksum exactly as shown in the export.');
+                setError(artifactRecordHashError(artifactHash));
                 return;
             }
             var requestState = beginVerification();
@@ -667,10 +694,7 @@
             if (!releaseRequest.response.ok) throw new Error('Public site release metadata was unavailable.');
             var release = releaseRequest.result;
             if (
-                !release ||
-                !isFortyHex(release.source_sha) ||
-                !isFortyHex(result.public_site_source_sha) ||
-                release.source_sha !== result.public_site_source_sha
+                !isReviewedCompatibleBackendSiteSha(release, result.public_site_source_sha)
             ) {
                 throw new Error('Public site release identity was not confirmed.');
             }
@@ -700,8 +724,11 @@
         }
         if (!reportId || !hash) return;
 
+        RETIRED_LEGACY_QR_BINDING = isRetiredLegacyArtifactRecordHash(hash);
+
         var card = byId('qr-verify');
         if (card) card.classList.add('qr-card-visible');
+        toggle(byId('legacy-binding-tombstone'), RETIRED_LEGACY_QR_BINDING);
         setText('qr-report-id', reportId);
         setText('qr-hash', hash);
         var reportInput = byId('manual-report-id');
@@ -717,12 +744,19 @@
 
         var button = byId('qr-verify-btn');
         if (button) {
+            if (RETIRED_LEGACY_QR_BINDING) {
+                button.disabled = true;
+                button.setAttribute('aria-disabled', 'true');
+                button.textContent = 'Legacy Binding Retired';
+                setError(artifactRecordHashError(hash));
+                return;
+            }
             button.addEventListener('click', async function () {
                 if (ACTIVE_VERIFICATION) return;
                 clearVerificationResult();
                 if (!isValidArtifactRecordHash(hash)) {
                     setButtonLoading('qr-verify-btn', false, '');
-                    setError('Enter the complete record binding checksum exactly as shown in the export.');
+                    setError(artifactRecordHashError(hash));
                     return;
                 }
                 var requestState = beginVerification();

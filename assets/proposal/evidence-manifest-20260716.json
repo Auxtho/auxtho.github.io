@@ -15,7 +15,7 @@
     {
       "path": "/assets/proposal/app-overview-synthetic-replay-20260716.png",
       "sidecar": "/assets/proposal/app-overview-synthetic-replay-20260716.json",
-      "sidecar_sha256": "0a4f84b801767b63173fd64ba9736f254b884c33716b6294ad3a6fe0711e6541",
+      "sidecar_sha256": "c7f4917e39ecde818aad2b9c5ef12a2f709b306f032f02003c71b6945f4e5841",
       "sha256": "0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",
@@ -27,7 +27,7 @@
       "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
       "provenance_class": "publisher_self_attestation",
       "rendered_component": "OverviewView",
-      "capture_method": "controlled local Next server started and stopped by the capture harness; browser time fixed to UTC; locally rendered interface supplied with deterministic synthetic GET responses; all external requests blocked",
+      "capture_method": "controlled local Next server started and stopped by the capture harness; browser time fixed to UTC; locally rendered interface supplied with deterministic synthetic GET responses; external request attempts blocked before completion",
       "fixture_relationship": "independent synthetic fixture; not correlated with the Console capture or a customer run",
       "capture_annotation": "the visible top-right synthetic replay badge is added by the capture harness and is not native product UI",
       "capture_tooling_removed": "the Next.js development toolbar portal is excluded because it is capture-environment tooling, not product UI",
@@ -50,7 +50,7 @@
         "person-like profile avatar and Next.js development toolbar were absent",
         "all four KPI status badges rendered as equal-height single-line pills",
         "regulatory-alignment text was absent from the captured product surface",
-        "external network egress: zero; one external dependency request was intercepted locally",
+        "external request completions: zero; external network egress: zero; one external dependency request was attempted and intercepted locally",
         "customer data used: false"
       ],
       "does_not_establish": [
@@ -76,7 +76,7 @@
       "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
       "provenance_class": "publisher_self_attestation",
       "rendered_component": "DashboardMetricCards",
-      "capture_method": "controlled local Next server started and stopped by the capture harness; development-only fixture route; locally rendered interface; unapproved external requests blocked",
+      "capture_method": "controlled local Next server started and stopped by the capture harness; development-only fixture route; locally rendered interface; external request attempts blocked before completion",
       "fixture_relationship": "independent synthetic fixture; not correlated with the App capture or a customer run",
       "fixture_values": {
         "review_attention": 4,
@@ -90,7 +90,7 @@
         "shared component labels and exact values were asserted in browser",
         "capture completed without console or page errors",
         "Google Fonts stylesheet dependency was intercepted and replaced with a local system-font fallback",
-        "external network requests: zero",
+        "external request completions: zero; external network egress: zero; one external dependency request was attempted and intercepted locally",
         "customer data used: false"
       ],
       "does_not_establish": [

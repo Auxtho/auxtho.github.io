@@ -1,10 +1,22 @@
 name: Site Build + Verifier Contract
 
-# Pages must use GitHub Actions as its publishing source. Branch-based publishing
-# bypasses this workflow. Without protected refs/environment approvals, this is
-# integrity evidence and a fail-closed build path, not an authorization boundary.
+# RELEASE HOLD: the live Pages project still uses legacy branch publishing.
+# Branch-based publishing bypasses this workflow, so this workflow cannot
+# authorize a release until Pages reports build_type=workflow. Merely naming
+# the github-pages environment is not evidence of approval. Packaging and
+# deployment remain manual-only and also require future platform controls:
+# required reviewers, self-review prevention, and exact-SHA release variables.
 on:
   workflow_dispatch:
+    inputs:
+      approved_sha:
+        description: Exact 40-character site commit reviewed for release
+        required: true
+        type: string
+      compatible_backend_site_shas:
+        description: JSON array of one or two reviewed site SHAs emitted by the old/new backend revisions
+        required: true
+        type: string
   pull_request:
     branches: [main]
     paths:
@@ -67,21 +79,6 @@ jobs:
       - name: Require main for a manual Pages release
         if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
         run: exit 1
-      - name: Bind a manual Pages release to the explicitly approved SHA
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-        env:
-          APPROVED_SITE_SHA: ${{ vars.PRODUCTION_VERIFY_SITE_APPROVED_SHA }}
-        run: |
-          echo "${APPROVED_SITE_SHA}" | grep -Eq '^[0-9a-f]{40}$'
-          test "${GITHUB_SHA}" = "${APPROVED_SITE_SHA}"
-      - name: Require GitHub Actions as the Pages publishing source
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          pages_build_type="$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.build_type')"
-          echo "pages-build-type=$pages_build_type"
-          test "$pages_build_type" = "workflow"
       - name: Bind the checkout to the workflow SHA
         run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -99,20 +96,95 @@ jobs:
       - run: ./node_modules/.bin/playwright install --with-deps chromium
       - run: npm run test:verify
 
+  authorize_release:
+    name: HOLD Unless Future Platform Controls Authorize Exact SHA
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      deployments: read
+      pages: read
+    environment:
+      name: github-pages
+    env:
+      REQUESTED_SITE_SHA: ${{ inputs.approved_sha }}
+      APPROVED_SITE_SHA: ${{ vars.PRODUCTION_VERIFY_SITE_APPROVED_SHA }}
+      REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
+      APPROVED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ vars.PRODUCTION_VERIFY_COMPATIBLE_BACKEND_SITE_SHAS }}
+    steps:
+      - name: Bind dispatch input, protected variables, and workflow source
+        run: |
+          echo "${REQUESTED_SITE_SHA}" | grep -Eq '^[0-9a-f]{40}$'
+          echo "${APPROVED_SITE_SHA}" | grep -Eq '^[0-9a-f]{40}$'
+          test "${GITHUB_SHA}" = "${REQUESTED_SITE_SHA}"
+          test "${REQUESTED_SITE_SHA}" = "${APPROVED_SITE_SHA}"
+          node - <<'NODE'
+          const SHA = /^[0-9a-f]{40}$/;
+          function parseAndValidate(name, value) {
+            let parsed;
+            try { parsed = JSON.parse(value); } catch { throw new Error(`${name} must be valid JSON`); }
+            if (!Array.isArray(parsed) || parsed.length < 1 || parsed.length > 2) {
+              throw new Error(`${name} must contain one or two reviewed site SHAs`);
+            }
+            if (parsed.some((sha) => typeof sha !== 'string' || !SHA.test(sha))) {
+              throw new Error(`${name} entries must be exact lowercase 40-character SHAs`);
+            }
+            if (new Set(parsed).size !== parsed.length) throw new Error(`${name} must not contain duplicates`);
+            if (!parsed.includes(process.env.GITHUB_SHA)) throw new Error(`${name} must include the release source SHA`);
+            return parsed;
+          }
+          const requested = parseAndValidate('requested compatible_backend_site_shas', process.env.REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS);
+          const approved = parseAndValidate('environment compatible_backend_site_shas', process.env.APPROVED_COMPATIBLE_BACKEND_SITE_SHAS);
+          if (JSON.stringify(requested) !== JSON.stringify(approved)) {
+            throw new Error('requested compatible_backend_site_shas does not exactly match the protected environment allowlist');
+          }
+          NODE
+      - name: Require future Pages and protected-environment controls
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -Eeuo pipefail
+          pages_build_type="$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq '.build_type')"
+          echo "pages-build-type=$pages_build_type"
+          if test "$pages_build_type" != "workflow"; then
+            echo "::error::HOLD: Pages publishing source is legacy; a separately approved future platform change is still required."
+            exit 1
+          fi
+          gh api "repos/$GITHUB_REPOSITORY/environments/github-pages" > /tmp/github-pages-environment.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const environment = JSON.parse(fs.readFileSync('/tmp/github-pages-environment.json', 'utf8'));
+          const rules = Array.isArray(environment.protection_rules) ? environment.protection_rules : [];
+          const reviewerRule = rules.find((rule) => rule && rule.type === 'required_reviewers');
+          if (!reviewerRule || !Array.isArray(reviewerRule.reviewers) || reviewerRule.reviewers.length < 1) {
+            throw new Error('HOLD: github-pages must have at least one platform-enforced required reviewer');
+          }
+          if (reviewerRule.prevent_self_review !== true && environment.prevent_self_review !== true) {
+            throw new Error('HOLD: github-pages must prevent self-review');
+          }
+          console.log(`required-reviewers=${reviewerRule.reviewers.length}`);
+          console.log('prevent-self-review=true');
+          NODE
+
   package:
     name: Package Exact Committed Pages Bytes
-    needs: verify
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: [verify, authorize_release]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
       contents: read
     env:
-      SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      SOURCE_SHA: ${{ github.sha }}
+      COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
     steps:
       - name: Check out the exact package source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Set up exact Node runtime for release identity validation
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -141,6 +213,10 @@ jobs:
           git archive --format=tar "${SOURCE_SHA}" | tar -xf - -C _release_source
           find _release_source -type l -print -quit | grep -q . && exit 1 || true
           test -d _release_source/assets
+          if test -e _release_source/assets/ld-org.json; then
+            echo "HOLD: assets/ld-org.json is retired while the legal entity is unresolved" >&2
+            exit 1
+          fi
           while IFS= read -r -d '' asset; do
             case "${asset}" in
               *.css|*.js|*.json|*.png|*.svg) ;;
@@ -152,29 +228,90 @@ jobs:
             test -f "_release_source/${path}"
             cp --preserve=mode,timestamps "_release_source/${path}" "_site/${path}"
           done
+          for path in security/ardamire/index.html; do
+            test -f "_release_source/${path}"
+            mkdir -p "_site/$(dirname "${path}")"
+            cp --preserve=mode,timestamps "_release_source/${path}" "_site/${path}"
+          done
           cp -a _release_source/assets _site/assets
-          printf '{"source_sha":"%s"}\n' "${SOURCE_SHA}" > _site/release.json
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const compatible = JSON.parse(process.env.COMPATIBLE_BACKEND_SITE_SHAS);
+          fs.writeFileSync(
+            '_site/release.json',
+            `${JSON.stringify({ source_sha: process.env.SOURCE_SHA, compatible_backend_site_shas: compatible })}\n`,
+          );
+          NODE
           test -z "$(find _site -type l -print -quit)"
           test "$(find _site -maxdepth 1 -type f -name '*.html' | wc -l)" -gt 0
           EXPECTED_FILE_COUNT=$((
             $(find _release_source -maxdepth 1 -type f -name '*.html' | wc -l) +
             $(find _release_source/assets -type f | wc -l) +
-            4
+            5
           ))
           test "$(find _site -type f | wc -l)" -eq "${EXPECTED_FILE_COUNT}"
       - name: Verify every packaged committed byte and generated release identity
         run: |
           set -Eeuo pipefail
           diff -qr _release_source/assets _site/assets
-          for path in _site/*.html _site/CNAME _site/robots.txt _site/sitemap.xml; do
+          for path in _site/*.html _site/security/ardamire/index.html _site/CNAME _site/robots.txt _site/sitemap.xml; do
             relative="${path#_site/}"
             cmp "_release_source/${relative}" "${path}"
           done
-          node scripts/verify-release-contract.cjs _site/release.json "${SOURCE_SHA}"
-          find _site -type f -print0 | sort -z | xargs -0 sha256sum > site-artifact-sha256.txt
-          cat site-artifact-sha256.txt
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const SHA = /^[0-9a-f]{40}$/;
+          const payload = JSON.parse(fs.readFileSync('_site/release.json', 'utf8'));
+          const keys = Object.keys(payload);
+          if (keys.length !== 2 || keys[0] !== 'source_sha' || keys[1] !== 'compatible_backend_site_shas') {
+            throw new Error('release metadata must contain only source_sha and compatible_backend_site_shas');
+          }
+          if (payload.source_sha !== process.env.SOURCE_SHA) throw new Error('release source_sha mismatch');
+          const compatible = payload.compatible_backend_site_shas;
+          if (!Array.isArray(compatible) || compatible.length < 1 || compatible.length > 2) {
+            throw new Error('compatible_backend_site_shas must contain one or two reviewed SHAs');
+          }
+          if (compatible.some((sha) => typeof sha !== 'string' || !SHA.test(sha))) {
+            throw new Error('compatible_backend_site_shas contains an invalid SHA');
+          }
+          if (new Set(compatible).size !== compatible.length) throw new Error('compatible_backend_site_shas contains duplicates');
+          if (!compatible.includes(payload.source_sha)) throw new Error('compatible_backend_site_shas must include source_sha');
+          NODE
+          mkdir -p site-release-provenance
+          (
+            cd _site
+            find . -type f -print0 | sort -z | xargs -0 sha256sum
+          ) > site-release-provenance/public-files-sha256.txt
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const digestLines = fs.readFileSync('site-release-provenance/public-files-sha256.txt', 'utf8')
+            .trim()
+            .split('\n')
+            .filter(Boolean);
+          const provenance = {
+            schema_version: 1,
+            source_sha: process.env.SOURCE_SHA,
+            compatible_backend_site_shas: JSON.parse(process.env.COMPATIBLE_BACKEND_SITE_SHAS),
+            repository: process.env.GITHUB_REPOSITORY,
+            workflow_run_id: process.env.GITHUB_RUN_ID,
+            workflow_run_attempt: Number(process.env.GITHUB_RUN_ATTEMPT),
+            digest_algorithm: 'sha256',
+            digest_manifest: 'public-files-sha256.txt',
+            public_file_count: digestLines.length,
+          };
+          fs.writeFileSync('site-release-provenance/provenance.json', `${JSON.stringify(provenance, null, 2)}\n`);
+          NODE
+          cat site-release-provenance/public-files-sha256.txt
+          cat site-release-provenance/provenance.json
+      - name: Retain public file digests and release provenance
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: site-public-file-provenance-${{ github.sha }}
+          path: site-release-provenance
+          if-no-files-found: error
+          retention-days: 90
+          compression-level: 0
       - name: Upload the verified Pages artifact
-        if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: ./_site
@@ -192,7 +329,130 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    outputs:
+      page_url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy the verified exact-SHA artifact
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
+
+  post_deploy_verify:
+    name: Read Back Release And Smoke Verifier
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    permissions:
+      contents: read
+    env:
+      DEPLOYMENT_PAGE_URL: ${{ needs.deploy.outputs.page_url }}
+      PUBLIC_SITE_ORIGIN: https://auxtho.com
+      EXPECTED_SITE_SHA: ${{ github.sha }}
+      EXPECTED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
+    steps:
+      - name: Check out the exact deployed source for the bounded smoke
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+      - run: npm ci
+      - name: Cache-busted exact-SHA and compatibility readback
+        run: |
+          set -Eeuo pipefail
+          case "${DEPLOYMENT_PAGE_URL}" in
+            https://*) ;;
+            *) echo "HOLD: Pages deployment did not report an HTTPS URL" >&2; exit 1 ;;
+          esac
+          case "${PUBLIC_SITE_ORIGIN}" in
+            https://*) ;;
+            *) echo "HOLD: public readback origin must use HTTPS" >&2; exit 1 ;;
+          esac
+          mkdir -p post-deploy-evidence
+          readback_confirmed=false
+          for attempt in 1 2 3 4 5 6; do
+            cache_bust="${EXPECTED_SITE_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${attempt}"
+            readback_url="${PUBLIC_SITE_ORIGIN}/release.json?cache_bust=${cache_bust}"
+            printf '%s\n' "${readback_url}" > post-deploy-evidence/release-readback-url.txt
+            if curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+              --connect-timeout 10 --max-time 30 --max-redirs 0 \
+              --dump-header post-deploy-evidence/release-response-headers.txt \
+              --output post-deploy-evidence/deployed-release.json \
+              "${readback_url}" && node - <<'NODE'
+          const fs = require('node:fs');
+          const SHA = /^[0-9a-f]{40}$/;
+          const deployed = JSON.parse(fs.readFileSync('post-deploy-evidence/deployed-release.json', 'utf8'));
+          const expectedCompatible = JSON.parse(process.env.EXPECTED_COMPATIBLE_BACKEND_SITE_SHAS);
+          if (!SHA.test(process.env.EXPECTED_SITE_SHA)) throw new Error('expected source SHA is invalid');
+          if (JSON.stringify(Object.keys(deployed)) !== JSON.stringify(['source_sha', 'compatible_backend_site_shas'])) {
+            throw new Error('deployed release metadata keys are not exact');
+          }
+          if (deployed.source_sha !== process.env.EXPECTED_SITE_SHA) throw new Error('deployed source SHA mismatch');
+          if (JSON.stringify(deployed.compatible_backend_site_shas) !== JSON.stringify(expectedCompatible)) {
+            throw new Error('deployed compatibility allowlist mismatch');
+          }
+          if (!deployed.compatible_backend_site_shas.includes(deployed.source_sha)) {
+            throw new Error('deployed compatibility allowlist does not include the source SHA');
+          }
+          NODE
+            then
+              readback_confirmed=true
+              break
+            fi
+            if test "${attempt}" -eq 6; then
+              echo "HOLD: deployed release identity was not confirmed after six bounded attempts" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+          test "${readback_confirmed}" = true
+      - name: Verify Cloudflare HTTPS and security response headers
+        run: |
+          set -Eeuo pipefail
+          cache_bust="${EXPECTED_SITE_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          curl --fail --silent --show-error --proto '=https' --tlsv1.2 \
+            --connect-timeout 10 --max-time 30 --max-redirs 0 \
+            --dump-header post-deploy-evidence/verifier-response-headers.txt \
+            --output post-deploy-evidence/verifier-response.html \
+            "${PUBLIC_SITE_ORIGIN}/verify.html?cache_bust=${cache_bust}"
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const raw = fs.readFileSync('post-deploy-evidence/verifier-response-headers.txt', 'utf8').replace(/\r\n/g, '\n');
+          const blocks = raw.trim().split(/\n\n+/).filter(Boolean);
+          const responseBlock = [...blocks].reverse().find((block) => /^HTTP\/\S+\s+200\b/m.test(block));
+          if (!responseBlock) throw new Error('public verifier did not return a final HTTP 200 response');
+          const headers = new Map();
+          for (const line of responseBlock.split('\n').slice(1)) {
+            const separator = line.indexOf(':');
+            if (separator < 1) continue;
+            const name = line.slice(0, separator).trim().toLowerCase();
+            const value = line.slice(separator + 1).trim();
+            headers.set(name, headers.has(name) ? `${headers.get(name)}, ${value}` : value);
+          }
+          function requireHeader(name, pattern) {
+            const value = headers.get(name);
+            if (!value || !pattern.test(value)) throw new Error(`required ${name} response header is missing or invalid`);
+          }
+          requireHeader('cf-ray', /\S+/);
+          requireHeader('server', /cloudflare/i);
+          requireHeader('content-type', /^text\/html\b/i);
+          requireHeader('strict-transport-security', /(?:^|;)\s*max-age=\d+/i);
+          requireHeader('x-content-type-options', /^nosniff$/i);
+          requireHeader('referrer-policy', /\S+/);
+          requireHeader('content-security-policy', /(?:^|;)\s*frame-ancestors\s+'none'\s*(?:;|$)/i);
+          NODE
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - name: Run bounded read-only verifier browser smoke after deploy
+        run: npm run test:verify:deployed
+      - name: Retain post-deploy readback evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: site-post-deploy-readback-${{ github.sha }}
+          path: post-deploy-evidence
+          if-no-files-found: warn
+          retention-days: 90
+          compression-level: 0
