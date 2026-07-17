@@ -4,16 +4,13 @@
   "source_revision": null,
   "source_revision_publicly_resolvable": false,
   "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
-  "sha256": "0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1",
-  "dimensions_css_px": [
-    1440,
-    960
-  ],
+  "sha256": "c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32",
   "dimensions_physical_px": [
-    2880,
-    1920
+    1920,
+    1280
   ],
-  "device_scale_factor": 2,
+  "public_derivative": true,
+  "public_derivative_note": "Downscaled from the controlled synthetic capture without semantic content alteration.",
   "capture_time_utc": "2026-07-16T12:00:00.000Z",
   "fixture_summary": {
     "needs_review": 4,
@@ -24,17 +21,8 @@
     "released_today": 1,
     "total": 12
   },
-  "fixture_session_count": 12,
-  "observed_request_boundary": "Five first-party read-only GET requests; no mutation request completed; one external dependency request was attempted, intercepted locally, and produced no external network egress.",
-  "request_methods_allowed": [
-    "GET"
-  ],
   "customer_data_used": false,
-  "external_network_egress_requests": 0,
-  "intercepted_external_dependency_request_count": 1,
-  "capture_annotation": "The visible synthetic replay badge is added by the capture harness and is not native product UI.",
-  "policy_profile": "The product UI rendered a development-only Synthetic QA profile for this local fixture.",
-  "synthetic_identity_presentation": "The product UI omitted the person-like avatar and rendered a Synthetic reviewer label; no person or customer identity is represented.",
-  "capture_tooling_removed": "The Next.js development toolbar portal was removed because it is capture-environment tooling, not product UI.",
-  "claim_boundary": "A controlled local rendering of the App overview interface used deterministic synthetic responses in a network-isolated capture. This does not prove source revision, deployment identity, live usage, backend aggregation, or completed customer releases."
+  "capture_annotation": "The visible synthetic replay label is a capture annotation and is not native product UI.",
+  "fixture_relationship": "Independent synthetic fixture; it is not correlated with the Console capture or a customer run.",
+  "claim_boundary": "This controlled synthetic rendering demonstrates visible review states. It does not prove deployment identity, live usage, customer adoption, completed approvals, export, or operating effectiveness."
 }

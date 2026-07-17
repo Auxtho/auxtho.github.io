@@ -198,40 +198,40 @@
         <div class="text-center mb-12">
           <p class="hero-kicker">PRODUCT EVIDENCE</p>
           <h2 class="text-3xl md:text-5xl font-bold">Two bounded product surfaces.</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">App and Console interface surfaces are shown in separate controlled local captures with deterministic synthetic state. They are independent fixtures, not live telemetry, deployment proof, or a correlated customer run.</p>
+          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">These controlled synthetic renderings show selected review states in the App and operator attention in the Console. They are independent fixtures, not live telemetry, deployment proof, or a customer run.</p>
         </div>
 
         <div class="evidence-surface-grid">
           <article class="evidence-surface-card">
             <div class="evidence-surface-copy">
-              <p class="proposal-surface-label">Auxtho App &middot; independent synthetic fixture &middot; controlled local capture &middot; 16 Jul 2026</p>
+              <p class="proposal-surface-label">Auxtho App &middot; controlled synthetic rendering &middot; 16 Jul 2026</p>
               <h3>Governed review states rendered in the App</h3>
-              <p>A controlled local rendering of the App Overview component shows a coherent 12-packet fixture: four need review, two are blocked, three are ready for release, one was released today, and two remain in progress.</p>
+              <p>A fixed QA scenario shows a bounded review queue: four items need review, two are blocked, three are release-ready, one is shown as released today, and two remain in progress.</p>
             </div>
-              <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1"
+              <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32"
               data-lightbox-mode="app-overview"
               data-lightbox-title="Auxtho App synthetic workflow replay"
-              data-lightbox-caption="A controlled local rendering of the Overview component used 12 deterministic synthetic records. The top-right synthetic replay badge is a capture annotation, not native product UI. This fixture is not proof of a deployed build, live usage, adoption, or completed customer releases."
-              aria-label="Open a larger view of the Auxtho App deterministic synthetic workflow replay">
-                  <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=0850124c03341808362eab194f88a0a1835edf330ada939922e2f46855942cd1" alt="Controlled local rendering of an Auxtho App Overview component with deterministic synthetic review states." loading="lazy" decoding="async">
+              data-lightbox-caption="Controlled synthetic rendering using fixed QA records. The synthetic replay label is a capture annotation, not native product UI. This view does not represent live usage, customer activity, or completed customer releases."
+              aria-label="Open a larger view of the Auxtho App synthetic workflow replay">
+                  <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="Auxtho App interface rendered with synthetic review states." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, fixed responses, no customer data, and zero external network egress. One external dependency request was attempted and intercepted locally; no external request completed. The capture does not establish source revision, deployment identity, live use, backend aggregation, or completed customer releases.</p>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> fixed synthetic QA records, no customer data, no provider runtime, no export path, and no production mutation. This view does not establish deployment identity, live usage, customer adoption, completed approvals, or operating effectiveness.</p>
           </article>
 
           <article class="evidence-surface-card">
             <div class="evidence-surface-copy">
-            <p class="proposal-surface-label">Auxtho Console &middot; independent synthetic fixture &middot; controlled local capture &middot; 16 Jul 2026</p>
+            <p class="proposal-surface-label">Auxtho Console &middot; controlled synthetic rendering &middot; 16 Jul 2026</p>
               <h3>Operator attention rendered in the Console</h3>
-              <p>A controlled local rendering of the Console metric component shows four review-attention events, two critical signals, three invented customer records, and one invented active bootstrap from a fixed fixture.</p>
+              <p>A fixed QA scenario illustrates four review-attention signals, two critical signals, three synthetic account records, and one synthetic bootstrap state.</p>
             </div>
               <a class="sample-card-media proposal-surface-media proposal-surface-media-wide" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712"
               data-lightbox-mode="console-wide"
               data-lightbox-title="Auxtho Console synthetic workflow replay"
-              data-lightbox-caption="A controlled local rendering of the Console metric component used a deterministic development-only fixture. Synthetic only; not proof of a deployed build, live telemetry, customer adoption, or a correlated App run."
+              data-lightbox-caption="Controlled synthetic rendering using fixed QA records. It illustrates operator attention and does not represent live telemetry, customer activity, or completed operational work."
               aria-label="Open a larger view of the Auxtho Console synthetic QA fixture">
-                  <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712" alt="Controlled local rendering of an Auxtho Console metric component with deterministic synthetic operator signals." loading="lazy" decoding="async">
+                  <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712" alt="Auxtho Console interface rendered with synthetic operator signals." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> controlled local component rendering, invented records, no customer data, no application or external request completed, no provider or export path, and no production mutation. One stylesheet dependency request was attempted and intercepted locally, producing zero external network egress. The capture does not establish source revision or deployment identity and is not the continuation of the App fixture.</p>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> fixed synthetic QA records, no customer data, no provider runtime, no export path, and no production mutation. This independent view does not establish deployment identity, live telemetry, customer adoption, or operating effectiveness.</p>
           </article>
         </div>
         <p class="proposal-scope-note">Evidence provenance and limits are recorded in the <a class="auxtho-subtle-link" href="/assets/proposal/evidence-manifest-20260716.json">public evidence manifest</a>.</p>
@@ -281,8 +281,8 @@
           <section class="state-panel state-panel-live">
             <p class="state-label">Visible in this bounded evidence set</p>
             <ul class="state-list">
-              <li>App overview interface rendered in a controlled local capture from 12 deterministic synthetic sessions</li>
-              <li>Console operator metrics rendered in a controlled local capture from fixed synthetic records</li>
+              <li>App review queue rendered from fixed synthetic QA records</li>
+              <li>Console operator metrics rendered from fixed synthetic QA records</li>
               <li>Image hashes, fixture values, and capture limits recorded in a public manifest</li>
               <li>No customer data, provider runtime, export path, or production mutation in either capture</li>
             </ul>

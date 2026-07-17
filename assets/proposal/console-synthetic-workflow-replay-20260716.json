@@ -5,29 +5,18 @@
   "source_revision_publicly_resolvable": false,
   "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
   "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
-  "clip_css_px": {
-    "x": 80,
-    "y": 32,
-    "width": 1280,
-    "height": 509.78125
-  },
   "dimensions_physical_px": [
     1280,
     509
   ],
-  "device_scale_factor": 1,
+  "public_derivative": false,
   "fixture_summary": {
     "review_attention": 4,
     "critical_signals": 2,
     "synthetic_customer_records": 3,
     "active_synthetic_bootstraps": 1
   },
-  "shared_component": "DashboardMetricCards",
   "customer_data_used": false,
-  "external_network_egress_requests": 0,
-  "intercepted_external_dependency_requests": [
-    "GET https://fonts.googleapis.com/css2"
-  ],
   "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",
-  "claim_boundary": "A controlled local rendering of the Console metric interface used a deterministic development-only fixture in a network-isolated capture. This does not prove source revision, deployment identity, live telemetry, customer adoption, production runtime, or completed operational work."
+  "claim_boundary": "This controlled synthetic rendering demonstrates operator attention states. It does not prove deployment identity, live telemetry, customer adoption, completed operational work, export, or operating effectiveness."
 }

@@ -367,10 +367,27 @@ test('public evidence manifest and homepage preserve synthetic and non-customer 
   assert.equal(manifest.evidence_policy.live_telemetry_claimed, false);
   assert.equal(manifest.evidence_policy.operating_effectiveness_claimed, false);
   assert.equal(manifest.evidence_policy.production_readiness_claimed, false);
+  const publicEvidenceText = [
+    index,
+    JSON.stringify(manifest),
+    ...manifest.assets.map((asset) => fs.readFileSync(
+      path.join(root, ...asset.sidecar.replace(/^\//, '').split('/')),
+      'utf8',
+    )),
+  ].join('\n');
+  assert.doesNotMatch(
+    publicEvidenceText,
+    /OverviewView|DashboardMetricCards|source-bound|network-isolated|capture harness|intercepted_external/i,
+  );
   for (const asset of manifest.assets) {
     const bytes = fs.readFileSync(path.join(root, ...asset.path.replace(/^\//, '').split('/')));
     assert.equal(sha256(bytes), asset.sha256);
+    assert.equal(bytes.subarray(1, 4).toString('ascii'), 'PNG');
+    assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], asset.dimensions_px);
+    assert.ok(asset.dimensions_px[0] <= 1920, `${asset.path} exceeds the public width limit`);
   }
+  const appAsset = manifest.assets.find((asset) => asset.surface === 'Auxtho App');
+  assert.equal(appAsset.public_derivative, true);
 });
 
 test('retired path manifest enumerates the full historical public surface class', () => {
