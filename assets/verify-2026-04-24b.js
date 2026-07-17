@@ -434,6 +434,24 @@
         var reportBindingMatches = normalizeReportId(artifact.report_id) === normalizeReportId(requestContext.reportId);
         var exportBindingMatches = !requestContext.exportEventId ||
             normalizeExportEventId(artifact.export_event_id) === normalizeExportEventId(requestContext.exportEventId);
+        var artifactHashBindingMatches = !!(
+            result &&
+            typeof requestContext.artifactHash === 'string' &&
+            typeof result.artifact_hash === 'string' &&
+            result.artifact_hash === requestContext.artifactHash
+        );
+        var responseHasFileBinding = !!(
+            result &&
+            hasOwn(result, 'artifact_bytes_sha256') &&
+            result.artifact_bytes_sha256 != null
+        );
+        var fileBindingMatches = fileCheckRequested
+            ? !!(
+                typeof requestContext.artifactBytesSha256 === 'string' &&
+                typeof result.artifact_bytes_sha256 === 'string' &&
+                result.artifact_bytes_sha256 === requestContext.artifactBytesSha256
+            )
+            : !responseHasFileBinding;
         var scopeMatchesRequest = fileCheckRequested ? responseFileMatch : responseIdentifierMatch;
         var controlProfile = recordedControlProfile(result);
         var confirmed = !!(
@@ -443,6 +461,8 @@
             result.artifact_hash_match === true &&
             reportBindingMatches &&
             exportBindingMatches &&
+            artifactHashBindingMatches &&
+            fileBindingMatches &&
             controlProfile &&
             scopeMatchesRequest
         );
@@ -508,12 +528,18 @@
         var state = requestState || beginVerification();
         clearVerificationResult();
         if (!isValidArtifactRecordHash(artifactHash)) {
-            if (isCurrentVerification(state)) setError('Enter the complete artifact record hash exactly as shown in the export.');
+            if (isCurrentVerification(state)) {
+                if (buttonId) setButtonLoading(buttonId, false, '');
+                setError('Enter the complete artifact record hash exactly as shown in the export.');
+            }
             finishVerification(state);
             return;
         }
         if (!SERVICE_AVAILABLE) {
-            if (isCurrentVerification(state)) setError('Verification unavailable. Use manual email support.');
+            if (isCurrentVerification(state)) {
+                if (buttonId) setButtonLoading(buttonId, false, '');
+                setError('Verification unavailable. Use manual email support.');
+            }
             finishVerification(state);
             return;
         }
@@ -550,7 +576,9 @@
             renderResult(result, {
                 fileCheckRequested: !!artifactBytesSha256,
                 reportId: reportId,
-                exportEventId: exportEventId || null
+                exportEventId: exportEventId || null,
+                artifactHash: artifactHash,
+                artifactBytesSha256: artifactBytesSha256 || null
             });
         } catch (err) {
             if (!isActiveVerificationState(state)) return;
@@ -593,6 +621,11 @@
             var exportEventId = ((byId('manual-export-event-id') || {}).value || '').trim();
             if (!reportId || !artifactHash) {
                 setError('Report ID and artifact integrity hash are required.');
+                return;
+            }
+            if (!isValidArtifactRecordHash(artifactHash)) {
+                setButtonLoading('manual-verify-btn', false, '');
+                setError('Enter the complete artifact record hash exactly as shown in the export.');
                 return;
             }
             var requestState = beginVerification();
@@ -680,6 +713,11 @@
             button.addEventListener('click', async function () {
                 if (ACTIVE_VERIFICATION) return;
                 clearVerificationResult();
+                if (!isValidArtifactRecordHash(hash)) {
+                    setButtonLoading('qr-verify-btn', false, '');
+                    setError('Enter the complete artifact record hash exactly as shown in the export.');
+                    return;
+                }
                 var requestState = beginVerification();
                 setButtonLoading('qr-verify-btn', true, 'Hashing locally...');
                 var fileHash = null;

@@ -4,6 +4,7 @@
   "description": "Project configuration for the Auxtho website.",
   "scripts": {
     "build": "npx tailwindcss -i ./src/input.css -o ./assets/style.css --minify",
+    "test:release": "node --test tests/release-contract.spec.cjs",
     "test:verify": "playwright test tests/verify-contract.spec.cjs --reporter=line --workers=1"
   },
   "devDependencies": {

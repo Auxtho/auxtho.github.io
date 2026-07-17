@@ -43,6 +43,8 @@ function successPayload({
   fileVerified = false,
   reportId = 'RPT-VERIFY-001',
   exportEventId = 'EXP-VERIFY-001',
+  artifactHash,
+  artifactBytesSha256,
   verificationMode = 'pilot_hash_only',
   signature = {},
   publicMode,
@@ -63,10 +65,11 @@ function successPayload({
     live_cryptographic_revalidation_performed: false,
     recorded_reason_code: 'SIGNATURE_NOT_ENABLED',
   };
-  return {
+  const payload = {
     verification_outcome: 'RECORDED_MATCH',
     record_match_confirmed: true,
     artifact_hash_match: true,
+    artifact_hash: artifactHash,
     file_bytes_verified: fileVerified,
     verification_scope: fileVerified ? 'FILE' : 'IDENTIFIER',
     artifact: {
@@ -79,6 +82,18 @@ function successPayload({
     verification_mode: verificationMode,
     timestamp_provider: timestampProvider || (verificationMode === 'production_signed' ? 'rfc3161_http' : (verificationMode === 'local_signed' ? 'local_mock' : 'none')),
   };
+  if (artifactBytesSha256 !== undefined) payload.artifact_bytes_sha256 = artifactBytesSha256;
+  return payload;
+}
+
+function successPayloadForRequest(request, overrides = {}) {
+  const body = request.postDataJSON();
+  return successPayload({
+    artifactHash: body.artifact_hash,
+    artifactBytesSha256: body.artifact_bytes_sha256,
+    fileVerified: Boolean(body.artifact_bytes_sha256),
+    ...overrides,
+  });
 }
 
 async function mockStatus(page, status = 'operational', options = {}) {
@@ -133,7 +148,7 @@ test('QR parameters prefill but never submit before an explicit click', async ({
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
     if (route.request().method() === 'POST') postCount += 1;
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload()) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayloadForRequest(route.request())) });
   });
 
   const hash = 'a'.repeat(64);
@@ -154,7 +169,7 @@ test('manual controls use form semantics and one Enter action submits exactly on
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
     if (route.request().method() === 'POST') postCount += 1;
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload()) });
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayloadForRequest(route.request())) });
   });
 
   await page.goto(`${baseUrl}/verify.html`);
@@ -167,6 +182,38 @@ test('manual controls use form semantics and one Enter action submits exactly on
 
   await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
   expect(postCount).toBe(1);
+});
+
+test('invalid artifact hashes never leave manual or QR controls busy', async ({ page }) => {
+  let postCount = 0;
+  await mockStatus(page);
+  await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+    postCount += 1;
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(successPayloadForRequest(route.request())),
+    });
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await page.locator('#manual-report-id').fill('RPT-INVALID-HASH');
+  await page.locator('#manual-artifact-hash').fill('not-a-hash');
+  await page.locator('#manual-verify-btn').click();
+  await expect(page.locator('#verify-error')).toContainText('complete artifact record hash');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await expect(page.locator('#manual-verify-btn')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#manual-verify-btn')).toHaveText('Verify Artifact');
+
+  await page.goto(`${baseUrl}/verify.html?report=RPT-INVALID-HASH&h=still-not-a-hash`);
+  await expect(page.locator('#qr-verify-btn')).toBeEnabled();
+  await page.locator('#qr-verify-btn').click();
+  await expect(page.locator('#verify-error')).toContainText('complete artifact record hash');
+  await expect(page.locator('#qr-verify-btn')).toBeEnabled();
+  await expect(page.locator('#qr-verify-btn')).toHaveAttribute('aria-busy', 'false');
+  await expect(page.locator('#qr-verify-btn')).toHaveText('Run Verification');
+  expect(postCount).toBe(0);
 });
 
 test('matching rendered release identity enables verification with a cache-busted same-origin fetch', async ({ page }) => {
@@ -229,11 +276,10 @@ test('verifier disclosure does not promise an application audit record for every
 test('changing identifiers or the selected file invalidates a prior success result', async ({ page }) => {
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
-    const body = route.request().postDataJSON();
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(successPayload({ fileVerified: Boolean(body.artifact_bytes_sha256) })),
+      body: JSON.stringify(successPayloadForRequest(route.request())),
     });
   });
 
@@ -268,7 +314,7 @@ test('an aborted stale response cannot restore an invalidated or older result', 
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(successPayload({ reportId: body.report_id })),
+        body: JSON.stringify(successPayloadForRequest(route.request(), { reportId: body.report_id })),
       });
     } catch (error) {
       // The first route may already be canceled by the browser-side AbortController.
@@ -301,7 +347,7 @@ test('verification-unavailable response disables controls and removes prior meta
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
     attempts += 1;
     if (attempts === 1) {
-      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload()) });
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayloadForRequest(route.request())) });
       return;
     }
     await route.fulfill({
@@ -338,7 +384,7 @@ test('a bounded timeout restores the button and permits a successful retry', asy
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(successPayload({ reportId: body.report_id })),
+        body: JSON.stringify(successPayloadForRequest(route.request(), { reportId: body.report_id })),
       });
     } catch (error) {
       // The timed-out request may already be canceled by AbortController.
@@ -382,7 +428,7 @@ test('contradictory recorded signature evidence fails closed', async ({ page }) 
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(successPayload({
+      body: JSON.stringify(successPayloadForRequest(route.request(), {
         verificationMode: 'production_signed',
         signature: {
           enabled: true,
@@ -426,7 +472,7 @@ test('readiness hints alone never produce PKCS7 or public TSA claims', async ({ 
 test('incomplete signed metadata fails closed without crypto capability labels', async ({ page }) => {
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
-    const payload = successPayload({
+    const payload = successPayloadForRequest(route.request(), {
       verificationMode: 'production_signed',
       signature: {
         enabled: true,
@@ -461,7 +507,7 @@ test('complete signed registry state is labeled recorded and not revalidated', a
     await route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify(successPayload({
+      body: JSON.stringify(successPayloadForRequest(route.request(), {
         verificationMode: 'production_signed',
         signature: {
           enabled: true,
@@ -503,7 +549,7 @@ test('complete signed registry state is labeled recorded and not revalidated', a
 test('legacy bare verified true cannot authorize a displayed match', async ({ page }) => {
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
-    const legacy = successPayload();
+    const legacy = successPayloadForRequest(route.request());
     delete legacy.verification_outcome;
     legacy.verified = true;
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(legacy) });
@@ -519,10 +565,92 @@ test('legacy bare verified true cannot authorize a displayed match', async ({ pa
   await expect(page.locator('#verify-result-grid')).not.toContainText('RPT-VERIFY-001');
 });
 
+test('missing, mismatched, or normalized artifact hash echoes fail closed', async ({ browser }) => {
+  const cases = [
+    {
+      submitted: 'a'.repeat(64),
+      mutate(payload) {
+        delete payload.artifact_hash;
+      },
+    },
+    {
+      submitted: 'b'.repeat(64),
+      mutate(payload) {
+        payload.artifact_hash = 'c'.repeat(64);
+      },
+    },
+    {
+      submitted: `sha256:${'D'.repeat(64)}`,
+      mutate(payload) {
+        payload.artifact_hash = 'd'.repeat(64);
+      },
+    },
+  ];
+
+  for (const contractCase of cases) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    await mockStatus(page);
+    await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+      const payload = successPayloadForRequest(route.request());
+      contractCase.mutate(payload);
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+    });
+
+    await page.goto(`${baseUrl}/verify.html`);
+    await page.locator('#manual-report-id').fill('RPT-VERIFY-001');
+    await page.locator('#manual-artifact-hash').fill(contractCase.submitted);
+    await page.locator('#manual-verify-btn').click();
+    await expect(page.locator('#verify-result-title')).toHaveText('Not confirmed');
+    await expect(page.locator('#verify-result-grid')).toContainText('NO_MATCH');
+    await expect(page.locator('#verify-result-grid')).not.toContainText('RPT-VERIFY-001');
+    await context.close();
+  }
+});
+
+test('missing or mismatched uploaded-file SHA-256 echoes fail closed', async ({ browser }) => {
+  const mutations = [
+    (payload) => delete payload.artifact_bytes_sha256,
+    (payload) => { payload.artifact_bytes_sha256 = '0'.repeat(64); },
+  ];
+
+  for (const mutate of mutations) {
+    const context = await browser.newContext();
+    const page = await context.newPage();
+    let submittedFileHash;
+    await mockStatus(page);
+    await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
+      const requestBody = route.request().postDataJSON();
+      submittedFileHash = requestBody.artifact_bytes_sha256;
+      const payload = successPayloadForRequest(route.request());
+      mutate(payload);
+      await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+    });
+
+    await page.goto(`${baseUrl}/verify.html`);
+    await page.locator('#manual-report-id').fill('RPT-VERIFY-001');
+    await page.locator('#manual-artifact-hash').fill('9'.repeat(64));
+    await page.locator('#manual-artifact-file').setInputFiles({
+      name: 'binding.pdf',
+      mimeType: 'application/pdf',
+      buffer: Buffer.from('%PDF-file-binding'),
+    });
+    await page.locator('#manual-verify-btn').click();
+    await expect(page.locator('#verify-result-title')).toHaveText('Not confirmed');
+    await expect(page.locator('#verify-result-grid')).toContainText('NO_MATCH');
+    expect(submittedFileHash).toMatch(/^[0-9a-f]{64}$/);
+    await context.close();
+  }
+});
+
 test('response scope must match whether file bytes were requested', async ({ page }) => {
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload()) });
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(successPayloadForRequest(route.request(), { fileVerified: false })),
+    });
   });
 
   await page.goto(`${baseUrl}/verify.html`);
@@ -542,7 +670,11 @@ test('response scope must match whether file bytes were requested', async ({ pag
 test('a mismatched response record identifier fails closed', async ({ page }) => {
   await mockStatus(page);
   await page.route('http://127.0.0.1:8000/api/verify', async (route) => {
-    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(successPayload({ reportId: 'RPT-OTHER' })) });
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(successPayloadForRequest(route.request(), { reportId: 'RPT-OTHER' })),
+    });
   });
   await page.goto(`${baseUrl}/verify.html`);
   await page.locator('#manual-report-id').fill('RPT-VERIFY-001');
