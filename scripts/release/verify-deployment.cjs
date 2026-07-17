@@ -68,10 +68,18 @@ async function fetchHttps(value, allowedOrigins, maxRedirects = 5, requestOption
 }
 
 function parseDigestManifest(document) {
-  const entries = String(document).trim().split(/\r?\n/).filter(Boolean).map((line) => {
-    const match = line.match(/^([0-9a-f]{64})  \.\/([A-Za-z0-9._/-]+)$/);
-    if (!match || match[2].includes('..') || path.posix.isAbsolute(match[2])) fail(`invalid digest line: ${line}`);
-    return { sha256: match[1], relative: match[2] };
+  const entries = String(document).split(/\r?\n/).filter((line) => line.length > 0).map((line) => {
+    const match = line.match(/^([0-9a-f]{64})  \.\/([A-Za-z0-9._/ -]+)$/);
+    const relative = match?.[2] || '';
+    const segments = relative.split('/');
+    if (
+      !match
+      || relative !== relative.trim()
+      || relative.includes('\\')
+      || path.posix.isAbsolute(relative)
+      || segments.some((segment) => !segment || segment === '.' || segment === '..')
+    ) fail(`invalid digest line: ${line}`);
+    return { sha256: match[1], relative };
   });
   if (entries.length < 1 || entries.length > 1024) fail('digest entry count is outside the reviewed range');
   if (new Set(entries.map((entry) => entry.relative)).size !== entries.length) fail('digest manifest contains duplicate paths');
@@ -252,7 +260,7 @@ async function verifyDeployment(options) {
     for (const variant of ['canonical', 'cache_busted']) {
       const url = new URL(`/${entry.relative}`, options.origin);
       if (variant === 'cache_busted') url.searchParams.set('cache_bust', `${options.cacheToken}-bytes`);
-      const response = await fetchHttps(url, allowedOrigins);
+      const response = await fetchHttps(url, allowedOrigins, 5, { bypassCache: true });
       if (response.status !== 200) fail(`${variant} public path /${entry.relative} returned HTTP ${response.status}`);
       const actual = sha256(response.body);
       if (actual !== entry.sha256) fail(`${variant} public byte mismatch for /${entry.relative}`);
@@ -271,7 +279,12 @@ async function verifyDeployment(options) {
     if (options.mode === 'candidate' && reference.content_addressed !== true) {
       fail(`candidate script reference is not content-addressed: ${reference.url}`);
     }
-    const referencedResponse = await fetchHttps(new URL(reference.url, options.origin), allowedOrigins);
+    const referencedResponse = await fetchHttps(
+      new URL(reference.url, options.origin),
+      allowedOrigins,
+      5,
+      { bypassCache: true },
+    );
     if (referencedResponse.status !== 200 || sha256(referencedResponse.body) !== reference.sha256) {
       fail(`exact referenced script URL bytes mismatch: ${reference.url}`);
     }
@@ -293,7 +306,12 @@ async function verifyDeployment(options) {
     if (options.mode === 'candidate' && reference.content_addressed !== true) {
       fail(`candidate stylesheet reference is not content-addressed: ${reference.url}`);
     }
-    const referencedResponse = await fetchHttps(new URL(reference.url, options.origin), allowedOrigins);
+    const referencedResponse = await fetchHttps(
+      new URL(reference.url, options.origin),
+      allowedOrigins,
+      5,
+      { bypassCache: true },
+    );
     if (referencedResponse.status !== 200 || sha256(referencedResponse.body) !== reference.sha256) {
       fail(`exact referenced stylesheet URL bytes mismatch: ${reference.url}`);
     }
@@ -315,7 +333,12 @@ async function verifyDeployment(options) {
     if (options.mode === 'candidate' && reference.content_addressed !== true) {
       fail(`candidate image reference is not content-addressed: ${reference.url}`);
     }
-    const referencedResponse = await fetchHttps(new URL(reference.url, options.origin), allowedOrigins);
+    const referencedResponse = await fetchHttps(
+      new URL(reference.url, options.origin),
+      allowedOrigins,
+      5,
+      { bypassCache: true },
+    );
     if (referencedResponse.status !== 200 || sha256(referencedResponse.body) !== reference.sha256) {
       fail(`exact referenced image URL bytes mismatch: ${reference.url}`);
     }
@@ -341,7 +364,7 @@ async function verifyDeployment(options) {
     for (const variant of ['canonical', 'cache_busted']) {
       const url = new URL(publicPath, options.origin);
       if (variant === 'cache_busted') url.searchParams.set('cache_bust', `${options.cacheToken}-retired`);
-      const response = await fetchHttps(url, allowedOrigins);
+      const response = await fetchHttps(url, allowedOrigins, 5, { bypassCache: true });
       if (![404, 410].includes(response.status)) fail(`${variant} removed path ${publicPath} returned HTTP ${response.status}`);
       records.push({ type: 'absent', variant, path: publicPath, status: response.status, chain: response.chain });
     }

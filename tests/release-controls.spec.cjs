@@ -353,9 +353,13 @@ test('HTTPS redirect resolver rejects every downgrade and unreviewed origin', ()
 });
 
 test('digest parser is exact and deterministic', () => {
-  assert.deepEqual(parseDigestManifest(`${'d'.repeat(64)}  ./verify.html\n`), [
+  assert.deepEqual(parseDigestManifest(
+    `${'d'.repeat(64)}  ./verify.html\n${'e'.repeat(64)}  ./archive/index fix 011226.html\n`,
+  ), [
     { sha256: 'd'.repeat(64), relative: 'verify.html' },
+    { sha256: 'e'.repeat(64), relative: 'archive/index fix 011226.html' },
   ]);
   assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./../secret\n`), /invalid digest/);
+  assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./archive/ trailing.html \n`), /invalid digest/);
 
 });

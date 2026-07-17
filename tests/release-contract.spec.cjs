@@ -101,6 +101,7 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
     deploymentVerifier,
     /fetchHttps\(url, allowedOrigins, 5, \{ bypassCache: true \}\)/,
   );
+  assert.equal((deploymentVerifier.match(/\{ bypassCache: true \}/g) || []).length, 6);
   assert.doesNotMatch(deploymentVerifier, /bypassCache: variant ===/);
 });
 
