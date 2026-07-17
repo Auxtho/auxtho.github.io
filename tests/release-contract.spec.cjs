@@ -89,6 +89,7 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.match(deploy, /id: rollback_readback/);
   assert.doesNotMatch(deploy, /BACKEND_FINALIZE_REQUIRED|BACKEND_ROLLBACK_REQUIRED/);
   assert.doesNotMatch(deploy, /BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA/);
+  assert.doesNotMatch(deploy, /^\s*<<:/m);
   assert.match(deploy, /Keep the release failed after deterministic restoration/);
   assert.match(
     deploymentVerifier,
