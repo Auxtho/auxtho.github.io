@@ -45,8 +45,19 @@ function validate() {
   }
 
   const deploy = parsed['.github/workflows/deploy-pages.yml'];
-  if (!JSON.stringify(deploy.on?.workflow_dispatch?.inputs || {}).includes('site_contract_mode')) {
-    fail('manual deploy must require an explicit bootstrap or normal site contract mode');
+  const dispatchInputs = deploy.on?.workflow_dispatch?.inputs || {};
+  if (dispatchInputs.site_contract_mode?.required !== true) {
+    fail('manual deploy must require an explicit site contract mode');
+  }
+  if (
+    dispatchInputs.release_purpose?.required !== true
+    || dispatchInputs.release_purpose?.type !== 'choice'
+    || JSON.stringify(dispatchInputs.release_purpose?.options) !== JSON.stringify([
+      'approved-site-release',
+      'bootstrap-migration',
+    ])
+  ) {
+    fail('manual deploy must use the exact non-secret release purpose choices');
   }
   const packageText = JSON.stringify(deploy.jobs?.package);
   const deployText = JSON.stringify(deploy.jobs?.deploy_and_verify);
@@ -61,8 +72,46 @@ function validate() {
   if (!deployText.includes('predeploy-authorization-evidence/platform-state.json')) {
     fail('deploy job must recapture authorization immediately before the first publication mutation');
   }
-  for (const required of ['REQUESTED_SITE_CONTRACT_MODE', 'APPROVED_SITE_CONTRACT_MODE']) {
-    if (!JSON.stringify(deploy).includes(required)) fail(`site bootstrap mode binding is missing: ${required}`);
+  const exactAuthorityBindings = {
+    REQUESTED_SITE_CONTRACT_MODE: '${{ inputs.site_contract_mode }}',
+    APPROVED_SITE_CONTRACT_MODE: '${{ vars.PRODUCTION_VERIFY_SITE_CONTRACT_MODE }}',
+    REQUESTED_RELEASE_PURPOSE: '${{ inputs.release_purpose }}',
+    APPROVED_RELEASE_AUTHORITY_MODE: '${{ vars.PRODUCTION_VERIFY_RELEASE_AUTHORITY_MODE }}',
+    APPROVED_ENVIRONMENT_REVIEWER_IDS: '${{ vars.PRODUCTION_VERIFY_ENVIRONMENT_REVIEWER_IDS }}',
+    APPROVED_SOLO_FOUNDER_ACTOR_ID: '${{ vars.PRODUCTION_VERIFY_SOLO_FOUNDER_ACTOR_ID }}',
+    APPROVED_SOLO_FOUNDER_ACTOR_LOGIN: '${{ vars.PRODUCTION_VERIFY_SOLO_FOUNDER_ACTOR_LOGIN }}',
+    RELEASE_ACTOR_ID: '${{ github.actor_id }}',
+    RELEASE_ACTOR_LOGIN: '${{ github.actor }}',
+    RELEASE_TRIGGERING_ACTOR_LOGIN: '${{ github.triggering_actor }}',
+    RELEASE_EVENT_NAME: '${{ github.event_name }}',
+    RELEASE_REF: '${{ github.ref }}',
+    RELEASE_WORKFLOW_REF: '${{ github.workflow_ref }}',
+    RELEASE_RUN_ID: '${{ github.run_id }}',
+    RELEASE_RUN_ATTEMPT: '${{ github.run_attempt }}',
+  };
+  const exactCaptureCommands = {
+    authorize_release: 'node scripts/release/platform-controls.cjs capture-and-validate authorization-evidence/platform-state.json',
+    package: 'node scripts/release/platform-controls.cjs capture-and-validate package-authorization-evidence/platform-state.json',
+    deploy_and_verify: 'node scripts/release/platform-controls.cjs capture-and-validate predeploy-authorization-evidence/platform-state.json',
+  };
+  for (const [jobName, exactCaptureCommand] of Object.entries(exactCaptureCommands)) {
+    const job = deploy.jobs?.[jobName];
+    const jobEnv = job?.env || {};
+    for (const [name, expected] of Object.entries(exactAuthorityBindings)) {
+      if (jobEnv[name] !== expected) {
+        fail(`${jobName} release authority binding must be exact: ${name}`);
+      }
+    }
+    const captureSteps = (job?.steps || []).filter((step) => String(step?.run || '').includes('capture-and-validate'));
+    if (captureSteps.length !== 1 || captureSteps[0].run !== exactCaptureCommand) {
+      fail(`${jobName} must run the exact fail-closed platform capture command once`);
+    }
+    const stepEnv = captureSteps[0].env || {};
+    for (const name of Object.keys(exactAuthorityBindings)) {
+      if (Object.prototype.hasOwnProperty.call(stepEnv, name)) {
+        fail(`${jobName} capture step must not override release authority binding: ${name}`);
+      }
+    }
   }
   for (const artifactName of ['github-pages-candidate', 'github-pages-rollback']) {
     if (!packageText.includes(artifactName) || !deployText.includes(artifactName)) {

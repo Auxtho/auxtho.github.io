@@ -5,6 +5,8 @@ const { spawnSync } = require('node:child_process');
 const EXACT_VERIFY_CHECK = 'Verify Site Contract';
 const GITHUB_ACTIONS_APP_ID = 15368;
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
+const AUTHORITY_MODES = new Set(['independent_review', 'solo_founder']);
+const RELEASE_PURPOSES = new Set(['bootstrap-migration', 'approved-site-release']);
 
 function fail(message) {
   throw new Error(`HOLD: ${message}`);
@@ -37,11 +39,99 @@ function parseReviewerIds(value) {
   } catch {
     fail('approved environment reviewer IDs must be valid JSON');
   }
-  if (!Array.isArray(parsed) || parsed.length < 1 || parsed.some((id) => !Number.isSafeInteger(id) || id < 1)) {
-    fail('approved environment reviewer IDs must be a non-empty JSON array of positive integers');
+  if (!Array.isArray(parsed) || parsed.some((id) => !Number.isSafeInteger(id) || id < 1)) {
+    fail('approved environment reviewer IDs must be a JSON array of positive integers');
   }
   if (new Set(parsed).size !== parsed.length) fail('approved environment reviewer IDs must not contain duplicates');
   return [...parsed].sort((left, right) => left - right);
+}
+
+function parsePositiveInteger(name, value) {
+  const parsed = Number(value);
+  if (!Number.isSafeInteger(parsed) || parsed < 1) fail(`${name} must be a positive integer`);
+  return parsed;
+}
+
+function parseActorLogin(name, value) {
+  const parsed = String(value || '');
+  if (!/^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(parsed)) fail(`${name} must be an exact GitHub login`);
+  return parsed;
+}
+
+function parseReleasePurpose(value, siteContractMode) {
+  const parsed = String(value || '');
+  if (!RELEASE_PURPOSES.has(parsed)) {
+    fail('release purpose must be bootstrap-migration or approved-site-release');
+  }
+  if (
+    siteContractMode === 'bootstrap' && parsed !== 'bootstrap-migration'
+    || siteContractMode === 'normal' && parsed !== 'approved-site-release'
+  ) {
+    fail('release purpose must exactly match the protected site contract mode');
+  }
+  return parsed;
+}
+
+function parseReleaseAuthorization(bindings, approvedReviewerIds, siteContractMode) {
+  const mode = String(bindings.releaseAuthorityMode || '');
+  const approvedMode = String(bindings.approvedReleaseAuthorityMode || '');
+  if (!AUTHORITY_MODES.has(mode) || mode !== approvedMode) {
+    fail('release authority mode must exactly match independent_review or solo_founder');
+  }
+
+  const actorId = parsePositiveInteger('release actor ID', bindings.releaseActorId);
+  const actorLogin = parseActorLogin('release actor login', bindings.releaseActorLogin);
+  const triggeringActorLogin = parseActorLogin(
+    'release triggering actor login',
+    bindings.releaseTriggeringActorLogin,
+  );
+  const eventName = String(bindings.releaseEventName || '');
+  const ref = String(bindings.releaseRef || '');
+  const workflowRef = String(bindings.releaseWorkflowRef || '');
+  const runId = parsePositiveInteger('release run ID', bindings.releaseRunId);
+  const runAttempt = parsePositiveInteger('release run attempt', bindings.releaseRunAttempt);
+  const purpose = parseReleasePurpose(bindings.releasePurpose, siteContractMode);
+  if (eventName !== 'workflow_dispatch') fail('site release must originate from workflow_dispatch');
+  if (ref !== 'refs/heads/main') fail('site release must be dispatched from refs/heads/main');
+  if (!workflowRef.toLowerCase().endsWith('/.github/workflows/deploy-pages.yml@refs/heads/main')) {
+    fail('site release must use deploy-pages.yml from refs/heads/main');
+  }
+  if (runAttempt !== 1) fail('workflow reruns are not release authorizations; dispatch a fresh run');
+
+  let founderActorId = null;
+  let founderActorLogin = null;
+  if (mode === 'independent_review') {
+    if (approvedReviewerIds.length < 1) fail('independent_review requires at least one approved reviewer');
+  } else {
+    if (approvedReviewerIds.length !== 0) fail('solo_founder must not simulate independent environment reviewers');
+    founderActorId = parsePositiveInteger('approved solo founder actor ID', bindings.approvedSoloFounderActorId);
+    founderActorLogin = parseActorLogin(
+      'approved solo founder actor login',
+      bindings.approvedSoloFounderActorLogin,
+    );
+    if (
+      actorId !== founderActorId
+      || actorLogin !== founderActorLogin
+      || triggeringActorLogin !== founderActorLogin
+    ) {
+      fail('solo_founder dispatch actor does not exactly match the protected founder identity');
+    }
+  }
+
+  return {
+    mode,
+    actor_id: actorId,
+    actor_login: actorLogin,
+    triggering_actor_login: triggeringActorLogin,
+    founder_actor_id: founderActorId,
+    founder_actor_login: founderActorLogin,
+    event_name: eventName,
+    ref,
+    workflow_ref: workflowRef,
+    run_id: runId,
+    run_attempt: runAttempt,
+    purpose,
+  };
 }
 
 function assertBindings(bindings) {
@@ -103,6 +193,9 @@ function assertBindings(bindings) {
   }
   if (finalBackendSha === backendBridgeSha) fail('final backend SHA must be distinct from the migration bridge SHA');
 
+  const approvedReviewerIds = parseReviewerIds(bindings.approvedReviewerIds);
+  const releaseAuthorization = parseReleaseAuthorization(bindings, approvedReviewerIds, siteContractMode);
+
   return {
     siteContractMode,
     sourceSha,
@@ -112,7 +205,8 @@ function assertBindings(bindings) {
     backendBridgeSha,
     rollbackBackendSha,
     finalBackendSha,
-    approvedReviewerIds: parseReviewerIds(bindings.approvedReviewerIds),
+    approvedReviewerIds,
+    releaseAuthorization,
   };
 }
 
@@ -132,7 +226,7 @@ function listIsEmpty(value) {
     : [value.users, value.teams, value.apps].every((items) => !Array.isArray(items) || items.length === 0);
 }
 
-function validateBranchProtection(protection) {
+function validateBranchProtection(protection, authorityMode = 'independent_review') {
   if (!protection || protection.missing === true) return false;
   if (!hasExactRequiredCheck(protection.required_status_checks)) {
     fail(`branch protection must strictly require ${EXACT_VERIFY_CHECK} from GitHub Actions`);
@@ -143,12 +237,20 @@ function validateBranchProtection(protection) {
   const reviewBypass = protection.required_pull_request_reviews?.bypass_pull_request_allowances;
   if (!listIsEmpty(reviewBypass)) fail('branch protection must not grant pull-request bypass allowances');
   const reviews = protection.required_pull_request_reviews;
-  if (
-    Number(reviews?.required_approving_review_count) < 1
+  if (authorityMode === 'independent_review') {
+    if (
+      Number(reviews?.required_approving_review_count) < 1
+      || reviews?.dismiss_stale_reviews !== true
+      || reviews?.require_last_push_approval !== true
+    ) {
+      fail('branch protection must require an independent approving review after the latest push');
+    }
+  } else if (
+    Number(reviews?.required_approving_review_count) !== 0
     || reviews?.dismiss_stale_reviews !== true
-    || reviews?.require_last_push_approval !== true
+    || reviews?.require_last_push_approval !== false
   ) {
-    fail('branch protection must require an independent approving review after the latest push');
+    fail('solo-founder branch protection must require PRs without simulated approvals');
   }
   if (protection.required_conversation_resolution?.enabled !== true) {
     fail('branch protection must require conversation resolution');
@@ -162,10 +264,10 @@ function rulesetAppliesToMain(ruleset) {
   const includes = Array.isArray(refName?.include) ? refName.include : [];
   const excludes = Array.isArray(refName?.exclude) ? refName.exclude : [];
   const mainNames = new Set(['refs/heads/main', '~DEFAULT_BRANCH']);
-  return includes.some((entry) => mainNames.has(entry)) && !excludes.some((entry) => mainNames.has(entry));
+  return includes.length === 1 && mainNames.has(includes[0]) && excludes.length === 0;
 }
 
-function validateRulesets(rulesets) {
+function validateRulesets(rulesets, authorityMode = 'independent_review') {
   const applicable = (Array.isArray(rulesets) ? rulesets : []).filter(rulesetAppliesToMain);
   if (applicable.length === 0) return false;
   if (applicable.some((ruleset) => Array.isArray(ruleset.bypass_actors) && ruleset.bypass_actors.length > 0)) {
@@ -187,31 +289,45 @@ function validateRulesets(rulesets) {
   ));
   if (!exactCheckRequired) fail(`active main-branch rulesets must strictly require ${EXACT_VERIFY_CHECK} from GitHub Actions`);
   const pullRequestRules = rules.filter((rule) => rule?.type === 'pull_request');
-  if (!pullRequestRules.some((rule) => (
-    Number(rule.parameters?.required_approving_review_count) >= 1
-    && rule.parameters?.dismiss_stale_reviews_on_push === true
-    && rule.parameters?.require_last_push_approval === true
-    && rule.parameters?.required_review_thread_resolution === true
-  ))) {
-    fail('active main-branch rulesets must require independent review after the latest push and thread resolution');
+  const validPullRequestRule = authorityMode === 'independent_review'
+    ? pullRequestRules.some((rule) => (
+      Number(rule.parameters?.required_approving_review_count) >= 1
+      && rule.parameters?.dismiss_stale_reviews_on_push === true
+      && rule.parameters?.require_last_push_approval === true
+      && rule.parameters?.required_review_thread_resolution === true
+    ))
+    : pullRequestRules.some((rule) => (
+      Number(rule.parameters?.required_approving_review_count) === 0
+      && rule.parameters?.dismiss_stale_reviews_on_push === true
+      && rule.parameters?.require_last_push_approval === false
+      && rule.parameters?.required_review_thread_resolution === true
+    ));
+  if (!validPullRequestRule) {
+    fail(authorityMode === 'independent_review'
+      ? 'active main-branch rulesets must require independent review after the latest push and thread resolution'
+      : 'solo-founder rulesets must require PRs, exact checks, and thread resolution without simulated approvals');
   }
   return true;
 }
 
-function validateEnvironment(environment, branchPolicies, approvedReviewerIds) {
+function validateEnvironment(environment, branchPolicies, approvedReviewerIds, authorityMode) {
   if (!environment || environment.name !== 'github-pages') fail('github-pages environment state is missing');
   if (environment.can_admins_bypass !== false) fail('github-pages must disable administrator bypass');
   const rules = Array.isArray(environment.protection_rules) ? environment.protection_rules : [];
   const reviewerRule = rules.find((rule) => rule?.type === 'required_reviewers');
-  if (!reviewerRule || reviewerRule.prevent_self_review !== true) {
-    fail('github-pages must require reviewers and prevent self-review');
-  }
-  const actualReviewerIds = (Array.isArray(reviewerRule.reviewers) ? reviewerRule.reviewers : [])
-    .map((entry) => Number(entry?.reviewer?.id))
-    .filter(Number.isSafeInteger)
-    .sort((left, right) => left - right);
-  if (JSON.stringify(actualReviewerIds) !== JSON.stringify(approvedReviewerIds)) {
-    fail('github-pages reviewer IDs do not exactly match the protected approved reviewer list');
+  if (authorityMode === 'independent_review') {
+    if (!reviewerRule || reviewerRule.prevent_self_review !== true) {
+      fail('github-pages must require reviewers and prevent self-review');
+    }
+    const actualReviewerIds = (Array.isArray(reviewerRule.reviewers) ? reviewerRule.reviewers : [])
+      .map((entry) => Number(entry?.reviewer?.id))
+      .filter(Number.isSafeInteger)
+      .sort((left, right) => left - right);
+    if (JSON.stringify(actualReviewerIds) !== JSON.stringify(approvedReviewerIds)) {
+      fail('github-pages reviewer IDs do not exactly match the protected approved reviewer list');
+    }
+  } else if (reviewerRule) {
+    fail('solo_founder environment must not contain a simulated required-reviewer rule');
   }
 
   const deploymentPolicy = environment.deployment_branch_policy;
@@ -272,10 +388,18 @@ function validatePlatformState(snapshot, bindings) {
   }
   if (snapshot?.pages?.build_type !== 'workflow') fail('Pages publishing source must be GitHub Actions workflow');
   if (snapshot?.pages?.https_enforced !== true) fail('GitHub Pages HTTPS enforcement must be enabled');
-  validateEnvironment(snapshot.environment, snapshot.deploymentBranchPolicies, approved.approvedReviewerIds);
+  validateEnvironment(
+    snapshot.environment,
+    snapshot.deploymentBranchPolicies,
+    approved.approvedReviewerIds,
+    approved.releaseAuthorization.mode,
+  );
 
-  const branchProtectionPresent = validateBranchProtection(snapshot.branchProtection);
-  const rulesetsPresent = validateRulesets(snapshot.rulesets);
+  const branchProtectionPresent = validateBranchProtection(
+    snapshot.branchProtection,
+    approved.releaseAuthorization.mode,
+  );
+  const rulesetsPresent = validateRulesets(snapshot.rulesets, approved.releaseAuthorization.mode);
   if (!branchProtectionPresent && !rulesetsPresent) {
     fail('main must be protected by branch protection or active rulesets');
   }
@@ -416,6 +540,19 @@ function bindingsFromEnvironment() {
     rollbackCompatibleShas: process.env.REQUESTED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS,
     approvedRollbackCompatibleShas: process.env.APPROVED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS,
     approvedReviewerIds: process.env.APPROVED_ENVIRONMENT_REVIEWER_IDS,
+    releaseAuthorityMode: process.env.APPROVED_RELEASE_AUTHORITY_MODE,
+    approvedReleaseAuthorityMode: process.env.APPROVED_RELEASE_AUTHORITY_MODE,
+    approvedSoloFounderActorId: process.env.APPROVED_SOLO_FOUNDER_ACTOR_ID,
+    approvedSoloFounderActorLogin: process.env.APPROVED_SOLO_FOUNDER_ACTOR_LOGIN,
+    releaseActorId: process.env.RELEASE_ACTOR_ID,
+    releaseActorLogin: process.env.RELEASE_ACTOR_LOGIN,
+    releaseTriggeringActorLogin: process.env.RELEASE_TRIGGERING_ACTOR_LOGIN,
+    releaseEventName: process.env.RELEASE_EVENT_NAME,
+    releaseRef: process.env.RELEASE_REF,
+    releaseWorkflowRef: process.env.RELEASE_WORKFLOW_REF,
+    releaseRunId: process.env.RELEASE_RUN_ID,
+    releaseRunAttempt: process.env.RELEASE_RUN_ATTEMPT,
+    releasePurpose: process.env.REQUESTED_RELEASE_PURPOSE,
     publicOrigin: process.env.PUBLIC_SITE_ORIGIN,
     backendBridgeSha: process.env.REQUESTED_BACKEND_BRIDGE_SHA,
     approvedBackendBridgeSha: process.env.APPROVED_BACKEND_BRIDGE_SHA,
@@ -442,12 +579,14 @@ function run(argv) {
     fail('usage: platform-controls.cjs <assert-pages-bootstrap|capture-and-validate> <snapshot-output.json>');
   }
   const bindings = bindingsFromEnvironment();
+  const approved = assertBindings(bindings);
   const snapshot = capturePlatformState({
     repository: bindings.repository,
     sourceSha: bindings.sourceSha,
     rollbackSha: bindings.rollbackSha,
     publicOrigin: bindings.publicOrigin,
   });
+  snapshot.releaseAuthorization = approved.releaseAuthorization;
   validatePlatformState(snapshot, bindings);
   const outputPath = path.resolve(argv[1]);
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });

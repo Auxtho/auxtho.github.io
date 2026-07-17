@@ -46,9 +46,36 @@ function bindings(overrides = {}) {
     approvedFinalBackendSha: F,
     rollbackBackendSha: RL,
     approvedRollbackBackendSha: RL,
+    releaseAuthorityMode: 'independent_review',
+    approvedReleaseAuthorityMode: 'independent_review',
     approvedReviewerIds: JSON.stringify([101]),
+    approvedSoloFounderActorId: '',
+    approvedSoloFounderActorLogin: '',
+    releaseActorId: '202',
+    releaseActorLogin: 'release-operator',
+    releaseTriggeringActorLogin: 'release-operator',
+    releaseEventName: 'workflow_dispatch',
+    releaseRef: 'refs/heads/main',
+    releaseWorkflowRef: 'Auxtho/auxtho.github.io/.github/workflows/deploy-pages.yml@refs/heads/main',
+    releaseRunId: '303',
+    releaseRunAttempt: '1',
+    releasePurpose: 'bootstrap-migration',
     ...overrides,
   };
+}
+
+function soloBindings(overrides = {}) {
+  return bindings({
+    releaseAuthorityMode: 'solo_founder',
+    approvedReleaseAuthorityMode: 'solo_founder',
+    approvedReviewerIds: JSON.stringify([]),
+    approvedSoloFounderActorId: '230734665',
+    approvedSoloFounderActorLogin: 'AuxthoAdmin',
+    releaseActorId: '230734665',
+    releaseActorLogin: 'AuxthoAdmin',
+    releaseTriggeringActorLogin: 'AuxthoAdmin',
+    ...overrides,
+  });
 }
 
 function validBranchProtection() {
@@ -136,6 +163,22 @@ function validRuleset() {
   };
 }
 
+function soloSnapshot() {
+  const state = snapshot();
+  state.environment.protection_rules = [];
+  state.branchProtection.required_pull_request_reviews.required_approving_review_count = 0;
+  state.branchProtection.required_pull_request_reviews.require_last_push_approval = false;
+  return state;
+}
+
+function validSoloRuleset() {
+  const ruleset = validRuleset();
+  const pullRequest = ruleset.rules.find((rule) => rule.type === 'pull_request');
+  pullRequest.parameters.required_approving_review_count = 0;
+  pullRequest.parameters.require_last_push_approval = false;
+  return ruleset;
+}
+
 test('bootstrap authorization accepts only exact S with canonical [L,S], bridge B -> L, and legacy release 404 at L', () => {
   const approved = validatePlatformState(snapshot(), bindings());
   assert.equal(approved.sourceSha, S);
@@ -163,6 +206,38 @@ test('candidate compatibility is exactly the canonical distinct legacy/candidate
     approvedCompatibleShas: JSON.stringify([...COMPATIBILITY].reverse()),
   })), /canonical sorted pair/);
   assert.throws(() => assertBindings(bindings({ finalBackendSha: B, approvedFinalBackendSha: B })), /distinct/);
+});
+
+test('solo-founder authorization binds exact actor, dispatch context, PR controls, and no fake reviewer', () => {
+  const approved = validatePlatformState(soloSnapshot(), soloBindings());
+  assert.equal(approved.releaseAuthorization.mode, 'solo_founder');
+  assert.equal(approved.releaseAuthorization.actor_id, 230734665);
+  assert.equal(approved.releaseAuthorization.actor_login, 'AuxthoAdmin');
+  assert.equal(approved.releaseAuthorization.purpose, 'bootstrap-migration');
+  assert.deepEqual(approved.approvedReviewerIds, []);
+
+  const cases = [
+    [{ releaseActorId: '230734666' }, /founder identity/],
+    [{ releaseActorLogin: 'OtherAdmin' }, /founder identity/],
+    [{ releaseTriggeringActorLogin: 'OtherAdmin' }, /founder identity/],
+    [{ releaseEventName: 'push' }, /workflow_dispatch/],
+    [{ releaseRef: 'refs/heads/release' }, /refs\/heads\/main/],
+    [{ releaseWorkflowRef: 'Auxtho/auxtho.github.io/.github/workflows/other.yml@refs/heads/main' }, /deploy-pages/],
+    [{ approvedReviewerIds: JSON.stringify([101]) }, /must not simulate/],
+    [{ releasePurpose: 'ghp_secret-like-value' }, /release purpose/],
+    [{ releasePurpose: 'approved-site-release' }, /protected site contract mode/],
+    [{ releaseRunAttempt: '2' }, /reruns are not release authorizations/],
+  ];
+  for (const [overrides, expected] of cases) {
+    assert.throws(() => validatePlatformState(soloSnapshot(), soloBindings(overrides)), expected);
+  }
+
+  const fakeReviewer = soloSnapshot();
+  fakeReviewer.environment.protection_rules = snapshot().environment.protection_rules;
+  assert.throws(
+    () => validatePlatformState(fakeReviewer, soloBindings()),
+    /must not contain a simulated required-reviewer rule/,
+  );
 });
 
 test('branch, environment, Pages HTTPS, live release, and backend controls fail closed independently', () => {
@@ -197,6 +272,7 @@ test('branch, environment, Pages HTTPS, live release, and backend controls fail 
   assert.throws(() => validatePlatformState(snapshot(), bindings({
     siteContractMode: 'normal',
     approvedSiteContractMode: 'normal',
+    releasePurpose: 'approved-site-release',
   })), /normal mode requires/);
 
   const normalState = snapshot();
@@ -204,6 +280,7 @@ test('branch, environment, Pages HTTPS, live release, and backend controls fail 
   assert.equal(validatePlatformState(normalState, bindings({
     siteContractMode: 'normal',
     approvedSiteContractMode: 'normal',
+    releasePurpose: 'approved-site-release',
   })).siteContractMode, 'normal');
 
   const withPendingCurrentJob = snapshot();
@@ -241,6 +318,23 @@ test('active no-bypass rulesets can supply exact deletion, force-push, and verif
   const noReview = validRuleset();
   noReview.rules = noReview.rules.filter((rule) => rule.type !== 'pull_request');
   assert.throws(() => validateRulesets([noReview]), /independent review/);
+
+  const soloState = soloSnapshot();
+  soloState.branchProtection = { missing: true };
+  soloState.rulesets = [validSoloRuleset()];
+  assert.equal(validatePlatformState(soloState, soloBindings()).sourceSha, S);
+
+  const fakeSoloApproval = validSoloRuleset();
+  fakeSoloApproval.rules.find((rule) => rule.type === 'pull_request')
+    .parameters.required_approving_review_count = 1;
+  assert.throws(
+    () => validateRulesets([fakeSoloApproval], 'solo_founder'),
+    /without simulated approvals/,
+  );
+
+  const wildcardExcluded = validSoloRuleset();
+  wildcardExcluded.conditions.ref_name.exclude = ['refs/heads/ma*'];
+  assert.equal(validateRulesets([wildcardExcluded], 'solo_founder'), false);
 });
 
 test('backend status accepts bridge B -> L, final F -> S, and rollback RL -> L only exactly', () => {

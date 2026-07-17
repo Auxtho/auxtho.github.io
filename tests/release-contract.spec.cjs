@@ -63,7 +63,17 @@ test('CI and deploy workflows bind pre-merge bootstrap, fresh package authorizat
   assert.match(site, /\.github\/workflows\/deploy-pages\.yml/);
   assert.equal((deploy.match(/capture-and-validate/g) || []).length, 3);
   assert.equal((deploy.match(/deployment: false/g) || []).length, 2);
+  assert.match(deploy, /release_purpose:/);
+  assert.match(deploy, /APPROVED_RELEASE_AUTHORITY_MODE/);
   assert.match(deploy, /APPROVED_ENVIRONMENT_REVIEWER_IDS/);
+  assert.match(deploy, /APPROVED_SOLO_FOUNDER_ACTOR_ID/);
+  assert.match(deploy, /RELEASE_TRIGGERING_ACTOR_LOGIN/);
+  assert.match(deploy, /RELEASE_ACTOR_ID:\s+\$\{\{ github\.actor_id \}\}/);
+  assert.match(deploy, /RELEASE_ACTOR_LOGIN:\s+\$\{\{ github\.actor \}\}/);
+  assert.match(deploy, /RELEASE_EVENT_NAME:\s+\$\{\{ github\.event_name \}\}/);
+  assert.match(deploy, /RELEASE_REF:\s+\$\{\{ github\.ref \}\}/);
+  assert.match(deploy, /RELEASE_WORKFLOW_REF:\s+\$\{\{ github\.workflow_ref \}\}/);
+  assert.match(deploy, /RELEASE_RUN_ATTEMPT:\s+\$\{\{ github\.run_attempt \}\}/);
   assert.match(deploy, /PRODUCTION_VERIFY_FINAL_BACKEND_SHA/);
   assert.match(deploy, /artifact_name: github-pages-candidate/);
   assert.match(deploy, /artifact_name: github-pages-rollback/);

@@ -45,6 +45,13 @@ on:
         description: Exact approved backend revision to restore if publication fails
         required: true
         type: string
+      release_purpose:
+        description: Fixed public purpose for this exact release; never enter free-form text or secrets
+        required: true
+        type: choice
+        options:
+          - approved-site-release
+          - bootstrap-migration
 
 permissions:
   contents: read
@@ -86,7 +93,19 @@ jobs:
       APPROVED_FINAL_BACKEND_SHA: ${{ vars.PRODUCTION_VERIFY_FINAL_BACKEND_SHA }}
       REQUESTED_ROLLBACK_BACKEND_SHA: ${{ inputs.rollback_backend_sha }}
       APPROVED_ROLLBACK_BACKEND_SHA: ${{ vars.PRODUCTION_VERIFY_ROLLBACK_BACKEND_SHA }}
+      REQUESTED_RELEASE_PURPOSE: ${{ inputs.release_purpose }}
+      APPROVED_RELEASE_AUTHORITY_MODE: ${{ vars.PRODUCTION_VERIFY_RELEASE_AUTHORITY_MODE }}
       APPROVED_ENVIRONMENT_REVIEWER_IDS: ${{ vars.PRODUCTION_VERIFY_ENVIRONMENT_REVIEWER_IDS }}
+      APPROVED_SOLO_FOUNDER_ACTOR_ID: ${{ vars.PRODUCTION_VERIFY_SOLO_FOUNDER_ACTOR_ID }}
+      APPROVED_SOLO_FOUNDER_ACTOR_LOGIN: ${{ vars.PRODUCTION_VERIFY_SOLO_FOUNDER_ACTOR_LOGIN }}
+      RELEASE_ACTOR_ID: ${{ github.actor_id }}
+      RELEASE_ACTOR_LOGIN: ${{ github.actor }}
+      RELEASE_TRIGGERING_ACTOR_LOGIN: ${{ github.triggering_actor }}
+      RELEASE_EVENT_NAME: ${{ github.event_name }}
+      RELEASE_REF: ${{ github.ref }}
+      RELEASE_WORKFLOW_REF: ${{ github.workflow_ref }}
+      RELEASE_RUN_ID: ${{ github.run_id }}
+      RELEASE_RUN_ATTEMPT: ${{ github.run_attempt }}
     steps:
       - name: Check out the exact workflow source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
