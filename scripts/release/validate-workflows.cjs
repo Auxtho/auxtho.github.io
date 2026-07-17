@@ -123,14 +123,17 @@ function validate() {
     fail('candidate and rollback deploy actions must remain in the same environment-gated job');
   }
   for (const required of [
-    'backend-reported-site-sha',
-    'final_backend_readback',
-    'backend-finalize-required',
-    'backend-rollback-required',
-    'steps.final_backend_readback.outcome',
-    'Hold without site rollback when the final backend transition is not yet proven',
+    '--source-sha',
+    '--compatible-json',
+    'candidate_readback',
+    'rollback_readback',
+    'steps.candidate_readback.outcome',
+    'Keep the release failed after deterministic restoration',
   ]) {
-    if (!deployText.includes(required)) fail(`migration/rollback control is missing: ${required}`);
+    if (!deployText.includes(required)) fail(`static publication/rollback control is missing: ${required}`);
+  }
+  if (/BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA|backend-reported-site-sha/.test(deployText)) {
+    fail('static site deployment must not depend on backend revision bindings');
   }
   process.stdout.write(`workflow-contract parsed=${workflowPaths.length} actions=${actionUses(site).length + actionUses(deploy).length}\n`);
 }

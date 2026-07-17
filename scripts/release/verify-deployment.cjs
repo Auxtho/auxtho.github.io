@@ -3,7 +3,6 @@ const fs = require('node:fs');
 const https = require('node:https');
 const path = require('node:path');
 const { findImageSources, findScriptSources, findStylesheetSources } = require('./public-artifact.cjs');
-const { validateBackendStatus } = require('./platform-controls.cjs');
 
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
@@ -144,9 +143,6 @@ function validateRelease(release, provenance, expected) {
     fail('deployed compatibility list is not in canonical SHA sort order');
   }
   if (!release.compatible_backend_site_shas.includes(release.source_sha)) fail('compatibility list omits current site source');
-  if (!release.compatible_backend_site_shas.includes(expected.backendReportedSiteSha)) {
-    fail('compatibility list omits the backend-reported site SHA');
-  }
   if (
     expected.mode === 'candidate'
     && JSON.stringify(release.compatible_backend_site_shas)
@@ -180,17 +176,13 @@ function parseArguments(argv) {
     options[argv[index].slice(2)] = argv[index + 1];
   }
   for (const key of [
-    'origin', 'source-sha', 'backend-sha', 'backend-reported-site-sha', 'compatible-json',
+    'origin', 'source-sha', 'compatible-json',
     'mode', 'provenance', 'evidence', 'cache-token',
   ]) {
     if (!options[key]) fail(`missing --${key}`);
   }
   if (options.origin !== 'https://auxtho.com') fail('public origin must be exactly https://auxtho.com');
-  if (
-    !SHA_PATTERN.test(options['source-sha'])
-    || !SHA_PATTERN.test(options['backend-sha'])
-    || !SHA_PATTERN.test(options['backend-reported-site-sha'])
-  ) fail('site, backend, and backend-reported site SHAs must be exact');
+  if (!SHA_PATTERN.test(options['source-sha'])) fail('site SHA must be exact');
   let compatibleShas;
   try { compatibleShas = JSON.parse(options['compatible-json']); } catch { fail('compatible JSON is invalid'); }
   if (!Array.isArray(compatibleShas) || !compatibleShas.includes(options['source-sha'])) {
@@ -199,8 +191,6 @@ function parseArguments(argv) {
   return {
     origin: options.origin,
     sourceSha: options['source-sha'],
-    backendSha: options['backend-sha'],
-    backendReportedSiteSha: options['backend-reported-site-sha'],
     compatibleShas,
     mode: options.mode,
     rollbackOfSha: options['rollback-of-sha'] || null,
@@ -234,7 +224,7 @@ async function waitForExactRelease(options, allowedOrigins, provenance) {
     try {
       const url = new URL('/release.json', options.origin);
       url.searchParams.set('cache_bust', `${options.cacheToken}-identity-${attempt}`);
-      const response = await fetchHttps(url, allowedOrigins, 5, { bypassCache: variant === 'cache_busted' });
+      const response = await fetchHttps(url, allowedOrigins, 5, { bypassCache: true });
       if (response.status !== 200) fail(`release readback returned HTTP ${response.status}`);
       const release = JSON.parse(response.body.toString('utf8'));
       validateRelease(release, provenance, options);
@@ -245,26 +235,6 @@ async function waitForExactRelease(options, allowedOrigins, provenance) {
     }
   }
   throw lastError || new Error('HOLD: exact release identity was not observed');
-}
-
-async function verifyBackend(options) {
-  const allowedOrigins = ['https://api.auxtho.com'];
-  let lastError;
-  for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
-    try {
-      const url = new URL('/api/verify/status', allowedOrigins[0]);
-      url.searchParams.set('readback_cache_bust', `${options.cacheToken}-backend-${attempt}`);
-      const response = await fetchHttps(url, allowedOrigins);
-      if (response.status !== 200) fail(`backend status returned HTTP ${response.status}`);
-      const status = JSON.parse(response.body.toString('utf8'));
-      validateBackendStatus(status, options.backendReportedSiteSha, options.backendSha);
-      return { attempt, status, chain: response.chain };
-    } catch (error) {
-      lastError = error;
-      if (attempt < options.attempts) await sleep(Number(process.env.READBACK_RETRY_DELAY_MS || 10_000));
-    }
-  }
-  throw lastError || new Error('HOLD: exact backend bridge status was not observed');
 }
 
 async function verifyDeployment(options) {
@@ -377,23 +347,18 @@ async function verifyDeployment(options) {
     }
   }
 
-  const backend = await verifyBackend(options);
   fs.mkdirSync(options.evidenceRoot, { recursive: true });
   fs.writeFileSync(path.join(options.evidenceRoot, 'deployment-readback.json'), `${JSON.stringify({
     schema_version: 2,
     publication_mode: options.mode,
     source_sha: options.sourceSha,
-    backend_source_sha: options.backendSha,
-    backend_reported_site_sha: options.backendReportedSiteSha,
     release_identity_attempt: releaseReadback.attempt,
-    backend_identity_attempt: backend.attempt,
     release_chain: releaseReadback.response.chain,
-    backend_chain: backend.chain,
     public_file_variants_verified: records.filter((record) => record.type === 'published').length,
     absent_path_variants_verified: records.filter((record) => record.type === 'absent').length,
     records,
   }, null, 2)}\n`, { flag: 'wx' });
-  return { records, backend };
+  return { records };
 }
 
 function writeFailureEvidence(options, error) {
@@ -403,8 +368,6 @@ function writeFailureEvidence(options, error) {
     schema_version: 1,
     publication_mode: options.mode,
     source_sha: options.sourceSha,
-    backend_source_sha: options.backendSha,
-    backend_reported_site_sha: options.backendReportedSiteSha,
     error: String(error?.message || error),
   }, null, 2)}\n`);
 }

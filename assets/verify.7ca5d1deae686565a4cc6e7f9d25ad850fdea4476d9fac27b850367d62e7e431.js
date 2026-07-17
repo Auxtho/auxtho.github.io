@@ -696,9 +696,7 @@
             });
             if (!releaseRequest.response.ok) throw new Error('Public site release metadata was unavailable.');
             var release = releaseRequest.result;
-            if (
-                !isReviewedCompatibleBackendSiteSha(release, result.public_site_source_sha)
-            ) {
+            if (!isReviewedCompatibleBackendSiteSha(release, release.source_sha)) {
                 throw new Error('Public site release identity was not confirmed.');
             }
             applyStatusPanel({ empty_state: true });

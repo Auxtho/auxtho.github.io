@@ -59,9 +59,13 @@ test('legacy branch metadata remains an exact build-revision-only hold contract'
   );
 });
 
-test('CI and deploy workflows bind pre-merge bootstrap, fresh package authorization, and same-job rollback', () => {
+test('CI and deploy workflows bind exact static-site authorization and same-job rollback', () => {
   const site = fs.readFileSync(path.join(root, '.github', 'workflows', 'site-ci.yml'), 'utf8');
   const deploy = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-pages.yml'), 'utf8');
+  const deploymentVerifier = fs.readFileSync(
+    path.join(root, 'scripts', 'release', 'verify-deployment.cjs'),
+    'utf8',
+  );
   assert.match(site, /name: Verify Site Contract/);
   assert.match(site, /assert-pages-bootstrap/);
   assert.match(site, /\.github\/workflows\/deploy-pages\.yml/);
@@ -78,19 +82,22 @@ test('CI and deploy workflows bind pre-merge bootstrap, fresh package authorizat
   assert.match(deploy, /RELEASE_REF:\s+\$\{\{ github\.ref \}\}/);
   assert.match(deploy, /RELEASE_WORKFLOW_REF:\s+\$\{\{ github\.workflow_ref \}\}/);
   assert.match(deploy, /RELEASE_RUN_ATTEMPT:\s+\$\{\{ github\.run_attempt \}\}/);
-  assert.match(deploy, /PRODUCTION_VERIFY_FINAL_BACKEND_SHA/);
   assert.match(deploy, /artifact_name: github-pages-candidate/);
   assert.match(deploy, /artifact_name: github-pages-rollback/);
   assert.equal((deploy.match(/actions\/deploy-pages@[0-9a-f]{40}/g) || []).length, 2);
-  assert.match(deploy, /id: final_backend_readback/);
-  assert.match(deploy, /steps\.final_backend_readback\.outcome != 'success'/);
-  assert.match(deploy, /BACKEND_FINALIZE_REQUIRED/);
-  assert.match(deploy, /BACKEND_ROLLBACK_REQUIRED/);
-  assert.match(deploy, /Hold without site rollback when the final backend transition is not yet proven/);
+  assert.match(deploy, /id: candidate_readback/);
+  assert.match(deploy, /id: rollback_readback/);
+  assert.doesNotMatch(deploy, /BACKEND_FINALIZE_REQUIRED|BACKEND_ROLLBACK_REQUIRED/);
+  assert.doesNotMatch(deploy, /BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA/);
   assert.match(deploy, /Keep the release failed after deterministic restoration/);
+  assert.match(
+    deploymentVerifier,
+    /fetchHttps\(url, allowedOrigins, 5, \{ bypassCache: true \}\)/,
+  );
+  assert.doesNotMatch(deploymentVerifier, /bypassCache: variant ===/);
 });
 
-test('candidate artifact is deterministic, content-addressed, privacy-bounded, and migration-aware', () => {
+test('candidate artifact is deterministic, content-addressed, privacy-bounded, and rollback-aware', () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-release-contract-'));
   try {
     const source = path.join(temporary, 'source');

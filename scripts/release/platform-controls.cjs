@@ -17,21 +17,6 @@ function assertSha(name, value) {
   return value;
 }
 
-function parseShaList(name, value) {
-  let parsed;
-  try {
-    parsed = typeof value === 'string' ? JSON.parse(value) : value;
-  } catch {
-    fail(`${name} must be valid JSON`);
-  }
-  if (!Array.isArray(parsed) || parsed.length < 1 || parsed.length > 2) {
-    fail(`${name} must contain one or two SHAs`);
-  }
-  parsed.forEach((sha) => assertSha(`${name} entry`, sha));
-  if (new Set(parsed).size !== parsed.length) fail(`${name} must not contain duplicate SHAs`);
-  return parsed;
-}
-
 function parseReviewerIds(value) {
   let parsed;
   try {
@@ -147,51 +132,11 @@ function assertBindings(bindings) {
   const approvedSha = assertSha('approved site SHA', bindings.approvedSha);
   if (sourceSha !== approvedSha) fail('requested site SHA does not exactly match the protected approved SHA');
 
-  const compatible = parseShaList('requested compatible backend site SHAs', bindings.compatibleShas);
-  const approvedCompatible = parseShaList('approved compatible backend site SHAs', bindings.approvedCompatibleShas);
-  if (JSON.stringify(compatible) !== JSON.stringify(approvedCompatible)) {
-    fail('requested compatible backend site SHAs do not exactly match the protected approved list');
-  }
-  if (!compatible.includes(sourceSha)) fail('compatible backend site SHAs must include the requested site SHA');
-
   const rollbackSha = assertSha('requested rollback site SHA', bindings.rollbackSha);
   const approvedRollbackSha = assertSha('approved rollback site SHA', bindings.approvedRollbackSha);
   if (rollbackSha !== approvedRollbackSha || rollbackSha === sourceSha) {
     fail('rollback site SHA must exactly match a distinct protected previously approved SHA');
   }
-  const canonicalMigrationPair = [rollbackSha, sourceSha].sort();
-  if (JSON.stringify(compatible) !== JSON.stringify(canonicalMigrationPair)) {
-    fail('candidate compatibility must be the canonical sorted pair of legacy and candidate site SHAs');
-  }
-  const rollbackCompatible = parseShaList('requested rollback compatible backend site SHAs', bindings.rollbackCompatibleShas);
-  const approvedRollbackCompatible = parseShaList(
-    'approved rollback compatible backend site SHAs',
-    bindings.approvedRollbackCompatibleShas,
-  );
-  if (JSON.stringify(rollbackCompatible) !== JSON.stringify(approvedRollbackCompatible)) {
-    fail('requested rollback compatibility does not exactly match the protected approved list');
-  }
-  if (JSON.stringify(rollbackCompatible) !== JSON.stringify([...rollbackCompatible].sort())) {
-    fail('rollback compatibility must be canonical SHA sort order');
-  }
-  if (!rollbackCompatible.includes(rollbackSha)) fail('rollback compatibility must include the rollback site SHA');
-  if (JSON.stringify(rollbackCompatible) !== JSON.stringify([rollbackSha])) {
-    fail('rollback compatibility must contain only the rollback site SHA');
-  }
-
-  const backendBridgeSha = assertSha('requested backend bridge SHA', bindings.backendBridgeSha);
-  if (backendBridgeSha !== assertSha('approved backend bridge SHA', bindings.approvedBackendBridgeSha)) {
-    fail('requested backend bridge SHA does not exactly match the protected approved SHA');
-  }
-  const rollbackBackendSha = assertSha('requested rollback backend SHA', bindings.rollbackBackendSha);
-  if (rollbackBackendSha !== assertSha('approved rollback backend SHA', bindings.approvedRollbackBackendSha)) {
-    fail('requested rollback backend SHA does not exactly match the protected approved SHA');
-  }
-  const finalBackendSha = assertSha('requested final backend SHA', bindings.finalBackendSha);
-  if (finalBackendSha !== assertSha('approved final backend SHA', bindings.approvedFinalBackendSha)) {
-    fail('requested final backend SHA does not exactly match the protected approved SHA');
-  }
-  if (finalBackendSha === backendBridgeSha) fail('final backend SHA must be distinct from the migration bridge SHA');
 
   const approvedReviewerIds = parseReviewerIds(bindings.approvedReviewerIds);
   const releaseAuthorization = parseReleaseAuthorization(bindings, approvedReviewerIds, siteContractMode);
@@ -199,12 +144,7 @@ function assertBindings(bindings) {
   return {
     siteContractMode,
     sourceSha,
-    compatible,
     rollbackSha,
-    rollbackCompatible,
-    backendBridgeSha,
-    rollbackBackendSha,
-    finalBackendSha,
     approvedReviewerIds,
     releaseAuthorization,
   };
@@ -371,16 +311,6 @@ function validateLatestPagesBuild(latestPagesBuild, rollbackSha) {
   }
 }
 
-function validateBackendStatus(status, expectedSiteSha, expectedBackendSha) {
-  if (
-    status?.status !== 'operational'
-    || status?.public_site_source_sha !== expectedSiteSha
-    || status?.backend_source_sha !== expectedBackendSha
-  ) {
-    fail('backend bridge status must be operational and exactly match the approved backend and site SHAs');
-  }
-}
-
 function validatePlatformState(snapshot, bindings) {
   const approved = assertBindings(bindings);
   if (snapshot?.repository?.full_name !== bindings.repository || snapshot?.repository?.default_branch !== 'main') {
@@ -420,7 +350,6 @@ function validatePlatformState(snapshot, bindings) {
   ) {
     fail('normal mode requires release.json to exactly match the rollback SHA');
   }
-  validateBackendStatus(snapshot.currentBackendStatus, approved.rollbackSha, approved.backendBridgeSha);
   return approved;
 }
 
@@ -486,13 +415,6 @@ function parseCurrentLiveReleaseResponse(rawResponse) {
   return release;
 }
 
-function readCurrentBackendStatus(cacheToken) {
-  return readExactJsonUrl(
-    `https://api.auxtho.com/api/verify/status?authorization_cache_bust=${encodeURIComponent(cacheToken)}`,
-    'backend bridge status',
-  );
-}
-
 function capturePlatformState({ repository, sourceSha, rollbackSha, publicOrigin }) {
   assertSha('source SHA', sourceSha);
   assertSha('rollback SHA', rollbackSha);
@@ -522,7 +444,6 @@ function capturePlatformState({ repository, sourceSha, rollbackSha, publicOrigin
     latestPagesBuild: ghApi(`repos/${repository}/pages/builds/latest`),
     rollbackDeployments,
     currentLiveRelease: readCurrentLiveRelease(publicOrigin, `${sourceSha}-${process.env.GITHUB_RUN_ID || 'local'}`),
-    currentBackendStatus: readCurrentBackendStatus(`${sourceSha}-${process.env.GITHUB_RUN_ID || 'local'}`),
   };
 }
 
@@ -533,12 +454,8 @@ function bindingsFromEnvironment() {
     approvedSiteContractMode: process.env.APPROVED_SITE_CONTRACT_MODE,
     sourceSha: process.env.REQUESTED_SITE_SHA,
     approvedSha: process.env.APPROVED_SITE_SHA,
-    compatibleShas: process.env.REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS,
-    approvedCompatibleShas: process.env.APPROVED_COMPATIBLE_BACKEND_SITE_SHAS,
     rollbackSha: process.env.REQUESTED_ROLLBACK_SITE_SHA,
     approvedRollbackSha: process.env.APPROVED_ROLLBACK_SITE_SHA,
-    rollbackCompatibleShas: process.env.REQUESTED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS,
-    approvedRollbackCompatibleShas: process.env.APPROVED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS,
     approvedReviewerIds: process.env.APPROVED_ENVIRONMENT_REVIEWER_IDS,
     releaseAuthorityMode: process.env.APPROVED_RELEASE_AUTHORITY_MODE,
     approvedReleaseAuthorityMode: process.env.APPROVED_RELEASE_AUTHORITY_MODE,
@@ -554,12 +471,6 @@ function bindingsFromEnvironment() {
     releaseRunAttempt: process.env.RELEASE_RUN_ATTEMPT,
     releasePurpose: process.env.REQUESTED_RELEASE_PURPOSE,
     publicOrigin: process.env.PUBLIC_SITE_ORIGIN,
-    backendBridgeSha: process.env.REQUESTED_BACKEND_BRIDGE_SHA,
-    approvedBackendBridgeSha: process.env.APPROVED_BACKEND_BRIDGE_SHA,
-    rollbackBackendSha: process.env.REQUESTED_ROLLBACK_BACKEND_SHA,
-    approvedRollbackBackendSha: process.env.APPROVED_ROLLBACK_BACKEND_SHA,
-    finalBackendSha: process.env.REQUESTED_FINAL_BACKEND_SHA,
-    approvedFinalBackendSha: process.env.APPROVED_FINAL_BACKEND_SHA,
   };
 }
 
@@ -610,7 +521,6 @@ module.exports = {
   capturePlatformState,
   parseCurrentLiveReleaseResponse,
   validateBranchProtection,
-  validateBackendStatus,
   validateLatestPagesBuild,
   validatePlatformState,
   validateRulesets,

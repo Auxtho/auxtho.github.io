@@ -313,28 +313,18 @@ test('matching rendered release identity enables verification with a cache-buste
   expect(releaseUrl.searchParams.get('cache_bust')).toMatch(/^\d+$/);
 });
 
-test('canonical legacy/candidate site SHAs remain exact-match compatible through bridge and final backend phases', async ({ browser }) => {
-  const compatible = [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA];
-  for (const backendSiteSha of compatible) {
-    const context = await browser.newContext();
-    const page = await context.newPage();
-    await mockStatus(page, 'operational', {
-      statusOverrides: { public_site_source_sha: backendSiteSha },
-      compatibleBackendSiteShas: compatible,
-    });
-    await page.goto(`${baseUrl}/verify.html`);
-    await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
-    await expect(page.locator('#manual-verify-btn')).toBeEnabled();
-    await context.close();
-  }
+test('canonical static release history enables verification without backend source metadata', async ({ page }) => {
+  await mockStatus(page, 'operational', {
+    statusOverrides: { public_site_source_sha: undefined, backend_source_sha: undefined },
+    compatibleBackendSiteShas: [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA],
+  });
+  await page.goto(`${baseUrl}/verify.html`);
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
 });
 
-test('unreviewed, wildcard, duplicate, oversized, and non-current compatibility lists fail closed', async ({ browser }) => {
+test('wildcard, duplicate, oversized, and non-current release history lists fail closed', async ({ browser }) => {
   const invalidCases = [
-    {
-      statusOverrides: { public_site_source_sha: 'c'.repeat(40) },
-      releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA] },
-    },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, '*'] } },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, MATCHED_SITE_SHA] } },
     { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA] } },
@@ -353,14 +343,14 @@ test('unreviewed, wildcard, duplicate, oversized, and non-current compatibility 
   }
 });
 
-test('release identity mismatch fails closed', async ({ page }) => {
+test('self-consistent exact static release identity is accepted independently of backend metadata', async ({ page }) => {
   await mockStatus(page, 'operational', {
+    statusOverrides: { public_site_source_sha: undefined, backend_source_sha: undefined },
     releasePayload: { source_sha: ROLLBACK_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA] },
   });
   await page.goto(`${baseUrl}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
-  await expect(page.locator('#manual-verify-btn')).toBeDisabled();
-  await expect(page.locator('#qr-verify-btn')).toBeDisabled();
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
 });
 
 test('malformed release metadata fails closed', async ({ page }) => {
@@ -370,11 +360,10 @@ test('malformed release metadata fails closed', async ({ page }) => {
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
 });
 
-test('missing release, compatibility allowlist, or backend source metadata fails closed', async ({ browser }) => {
+test('missing release or release-history metadata fails closed', async ({ browser }) => {
   const cases = [
     { releasePayload: {} },
     { releasePayload: { source_sha: MATCHED_SITE_SHA } },
-    { statusOverrides: { public_site_source_sha: undefined } },
   ];
   for (const options of cases) {
     const context = await browser.newContext();

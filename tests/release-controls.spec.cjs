@@ -6,7 +6,6 @@ const {
   GITHUB_ACTIONS_APP_ID,
   assertBindings,
   parseCurrentLiveReleaseResponse,
-  validateBackendStatus,
   validatePlatformState,
   validateRulesets,
 } = require('../scripts/release/platform-controls.cjs');
@@ -15,16 +14,8 @@ const {
   resolveHttpsRedirect,
   validateRelease,
 } = require('../scripts/release/verify-deployment.cjs');
-const {
-  createFinalizeSignal,
-  createRollbackSignal,
-} = require('../scripts/release/rollback-signal.cjs');
-
 const L = '1'.repeat(40);
 const S = 'a'.repeat(40);
-const B = 'b'.repeat(40);
-const F = 'f'.repeat(40);
-const RL = 'c'.repeat(40);
 const COMPATIBILITY = [L, S].sort();
 
 function bindings(overrides = {}) {
@@ -34,18 +25,8 @@ function bindings(overrides = {}) {
     approvedSiteContractMode: 'bootstrap',
     sourceSha: S,
     approvedSha: S,
-    compatibleShas: JSON.stringify(COMPATIBILITY),
-    approvedCompatibleShas: JSON.stringify(COMPATIBILITY),
     rollbackSha: L,
     approvedRollbackSha: L,
-    rollbackCompatibleShas: JSON.stringify([L]),
-    approvedRollbackCompatibleShas: JSON.stringify([L]),
-    backendBridgeSha: B,
-    approvedBackendBridgeSha: B,
-    finalBackendSha: F,
-    approvedFinalBackendSha: F,
-    rollbackBackendSha: RL,
-    approvedRollbackBackendSha: RL,
     releaseAuthorityMode: 'independent_review',
     approvedReleaseAuthorityMode: 'independent_review',
     approvedReviewerIds: JSON.stringify([101]),
@@ -130,7 +111,6 @@ function snapshot() {
     }],
     latestPagesBuild: { commit: L, status: 'built' },
     currentLiveRelease: { missing: true, status_code: 404 },
-    currentBackendStatus: { status: 'operational', backend_source_sha: B, public_site_source_sha: L },
   };
 }
 
@@ -179,33 +159,22 @@ function validSoloRuleset() {
   return ruleset;
 }
 
-test('bootstrap authorization accepts only exact S with canonical [L,S], bridge B -> L, and legacy release 404 at L', () => {
+test('bootstrap authorization accepts exact candidate and rollback site SHAs with legacy release 404 at L', () => {
   const approved = validatePlatformState(snapshot(), bindings());
   assert.equal(approved.sourceSha, S);
   assert.equal(approved.rollbackSha, L);
-  assert.deepEqual(approved.compatible, COMPATIBILITY);
-  assert.equal(approved.backendBridgeSha, B);
-  assert.equal(approved.finalBackendSha, F);
 });
 
-test('candidate compatibility is exactly the canonical distinct legacy/candidate pair', () => {
+test('candidate and rollback site identities are exact, protected, and distinct', () => {
   assert.throws(() => assertBindings(bindings({
     siteContractMode: 'bootstrap',
     approvedSiteContractMode: 'normal',
   })), /protected approved mode/);
   assert.throws(() => assertBindings(bindings({
-    rollbackCompatibleShas: JSON.stringify([L, S].sort()),
-    approvedRollbackCompatibleShas: JSON.stringify([L, S].sort()),
-  })), /rollback compatibility/);
-  assert.throws(() => assertBindings(bindings({
-    compatibleShas: JSON.stringify([S]),
-    approvedCompatibleShas: JSON.stringify([S]),
-  })), /canonical sorted pair/);
-  assert.throws(() => assertBindings(bindings({
-    compatibleShas: JSON.stringify([...COMPATIBILITY].reverse()),
-    approvedCompatibleShas: JSON.stringify([...COMPATIBILITY].reverse()),
-  })), /canonical sorted pair/);
-  assert.throws(() => assertBindings(bindings({ finalBackendSha: B, approvedFinalBackendSha: B })), /distinct/);
+    rollbackSha: S,
+    approvedRollbackSha: S,
+  })), /distinct/);
+  assert.throws(() => assertBindings(bindings({ approvedSha: L })), /approved SHA/);
 });
 
 test('solo-founder authorization binds exact actor, dispatch context, PR controls, and no fake reviewer', () => {
@@ -240,7 +209,7 @@ test('solo-founder authorization binds exact actor, dispatch context, PR control
   );
 });
 
-test('branch, environment, Pages HTTPS, live release, and backend controls fail closed independently', () => {
+test('branch, environment, Pages HTTPS, and live release controls fail closed independently', () => {
   const cases = [
     [(state) => { state.pages.https_enforced = false; }, /HTTPS enforcement/],
     [(state) => { state.pages.build_type = 'legacy'; }, /publishing source/],
@@ -260,8 +229,6 @@ test('branch, environment, Pages HTTPS, live release, and backend controls fail 
     [(state) => { state.latestPagesBuild.status = 'building'; }, /latest successful Pages build/],
     [(state) => { state.currentLiveRelease = { source_sha: L }; }, /bootstrap mode requires/],
     [(state) => { state.currentLiveRelease.status_code = 500; }, /bootstrap mode requires/],
-    [(state) => { delete state.currentBackendStatus.backend_source_sha; }, /exactly match/],
-    [(state) => { state.currentBackendStatus.public_site_source_sha = S; }, /exactly match/],
   ];
   for (const [mutate, expected] of cases) {
     const state = snapshot();
@@ -337,30 +304,7 @@ test('active no-bypass rulesets can supply exact deletion, force-push, and verif
   assert.equal(validateRulesets([wildcardExcluded], 'solo_founder'), false);
 });
 
-test('backend status accepts bridge B -> L, final F -> S, and rollback RL -> L only exactly', () => {
-  assert.doesNotThrow(() => validateBackendStatus(
-    { status: 'operational', backend_source_sha: B, public_site_source_sha: L },
-    L,
-    B,
-  ));
-  assert.doesNotThrow(() => validateBackendStatus(
-    { status: 'operational', backend_source_sha: F, public_site_source_sha: S },
-    S,
-    F,
-  ));
-  assert.doesNotThrow(() => validateBackendStatus(
-    { status: 'operational', backend_source_sha: RL, public_site_source_sha: L },
-    L,
-    RL,
-  ));
-  assert.throws(() => validateBackendStatus(
-    { status: 'operational', backend_source_sha: B, public_site_source_sha: S },
-    L,
-    B,
-  ), /exactly match/);
-});
-
-test('postdeploy release validation accepts source S while bridge reports compatible L', () => {
+test('postdeploy release validation accepts exact static candidate history metadata', () => {
   const transition = {
     bridge_reported_site_sha: L,
     final_reported_site_sha: S,
@@ -381,17 +325,15 @@ test('postdeploy release validation accepts source S while bridge reports compat
   assert.doesNotThrow(() => validateRelease(release, provenance, {
     mode: 'candidate',
     sourceSha: S,
-    backendReportedSiteSha: L,
     compatibleShas: COMPATIBILITY,
     rollbackOfSha: null,
   }));
   assert.throws(() => validateRelease(release, provenance, {
     mode: 'candidate',
     sourceSha: S,
-    backendReportedSiteSha: '9'.repeat(40),
-    compatibleShas: COMPATIBILITY,
+    compatibleShas: [...COMPATIBILITY].reverse(),
     rollbackOfSha: null,
-  }), /omits the backend-reported/);
+  }), /compatible backend site SHA list mismatch/);
 });
 
 test('HTTPS redirect resolver rejects every downgrade and unreviewed origin', () => {
@@ -410,29 +352,10 @@ test('HTTPS redirect resolver rejects every downgrade and unreviewed origin', ()
   );
 });
 
-test('digest parser and backend transition signals are exact and deterministic', () => {
+test('digest parser is exact and deterministic', () => {
   assert.deepEqual(parseDigestManifest(`${'d'.repeat(64)}  ./verify.html\n`), [
     { sha256: 'd'.repeat(64), relative: 'verify.html' },
   ]);
   assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./../secret\n`), /invalid digest/);
 
-  const values = {
-    candidateSiteSha: S,
-    restoredSiteSha: L,
-    candidateBackendSha: B,
-    finalBackendSha: F,
-    rollbackBackendSha: RL,
-  };
-  assert.deepEqual(createFinalizeSignal(values), {
-    schema_version: 1,
-    signal: 'BACKEND_FINALIZE_REQUIRED',
-    published_site_sha: S,
-    bridge_reported_site_sha: L,
-    bridge_backend_sha: B,
-    required_final_backend_sha: F,
-    required_final_reported_site_sha: S,
-    completion_condition: 'final backend status reports the published site SHA before the release succeeds',
-  });
-  assert.equal(createRollbackSignal(values).required_backend_rollback_sha, RL);
-  assert.equal(createRollbackSignal(values).restored_site_sha, L);
 });

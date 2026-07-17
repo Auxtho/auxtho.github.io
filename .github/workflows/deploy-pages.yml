@@ -1,11 +1,5 @@
 name: Deploy Approved Pages Release
 
-# Bootstrap is intentionally external and ordered: an administrator first
-# switches Pages build_type to workflow with HTTPS enforcement, then the site
-# PR can merge, then the separately released backend bridge must report the
-# exact legacy site SHA included beside the candidate in the compatibility
-# pair. This workflow never changes platform configuration; it only publishes
-# the two approved Pages artifacts selected by the operator.
 on:
   workflow_dispatch:
     inputs:
@@ -21,32 +15,12 @@ on:
         description: Exact merged site SHA approved for publication
         required: true
         type: string
-      compatible_backend_site_shas:
-        description: Canonical sorted JSON pair containing rollback_sha and approved_sha
-        required: true
-        type: string
       rollback_sha:
         description: Exact currently live and previously approved Pages site SHA
         required: true
         type: string
-      rollback_compatible_backend_site_shas:
-        description: JSON array of one or two site SHAs approved for the rollback backend
-        required: true
-        type: string
-      backend_bridge_sha:
-        description: Exact separately released bridge backend revision still reporting rollback_sha
-        required: true
-        type: string
-      final_backend_sha:
-        description: Exact final backend revision that must report approved_sha after site readback
-        required: true
-        type: string
-      rollback_backend_sha:
-        description: Exact approved backend revision to restore if publication fails
-        required: true
-        type: string
       release_purpose:
-        description: Fixed public purpose for this exact release; never enter free-form text or secrets
+        description: Fixed public purpose for this exact release
         required: true
         type: choice
         options:
@@ -81,18 +55,8 @@ jobs:
       APPROVED_SITE_CONTRACT_MODE: ${{ vars.PRODUCTION_VERIFY_SITE_CONTRACT_MODE }}
       REQUESTED_SITE_SHA: ${{ inputs.approved_sha }}
       APPROVED_SITE_SHA: ${{ vars.PRODUCTION_VERIFY_SITE_APPROVED_SHA }}
-      REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
-      APPROVED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ vars.PRODUCTION_VERIFY_COMPATIBLE_BACKEND_SITE_SHAS }}
       REQUESTED_ROLLBACK_SITE_SHA: ${{ inputs.rollback_sha }}
       APPROVED_ROLLBACK_SITE_SHA: ${{ vars.PRODUCTION_VERIFY_ROLLBACK_SITE_SHA }}
-      REQUESTED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.rollback_compatible_backend_site_shas }}
-      APPROVED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS: ${{ vars.PRODUCTION_VERIFY_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS }}
-      REQUESTED_BACKEND_BRIDGE_SHA: ${{ inputs.backend_bridge_sha }}
-      APPROVED_BACKEND_BRIDGE_SHA: ${{ vars.PRODUCTION_VERIFY_BACKEND_BRIDGE_SHA }}
-      REQUESTED_FINAL_BACKEND_SHA: ${{ inputs.final_backend_sha }}
-      APPROVED_FINAL_BACKEND_SHA: ${{ vars.PRODUCTION_VERIFY_FINAL_BACKEND_SHA }}
-      REQUESTED_ROLLBACK_BACKEND_SHA: ${{ inputs.rollback_backend_sha }}
-      APPROVED_ROLLBACK_BACKEND_SHA: ${{ vars.PRODUCTION_VERIFY_ROLLBACK_BACKEND_SHA }}
       REQUESTED_RELEASE_PURPOSE: ${{ inputs.release_purpose }}
       APPROVED_RELEASE_AUTHORITY_MODE: ${{ vars.PRODUCTION_VERIFY_RELEASE_AUTHORITY_MODE }}
       APPROVED_ENVIRONMENT_REVIEWER_IDS: ${{ vars.PRODUCTION_VERIFY_ENVIRONMENT_REVIEWER_IDS }}
@@ -112,11 +76,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - name: Bind dispatch to main and exact approved SHA
         run: |
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           test "${GITHUB_SHA}" = "${REQUESTED_SITE_SHA}"
-      - name: Capture and fail-closed validate fresh platform, live-site, and backend state
+          git merge-base --is-ancestor "${REQUESTED_ROLLBACK_SITE_SHA}" "${REQUESTED_SITE_SHA}"
+      - name: Capture and validate fresh platform and live-site state
         run: node scripts/release/platform-controls.cjs capture-and-validate authorization-evidence/platform-state.json
       - name: Retain authorization evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -146,11 +112,12 @@ jobs:
       deployment: false
     env: *release_authorization
     steps:
-      - name: Check out the exact candidate workflow source
+      - name: Check out the exact candidate source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - name: Check out the exact approved rollback source independently
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
@@ -163,8 +130,11 @@ jobs:
           node-version: 22.17.0
           cache: npm
       - run: npm ci
-      - name: Independently recapture authorization and platform state for partial reruns
+      - name: Independently recapture authorization and platform state
         run: node scripts/release/platform-controls.cjs capture-and-validate package-authorization-evidence/platform-state.json
+      - name: Derive deterministic site history metadata
+        run: |
+          node -e "const fs=require('fs'); const current=process.env.REQUESTED_SITE_SHA; const previous=process.env.REQUESTED_ROLLBACK_SITE_SHA; fs.appendFileSync(process.env.GITHUB_ENV, 'CANDIDATE_SITE_HISTORY='+JSON.stringify([previous,current].sort())+'\nROLLBACK_SITE_HISTORY='+JSON.stringify([previous])+'\n')"
       - name: Export exact committed candidate and rollback bytes
         run: |
           set -Eeuo pipefail
@@ -182,11 +152,11 @@ jobs:
           --provenance site-release-provenance
           --source-sha "${REQUESTED_SITE_SHA}"
           --previous-sha "${REQUESTED_ROLLBACK_SITE_SHA}"
-          --compatible-json "${REQUESTED_COMPATIBLE_BACKEND_SITE_SHAS}"
+          --compatible-json "${CANDIDATE_SITE_HISTORY}"
           --mode candidate
           --retired-manifest scripts/release/retired-public-paths.json
           --artifact-name github-pages-candidate
-      - name: Build deterministic exact-SHA rollback Pages artifact and provenance
+      - name: Build deterministic exact-SHA rollback Pages artifact
         run: >-
           node scripts/release/public-artifact.cjs build
           --source _rollback_source
@@ -195,16 +165,12 @@ jobs:
           --provenance rollback-release-provenance
           --source-sha "${REQUESTED_ROLLBACK_SITE_SHA}"
           --previous-sha "${REQUESTED_ROLLBACK_SITE_SHA}"
-          --compatible-json "${REQUESTED_ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS}"
+          --compatible-json "${ROLLBACK_SITE_HISTORY}"
           --mode rollback
           --legacy-bootstrap "${{ inputs.site_contract_mode == 'bootstrap' && 'true' || 'false' }}"
           --rollback-of-sha "${REQUESTED_SITE_SHA}"
           --retired-manifest scripts/release/retired-public-paths.json
           --artifact-name github-pages-rollback
-      - name: Create exact finalization and rollback backend signal evidence
-        run: |
-          node scripts/release/rollback-signal.cjs finalize site-release-provenance/backend-finalize-signal.json
-          node scripts/release/rollback-signal.cjs rollback rollback-release-provenance/backend-rollback-signal.json
       - name: Retain candidate package provenance
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -213,7 +179,7 @@ jobs:
           if-no-files-found: error
           retention-days: 90
           compression-level: 0
-      - name: Retain rollback package provenance and signal
+      - name: Retain rollback package provenance
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: site-rollback-provenance-${{ github.sha }}
@@ -241,7 +207,7 @@ jobs:
           name: github-pages-rollback
           path: ./_rollback_site
           retention-days: 1
-      - name: Retain fresh package authorization evidence
+      - name: Retain package authorization evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: site-package-authorization-${{ github.sha }}
@@ -255,7 +221,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     needs: package
     runs-on: ubuntu-24.04
-    timeout-minutes: 35
+    timeout-minutes: 30
     permissions:
       actions: read
       contents: read
@@ -269,18 +235,14 @@ jobs:
       <<: *release_authorization
       PUBLIC_SITE_ORIGIN: https://auxtho.com
       EXPECTED_SITE_SHA: ${{ inputs.approved_sha }}
-      EXPECTED_BACKEND_SHA: ${{ inputs.backend_bridge_sha }}
-      FINAL_BACKEND_SHA: ${{ inputs.final_backend_sha }}
-      EXPECTED_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.compatible_backend_site_shas }}
       ROLLBACK_SITE_SHA: ${{ inputs.rollback_sha }}
-      ROLLBACK_BACKEND_SHA: ${{ inputs.rollback_backend_sha }}
-      ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS: ${{ inputs.rollback_compatible_backend_site_shas }}
     steps:
       - name: Check out exact readback verifier source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - name: Set up exact Node runtime for HTTP and browser readback
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -288,14 +250,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: ./node_modules/.bin/playwright install --with-deps chromium
-      - name: Recapture authorization immediately before the first publication mutation
+      - name: Recapture authorization immediately before publication
         run: node scripts/release/platform-controls.cjs capture-and-validate predeploy-authorization-evidence/platform-state.json
+      - name: Derive deterministic site history metadata
+        run: |
+          node -e "const fs=require('fs'); const current=process.env.REQUESTED_SITE_SHA; const previous=process.env.REQUESTED_ROLLBACK_SITE_SHA; fs.appendFileSync(process.env.GITHUB_ENV, 'CANDIDATE_SITE_HISTORY='+JSON.stringify([previous,current].sort())+'\nROLLBACK_SITE_HISTORY='+JSON.stringify([previous])+'\n')"
       - name: Download exact candidate package provenance
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: site-public-file-provenance-${{ github.sha }}
           path: site-release-provenance
-      - name: Download exact rollback package provenance and signal
+      - name: Download exact rollback package provenance
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: site-rollback-provenance-${{ github.sha }}
@@ -315,7 +280,7 @@ jobs:
           process.env.DEPLOYMENT_PAGE_URL,
           ['https://auxtho.com','https://auxtho.github.io'],
           'Pages deployment URL')"
-      - name: Compare canonical and cache-busted candidate bytes, removed paths, headers, backend, and browser
+      - name: Compare canonical and cache-busted candidate bytes, removed paths, headers, and browser
         id: candidate_readback
         if: steps.candidate_deployment.outcome == 'success'
         continue-on-error: true
@@ -323,50 +288,14 @@ jobs:
           node scripts/release/verify-deployment.cjs \
             --origin "${PUBLIC_SITE_ORIGIN}" \
             --source-sha "${EXPECTED_SITE_SHA}" \
-            --backend-sha "${EXPECTED_BACKEND_SHA}" \
-            --backend-reported-site-sha "${ROLLBACK_SITE_SHA}" \
-            --compatible-json "${EXPECTED_COMPATIBLE_BACKEND_SITE_SHAS}" \
+            --compatible-json "${CANDIDATE_SITE_HISTORY}" \
             --mode candidate \
             --provenance site-release-provenance \
             --evidence post-deploy-evidence/candidate \
             --cache-token "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-candidate" \
             --attempts 6
           npm run test:verify:deployed
-      - name: Emit exact final backend transition signal
-        if: steps.candidate_readback.outcome == 'success'
-        run: |
-          mkdir -p post-deploy-evidence/finalize-signal
-          cp site-release-provenance/backend-finalize-signal.json post-deploy-evidence/finalize-signal/
-          echo "::notice::BACKEND_FINALIZE_REQUIRED: deploy backend ${FINAL_BACKEND_SHA} reporting site ${EXPECTED_SITE_SHA}"
-          echo "## BACKEND_FINALIZE_REQUIRED" >> "${GITHUB_STEP_SUMMARY}"
-          echo "Deploy approved backend revision \`${FINAL_BACKEND_SHA}\` and require its status endpoint to report site \`${EXPECTED_SITE_SHA}\`." >> "${GITHUB_STEP_SUMMARY}"
-      - name: Publish final backend transition signal for the operator
-        if: steps.candidate_readback.outcome == 'success'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: backend-finalize-required-${{ github.run_id }}-${{ github.run_attempt }}
-          path: post-deploy-evidence/finalize-signal
-          if-no-files-found: error
-          retention-days: 90
-          compression-level: 0
-      - name: Require final backend revision to report the published site SHA
-        id: final_backend_readback
-        if: steps.candidate_readback.outcome == 'success'
-        continue-on-error: true
-        run: |
-          node scripts/release/verify-deployment.cjs \
-            --origin "${PUBLIC_SITE_ORIGIN}" \
-            --source-sha "${EXPECTED_SITE_SHA}" \
-            --backend-sha "${FINAL_BACKEND_SHA}" \
-            --backend-reported-site-sha "${EXPECTED_SITE_SHA}" \
-            --compatible-json "${EXPECTED_COMPATIBLE_BACKEND_SITE_SHAS}" \
-            --mode candidate \
-            --provenance site-release-provenance \
-            --evidence post-deploy-evidence/final-backend \
-            --cache-token "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-final-backend" \
-            --attempts 18
-          npm run test:verify:deployed
-      - name: Redeploy exact approved rollback artifact in the same environment approval
+      - name: Redeploy exact approved rollback artifact after candidate failure
         id: rollback_deployment
         if: >-
           always() &&
@@ -375,47 +304,21 @@ jobs:
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
         with:
           artifact_name: github-pages-rollback
-      - name: Emit exact backend rollback signal and operator evidence
-        if: >-
-          always() &&
-          (steps.candidate_deployment.outcome != 'success' ||
-          steps.candidate_readback.outcome != 'success')
-        run: |
-          mkdir -p post-deploy-evidence/rollback-signal
-          cp rollback-release-provenance/backend-rollback-signal.json post-deploy-evidence/rollback-signal/
-          echo "::error::BACKEND_ROLLBACK_REQUIRED: restore backend ${ROLLBACK_BACKEND_SHA} for site ${ROLLBACK_SITE_SHA}"
-          echo "## BACKEND_ROLLBACK_REQUIRED" >> "${GITHUB_STEP_SUMMARY}"
-          echo "Restore approved backend revision \`${ROLLBACK_BACKEND_SHA}\` and require its status endpoint to report site \`${ROLLBACK_SITE_SHA}\`." >> "${GITHUB_STEP_SUMMARY}"
-      - name: Publish backend rollback signal for the operator
-        if: >-
-          always() &&
-          (steps.candidate_deployment.outcome != 'success' ||
-          steps.candidate_readback.outcome != 'success')
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: backend-rollback-required-${{ github.run_id }}-${{ github.run_attempt }}
-          path: post-deploy-evidence/rollback-signal
-          if-no-files-found: error
-          retention-days: 90
-          compression-level: 0
-      - name: Verify restored site bytes and exact rollback backend status
+      - name: Verify restored site bytes
         id: rollback_readback
         if: always() && steps.rollback_deployment.outcome == 'success'
         run: |
           node scripts/release/verify-deployment.cjs \
             --origin "${PUBLIC_SITE_ORIGIN}" \
             --source-sha "${ROLLBACK_SITE_SHA}" \
-            --backend-sha "${ROLLBACK_BACKEND_SHA}" \
-            --backend-reported-site-sha "${ROLLBACK_SITE_SHA}" \
-            --compatible-json "${ROLLBACK_COMPATIBLE_BACKEND_SITE_SHAS}" \
+            --compatible-json "${ROLLBACK_SITE_HISTORY}" \
             --mode rollback \
             --rollback-of-sha "${EXPECTED_SITE_SHA}" \
             --provenance rollback-release-provenance \
             --evidence post-deploy-evidence/rollback \
             --cache-token "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-rollback" \
             --attempts 18
-          EXPECTED_SITE_SHA="${ROLLBACK_SITE_SHA}" npm run test:verify:deployed
-      - name: Retain all candidate and rollback readback evidence
+      - name: Retain candidate and rollback readback evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -426,13 +329,6 @@ jobs:
           if-no-files-found: warn
           retention-days: 90
           compression-level: 0
-      - name: Hold without site rollback when the final backend transition is not yet proven
-        if: >-
-          steps.candidate_readback.outcome == 'success' &&
-          steps.final_backend_readback.outcome != 'success'
-        run: |
-          echo "Candidate site remains on the verified bridge-compatible state; backend finalization is not proven." >&2
-          exit 1
       - name: Keep the release failed after deterministic restoration
         if: >-
           always() &&
@@ -441,5 +337,5 @@ jobs:
         run: |
           test "${{ steps.rollback_deployment.outcome }}" = "success"
           test "${{ steps.rollback_readback.outcome }}" = "success"
-          echo "Candidate publication failed; exact approved site and backend rollback was verified." >&2
+          echo "Candidate publication failed; the exact approved site rollback was verified." >&2
           exit 1
