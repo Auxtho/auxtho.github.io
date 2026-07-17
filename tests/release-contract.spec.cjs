@@ -62,6 +62,10 @@ test('legacy branch metadata remains an exact build-revision-only hold contract'
 test('CI and deploy workflows bind exact static-site authorization and same-job rollback', () => {
   const site = fs.readFileSync(path.join(root, '.github', 'workflows', 'site-ci.yml'), 'utf8');
   const deploy = fs.readFileSync(path.join(root, '.github', 'workflows', 'deploy-pages.yml'), 'utf8');
+  const platformControls = fs.readFileSync(
+    path.join(root, 'scripts', 'release', 'platform-controls.cjs'),
+    'utf8',
+  );
   const deploymentVerifier = fs.readFileSync(
     path.join(root, 'scripts', 'release', 'verify-deployment.cjs'),
     'utf8',
@@ -91,6 +95,8 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.doesNotMatch(deploy, /BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA/);
   assert.doesNotMatch(deploy, /^\s*<<:/m);
   assert.match(deploy, /Keep the release failed after deterministic restoration/);
+  assert.match(platformControls, /allowForbidden: true/);
+  assert.match(platformControls, /Resource not accessible by integration/);
   assert.match(
     deploymentVerifier,
     /fetchHttps\(url, allowedOrigins, 5, \{ bypassCache: true \}\)/,

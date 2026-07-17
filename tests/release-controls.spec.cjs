@@ -274,7 +274,7 @@ test('legacy release readback accepts exact 404 or valid JSON 200 and rejects ev
 
 test('active no-bypass rulesets can supply exact deletion, force-push, and verify protections', () => {
   const state = snapshot();
-  state.branchProtection = { missing: true };
+  state.branchProtection = { missing: true, forbidden: true };
   state.rulesets = [validRuleset()];
   assert.equal(validatePlatformState(state, bindings()).sourceSha, S);
 
