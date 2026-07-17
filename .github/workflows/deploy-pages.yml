@@ -231,11 +231,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.candidate_deployment.outputs.page_url }}
-    env:
-      <<: *release_authorization
-      PUBLIC_SITE_ORIGIN: https://auxtho.com
-      EXPECTED_SITE_SHA: ${{ inputs.approved_sha }}
-      ROLLBACK_SITE_SHA: ${{ inputs.rollback_sha }}
+    env: *release_authorization
     steps:
       - name: Check out exact readback verifier source
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -287,7 +283,7 @@ jobs:
         run: |
           node scripts/release/verify-deployment.cjs \
             --origin "${PUBLIC_SITE_ORIGIN}" \
-            --source-sha "${EXPECTED_SITE_SHA}" \
+            --source-sha "${REQUESTED_SITE_SHA}" \
             --compatible-json "${CANDIDATE_SITE_HISTORY}" \
             --mode candidate \
             --provenance site-release-provenance \
@@ -310,10 +306,10 @@ jobs:
         run: |
           node scripts/release/verify-deployment.cjs \
             --origin "${PUBLIC_SITE_ORIGIN}" \
-            --source-sha "${ROLLBACK_SITE_SHA}" \
+            --source-sha "${REQUESTED_ROLLBACK_SITE_SHA}" \
             --compatible-json "${ROLLBACK_SITE_HISTORY}" \
             --mode rollback \
-            --rollback-of-sha "${EXPECTED_SITE_SHA}" \
+            --rollback-of-sha "${REQUESTED_SITE_SHA}" \
             --provenance rollback-release-provenance \
             --evidence post-deploy-evidence/rollback \
             --cache-token "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-rollback" \

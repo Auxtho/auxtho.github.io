@@ -135,6 +135,9 @@ function validate() {
   if (/BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA|backend-reported-site-sha/.test(deployText)) {
     fail('static site deployment must not depend on backend revision bindings');
   }
+  if (/^\s*<<:/m.test(deployText)) {
+    fail('deploy workflow must use supported YAML aliases without merge keys');
+  }
   process.stdout.write(`workflow-contract parsed=${workflowPaths.length} actions=${actionUses(site).length + actionUses(deploy).length}\n`);
 }
 
