@@ -167,7 +167,7 @@ jobs:
           --previous-sha "${REQUESTED_ROLLBACK_SITE_SHA}"
           --compatible-json "${ROLLBACK_SITE_HISTORY}"
           --mode rollback
-          --legacy-bootstrap "${{ inputs.site_contract_mode == 'bootstrap' && 'true' || 'false' }}"
+          --legacy-bootstrap "${{ inputs.rollback_sha == '4b2f476c741b771519745930a6ebf244cf5d6433' && 'true' || 'false' }}"
           --rollback-of-sha "${REQUESTED_SITE_SHA}"
           --retired-manifest scripts/release/retired-public-paths.json
           --artifact-name github-pages-rollback

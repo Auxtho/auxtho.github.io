@@ -88,6 +88,11 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.match(deploy, /RELEASE_RUN_ATTEMPT:\s+\$\{\{ github\.run_attempt \}\}/);
   assert.match(deploy, /artifact_name: github-pages-candidate/);
   assert.match(deploy, /artifact_name: github-pages-rollback/);
+  assert.match(
+    deploy,
+    /--legacy-bootstrap "\$\{\{ inputs\.rollback_sha == '4b2f476c741b771519745930a6ebf244cf5d6433' && 'true' \|\| 'false' \}\}"/,
+  );
+  assert.doesNotMatch(deploy, /--legacy-bootstrap "\$\{\{ inputs\.site_contract_mode/);
   assert.equal((deploy.match(/actions\/deploy-pages@[0-9a-f]{40}/g) || []).length, 2);
   assert.match(deploy, /id: candidate_readback/);
   assert.match(deploy, /id: rollback_readback/);
