@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auxtho - Approval-Gated AI Release Control</title>
+  <title>Auxtho - Human review before AI-assisted work is released</title>
   <meta name="description"
-    content="Can you show the approved document and its evidence later? Approval-gated, evidence-linked release boundary for AI-assisted internal artifacts in regulated financial environments.">
+    content="Auxtho brings selected AI-assisted work, available evidence, decision state, and release boundaries into human review.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="/assets/favicon.svg">
@@ -16,11 +16,11 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Auxtho - Approval-Gated AI Release Control">
+  <meta property="og:title" content="Auxtho - Human review before AI-assisted work is released">
   <meta property="og:description"
-    content="Can you show the approved document and its evidence later? Auxtho links selected AI-assisted internal artifacts to evidence, approval, and later verification.">
-  <meta property="og:image" content="https://auxtho.com/assets/og-image.png">
-  <meta property="og:image:alt" content="Auxtho - Approval-Gated AI Release Control">
+    content="Review selected AI-assisted work, available evidence, decision state, and release boundaries before work moves forward.">
+  <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
+  <meta property="og:image:alt" content="Auxtho human review before release">
   <meta property="og:url" content="https://auxtho.com">
   <meta property="og:site_name" content="Auxtho">
   <meta property="og:locale" content="en_US">
@@ -28,17 +28,16 @@
   <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Auxtho - Approval-Gated AI Release Control">
+  <meta name="twitter:title" content="Auxtho - Human review before AI-assisted work is released">
   <meta name="twitter:description"
-    content="Can you show the approved document and its evidence later? Auxtho links selected AI-assisted internal artifacts to evidence, approval, and later verification.">
-  <meta name="twitter:image" content="https://auxtho.com/assets/og-image.png">
+    content="Review selected AI-assisted work, available evidence, decision state, and release boundaries before work moves forward.">
+  <meta name="twitter:image" content="https://auxtho.com/assets/og-image-v2-16.png">
 
-  <script type="application/ld+json" src="/assets/ld-org.json"></script>
-
-  <link rel="stylesheet" href="/assets/style.css?v=2026-04-24b">
-  <link rel="stylesheet" href="/assets/custom.css?v=2026-04-24b">
+  <link rel="stylesheet" href="/assets/style.css?sha256=de6e49fedb56d12c7c7c8ec96db326ae66ad4f1de98a5973d25f71bfb7507b2b">
+  <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
   
-  <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-25d">
+  <link rel="stylesheet" href="/assets/final-overrides.css?sha256=9d18c113b46b58d319852f3e00cfd6455d2e6b1de8ec97f48ecb52dd64f397c9">
+  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=a9af7817cf2ae28327322237be81948b668d1faf55ff7504d5cc3c9efa11831d">
 </head>
 
 <body class="antialiased">
@@ -50,7 +49,7 @@
   <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
     <div class="container mx-auto px-6 py-5 flex justify-between items-center">
       <a href="/" class="z-50" aria-label="Auxtho Home">
-        <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+        <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho Logo" class="h-6 w-auto">
       </a>
       <button class="mobile-nav-toggle" aria-controls="primary-navigation" aria-expanded="false">
         <span class="sr-only">Menu</span>
@@ -62,11 +61,9 @@
       <nav>
         <ul id="primary-navigation" data-visible="false" class="primary-navigation flex items-center space-x-8">
           <li><a href="#problem" class="text-gray-300 hover:text-white transition-colors">Problem</a></li>
-          <li><a href="#solution" class="text-gray-300 hover:text-white transition-colors">Controls</a></li>
+          <li><a href="#solution" class="text-gray-300 hover:text-white transition-colors">Product</a></li>
           <li><a href="#overview" class="text-gray-300 hover:text-white transition-colors">Workflow</a></li>
-          <li><a href="#sample" class="text-gray-300 hover:text-white transition-colors">Sample</a></li>
-          <li><a href="#verify" class="text-gray-300 hover:text-white transition-colors">Verify</a></li>
-          <li><a href="/story.html" class="text-gray-300 hover:text-white transition-colors">Our Story</a></li>
+          <li><a href="#verify" class="text-gray-300 hover:text-white transition-colors">Boundary</a></li>
           <li><a href="#contact"
               class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Contact</a>
           </li>
@@ -75,9 +72,9 @@
     </div>
   </header>
 
-  <nav id="scroll-nav" aria-label="In-page navigation">
+  <nav id="scroll-nav" aria-label="In-page navigation" aria-hidden="true" inert>
     <div class="scroll-nav-content">
-      <img src="/assets/logo-scroll.svg" alt="Auxtho" class="h-6 w-auto">
+      <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho" class="h-6 w-auto">
       <button id="scroll-nav-toggle" class="scroll-nav-toggle" aria-expanded="false" aria-controls="scroll-nav-menu">
         <span class="sr-only">Menu</span>
         <span class="auxtho-toggle-mark" aria-hidden="true">
@@ -86,321 +83,236 @@
         </span>
       </button>
     </div>
-    <div id="scroll-nav-menu">
+    <div id="scroll-nav-menu" aria-hidden="true" inert>
       <ul class="scroll-nav-menu-list">
         <li><a href="#problem">Problem</a></li>
-        <li><a href="#solution">Controls</a></li>
+        <li><a href="#solution">Product</a></li>
         <li><a href="#overview">Workflow</a></li>
-        <li><a href="#sample">Sample</a></li>
-        <li><a href="#verify">Verify</a></li>
-        <li><a href="/story.html">Our Story</a></li>
+        <li><a href="#verify">Boundary</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
   </nav>
 
   <main>
-    <!-- HERO -->
     <section class="hero-section text-center pt-24 pb-16">
       <div class="container mx-auto px-6">
-        <p class="hero-kicker">APPROVAL-GATED, EVIDENCE-LINKED RELEASE BOUNDARY</p>
-        <h1 class="hero-title">
-          Can you show the approved document and its evidence later?
-        </h1>
+        <p class="hero-kicker">HUMAN REVIEW BEFORE RELEASE</p>
+        <h1 class="hero-title">Review AI-assisted work before it is released.</h1>
         <p class="hero-copy">
-          Auxtho keeps selected high-consequence AI-assisted internal artifacts blocked until human review, ties the approved artifact to its evidence and approval record, and preserves a verification path for later review.
-        </p>
-        <p class="hero-note">
-          Designed around regulated financial workflows, with initial reference contexts in Singapore, the United States, and Europe.
+          Auxtho brings selected AI-assisted work, available evidence, decision state, and export boundary into human review. A separate Console surface shows how operator attention can be presented.
         </p>
         <div class="hero-actions">
-          <a href="mailto:hello@auxtho.com?subject=Request%20Pilot%20Briefing%20-%20Regulated%20Workflow" class="btn-primary">
-            Request Pilot Briefing
-          </a>
-          <a href="#sample" class="btn-secondary" style="margin-left:1rem;">
-            View Sample Package
-          </a>
+          <a href="mailto:hello@auxtho.com?subject=Discuss%20a%20Bounded%20Pilot" class="btn-primary">Discuss a Bounded Pilot</a>
+          <a href="#solution" class="btn-secondary">See Product Evidence</a>
         </div>
-        <p class="hero-control-line">Not jurisdiction-wide compliance coverage.&ensp;Not a drafting replacement.&ensp;One governed release path for selected internal artifacts.</p>
+
+        <figure class="hero-product-proof hero-replay-proof">
+          <div class="verified-replay" data-verified-replay data-stage="0">
+            <div class="verified-replay-header">
+              <div>
+                <div class="verified-replay-kicker-line">
+                  <p class="verified-replay-kicker">Illustrative synthetic workflow replay</p>
+                  <span>Not live telemetry</span>
+                </div>
+                <h2>One queue. Human-controlled review states.</h2>
+              </div>
+              <div class="verified-replay-status" aria-live="polite">
+                <span class="verified-replay-pulse" aria-hidden="true"></span>
+                <span data-replay-status>Ready to play</span>
+                <button type="button" data-replay-trigger aria-label="Play synthetic review sequence"
+                  title="Play synthetic review sequence">Play</button>
+              </div>
+            </div>
+
+            <div class="verified-replay-metrics" aria-label="Illustrative synthetic review queue states">
+              <div class="verified-replay-metric" data-tone="priority">
+                <span>Review</span><strong data-replay-metric="priority">4</strong><small>Needs review</small>
+              </div>
+              <div class="verified-replay-metric" data-tone="blocked">
+                <span>Risk</span><strong data-replay-metric="blocked">0</strong><small>Held</small>
+              </div>
+              <div class="verified-replay-metric" data-tone="ready">
+                <span>Release</span><strong data-replay-metric="ready">0</strong><small>Release-ready</small>
+              </div>
+              <div class="verified-replay-metric" data-tone="released">
+                <span>Export</span><strong data-replay-metric="released">0</strong><small>Locked by default</small>
+              </div>
+            </div>
+
+            <div class="verified-replay-main">
+              <div class="verified-replay-queue" aria-label="Illustrative synthetic packet state replay">
+                <div class="verified-replay-queue-head"><span>Synthetic packet</span><span>Visible state</span></div>
+                <div class="verified-replay-row" data-replay-row="0" data-state="pending"><span>Final review</span><strong data-replay-row-state>Pending</strong></div>
+                <div class="verified-replay-row" data-replay-row="1" data-state="pending"><span>Policy review</span><strong data-replay-row-state>Pending</strong></div>
+                <div class="verified-replay-row" data-replay-row="2" data-state="pending"><span>Evidence review</span><strong data-replay-row-state>Pending</strong></div>
+                <div class="verified-replay-row" data-replay-row="3" data-state="pending"><span>Audit review</span><strong data-replay-row-state>Pending</strong></div>
+              </div>
+              <div class="verified-replay-stage" aria-live="polite">
+                <span data-replay-step>Step 01</span>
+                <h3 data-replay-title>Four packets wait for human review.</h3>
+                <p data-replay-copy>No AI action grants approval, release, or export authority.</p>
+                <div class="verified-replay-event">
+                  <small>Illustrative state</small><strong data-replay-event>No human decision yet</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+          <figcaption>
+            <span>Interface scenario</span>
+            <strong>A deterministic synthetic sequence showing visible review states. It is not production activity, a customer outcome, or operating-effectiveness evidence.</strong>
+          </figcaption>
+        </figure>
       </div>
     </section>
 
-    <!-- PROBLEM -->
-    <section id="problem" class="py-20 text-center">
+    <section id="problem" class="py-24">
       <div class="container mx-auto px-6">
-        <div class="max-w-4xl mx-auto">
-          <h2 class="text-3xl md:text-4xl font-bold headline-balance">Important documents need more than a reference list.</h2>
-          <p class="text-lg text-gray-400 mt-4">AI can help teams create internal drafts quickly. But when a draft becomes a document that supports a decision, the real question changes.<br><br>What was actually approved? Which evidence was used? Who reviewed it? Can the same artifact be checked later?</p>
+        <div class="proposal-scenario-header text-center max-w-5xl mx-auto">
+          <p class="hero-kicker">THE REVIEW GAP</p>
+          <h2 class="text-3xl md:text-5xl font-bold headline-balance">When the work moves forward, can the decision context still be found?</h2>
+          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">AI-assisted output, source context, reviewer rationale, and follow-up ownership can sit in different places. Auxtho is exploring one bounded review surface for that moment.</p>
+          <p class="scenario-disclaimer">Illustrative workflow pattern, not an observed customer incident.</p>
         </div>
-        <div class="mt-10 grid md:grid-cols-3 gap-8 text-left max-w-5xl mx-auto">
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <h3 class="text-xl font-bold mb-2">References alone do not show claim support.</h3>
-            <p class="text-gray-400">A document may cite sources, but later reviewers may not know which exact source passage supported which claim.</p>
-          </div>
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <h3 class="text-xl font-bold mb-2">An approval log is not a full release record.</h3>
-            <p class="text-gray-400">A system may show who clicked approve, but not always what exact artifact, evidence set, and review state were approved together.</p>
-          </div>
-          <div class="bg-gray-900/50 p-8 rounded-2xl border border-gray-800">
-            <h3 class="text-xl font-bold mb-2">A PDF export is not enough.</h3>
-            <p class="text-gray-400">If the exported document cannot be checked against its evidence, approval record, and integrity reference, later reconstruction becomes manual and fragile.</p>
-          </div>
+        <div class="proposal-failure-line" aria-label="Illustrative workflow failure pattern">
+          <div><span>Work advances</span><small>AI-assisted output</small></div>
+          <span class="proposal-failure-arrow" aria-hidden="true">&rarr;</span>
+          <div data-breakpoint="true"><span>Context separates</span><small>Evidence, rationale, ownership</small></div>
+          <span class="proposal-failure-arrow" aria-hidden="true">&rarr;</span>
+          <div><span>A question returns</span><small>The earlier decision must be reconstructed</small></div>
+        </div>
+        <div class="proposal-observed-state max-w-5xl mx-auto" aria-label="Visible review boundary states">
+          <p>States a reviewer may need to see</p>
+          <ul>
+            <li data-state="pending">Review pending</li>
+            <li data-state="evidence">Evidence attached</li>
+            <li data-state="locked">Not shared</li>
+            <li data-state="locked">Export locked</li>
+          </ul>
         </div>
       </div>
     </section>
 
-    <!-- CONTROLS (5 cards, 3-col grid) -->
     <section id="solution" class="py-20">
-      <div id="solution-anchor" aria-hidden="true"></div>
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <h2 class="text-3xl md:text-4xl font-bold">One governed release path before an AI-assisted artifact becomes final.</h2>
-          <p class="text-lg text-gray-400 mt-2">Auxtho does not replace drafting, document management, or GRC systems. It adds a narrow release boundary for selected high-consequence internal artifacts.</p>
+          <p class="hero-kicker">PRODUCT EVIDENCE</p>
+          <h2 class="text-3xl md:text-5xl font-bold">Two bounded product surfaces.</h2>
+          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">These controlled synthetic renderings show selected review states in the App and operator attention in the Console. They are independent fixtures, not live telemetry, deployment proof, or a customer run.</p>
         </div>
-        <div class="control-grid">
-          <article class="control-card">
-            <p class="control-kicker">Approval</p>
-            <h3>Human review gate</h3>
-            <p>Release remains blocked until a reviewer makes the approval decision.</p>
+
+        <div class="evidence-surface-grid">
+          <article class="evidence-surface-card">
+            <div class="evidence-surface-copy">
+              <p class="proposal-surface-label">Auxtho App &middot; controlled synthetic rendering &middot; 16 Jul 2026</p>
+              <h3>Governed review states rendered in the App</h3>
+              <p>A fixed QA scenario shows a bounded review queue: four items need review, two are blocked, three are release-ready, one is shown as released today, and two remain in progress.</p>
+            </div>
+              <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32"
+              data-lightbox-mode="app-overview"
+              data-lightbox-title="Auxtho App synthetic workflow replay"
+              data-lightbox-caption="Controlled synthetic rendering using fixed QA records. The synthetic replay label is a capture annotation, not native product UI. This view does not represent live usage, customer activity, or completed customer releases."
+              aria-label="Open a larger view of the Auxtho App synthetic workflow replay">
+                  <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="Auxtho App interface rendered with synthetic review states." loading="lazy" decoding="async">
+            </a>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> fixed synthetic QA records, no customer data, no provider runtime, no export path, and no production mutation. This view does not establish deployment identity, live usage, customer adoption, completed approvals, or operating effectiveness.</p>
           </article>
-          <article class="control-card">
-            <p class="control-kicker">Evidence</p>
-            <h3>Evidence-linked output</h3>
-            <p>Approved claims remain tied to source evidence and review context.</p>
-          </article>
-          <article class="control-card">
-            <p class="control-kicker">Hold &amp; Block</p>
-            <h3>Held / blocked claims</h3>
-            <p>Unsupported or overreaching claims can be held or blocked before the artifact is treated as releasable.</p>
-          </article>
-          <article class="control-card">
-            <p class="control-kicker">Integrity</p>
-            <h3>Verification reference</h3>
-            <p>The released artifact carries a reference that can later be checked against the recorded release package.</p>
-          </article>
-          <article class="control-card">
-            <p class="control-kicker">Verification</p>
-            <h3>Approval and export record</h3>
-            <p>Reviewer identity, decision state, timestamp, and export context are recorded and remain checkable after release.</p>
+
+          <article class="evidence-surface-card">
+            <div class="evidence-surface-copy">
+            <p class="proposal-surface-label">Auxtho Console &middot; controlled synthetic rendering &middot; 16 Jul 2026</p>
+              <h3>Operator attention rendered in the Console</h3>
+              <p>A fixed QA scenario illustrates four review-attention signals, two critical signals, three synthetic account records, and one synthetic bootstrap state.</p>
+            </div>
+              <a class="sample-card-media proposal-surface-media proposal-surface-media-wide" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712"
+              data-lightbox-mode="console-wide"
+              data-lightbox-title="Auxtho Console synthetic workflow replay"
+              data-lightbox-caption="Controlled synthetic rendering using fixed QA records. It illustrates operator attention and does not represent live telemetry, customer activity, or completed operational work."
+              aria-label="Open a larger view of the Auxtho Console synthetic QA fixture">
+                  <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712" alt="Auxtho Console interface rendered with synthetic operator signals." loading="lazy" decoding="async">
+            </a>
+            <p class="evidence-source-note"><strong>Fixture boundary:</strong> fixed synthetic QA records, no customer data, no provider runtime, no export path, and no production mutation. This independent view does not establish deployment identity, live telemetry, customer adoption, or operating effectiveness.</p>
           </article>
         </div>
+        <p class="proposal-scope-note">Evidence provenance and limits are recorded in the <a class="auxtho-subtle-link" href="/assets/proposal/evidence-manifest-20260716.json">public evidence manifest</a>.</p>
       </div>
     </section>
 
-    <!-- WORKFLOW (6 steps, 3-col grid) -->
     <section id="overview" class="py-24">
       <div class="container mx-auto px-6">
-        <div class="text-center mb-14">
-          <p class="hero-kicker">Workflow</p>
-          <h2 class="text-3xl md:text-5xl font-bold">From AI-assisted draft to governed release.</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">One accountable review path from an AI-assisted draft to a governed release that can later be checked under scrutiny.</p>
-        </div>
-        <div class="workflow-stage-rail max-w-6xl mx-auto">
-          <article class="workflow-stage-card">
-            <div class="workflow-stage-index">01</div>
-            <h3>Draft</h3>
-            <p>A team creates or receives an AI-assisted internal draft.</p>
-          </article>
-          <article class="workflow-stage-card">
-            <div class="workflow-stage-index">02</div>
-            <h3>Evidence</h3>
-            <p>The reviewer inspects linked evidence and source passages.</p>
-          </article>
-          <article class="workflow-stage-card">
-            <div class="workflow-stage-index">03</div>
-            <h3>Review</h3>
-            <p>Unsupported claims are held or blocked. Supported findings move forward.</p>
-          </article>
-          <article class="workflow-stage-card">
-            <div class="workflow-stage-index">04</div>
-            <h3>Approval</h3>
-            <p>A human reviewer approves the artifact before release.</p>
-          </article>
-          <article class="workflow-stage-card">
-            <div class="workflow-stage-index">05</div>
-            <h3>Export</h3>
-            <p>The approved artifact is exported with its evidence set, approval record, and integrity reference.</p>
-          </article>
-          <article class="workflow-stage-card">
-            <div class="workflow-stage-index">06</div>
-            <h3>Verify</h3>
-            <p>Later reviewers can check the artifact, evidence hash, approval record, and verification path.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- SAMPLE PACKAGE (3 cards, 3-col grid) -->
-    <section id="sample" class="py-20">
-      <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <p class="hero-kicker">Sample package</p>
-          <h2 class="text-3xl md:text-4xl font-bold">A simple example: advisory note + transparency report + verification page.</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">
-            Auxtho separates the document people need to read from the record auditors may need later.
-          </p>
+          <p class="hero-kicker">SELECTED REVIEW PATH</p>
+          <h2 class="text-3xl md:text-5xl font-bold">A visible path from work to human decision.</h2>
+          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">The main path stays simple. An exception signal can branch to operator follow-up without granting the AI approval or release authority.</p>
         </div>
-        <div class="control-grid-3">
-          <article class="control-card sample-card">
-            <a class="sample-card-media" href="/assets/sample/internal-advisory-note-sample.png" target="_blank"
-              rel="noopener noreferrer" aria-label="Open Internal Advisory Note sample image"
-              data-lightbox-title="Internal Advisory Note" data-lightbox-caption="Human-readable advisory note">
-              <img src="/assets/sample/internal-advisory-note-sample.png"
-                alt="Auxtho Internal Advisory Note sample showing review status, evidence count, and advisory points."
-                loading="lazy" decoding="async">
-            </a>
-            <p class="control-kicker">1. Human-readable note</p>
-            <h3>Internal Advisory Note</h3>
-            <p class="sample-card-caption">Human-readable advisory note</p>
-            <p>A one-page summary for compliance, risk, or operations reviewers.</p>
-          </article>
-          <article class="control-card sample-card">
-            <a class="sample-card-media" href="/assets/sample/transparency-report-held-blocked-sample.png" target="_blank"
-              rel="noopener noreferrer" aria-label="Open Auxtho Transparency Report sample image"
-              data-lightbox-title="Auxtho Transparency Report" data-lightbox-caption="Held and blocked claims remain visible">
-              <img src="/assets/sample/transparency-report-held-blocked-sample.png"
-                alt="Auxtho Transparency Report sample showing held and blocked claims with evidence sources."
-                loading="lazy" decoding="async">
-            </a>
-            <p class="control-kicker">2. Transparency report</p>
-            <h3>Auxtho Transparency Report</h3>
-            <p class="sample-card-caption">Held and blocked claims remain visible</p>
-            <p>Evidence, approval, held/blocked claims, and source locators remain recorded.</p>
-          </article>
-          <article class="control-card sample-card">
-            <a class="sample-card-media" href="/assets/sample/artifact-verification-sample.png" target="_blank"
-              rel="noopener noreferrer" aria-label="Open Artifact Verification sample image"
-              data-lightbox-title="Verification Page" data-lightbox-caption="Artifact verification after export">
-              <img src="/assets/sample/artifact-verification-sample.png"
-                alt="Auxtho Artifact Verification page sample showing verified artifact status and signature validation."
-                loading="lazy" decoding="async">
-            </a>
-            <p class="control-kicker">3. Independent verification</p>
-            <h3>Verification Page</h3>
-            <p class="sample-card-caption">Artifact verification after export</p>
-            <p>A later reviewer can verify the exported artifact against the recorded release package.</p>
-          </article>
+        <div class="proposal-flow proposal-flow-review" aria-label="Auxtho selected review path">
+          <article class="proposal-flow-step" data-tone="ai"><span class="proposal-flow-index">01</span><h3>Selected work</h3><p>One AI-assisted output enters review.</p></article>
+          <span class="proposal-flow-arrow" aria-hidden="true">&rarr;</span>
+          <article class="proposal-flow-step" data-tone="evidence"><span class="proposal-flow-index">02</span><h3>Available evidence</h3><p>Linked context and visible state when present.</p></article>
+          <span class="proposal-flow-arrow" aria-hidden="true">&rarr;</span>
+          <article class="proposal-flow-step" data-tone="human"><span class="proposal-flow-index">03</span><h3>Human decision</h3><p>A person decides what can move forward.</p></article>
+          <span class="proposal-flow-arrow" aria-hidden="true">&rarr;</span>
+          <article class="proposal-flow-step" data-tone="outcome"><span class="proposal-flow-index">04</span><h3>Held or release-ready</h3><p>The outcome remains explicit; export stays separately bounded.</p></article>
         </div>
-        <p class="text-center text-xs text-gray-500 mt-6">Pilot sample only &mdash; shown to illustrate the workflow, not as a production regulatory submission artifact.</p>
+        <aside class="operator-branch" aria-label="Exception signal branch">
+          <span>Exception signal</span>
+          <p>Review-attention or critical signals can appear in the separate Console for human follow-up. This is a side branch, not an automatic release step.</p>
+        </aside>
       </div>
     </section>
 
-    <!-- EXISTING SYSTEMS FAQ -->
     <section id="existing-systems" class="py-16">
-      <div class="container mx-auto px-6 max-w-3xl">
-        <div class="bg-gray-900/50 border border-gray-800 rounded-2xl p-10">
-          <p class="hero-kicker" style="margin-bottom:0.75rem;">If you already have approvals and audit logs</p>
-          <h2 class="text-2xl md:text-3xl font-bold mb-4">You probably do. Auxtho is for a narrower gap.</h2>
-          <p class="text-gray-400 mb-6">Auxtho is not meant to replace approval systems, document repositories, or records platforms. It is for the case where the approved artifact, linked evidence, reviewer decision, export record, and verification path need to remain recoverable <em>together</em> &mdash; without relying on memory, manual stitching, or a reference list alone.</p>
-          <p class="text-gray-300 font-medium">If a later reviewer asks why this exact artifact was approved, can your current system show the artifact, evidence, approval record, and verification path together?</p>
-          <p class="text-gray-400 mt-3">If yes, Auxtho may not be needed. If no, that is the gap Auxtho is built for.</p>
+      <div class="container mx-auto px-6 max-w-4xl">
+        <div class="existing-systems-panel">
+          <p class="hero-kicker">BOUNDED ADJACENCY</p>
+          <h2 class="text-2xl md:text-3xl font-bold mb-4">Review one workflow alongside existing repositories and control systems.</h2>
+          <p class="text-gray-400">This preview does not demonstrate integrations and does not claim to replace a repository, approval system, GRC platform, audit tool, or system of record.</p>
         </div>
       </div>
     </section>
 
-    <!-- TRUST BOUNDARY / VERIFY -->
     <section id="verify" class="py-24">
       <div class="container mx-auto px-6">
         <div class="text-center mb-14">
-          <p class="hero-kicker">Trust boundary</p>
-          <h2 class="text-3xl md:text-5xl font-bold">Current pilot boundary</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">This section distinguishes the current pilot boundary from capabilities that are not yet included.</p>
+          <p class="hero-kicker">EVIDENCE BOUNDARY</p>
+          <h2 class="text-3xl md:text-5xl font-bold">What is visible here - and what is not established.</h2>
         </div>
-
         <div class="state-grid max-w-5xl mx-auto">
           <section class="state-panel state-panel-live">
-            <p class="state-label">Current pilot capabilities</p>
+            <p class="state-label">Visible in this bounded evidence set</p>
             <ul class="state-list">
-              <li>Evidence-linked output in one governed workflow</li>
-              <li>Human approval before release</li>
-              <li>Exportable governed artifact</li>
-              <li>Later verification and reconstruction path</li>
+              <li>App review queue rendered from fixed synthetic QA records</li>
+              <li>Console operator metrics rendered from fixed synthetic QA records</li>
+              <li>Image hashes, fixture values, and capture limits recorded in a public manifest</li>
+              <li>No customer data, provider runtime, export path, or production mutation in either capture</li>
             </ul>
           </section>
           <section class="state-panel state-panel-scope">
-            <p class="state-label">Not yet included in the current pilot</p>
+            <p class="state-label">Not established by this evidence</p>
             <ul class="state-list">
-              <li>Production signing and enterprise key-management</li>
-              <li>Enterprise connectors and deeper archive integrations</li>
-              <li>Retention and deletion models by deployment environment</li>
-              <li>Broader document-management and records-system integration</li>
+              <li>Live usage, customer adoption, deployment identity, or backend aggregation correctness</li>
+              <li>Completed customer approval, release, export, or operating effectiveness</li>
+              <li>Integrations with existing repositories or control systems</li>
+              <li>Compliance approval, regulatory suitability, or bank-production readiness</li>
             </ul>
           </section>
-        </div>
-
-        <div class="artifact-shell max-w-6xl mx-auto mt-10">
-          <section class="artifact-frame">
-            <div class="artifact-header">
-              <div>
-                <p class="artifact-eyebrow">Example governed artifact</p>
-                <h3>Internal compliance advisory note</h3>
-                <p class="artifact-subhead">A simple example of what a reviewer and a later challenger may need to see.</p>
-              </div>
-              <span class="artifact-status">Approved before release</span>
-            </div>
-
-            <div class="artifact-meta-grid">
-              <div class="artifact-meta-card">
-                <p class="artifact-meta-title">Artifact type</p>
-                <p class="artifact-meta-text">Policy memo / compliance answer / internal advisory note</p>
-              </div>
-              <div class="artifact-meta-card">
-                <p class="artifact-meta-title">Evidence set</p>
-                <p class="artifact-meta-text">Linked references, timestamps, and review context retained</p>
-              </div>
-              <div class="artifact-meta-card">
-                <p class="artifact-meta-title">Approval record</p>
-                <p class="artifact-meta-text">Reviewer decision captured before export</p>
-              </div>
-              <div class="artifact-meta-card">
-                <p class="artifact-meta-title">Verification path</p>
-                <p class="artifact-meta-text">Integrity reference plus reconstruction context available later</p>
-              </div>
-            </div>
-
-            <div class="artifact-note">
-              <p class="artifact-meta-title">Why this matters</p>
-              <p class="artifact-meta-text">Under scrutiny, the question is not whether the draft was useful. It is whether the released artifact can still be explained, checked, and reviewed later.</p>
-            </div>
-          </section>
-
-          <aside class="artifact-sidebar">
-            <section class="artifact-side-card">
-              <p class="state-label">Verification in practice</p>
-              <ol class="artifact-steps">
-                <li>Open the exported artifact and confirm the approval state.</li>
-                <li>Check the linked evidence and integrity reference against the recorded context.</li>
-                <li>Reconstruct the release path if a reviewer challenges the artifact later.</li>
-              </ol>
-            </section>
-            <section class="artifact-side-card">
-              <p class="state-label">Current scope</p>
-              <p class="artifact-meta-text">One governed release path where the approved artifact, linked evidence, approval record, and verifiable release reference remain reviewable together.</p>
-            </section>
-          </aside>
         </div>
       </div>
     </section>
 
-    <!-- CONTACT / PILOT -->
     <section id="contact" class="py-20">
       <div class="container mx-auto px-6 text-center">
-        <h2 class="text-3xl md:text-4xl font-bold">Pilot Engagement</h2>
-        <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto">
-          We are opening fixed-scope pilots for regulated financial workflows.
-        </p>
-        <p class="text-gray-500 mt-2 max-w-2xl mx-auto text-sm">
-          Initial reference context: Singapore, with reference to similar regulated environments in the United States and Europe.
-        </p>
+        <p class="hero-kicker">BOUNDED PILOT EXPLORATION</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Start with one workflow and a written boundary.</h2>
+        <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">A useful first conversation defines the work, data, provider path, reviewer authority, storage, export, and exit conditions before anything is connected.</p>
+        <ul class="pilot-scope-grid" aria-label="Pilot scope checklist">
+          <li>Workflow and output type</li><li>Data classification</li><li>Model or provider path</li>
+          <li>Storage and retention</li><li>Reviewer roles</li><li>Export and release boundary</li><li>Exit and deletion</li>
+        </ul>
         <div class="mt-8">
-          <a href="mailto:hello@auxtho.com?subject=Request%20Pilot%20Briefing%20-%20Regulated%20Workflow" class="btn-primary">
-            Request Pilot Briefing
-          </a>
+          <a href="mailto:hello@auxtho.com?subject=Request%20Pilot%20Scope%20and%20Security%20Facts" class="btn-primary">Request Pilot Scope and Security Facts</a>
         </div>
-        <p class="text-sm text-gray-500 mt-4">Contact: hello@auxtho.com | We aim to respond within 1 business day.</p>
-        <p class="auxtho-subtle-bridge">
-          Related security direction: <a href="/security/ardamire/" class="auxtho-subtle-link">Ardamire Defense Layer</a>
-        </p>
+        <p class="text-sm text-gray-500 mt-4">Contact: hello@auxtho.com | Fixed-scope exploration only; no regulatory-suitability or production-readiness claim.</p>
       </div>
     </section>
   </main>
@@ -409,7 +321,7 @@
     <div class="sample-lightbox-panel">
       <button type="button" class="sample-lightbox-close" aria-label="Close sample image">&times;</button>
       <figure>
-        <div class="sample-lightbox-image-wrap">
+        <div class="sample-lightbox-image-wrap" tabindex="0" role="region" aria-label="Scrollable enlarged evidence image">
           <img id="sample-lightbox-image" alt="">
         </div>
         <figcaption class="sample-lightbox-caption">
@@ -432,16 +344,16 @@
         <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
         <span class="text-gray-600" aria-hidden="true">&middot;</span>
         <a href="https://www.linkedin.com/company/auxtho" target="_blank" rel="noopener noreferrer"
-          class="hover:text-white">Company LinkedIn</a>
+          class="hover:text-white">Company LinkedIn (Official)</a>
       </div>
       <p class="text-center md:text-right order-4 max-w-md text-xs text-gray-500">
-        Pilot artifacts are for evaluation and do not constitute production regulatory submission materials.
+        Interface-level product description. No regulatory, compliance, or production-readiness claim.
       </p>
     </div>
   </footer>
 
-  <script src="/assets/tw-init.js" defer></script>
-  <script src="/assets/app.js?v=2026-04-25f" defer></script>
+  <script src="/assets/tw-init.3a46d349f310cfb8aee19f2f69d6d2caf2393f7d975b1b386c5db6451f2a8dd5.js" defer></script>
+  <script src="/assets/app.eb0dad8c9eb83e2e9ec71879749daea7fcad30d3ffee6fdc69fc6aba18139665.js" defer></script>
 </body>
 
 </html>

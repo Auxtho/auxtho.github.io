@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auxtho - Artifact Verification</title>
-    <meta name="description" content="Verify whether an Auxtho artifact integrity hash matches the original export record.">
+    <meta name="description" content="Check whether a 64-character Auxtho record binding checksum matches a stored Auxtho artifact record.">
     <meta name="robots" content="noindex">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src 'self' https://api.auxtho.com; style-src 'self'; img-src 'self'; font-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'; frame-src 'none'; manifest-src 'none'; media-src 'none'; worker-src 'none'">
     <meta name="color-scheme" content="dark light">
     <link rel="icon" href="/assets/favicon.svg">
     <link rel="canonical" href="https://auxtho.com/verify.html">
     <meta name="theme-color" content="#0f1014">
     <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <link rel="stylesheet" href="/assets/style.css?v=2026-04-24b">
-    <link rel="stylesheet" href="/assets/custom.css?v=2026-04-24b">
-    <link rel="stylesheet" href="/assets/final-overrides.css?v=2026-04-24b">
-    <link rel="stylesheet" href="/assets/verify.css?v=2026-04-24b">
+    <meta name="referrer" content="no-referrer">
+    <link rel="stylesheet" href="/assets/style.css?sha256=de6e49fedb56d12c7c7c8ec96db326ae66ad4f1de98a5973d25f71bfb7507b2b">
+    <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
+    <link rel="stylesheet" href="/assets/final-overrides.css?sha256=9d18c113b46b58d319852f3e00cfd6455d2e6b1de8ec97f48ecb52dd64f397c9">
+    <link rel="stylesheet" href="/assets/verify.css?sha256=bbd8092b95f7dc9fe8d83576730bfb2221eb9ea48c107a0a91175a8d1ab4d5b1">
 </head>
 <body class="antialiased">
     <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
         <div class="container mx-auto px-6 py-5 flex justify-between items-center">
             <a href="/" class="z-50" aria-label="Auxtho Home">
-                <img src="/assets/logo-white.svg" alt="Auxtho Logo" class="h-6 w-auto">
+            <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho Logo" class="h-6 w-auto">
             </a>
             <a href="/" class="btn-secondary text-sm">Back to Home</a>
         </div>
@@ -30,10 +31,10 @@
     <main class="pt-24 md:pt-28 pb-20">
         <section class="container mx-auto px-6 max-w-4xl verify-page">
             <div class="text-center verify-hero">
-                <p class="hero-kicker">INDEPENDENT CHECK</p>
+                <p class="hero-kicker">ARTIFACT RECORD CHECK</p>
                 <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">Artifact Verification</h1>
                 <p class="text-lg text-gray-400 verify-subtitle">
-                    Confirm whether an exported artifact hash matches the original Auxtho record.
+                    Check whether a record binding checksum matches a stored Auxtho artifact record.
                 </p>
             </div>
 
@@ -41,44 +42,55 @@
                 <p class="qr-card-title">QR Verification Detected</p>
                 <span class="qr-label">Report ID</span>
                 <p id="qr-report-id" class="qr-value">-</p>
-                <span class="qr-label">Artifact Integrity Hash</span>
+                <span class="qr-label">Record Binding Checksum (64-character SHA-256)</span>
                 <p id="qr-hash" class="qr-value">-</p>
                 <p class="qr-description">
-                    This QR link can trigger automated verification. If API verification is unavailable, use
+                    Opening this QR link prefills the identifiers shown here but does not start an artifact comparison request. The page may check service readiness without sending artifact identifiers. Verification runs only after
+                    you select Run Verification. The URL itself is handled by this site as part of normal page delivery. If API verification is unavailable, use
                     <a href="mailto:verify@auxtho.com?subject=Audit%20Verification%20Request" id="qr-mailto">verify@auxtho.com</a>
-                    as manual verification support.
+                    for verification support. The support link does not prefill artifact identifiers.
                 </p>
+                <p id="legacy-binding-tombstone" class="verification-scope-warning" role="status" hidden>This legacy 16-character artifact binding is retired. Fragment-form and old query-form links are retained only as a local tombstone: their identifiers are removed from the visible URL, are not copied into the manual form, and cannot start readiness or comparison API requests. Request a current export with a 64-character record binding checksum or use manual verification support.</p>
+                <p class="verification-scope-warning">A QR-only check confirms a stored record match. It does not prove that the surrounding PDF or printed pages are unchanged, because a genuine QR can be copied.</p>
+                <p class="verification-disclosure">Selecting Run Verification sends these identifiers to Auxtho for comparison. If the request reaches the instrumented comparison path and its audit write succeeds, a minimized application audit record is created. Validation, rate-limit, network, or service-unavailable paths may create no application audit record. Site, hosting, API, and security infrastructure may separately retain request and connection logs.</p>
                 <div class="qr-btn-area">
-                    <button id="qr-verify-btn" class="btn-primary" type="button">Run Verification</button>
+                    <button id="qr-verify-btn" class="btn-primary" type="button" disabled aria-disabled="true">Run Verification</button>
                 </div>
             </div>
 
-            <div id="verify-result" class="verify-result-card" hidden>
+            <div id="verify-result" class="verify-result-card" role="status" aria-live="polite" aria-atomic="true" hidden>
                 <p id="verify-result-kicker" class="verify-result-kicker">Verification Result</p>
                 <h2 id="verify-result-title">Awaiting Verification</h2>
-                <p id="verify-result-message" class="verify-result-message">Submit a report ID and artifact hash to verify this artifact.</p>
+                <p id="verify-result-message" class="verify-result-message">Submit a report ID and record binding checksum to check the stored record.</p>
                 <div id="verify-result-grid" class="verify-result-grid"></div>
             </div>
 
             <div class="manual-verify-panel mt-8">
                 <h2>Manual Verification</h2>
-                <p class="manual-verify-copy">Paste the report ID and artifact integrity hash from the exported artifact to run API-backed verification. If the artifact has a QR export event ID, include it to bind the check to that exact export.</p>
-                <div class="manual-verify-form">
-                    <div class="manual-field">
+                <p class="manual-verify-copy">Paste the report ID and complete 64-character record binding checksum from the exported artifact to run API-backed verification. This checksum covers selected canonical registry fields, not every PDF byte. If the artifact has a QR export event ID, include it to bind the check to that exact export. To verify a digital PDF itself, select the file for a local byte-hash check.</p>
+                <p class="verification-scope-warning">Legacy 16-character artifact bindings were retired on July 17, 2026. They are not accepted. Legacy fragment-form or query-form QR links open only a local tombstone and start no API request; request a current export or use manual verification support.</p>
+                <form id="manual-verify-form" class="manual-verify-form">
+                    <div class="manual-field manual-report-field">
                         <label for="manual-report-id">Report ID</label>
-                        <input id="manual-report-id" type="text" placeholder="e.g. RPT-20260320-E5A23B">
+                        <input id="manual-report-id" name="report_id" type="text" placeholder="e.g. RPT-20260320-E5A23B" autocomplete="off" spellcheck="false" required>
                     </div>
-                    <div class="manual-field">
-                        <label for="manual-artifact-hash">Artifact Integrity Hash</label>
-                        <input id="manual-artifact-hash" type="text" placeholder="e.g. 53fe69cf3f1371a7">
+                    <div class="manual-field manual-hash-field">
+                        <label for="manual-artifact-hash">Record Binding Checksum (64-character SHA-256)</label>
+                        <input id="manual-artifact-hash" name="artifact_hash" type="text" placeholder="64-character checksum shown in the export" maxlength="71" autocomplete="off" spellcheck="false" required>
                     </div>
-                    <div class="manual-field">
+                    <div class="manual-field manual-export-field">
                         <label for="manual-export-event-id">Export Event ID <span class="optional-label">optional</span></label>
-                        <input id="manual-export-event-id" type="text" placeholder="e.g. exp_20260423_...">
+                        <input id="manual-export-event-id" name="export_event_id" type="text" placeholder="e.g. exp_20260423_..." autocomplete="off" spellcheck="false">
                     </div>
-                    <button id="manual-verify-btn" class="btn-primary" type="button">Verify Artifact</button>
-                </div>
-                <p id="verify-error" class="verify-error" hidden></p>
+                    <div class="manual-field manual-file-field">
+                        <label for="manual-artifact-file">PDF file check <span class="optional-label">optional</span></label>
+                        <input id="manual-artifact-file" name="artifact_file" type="file" accept="application/pdf,.pdf" aria-describedby="manual-file-hint">
+                        <p id="manual-file-hint" class="manual-field-hint">The PDF stays in this browser. Auxtho receives only its locally computed SHA-256 digest. Maximum file size: 25 MB.</p>
+                    </div>
+                    <button id="manual-verify-btn" class="btn-primary manual-submit-button" type="submit" disabled aria-disabled="true">Verify Artifact</button>
+                </form>
+                <p class="verification-disclosure">Submitting this form sends the entered identifiers to Auxtho for comparison. An application audit record is not guaranteed for every submit: client-side validation, request validation, rate limiting, network failure, or service unavailability may stop the request before an application audit write. Infrastructure access and security logs are separate from application audit records.</p>
+                <p id="verify-error" class="verify-error" role="alert" aria-live="assertive" hidden></p>
             </div>
 
             <div class="verify-layout mt-12">
@@ -87,15 +99,15 @@
                     <ol class="step-list">
                         <li class="step-row">
                             <span class="step-circle">1</span>
-                            <span class="step-text">Locate the <strong>artifact integrity hash</strong> from the last page of the exported artifact or QR link.</span>
+                            <span class="step-text">Locate the <strong>record binding checksum</strong> from the last page of the exported artifact or QR link.</span>
                         </li>
                         <li class="step-row">
                             <span class="step-circle">2</span>
-                            <span class="step-text">Run API verification here. Signed artifacts return registry-backed PKCS#7 signature and RFC 3161 timestamp values when those controls were attached at export.</span>
+                            <span class="step-text">Run the record check here. For a digital PDF file check, select the PDF so the browser can compare its byte hash without uploading the file contents.</span>
                         </li>
                         <li class="step-row">
                             <span class="step-circle">3</span>
-                            <span class="step-text">Confirm the <strong>hash match</strong>, then check signature and timestamp status for signed artifacts. Hash-only artifacts explicitly show that no signature was attached.</span>
+                            <span class="step-text">Distinguish a <strong>record match</strong> from a <strong>file-bytes match</strong>. Stored cryptographic metadata appears only when the artifact response contains a complete, consistent field set, and this browser does not cryptographically revalidate it.</span>
                         </li>
                     </ol>
                 </div>
@@ -103,24 +115,24 @@
                 <aside class="status-panel">
                     <h2>Verification Status</h2>
                     <div class="status-block">
-                        <p class="status-title active">Active now</p>
+                        <p id="verification-service-status" class="status-title checking" aria-live="polite">Checking / Not confirmed</p>
                         <ul id="status-active-items">
-                            <li>Artifact integrity hash</li>
-                            <li>Automated API verification</li>
+                            <li>Record binding checksum</li>
+                            <li>Verification service status pending</li>
                             <li>Manual verification support</li>
                         </ul>
-                        <p class="status-meta-line">Verification Profile: SG-MAS-TRM-2024</p>
-                        <p class="status-meta-line">Artifact hashing: SHA-256 (Active)</p>
+                        <p class="status-meta-line">Verification scope: selected canonical registry fields</p>
+                        <p class="status-meta-line">Record binding checksum: complete 64-character SHA-256-derived value shown in the export</p>
                     </div>
                     <div id="artifact-crypto-block" class="status-block">
                         <p class="status-title crypto">Artifact crypto</p>
                         <ul id="artifact-crypto-items">
-                            <li>Verification mode: checking API...</li>
-                            <li>PKCS#7 CMS detached signature: checking artifact record...</li>
-                            <li>RFC 3161 trusted timestamp: checking artifact record...</li>
+                            <li>Artifact cryptographic metadata is not yet available.</li>
+                            <li>Stored signature and timestamp fields appear only after a confirmed artifact response.</li>
+                            <li>This browser does not cryptographically revalidate stored metadata.</li>
                         </ul>
                     </div>
-                    <p id="status-footnote" class="status-footnote">We aim to respond to pilot verification requests within 1 business day.</p>
+                    <p id="status-footnote" class="status-footnote">Verification controls remain disabled until service status is confirmed.</p>
                 </aside>
             </div>
 
@@ -147,7 +159,7 @@
         </div>
     </footer>
 
-    <script src="/assets/tw-init.js" defer></script>
-    <script src="/assets/verify-2026-04-24b.js?v=2026-04-24b"></script>
+    <script src="/assets/tw-init.3a46d349f310cfb8aee19f2f69d6d2caf2393f7d975b1b386c5db6451f2a8dd5.js" defer></script>
+    <script src="/assets/verify.7ca5d1deae686565a4cc6e7f9d25ad850fdea4476d9fac27b850367d62e7e431.js"></script>
 </body>
 </html>

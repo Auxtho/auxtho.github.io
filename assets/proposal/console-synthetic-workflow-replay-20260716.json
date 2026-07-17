@@ -1,0 +1,22 @@
+{
+  "decision": "PUBLIC_SYNTHETIC_CONSOLE_CAPTURE_READY",
+  "output_path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
+  "source_revision": null,
+  "source_revision_publicly_resolvable": false,
+  "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
+  "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
+  "dimensions_physical_px": [
+    1280,
+    509
+  ],
+  "public_derivative": false,
+  "fixture_summary": {
+    "review_attention": 4,
+    "critical_signals": 2,
+    "synthetic_customer_records": 3,
+    "active_synthetic_bootstraps": 1
+  },
+  "customer_data_used": false,
+  "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",
+  "claim_boundary": "This controlled synthetic rendering demonstrates operator attention states. It does not prove deployment identity, live telemetry, customer adoption, completed operational work, export, or operating effectiveness."
+}

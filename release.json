@@ -1,0 +1,5 @@
+---
+layout: null
+permalink: /release.json
+---
+{"source_sha": {{ site.github.build_revision | jsonify }}}

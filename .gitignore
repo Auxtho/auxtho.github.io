@@ -13,3 +13,8 @@ OS-generated files
 
 .DS_Store
 Thumbs.dbnode_modules/
+
+# Browser test output
+/test-results/
+/test-results-*/
+/playwright-report/

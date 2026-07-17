@@ -1081,13 +1081,13 @@ footer > div {
 
 .sample-lightbox {
   width: min(1120px, calc(100vw - 2rem));
-  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
   margin: auto;
   padding: 0;
   border: 0;
   background: transparent;
   color: #f8fafc;
-  overflow: visible;
+  overflow: hidden;
   overscroll-behavior: contain;
 }
 
@@ -1099,6 +1099,7 @@ footer > div {
 
 .sample-lightbox-panel {
   position: relative;
+  max-height: inherit;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.16);
   border-radius: 1rem;
@@ -1133,11 +1134,15 @@ footer > div {
 }
 
 .sample-lightbox figure {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  max-height: inherit;
+  min-height: 0;
   margin: 0;
 }
 
 .sample-lightbox-image-wrap {
-  max-height: calc(100vh - 9rem);
+  min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
   background: #070a0f;
@@ -1198,11 +1203,7 @@ body.sample-lightbox-open {
 
   .sample-lightbox {
     width: calc(100vw - 1rem);
-    max-height: calc(100vh - 1rem);
-  }
-
-  .sample-lightbox-image-wrap {
-    max-height: calc(100vh - 8rem);
+    max-height: calc(100dvh - 1rem);
   }
 
   .sample-lightbox-caption {

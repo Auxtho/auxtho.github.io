@@ -1,0 +1,103 @@
+{
+  "version": "2026-07-16",
+  "scope": "Auxtho homepage public-safe product evidence",
+  "attestation_class": "publisher_self_attestation",
+  "attestation_limit": "The manifest binds published bytes and records the publisher's capture assertions; it is not an independently reproducible build or operating-effectiveness attestation.",
+  "evidence_policy": {
+    "surfaces_are_independent": true,
+    "matching_display_sequence_is_deliberate_synthetic_fixture": true,
+    "correlated_customer_run_claimed": false,
+    "live_telemetry_claimed": false,
+    "operating_effectiveness_claimed": false,
+    "production_readiness_claimed": false
+  },
+  "assets": [
+    {
+      "path": "/assets/proposal/app-overview-synthetic-replay-20260716.png",
+      "sidecar": "/assets/proposal/app-overview-synthetic-replay-20260716.json",
+      "sidecar_sha256": "fd6acff60ba66b220c7c475f9da7c19ffa52f734b0e5510f2bea22b2f7b7a31d",
+      "sha256": "c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32",
+      "sha256_basis": "raw file bytes",
+      "media_type": "image/png",
+      "dimensions_px": [1920, 1280],
+      "public_derivative": true,
+      "public_derivative_note": "Downscaled from the controlled synthetic capture without semantic content alteration.",
+      "surface": "Auxtho App",
+      "captured_on": "2026-07-16",
+      "source_revision": null,
+      "source_revision_publicly_resolvable": false,
+      "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
+      "provenance_class": "publisher_self_attestation",
+      "fixture_relationship": "independent synthetic fixture; not correlated with the Console capture or a customer run",
+      "capture_annotation": "the visible synthetic replay label is a capture annotation and is not native product UI",
+      "fixture_values": {
+        "needs_review": 4,
+        "blocked": 2,
+        "ready_for_release": 3,
+        "released": 1,
+        "in_progress": 2,
+        "released_today": 1,
+        "total": 12
+      },
+      "validation": [
+        "fixed synthetic QA records match the displayed summary",
+        "capture completed without browser errors",
+        "synthetic and no-live-telemetry boundaries are visible",
+        "no external request completed",
+        "customer data used: false"
+      ],
+      "does_not_establish": [
+        "live usage or customer adoption",
+        "backend aggregation correctness",
+        "deployment identity",
+        "completed customer approval, release, or export",
+        "operating effectiveness or production readiness"
+      ]
+    },
+    {
+      "path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
+      "sidecar": "/assets/proposal/console-synthetic-workflow-replay-20260716.json",
+      "sidecar_sha256": "c573e37efa46b7f8a0981bd28fa73473e26e28e4b3e4419a629ae7e31ee15763",
+      "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
+      "sha256_basis": "raw file bytes",
+      "media_type": "image/png",
+      "dimensions_px": [1280, 509],
+      "public_derivative": false,
+      "surface": "Auxtho Console",
+      "captured_on": "2026-07-16",
+      "source_revision": null,
+      "source_revision_publicly_resolvable": false,
+      "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
+      "provenance_class": "publisher_self_attestation",
+      "fixture_relationship": "independent synthetic fixture; not correlated with the App capture or a customer run",
+      "fixture_values": {
+        "review_attention": 4,
+        "critical_signals": 2,
+        "synthetic_customer_records": 3,
+        "active_synthetic_bootstraps": 1
+      },
+      "validation": [
+        "fixed synthetic QA records match the displayed summary",
+        "capture completed without browser errors",
+        "synthetic and no-live-telemetry boundaries are visible",
+        "no external request completed",
+        "customer data used: false"
+      ],
+      "does_not_establish": [
+        "live telemetry or customer adoption",
+        "production runtime or tenant provisioning",
+        "completed operational work",
+        "provider, export, or production mutation",
+        "operating effectiveness or production readiness"
+      ]
+    }
+  ],
+  "illustrative_elements": [
+    {
+      "name": "homepage selected review path",
+      "purpose": "explain the visible sequence from selected work to human decision",
+      "evidence_status": "illustrative structure only; not a production activity trace or customer outcome",
+      "final_state": "human decision remains required and export remains separately bounded"
+    }
+  ]
+}

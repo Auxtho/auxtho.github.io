@@ -1,0 +1,28 @@
+{
+  "decision": "PUBLIC_SYNTHETIC_APP_CAPTURE_READY",
+  "output_path": "/assets/proposal/app-overview-synthetic-replay-20260716.png",
+  "source_revision": null,
+  "source_revision_publicly_resolvable": false,
+  "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
+  "sha256": "c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32",
+  "dimensions_physical_px": [
+    1920,
+    1280
+  ],
+  "public_derivative": true,
+  "public_derivative_note": "Downscaled from the controlled synthetic capture without semantic content alteration.",
+  "capture_time_utc": "2026-07-16T12:00:00.000Z",
+  "fixture_summary": {
+    "needs_review": 4,
+    "blocked": 2,
+    "ready_for_release": 3,
+    "released": 1,
+    "in_progress": 2,
+    "released_today": 1,
+    "total": 12
+  },
+  "customer_data_used": false,
+  "capture_annotation": "The visible synthetic replay label is a capture annotation and is not native product UI.",
+  "fixture_relationship": "Independent synthetic fixture; it is not correlated with the Console capture or a customer run.",
+  "claim_boundary": "This controlled synthetic rendering demonstrates visible review states. It does not prove deployment identity, live usage, customer adoption, completed approvals, export, or operating effectiveness."
+}

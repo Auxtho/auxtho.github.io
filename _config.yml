@@ -1,0 +1,12 @@
+exclude:
+  - .github
+  - node_modules
+  - playwright-report
+  - scripts
+  - src
+  - tests
+  - test-results
+  - test-results-final
+  - package.json
+  - package-lock.json
+  - tailwind.config.js

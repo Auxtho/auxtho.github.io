@@ -1,0 +1,97 @@
+name: Site Build + Verifier Contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "**.html"
+      - "assets/**"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "CNAME"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "_config.yml"
+      - "tailwind.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "release.json"
+      - ".gitattributes"
+      - ".github/workflows/site-ci.yml"
+      - ".github/workflows/deploy-pages.yml"
+  push:
+    branches: [main]
+    paths:
+      - "**.html"
+      - "assets/**"
+      - "src/**"
+      - "scripts/**"
+      - "tests/**"
+      - "CNAME"
+      - "robots.txt"
+      - "sitemap.xml"
+      - "_config.yml"
+      - "tailwind.config.js"
+      - "package.json"
+      - "package-lock.json"
+      - "release.json"
+      - ".gitattributes"
+      - ".github/workflows/site-ci.yml"
+      - ".github/workflows/deploy-pages.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ format('site-ci-{0}', github.ref) }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Verify Site Contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    permissions:
+      contents: read
+      pages: read
+    env:
+      SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out the exact verification source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind the checkout to the exact event SHA
+        run: test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+      - name: Set up the exact Node runtime
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.17.0
+          cache: npm
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - name: Require workflow-mode Pages before merge can publish this commit
+        run: node scripts/release/platform-controls.cjs assert-pages-bootstrap site-ci-evidence/pages-bootstrap.json
+      - run: npm run test:yaml
+      - run: npm run test:release
+      - run: npm run test:js
+      - run: npm run build
+      - name: Require committed generated CSS to be tracked and current
+        run: |
+          git ls-files --error-unmatch -- assets/style.css
+          git diff --exit-code
+      - run: ./node_modules/.bin/playwright install --with-deps chromium
+      - run: npm run test:verify
+      - name: Retain pre-merge Pages bootstrap evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: site-ci-bootstrap-${{ env.SOURCE_SHA }}
+          path: site-ci-evidence
+          if-no-files-found: warn
+          retention-days: 90
+          compression-level: 0
