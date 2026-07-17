@@ -280,6 +280,8 @@ jobs:
         id: candidate_readback
         if: steps.candidate_deployment.outcome == 'success'
         continue-on-error: true
+        env:
+          EXPECTED_SITE_SHA: ${{ inputs.approved_sha }}
         run: |
           node scripts/release/verify-deployment.cjs \
             --origin "${PUBLIC_SITE_ORIGIN}" \
@@ -313,7 +315,7 @@ jobs:
             --provenance rollback-release-provenance \
             --evidence post-deploy-evidence/rollback \
             --cache-token "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-rollback" \
-            --attempts 18
+            --attempts 36
       - name: Retain candidate and rollback readback evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

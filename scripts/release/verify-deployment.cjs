@@ -10,9 +10,9 @@ const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true });
-const MAX_READBACK_ATTEMPTS = 24;
+const MAX_READBACK_ATTEMPTS = 48;
 const MAX_READBACK_RETRY_DELAY_MS = 15_000;
-const MAX_READBACK_WINDOW_MS = 300_000;
+const MAX_READBACK_WINDOW_MS = 600_000;
 const CLOUDFLARE_MANAGED_ROBOTS_BLOCK = [
   '# BEGIN Cloudflare Managed content',
   '',

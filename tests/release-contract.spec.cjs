@@ -96,6 +96,8 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.equal((deploy.match(/actions\/deploy-pages@[0-9a-f]{40}/g) || []).length, 2);
   assert.match(deploy, /id: candidate_readback/);
   assert.match(deploy, /id: rollback_readback/);
+  assert.match(deploy, /EXPECTED_SITE_SHA:\s+\$\{\{ inputs\.approved_sha \}\}/);
+  assert.match(deploy, /--attempts 36/);
   assert.doesNotMatch(deploy, /BACKEND_FINALIZE_REQUIRED|BACKEND_ROLLBACK_REQUIRED/);
   assert.doesNotMatch(deploy, /BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA/);
   assert.doesNotMatch(deploy, /^\s*<<:/m);

@@ -499,7 +499,7 @@ test('public file readback rejects unbounded attempts and preserves failed obser
   };
   await assert.rejects(
     waitForExpectedPublicFile({ ...base, attempts: Infinity }),
-    /readback attempts must be an integer from 1 to 24/,
+    /readback attempts must be an integer from 1 to 48/,
   );
   await assert.rejects(
     waitForExpectedPublicFile({ ...base, attempts: 2 }),
@@ -536,7 +536,7 @@ test('readback deadline rejects late exact bytes and constrains each HTTPS reque
       statusMessage: 'public path returned',
       mismatchMessage: 'public byte mismatch',
       fetcher: async () => {
-        now = 300001;
+        now = 600001;
         return { status: 200, headers: {}, body: expected, chain: [] };
       },
       sleeper: async () => {},
