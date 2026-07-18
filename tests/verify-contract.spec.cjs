@@ -2,6 +2,7 @@ const { test, expect } = require('@playwright/test');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { findBrokenImageSources } = require('../scripts/release/browser-readback.cjs');
 
 test.describe.configure({ mode: 'serial' });
 
@@ -141,6 +142,30 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   if (server) await new Promise((resolve) => server.close(resolve));
+});
+
+test('homepage image readback rejects source-less images except the closed sample lightbox placeholder', async ({ page }) => {
+  await page.goto(`${baseUrl}/index.html`, { waitUntil: 'networkidle' });
+  const collect = () => page.locator('img').evaluateAll((images) => images.map((image) => {
+    const lightbox = image.closest('dialog#sample-lightbox');
+    return {
+      source: image.currentSrc || image.getAttribute('src'),
+      complete: image.complete,
+      naturalWidth: image.naturalWidth,
+      descriptor: image.id ? `#${image.id}` : 'img',
+      inactiveSampleLightboxPlaceholder: image.id === 'sample-lightbox-image'
+        && Boolean(lightbox)
+        && !lightbox.open,
+    };
+  }));
+
+  expect(findBrokenImageSources(await collect())).toEqual([]);
+  await page.locator('body').evaluate((body) => {
+    const missing = document.createElement('img');
+    missing.id = 'missing-image-regression';
+    body.appendChild(missing);
+  });
+  expect(findBrokenImageSources(await collect())).toContain('missing-src:#missing-image-regression');
 });
 
 test('verifier CSP allows reviewed endpoints and blocks an unlisted connection', async ({ page }) => {

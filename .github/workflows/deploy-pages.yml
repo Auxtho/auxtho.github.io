@@ -315,7 +315,7 @@ jobs:
             --provenance rollback-release-provenance \
             --evidence post-deploy-evidence/rollback \
             --cache-token "${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-rollback" \
-            --attempts 36
+            --attempts 48
       - name: Retain candidate and rollback readback evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4

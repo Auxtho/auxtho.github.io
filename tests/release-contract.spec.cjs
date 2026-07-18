@@ -5,6 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const test = require('node:test');
+const YAML = require('yaml');
 
 const {
   buildArtifact,
@@ -20,6 +21,7 @@ const {
   collectJavaScriptFiles,
   validateJavaScriptFiles,
 } = require('../scripts/release/validate-js.cjs');
+const { findBrokenImageSources } = require('../scripts/release/browser-readback.cjs');
 
 const root = path.resolve(__dirname, '..');
 const LEGACY_SHA = '1'.repeat(40);
@@ -70,6 +72,10 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
     path.join(root, 'scripts', 'release', 'verify-deployment.cjs'),
     'utf8',
   );
+  const deployWorkflow = YAML.parse(deploy);
+  const deploySteps = deployWorkflow.jobs.deploy_and_verify.steps;
+  const candidateReadback = deploySteps.find((step) => step.id === 'candidate_readback');
+  const rollbackReadback = deploySteps.find((step) => step.id === 'rollback_readback');
   assert.match(site, /name: Verify Site Contract/);
   assert.match(site, /assert-pages-bootstrap/);
   assert.match(site, /\.github\/workflows\/deploy-pages\.yml/);
@@ -97,7 +103,8 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.match(deploy, /id: candidate_readback/);
   assert.match(deploy, /id: rollback_readback/);
   assert.match(deploy, /EXPECTED_SITE_SHA:\s+\$\{\{ inputs\.approved_sha \}\}/);
-  assert.match(deploy, /--attempts 36/);
+  assert.match(candidateReadback.run, /--attempts 6(?:\n|$)/);
+  assert.match(rollbackReadback.run, /--attempts 48(?:\n|$)/);
   assert.doesNotMatch(deploy, /BACKEND_FINALIZE_REQUIRED|BACKEND_ROLLBACK_REQUIRED/);
   assert.doesNotMatch(deploy, /BACKEND_(?:BRIDGE|FINAL|ROLLBACK)_SHA/);
   assert.doesNotMatch(deploy, /^\s*<<:/m);
@@ -115,6 +122,42 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.match(deploymentVerifier, /timeout: timeoutMs/);
   assert.doesNotMatch(deploymentVerifier, /timeout: 30_000/);
   assert.doesNotMatch(deploymentVerifier, /bypassCache: variant ===/);
+});
+
+test('browser readback exempts only the inactive sample lightbox placeholder', () => {
+  assert.deepEqual(findBrokenImageSources([
+    {
+      source: '',
+      complete: true,
+      naturalWidth: 0,
+      descriptor: '#sample-lightbox-image',
+      inactiveSampleLightboxPlaceholder: true,
+    },
+    {
+      source: '',
+      complete: true,
+      naturalWidth: 0,
+      descriptor: '#missing-image',
+      inactiveSampleLightboxPlaceholder: false,
+    },
+    {
+      source: '/assets/broken.png',
+      complete: true,
+      naturalWidth: 0,
+      descriptor: '#broken-image',
+      inactiveSampleLightboxPlaceholder: false,
+    },
+    {
+      source: '/assets/loaded.png',
+      complete: true,
+      naturalWidth: 640,
+      descriptor: '#loaded-image',
+      inactiveSampleLightboxPlaceholder: false,
+    },
+  ]), [
+    'missing-src:#missing-image',
+    '/assets/broken.png',
+  ]);
 });
 
 test('candidate artifact is deterministic, content-addressed, privacy-bounded, and rollback-aware', () => {
