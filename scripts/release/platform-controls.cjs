@@ -335,8 +335,9 @@ function validatePlatformState(snapshot, bindings) {
   }
   validateSuccessfulCheck(snapshot.checkRuns, approved.sourceSha);
   validateRollbackDeployment(snapshot.rollbackDeployments, approved.rollbackSha);
-  validateLatestPagesBuild(snapshot.latestPagesBuild, approved.rollbackSha);
   if (approved.siteContractMode === 'bootstrap') {
+    // The Pages build endpoint tracks the legacy branch build, not workflow deployments.
+    validateLatestPagesBuild(snapshot.latestPagesBuild, approved.rollbackSha);
     if (
       snapshot?.currentLiveRelease?.missing !== true
       || snapshot?.currentLiveRelease?.status_code !== 404
