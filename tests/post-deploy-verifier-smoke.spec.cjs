@@ -9,7 +9,7 @@ const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const evidenceDirectory = path.resolve(__dirname, '..', 'post-deploy-evidence');
 
-test.describe.configure({ mode: 'serial', timeout: 45_000 });
+test.describe.configure({ mode: 'serial', timeout: 120_000 });
 
 test('public pages render with packaged styles and images without CSP or same-origin resource failures', async ({ page }) => {
   expect(origin).toBe('https://auxtho.com');
@@ -81,10 +81,35 @@ test('deployed verifier loads over HTTPS and performs no identifier-bearing requ
   expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
 
   const verificationPosts = [];
+  const readinessEvents = [];
   const pageErrors = [];
+  const recordReadinessEvent = (event) => {
+    if (readinessEvents.length < 12) readinessEvents.push(event);
+  };
+  const readinessTarget = (value) => {
+    const url = new URL(value);
+    return { origin: url.origin, path: url.pathname };
+  };
   page.on('request', (request) => {
     if (request.method() === 'POST' && request.url().includes('/api/verify')) {
       verificationPosts.push(request.url());
+    }
+    if (request.url().includes('/api/verify/status') || request.url().includes('/release.json')) {
+      recordReadinessEvent({ type: 'request', method: request.method(), ...readinessTarget(request.url()) });
+    }
+  });
+  page.on('response', (response) => {
+    if (response.url().includes('/api/verify/status') || response.url().includes('/release.json')) {
+      recordReadinessEvent({ type: 'response', status: response.status(), ...readinessTarget(response.url()) });
+    }
+  });
+  page.on('requestfailed', (request) => {
+    if (request.url().includes('/api/verify/status') || request.url().includes('/release.json')) {
+      recordReadinessEvent({
+        type: 'requestfailed',
+        ...readinessTarget(request.url()),
+        error: request.failure()?.errorText || 'unknown',
+      });
     }
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
@@ -99,12 +124,16 @@ test('deployed verifier loads over HTTPS and performs no identifier-bearing requ
   expect(response.status()).toBe(200);
   expect(new URL(page.url()).protocol).toBe('https:');
   await expect(page.locator('#manual-verify-form')).toBeVisible({ timeout: 10_000 });
-  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready', { timeout: 20_000 });
-  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
-  await expect(page.locator('#manual-report-id')).toHaveValue('');
-  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
-  expect(verificationPosts).toEqual([]);
-  expect(pageErrors).toEqual([]);
+  const readinessStatus = page.locator('#verification-service-status');
+  let readinessWaitError = null;
+  try {
+    // The page performs two sequential requests, each bounded to 20 seconds.
+    // The deployment check must cover their combined budget plus browser overhead.
+    await expect(readinessStatus).not.toHaveText('Checking / Not confirmed', { timeout: 45_000 });
+  } catch (error) {
+    readinessWaitError = error;
+  }
+  const readinessText = await readinessStatus.textContent();
 
   fs.mkdirSync(evidenceDirectory, { recursive: true });
   fs.writeFileSync(path.join(evidenceDirectory, 'browser-smoke.json'), `${JSON.stringify({
@@ -112,10 +141,21 @@ test('deployed verifier loads over HTTPS and performs no identifier-bearing requ
     source_sha: sourceSha,
     url: page.url(),
     response_status: response.status(),
-    verification_status: await page.locator('#verification-service-status').textContent(),
+    verification_status: readinessText,
+    readiness_events: readinessEvents,
+    readiness_wait_error: readinessWaitError ? readinessWaitError.message : null,
     identifier_bearing_post_count: verificationPosts.length,
     page_errors: pageErrors,
   }, null, 2)}\n`);
+
+  expect(readinessWaitError).toBeNull();
+  expect(readinessText).toContain('Endpoint ready');
+  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
+  await expect(page.locator('#manual-report-id')).toHaveValue('');
+  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
+  expect(verificationPosts).toEqual([]);
+  expect(pageErrors).toEqual([]);
+
 });
 
 test('deployed query-form legacy binding is scrubbed into a tombstone without any API request', async ({ page }) => {

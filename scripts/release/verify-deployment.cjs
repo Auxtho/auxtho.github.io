@@ -162,6 +162,28 @@ function parseDigestManifest(document) {
   return entries;
 }
 
+function relativeFromManifestPublicPath(value) {
+  if (typeof value !== 'string' || !value.startsWith('/') || value.includes('\\')) {
+    fail(`invalid manifest public path: ${String(value)}`);
+  }
+  let relative;
+  try {
+    relative = decodeURIComponent(value.slice(1));
+  } catch {
+    fail(`invalid manifest public path encoding: ${value}`);
+  }
+  const segments = relative.split('/');
+  if (
+    !relative
+    || relative !== relative.trim()
+    || !/^[A-Za-z0-9._/ -]+$/.test(relative)
+    || path.posix.isAbsolute(relative)
+    || segments.some((segment) => !segment || segment === '.' || segment === '..')
+    || `/${segments.map((segment) => encodeURIComponent(segment)).join('/')}` !== value
+  ) fail(`manifest public path is not canonical: ${value}`);
+  return relative;
+}
+
 function headerValue(headers, name) {
   const value = headers[String(name).toLowerCase()];
   return Array.isArray(value) ? value.join(', ') : value;
@@ -586,7 +608,7 @@ async function verifyDeployment(options) {
   const digestByPath = new Map(digestEntries.map((entry) => [`/${entry.relative}`, entry.sha256]));
   for (const reference of releaseManifest.script_references) {
     if (digestByPath.get(reference.path) !== reference.sha256) fail(`script reference is not bound to package digest: ${reference.url}`);
-    const html = canonicalBodies.get(reference.html_path.slice(1))?.body?.toString('utf8');
+    const html = canonicalBodies.get(relativeFromManifestPublicPath(reference.html_path))?.body?.toString('utf8');
     if (!html || !findScriptSources(html).includes(reference.url)) fail(`deployed HTML does not reference exact script URL: ${reference.html_path}`);
     if (options.mode === 'candidate' && reference.content_addressed !== true) {
       fail(`candidate script reference is not content-addressed: ${reference.url}`);
@@ -613,7 +635,7 @@ async function verifyDeployment(options) {
   }
   for (const reference of releaseManifest.stylesheet_references || []) {
     if (digestByPath.get(reference.path) !== reference.sha256) fail(`stylesheet reference is not bound to package digest: ${reference.url}`);
-    const html = canonicalBodies.get(reference.html_path.slice(1))?.body?.toString('utf8');
+    const html = canonicalBodies.get(relativeFromManifestPublicPath(reference.html_path))?.body?.toString('utf8');
     if (!html || !findStylesheetSources(html).includes(reference.url)) {
       fail(`deployed HTML does not reference exact stylesheet URL: ${reference.html_path}`);
     }
@@ -642,7 +664,7 @@ async function verifyDeployment(options) {
   }
   for (const reference of releaseManifest.image_references || []) {
     if (digestByPath.get(reference.path) !== reference.sha256) fail(`image reference is not bound to package digest: ${reference.url}`);
-    const html = canonicalBodies.get(reference.html_path.slice(1))?.body?.toString('utf8');
+    const html = canonicalBodies.get(relativeFromManifestPublicPath(reference.html_path))?.body?.toString('utf8');
     if (!html || !findImageSources(html).includes(reference.url)) {
       fail(`deployed HTML does not reference exact image URL: ${reference.html_path}`);
     }
@@ -752,6 +774,7 @@ module.exports = {
   parseDigestManifest,
   parseArguments,
   requestOnce,
+  relativeFromManifestPublicPath,
   resolveHttpsRedirect,
   validateRelease,
   validatePublicPageSecurity,
