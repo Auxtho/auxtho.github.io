@@ -20,11 +20,54 @@ const {
   relativeFromManifestPublicPath,
   resolveHttpsRedirect,
   validateRelease,
+  validatePublicPageSecurity,
+  validateVerifierSecurity,
   waitForExpectedPublicFile,
 } = require('../scripts/release/verify-deployment.cjs');
 const L = '1'.repeat(40);
 const S = 'a'.repeat(40);
 const COMPATIBILITY = [L, S].sort();
+
+function secureHtmlResponse(csp) {
+  return {
+    headers: {
+      'cf-ray': 'a1ccea65eef92f4b-LAX',
+      server: 'cloudflare',
+      'content-type': 'text/html; charset=utf-8',
+      'strict-transport-security': 'max-age=15552000; includeSubDomains; preload',
+      'x-content-type-options': 'nosniff',
+      'referrer-policy': 'strict-origin-when-cross-origin',
+      'content-security-policy': csp,
+    },
+  };
+}
+
+const SUPPORTED_PUBLIC_CSP = "default-src 'self'; script-src 'self'; connect-src 'self' https://api.auxtho.com; frame-ancestors 'none';";
+
+test('deployment security validators reject the unsupported navigate-to directive', () => {
+  const publicDocument = '<!doctype html><html><head></head><body></body></html>';
+  const verifierDocument = `<!doctype html><html><head><meta http-equiv="Content-Security-Policy" content="${SUPPORTED_PUBLIC_CSP}"></head></html>`;
+
+  assert.doesNotThrow(() => validatePublicPageSecurity(
+    secureHtmlResponse(SUPPORTED_PUBLIC_CSP),
+    publicDocument,
+    '/index.html',
+  ));
+  assert.doesNotThrow(() => validateVerifierSecurity(
+    secureHtmlResponse(SUPPORTED_PUBLIC_CSP),
+    verifierDocument,
+  ));
+
+  const unsupportedCsp = `${SUPPORTED_PUBLIC_CSP} NaViGaTe-To 'self' mailto:;`;
+  assert.throws(
+    () => validatePublicPageSecurity(secureHtmlResponse(unsupportedCsp), publicDocument, '/index.html'),
+    /HOLD: \/index\.html response CSP contains unsupported navigate-to/,
+  );
+  assert.throws(
+    () => validateVerifierSecurity(secureHtmlResponse(unsupportedCsp), verifierDocument),
+    /HOLD: production response CSP contains unsupported navigate-to/,
+  );
+});
 
 function bindings(overrides = {}) {
   return {
