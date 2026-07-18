@@ -17,6 +17,7 @@ const {
   isManagedRobotsOverlay,
   parseDigestManifest,
   requestOnce,
+  relativeFromManifestPublicPath,
   resolveHttpsRedirect,
   validateRelease,
   waitForExpectedPublicFile,
@@ -369,6 +370,24 @@ test('digest parser is exact and deterministic', () => {
   assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./../secret\n`), /invalid digest/);
   assert.throws(() => parseDigestManifest(`${'d'.repeat(64)}  ./archive/ trailing.html \n`), /invalid digest/);
 
+});
+
+test('manifest public paths decode canonical encoded HTML paths for rollback readback', () => {
+  assert.equal(
+    relativeFromManifestPublicPath('/archive/index%20fix%20011226.html'),
+    'archive/index fix 011226.html',
+  );
+  assert.equal(relativeFromManifestPublicPath('/verify.html'), 'verify.html');
+  assert.throws(() => relativeFromManifestPublicPath('/archive/%2e%2e/secret.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/index%2ffix.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/%ZZ.html'), /encoding/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/a%5Cb.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/a%00b.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/a%09b.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/a%3Ab.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/a%25b.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/%20archive/index.html'), /not canonical/);
+  assert.throws(() => relativeFromManifestPublicPath('/archive/index.html%20'), /not canonical/);
 });
 
 test('managed robots overlay preserves the exact reviewed source and no-training policy', () => {
