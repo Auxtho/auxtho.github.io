@@ -295,11 +295,25 @@ test('branch, environment, Pages HTTPS, and live release controls fail closed in
 
   const normalState = snapshot();
   normalState.currentLiveRelease = { source_sha: L };
-  assert.equal(validatePlatformState(normalState, bindings({
+  normalState.latestPagesBuild = { commit: '4'.repeat(40), status: 'built' };
+  const normalBindings = bindings({
     siteContractMode: 'normal',
     approvedSiteContractMode: 'normal',
     releasePurpose: 'approved-site-release',
-  })).siteContractMode, 'normal');
+  });
+  assert.equal(validatePlatformState(normalState, normalBindings).siteContractMode, 'normal');
+
+  const normalDeploymentMismatch = snapshot();
+  normalDeploymentMismatch.currentLiveRelease = { source_sha: L };
+  normalDeploymentMismatch.rollbackDeployments[0].sha = '2'.repeat(40);
+  assert.throws(
+    () => validatePlatformState(normalDeploymentMismatch, normalBindings),
+    /latest successful github-pages deployment/,
+  );
+
+  const normalReleaseMismatch = snapshot();
+  normalReleaseMismatch.currentLiveRelease = { source_sha: S };
+  assert.throws(() => validatePlatformState(normalReleaseMismatch, normalBindings), /normal mode requires/);
 
   const withPendingCurrentJob = snapshot();
   withPendingCurrentJob.rollbackDeployments.unshift({
