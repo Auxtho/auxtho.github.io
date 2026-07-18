@@ -1,6 +1,7 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('node:fs');
 const path = require('node:path');
+const { findBrokenImageSources } = require('../scripts/release/browser-readback.cjs');
 
 const origin = process.env.PUBLIC_SITE_ORIGIN;
 const sourceSha = process.env.EXPECTED_SITE_SHA;
@@ -44,9 +45,19 @@ test('public pages render with packaged styles and images without CSP or same-or
     for (const stylesheet of styleSheets.filter((href) => new URL(href).origin === origin)) {
       expect(stylesheet).toMatch(/\?sha256=[0-9a-f]{64}$/);
     }
-    const brokenImages = await page.locator('img').evaluateAll((images) => images
-      .filter((image) => !image.complete || image.naturalWidth === 0)
-      .map((image) => image.getAttribute('src')));
+    const imageStates = await page.locator('img').evaluateAll((images) => images.map((image) => {
+      const lightbox = image.closest('dialog#sample-lightbox');
+      return {
+        source: image.currentSrc || image.getAttribute('src'),
+        complete: image.complete,
+        naturalWidth: image.naturalWidth,
+        descriptor: image.id ? `#${image.id}` : 'img',
+        inactiveSampleLightboxPlaceholder: image.id === 'sample-lightbox-image'
+          && Boolean(lightbox)
+          && !lightbox.open,
+      };
+    }));
+    const brokenImages = findBrokenImageSources(imageStates);
     expect(brokenImages).toEqual([]);
     checked.push({ path: item.path, status: response.status(), style_sheet_count: styleSheets.length });
   }
