@@ -237,6 +237,7 @@ function validateVerifierSecurity(response, document) {
   requireHeader('content-security-policy', /(?:^|;)\s*frame-ancestors\s+'none'\s*(?:;|$)/i);
   const responseCsp = headerValue(response.headers, 'content-security-policy');
   if (/127\.0\.0\.1|localhost|http:/i.test(responseCsp)) fail('production response CSP contains loopback or HTTP');
+  validateSupportedResponseCsp(responseCsp, 'production');
 
   const match = document.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/i);
   if (!match) fail('verifier meta CSP is missing');
@@ -261,9 +262,18 @@ function validatePublicPageSecurity(response, document, publicPath) {
   if (/127\.0\.0\.1|localhost|(?:^|\s)http:/i.test(csp)) fail(`${publicPath} response CSP contains loopback or HTTP`);
   if (/(?:^|\s)'unsafe-eval'(?:\s|;|$)/i.test(csp)) fail(`${publicPath} response CSP permits unsafe-eval`);
   if (/(?:^|\s)\*(?:\s|;|$)/.test(csp)) fail(`${publicPath} response CSP contains a wildcard source`);
+  validateSupportedResponseCsp(csp, publicPath);
   if (/<script\b(?![^>]*\bsrc=)[^>]*>/i.test(document)) {
     fail(`${publicPath} contains an inline script that cannot be bound to package bytes`);
   }
+}
+
+function validateSupportedResponseCsp(csp, label) {
+  const directives = csp
+    .split(';')
+    .map((directive) => directive.trim().split(/\s+/, 1)[0].toLowerCase())
+    .filter(Boolean);
+  if (directives.includes('navigate-to')) fail(`${label} response CSP contains unsupported navigate-to`);
 }
 
 function validateRelease(release, provenance, expected) {
