@@ -95,8 +95,11 @@ function normalizeManifestPath(value) {
 function isReviewedPublicSourcePath(relative) {
   const isRootHtml = !relative.includes('/') && relative.endsWith('.html');
   const isRootStatic = ['CNAME', 'robots.txt', 'sitemap.xml'].includes(relative);
-  const isSecurityTombstone = relative === 'security/ardamire/index.html';
-  return isRootHtml || isRootStatic || isSecurityTombstone || relative.startsWith('assets/');
+  const isReviewedNestedHtml = [
+    'lineage/isp/index.html',
+    'security/ardamire/index.html',
+  ].includes(relative);
+  return isRootHtml || isRootStatic || isReviewedNestedHtml || relative.startsWith('assets/');
 }
 
 function readPublicSourcePaths(sourceRoot) {

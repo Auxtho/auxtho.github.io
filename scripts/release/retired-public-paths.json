@@ -29,8 +29,6 @@
     "/assets/verify.js",
     "/core/",
     "/core/index.html",
-    "/lineage/isp/",
-    "/lineage/isp/index.html",
     "/package-lock.json",
     "/package.json",
     "/reset_repo.ps1",

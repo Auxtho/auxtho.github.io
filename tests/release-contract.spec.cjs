@@ -5,6 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const { spawnSync } = require('node:child_process');
 const test = require('node:test');
+const parse5 = require('parse5');
 const YAML = require('yaml');
 
 const {
@@ -43,9 +44,34 @@ function copy(relative, targetRoot) {
 function createSourceFixture(targetRoot) {
   for (const relative of [
     '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html', 'verify.html',
-    'CNAME', 'robots.txt', 'sitemap.xml', 'security/ardamire/index.html', 'assets',
+    'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
+    'security/ardamire/index.html', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
+}
+
+function walkHtml(node, visit) {
+  visit(node);
+  for (const child of node.childNodes || []) walkHtml(child, visit);
+  if (node.content) walkHtml(node.content, visit);
+}
+
+function htmlAttribute(node, name) {
+  return node.attrs?.find((attribute) => attribute.name === name)?.value;
+}
+
+function htmlLinksAndIds(document) {
+  const hrefs = [];
+  const ids = new Set();
+  walkHtml(document, (node) => {
+    const id = htmlAttribute(node, 'id');
+    if (id) ids.add(id);
+    if (node.tagName === 'a') {
+      const href = htmlAttribute(node, 'href');
+      if (href) hrefs.push(href);
+    }
+  });
+  return { hrefs, ids };
 }
 
 test('legacy branch metadata remains an exact build-revision-only hold contract', () => {
@@ -370,6 +396,14 @@ test('public file manifest rejects duplicate keys and non-canonical path aliases
       }, null, 2)}\n`,
       expected: /public file manifest path is not canonical/,
     },
+    {
+      name: 'unreviewed nested HTML namespace',
+      mutate: (manifest) => `${JSON.stringify({
+        schema_version: 1,
+        paths: [...manifest.paths, '/lineage/private/index.html'].sort(),
+      }, null, 2)}\n`,
+      expected: /public file path is outside reviewed namespaces/,
+    },
   ]) {
     const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-release-manifest-boundary-'));
     try {
@@ -556,7 +590,7 @@ test('bootstrap rollback packages the actual approved legacy tree without invent
 test('every HTML script reference is query-free and bound to exact SHA-256 bytes', () => {
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html',
-    'story.html', 'security/ardamire/index.html',
+    'story.html', 'lineage/isp/index.html', 'security/ardamire/index.html',
   ];
   const referenced = new Set();
   for (const relative of htmlFiles) {
@@ -575,7 +609,7 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
 test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', () => {
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html', 'verify.html',
-    'security/ardamire/index.html',
+    'lineage/isp/index.html', 'security/ardamire/index.html',
   ];
   for (const relative of htmlFiles) {
     const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
@@ -589,9 +623,12 @@ test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', ()
 });
 
 test('every candidate-rendered image URL carries the exact SHA-256 of its bytes', () => {
-  const htmlFiles = ['404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html'];
+  const htmlFiles = [
+    '404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html',
+    'lineage/isp/index.html', 'security/ardamire/index.html',
+  ];
   for (const relative of htmlFiles) {
-    const document = fs.readFileSync(path.join(root, relative), 'utf8');
+    const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
     for (const source of findImageSources(document)) {
       const match = source.match(/^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/);
       assert.ok(match, `${relative} -> ${source}`);
@@ -658,6 +695,81 @@ test('public evidence manifest and homepage preserve synthetic and non-customer 
   assert.equal(appAsset.public_derivative, true);
 });
 
+test('technical foundation routes are stable, scoped, and explicitly bounded', () => {
+  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const isp = fs.readFileSync(path.join(root, 'lineage', 'isp', 'index.html'), 'utf8');
+  const ardamire = fs.readFileSync(path.join(root, 'security', 'ardamire', 'index.html'), 'utf8');
+  const verify = fs.readFileSync(path.join(root, 'verify.html'), 'utf8');
+  const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
+  const publicFiles = JSON.parse(fs.readFileSync(
+    path.join(root, 'scripts', 'release', 'public-files.json'),
+    'utf8',
+  ));
+
+  assert.match(index, /id="foundations"/);
+  assert.match(index, /href="\/lineage\/isp\/"/);
+  assert.match(index, /href="\/security\/ardamire\/"/);
+  assert.match(index, /href="\/verify\.html"/);
+  assert.match(index, /not the current Auxtho production core/i);
+  assert.match(index, /not customer-wide defense/i);
+  assert.match(index, /not certification/i);
+
+  assert.match(isp, /<meta name="robots" content="index,follow">/);
+  assert.match(isp, /Public research lineage and prototype workflow proof/i);
+  assert.match(isp, /not presented here as the current Auxtho\s+production core/i);
+  assert.match(isp, /not third-party certification or independent assurance/i);
+  assert.doesNotMatch(isp, /AgentRunner/i);
+
+  assert.match(ardamire, /<meta name="robots" content="index,follow">/);
+  assert.match(ardamire, /does not establish live\s+enforcement, incident prevention, or operating effectiveness/i);
+  assert.match(ardamire, /does not replace a customer's SOC, SIEM, EDR, IAM/i);
+  assert.match(ardamire, /Review, approval, release, and export decisions remain human/i);
+  assert.doesNotMatch(ardamire, /guarantees? prevention|certified defense|autonomous approval/i);
+
+  assert.match(verify, /<meta name="robots" content="noindex">/);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/lineage\/isp\//);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/security\/ardamire\//);
+  assert.doesNotMatch(sitemap, /verify\.html/);
+
+  for (const required of [
+    '/assets/technical-foundations.css',
+    '/lineage/isp/index.html',
+    '/security/ardamire/index.html',
+  ]) assert.ok(publicFiles.paths.includes(required), required);
+});
+
+test('every reviewed internal link resolves to a public file and every internal fragment exists', () => {
+  const manifest = JSON.parse(fs.readFileSync(
+    path.join(root, 'scripts', 'release', 'public-files.json'),
+    'utf8',
+  ));
+  const publicPaths = new Set(manifest.paths);
+  const htmlDocuments = new Map();
+
+  for (const publicPath of manifest.paths.filter((value) => value.endsWith('.html'))) {
+    const relative = publicPath.slice(1);
+    const document = parse5.parse(fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8'));
+    htmlDocuments.set(publicPath, htmlLinksAndIds(document));
+  }
+
+  for (const [sourcePath, sourceDocument] of htmlDocuments.entries()) {
+    for (const href of sourceDocument.hrefs) {
+      if (/^(?:mailto|tel):/i.test(href)) continue;
+      assert.doesNotMatch(href, /^javascript:/i, `${sourcePath} -> ${href}`);
+      const target = new URL(href, `https://auxtho.com${sourcePath}`);
+      if (target.origin !== 'https://auxtho.com') continue;
+      let targetPath = decodeURIComponent(target.pathname);
+      if (targetPath === '/') targetPath = '/index.html';
+      else if (targetPath.endsWith('/')) targetPath = `${targetPath}index.html`;
+      assert.ok(publicPaths.has(targetPath), `${sourcePath} -> ${href} -> ${targetPath}`);
+      if (target.hash && htmlDocuments.has(targetPath)) {
+        const fragment = decodeURIComponent(target.hash.slice(1));
+        assert.ok(htmlDocuments.get(targetPath).ids.has(fragment), `${sourcePath} -> ${href}`);
+      }
+    }
+  }
+});
+
 test('retired path manifest enumerates the full historical public surface class', () => {
   const manifest = JSON.parse(fs.readFileSync(path.join(root, 'scripts', 'release', 'retired-public-paths.json'), 'utf8'));
   assert.equal(manifest.schema_version, 1);
@@ -667,9 +779,10 @@ test('retired path manifest enumerates the full historical public surface class'
     '/assets/verify.js',
     '/archive/core/v2025.1/',
     '/core/',
-    '/lineage/isp/',
     '/package.json',
     '/src/build-core-overview.js',
   ]) assert.ok(manifest.paths.includes(required), required);
+  assert.equal(manifest.paths.includes('/lineage/isp/'), false);
+  assert.equal(manifest.paths.includes('/lineage/isp/index.html'), false);
   assert.equal(new Set(manifest.paths).size, manifest.paths.length);
 });
