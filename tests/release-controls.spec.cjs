@@ -371,17 +371,17 @@ test('active no-bypass rulesets can supply exact deletion, force-push, and verif
 
 test('postdeploy release validation accepts exact static candidate history metadata', () => {
   const transition = {
-    bridge_reported_site_sha: L,
-    final_reported_site_sha: S,
-    rollback_reported_site_sha: L,
+    bridge_site_sha: L,
+    final_site_sha: S,
+    rollback_site_sha: L,
   };
   const release = {
     schema_version: 2,
     publication_mode: 'candidate',
     source_sha: S,
     previous_approved_source_sha: L,
-    compatible_backend_site_shas: COMPATIBILITY,
-    backend_site_sha_transition: transition,
+    declared_site_source_shas: COMPATIBILITY,
+    planned_site_sha_transition: transition,
     rollback_of_source_sha: null,
     release_manifest: { path: '/assets/release-manifest.json', sha256: 'd'.repeat(64) },
     privacy_manifest: { path: '/assets/proposal/evidence-manifest-20260716.json', sha256: 'e'.repeat(64) },
@@ -398,7 +398,7 @@ test('postdeploy release validation accepts exact static candidate history metad
     sourceSha: S,
     compatibleShas: [...COMPATIBILITY].reverse(),
     rollbackOfSha: null,
-  }), /compatible backend site SHA list mismatch/);
+  }), /deployed declared site source SHA list mismatch/);
 });
 
 test('HTTPS redirect resolver rejects every downgrade and unreviewed origin', () => {

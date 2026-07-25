@@ -11,10 +11,14 @@ the observed behavior, the expected behavior, and safe reproduction steps.
 
 ## Current Scope
 
-The supported public surface is the current release of `https://auxtho.com/`
-and its published verification page. Retired paths, stale branches, screenshots,
-synthetic fixtures, and historical commits are not evidence of a current
-security control, certification, compliance status, or production readiness.
+The supported public surface is the current release of `https://auxtho.com/`,
+the published ISP lineage reference, the noindex Ardamire interface reference,
+and the noindex record/file-digest check. The ISP and Ardamire pages document
+bounded evidence classes; they are not claims of an integrated production
+architecture or operating effectiveness. Retired paths, stale branches,
+screenshots, synthetic fixtures, and historical commits are not evidence of a
+current security control, certification, compliance status, or production
+readiness.
 
 The public site must not be used to submit personal, customer-confidential,
 regulated, or production data. See the published Privacy Policy and Public Site
@@ -24,4 +28,4 @@ Notice for the current evaluation boundaries.
 
 Please allow time for investigation and remediation before public disclosure.
 Auxtho does not promise a response or remediation service level through this
-public pilot policy.
+public evaluation policy.

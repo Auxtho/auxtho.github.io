@@ -38,7 +38,7 @@
 
     function artifactRecordHashError(value) {
         if (isRetiredLegacyArtifactRecordHash(value)) {
-            return 'This 16-character legacy artifact binding was retired on July 17, 2026 and is not accepted. Request a current export with a 64-character record binding checksum or use manual verification support.';
+            return 'This 16-character legacy artifact binding was retired on July 17, 2026 and is not accepted. Request a current export with a 64-character record binding checksum or use manual record-check support.';
         }
         return 'Enter the complete 64-character record binding checksum exactly as shown in the current export.';
     }
@@ -47,19 +47,19 @@
         return typeof value === 'string' && /^[0-9a-f]{40}$/.test(value);
     }
 
-    function isReviewedCompatibleBackendSiteSha(release, backendSiteSha) {
-        if (!release || !isFortyHex(release.source_sha) || !isFortyHex(backendSiteSha)) return false;
-        var compatible = release.compatible_backend_site_shas;
-        if (!Array.isArray(compatible) || compatible.length < 1 || compatible.length > 2) return false;
-        if (JSON.stringify(compatible) !== JSON.stringify(compatible.slice().sort())) return false;
+    function isDeclaredSiteSourceSha(release, candidateSiteSha) {
+        if (!release || !isFortyHex(release.source_sha) || !isFortyHex(candidateSiteSha)) return false;
+        var declared = release.declared_site_source_shas;
+        if (!Array.isArray(declared) || declared.length < 1 || declared.length > 2) return false;
+        if (JSON.stringify(declared) !== JSON.stringify(declared.slice().sort())) return false;
         var seen = Object.create(null);
-        for (var index = 0; index < compatible.length; index += 1) {
-            var siteSha = compatible[index];
+        for (var index = 0; index < declared.length; index += 1) {
+            var siteSha = declared[index];
             if (!isFortyHex(siteSha) || seen[siteSha]) return false;
             seen[siteSha] = true;
         }
         if (!seen[release.source_sha]) return false;
-        return seen[backendSiteSha] === true;
+        return seen[candidateSiteSha] === true;
     }
 
     function releaseMetadataUrl() {
@@ -71,7 +71,7 @@
     async function hashSelectedFile(file) {
         if (!file) return null;
         if (file.size > MAX_LOCAL_FILE_BYTES) {
-            throw new Error('The selected file exceeds the 25 MB local verification limit.');
+            throw new Error('The selected file exceeds the 25 MB local file-check limit.');
         }
         if (!window.crypto || !window.crypto.subtle) {
             throw new Error('Local file hashing is unavailable in this browser.');
@@ -116,11 +116,11 @@
         el.classList.remove('checking', 'active', 'unavailable');
         el.classList.add(state === 'retired' ? 'unavailable' : state);
         el.textContent = state === 'active'
-            ? 'Endpoint ready / request not yet checked'
+            ? 'Endpoint reachable / no record check run'
             : state === 'retired'
             ? 'Legacy link retired / no request sent'
             : state === 'unavailable'
-            ? 'Verification unavailable'
+            ? 'Record check unavailable'
             : 'Checking / Not confirmed';
     }
 
@@ -187,16 +187,16 @@
         setServiceStatus('unavailable');
         setVerificationButtonsEnabled(false);
         setListItems('status-active-items', [
-            'Verification service status not confirmed',
-            'Automated verification disabled',
+            'Record-check service status not confirmed',
+            'Automated record check disabled',
             'Manual email support available'
         ]);
         setListItems('artifact-crypto-items', [
-            'Verification mode unavailable.',
+            'Record-check mode unavailable.',
             'Signature status unavailable.',
             'Timestamp status unavailable.'
         ]);
-        setText('status-footnote', 'Automated verification is disabled because service status could not be confirmed. Use email support instead.');
+        setText('status-footnote', 'Automated record check is disabled because service reachability could not be confirmed. Use email support instead.');
     }
 
     function showVerificationTerminal(title, message) {
@@ -204,7 +204,7 @@
         var grid = byId('verify-result-grid');
         if (!card || !grid) return;
         toggle(card, true);
-        setText('verify-result-kicker', 'Verification Result');
+        setText('verify-result-kicker', 'Record Check Result');
         setText('verify-result-title', title);
         setText('verify-result-message', message);
         grid.innerHTML = '';
@@ -226,7 +226,7 @@
             return { response: response, result: result };
         } catch (err) {
             if (didTimeout) {
-                var timeoutError = new Error('Verification request timed out.');
+                var timeoutError = new Error('Record-check request timed out.');
                 timeoutError.name = 'TimeoutError';
                 throw timeoutError;
             }
@@ -252,9 +252,9 @@
         var grid = byId('verify-result-grid');
         if (!card || !grid) return;
         toggle(card, true);
-        setText('verify-result-kicker', 'Verification In Progress');
-        setText('verify-result-title', 'Verifying Artifact...');
-        setText('verify-result-message', 'Please wait while we verify the artifact. This can take a few seconds.');
+        setText('verify-result-kicker', 'Record Check In Progress');
+        setText('verify-result-title', 'Checking Record...');
+        setText('verify-result-message', 'Please wait while Auxtho compares the submitted values with the stored record.');
         grid.innerHTML = '';
     }
 
@@ -393,9 +393,9 @@
         result = result || {};
         var emptyState = !!result.empty_state;
         var profile = emptyState ? null : recordedControlProfile(result);
-        var items = ['Record binding checksum', 'Verification endpoint configured'];
+        var items = ['Record binding checksum', 'Record-check endpoint configured'];
         if (!profile) {
-            items.push('Manual verification support');
+            items.push('Manual record-check support');
         } else if (profile.kind === 'hash_only') {
             items.push('Hash-only artifact record');
         } else {
@@ -414,7 +414,7 @@
                 ]);
             } else if (profile.kind === 'hash_only') {
                 setListItems('artifact-crypto-items', [
-                    'Verification mode (API record): PILOT HASH ONLY',
+                    'Recorded mode (API record): PILOT HASH ONLY',
                     'Evidence type (API record): HASH ONLY',
                     'Signature metadata (API record): NOT ATTACHED',
                     'Timestamp metadata (API record): NOT ATTACHED',
@@ -422,7 +422,7 @@
                 ]);
             } else {
                 setListItems('artifact-crypto-items', [
-                    'Verification mode (API record): ' + formatMode(result.verification_mode),
+                    'Recorded mode (API record): ' + formatMode(result.verification_mode),
                     'Evidence type (API record): ' + formatMode(profile.signature.recorded_evidence_type),
                     'Signature format (API record): ' + signatureFormatLabel(profile.signature),
                     'Signature stored status: ' + recordedAtExportLabel('VALID'),
@@ -497,10 +497,10 @@
             scopeMatchesRequest
         );
         if (!confirmed) {
-            setText('verify-result-kicker', 'Verification Result');
+            setText('verify-result-kicker', 'Record Check Result');
             setText('verify-result-title', 'Not confirmed');
             setText('verify-result-message', 'The submitted values did not produce a recorded match under the requested scope. No record metadata is displayed.');
-            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Verification Outcome</span><span class="verify-result-value">NO_MATCH</span></div>';
+            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Record Check Outcome</span><span class="verify-result-value">NO_MATCH</span></div>';
             applyStatusPanel({ empty_state: true });
             return;
         }
@@ -518,13 +518,13 @@
         var rows = [
             ['Report ID', artifact.report_id || '-'],
             ['Export Event ID', artifact.export_event_id || '-'],
-            ['Verification Outcome', result.verification_outcome],
-            ['Verification Scope', result.verification_scope],
+            ['Record Check Outcome', result.verification_outcome],
+            ['Record Check Scope', result.verification_scope],
             ['Record Match Confirmed', result.record_match_confirmed === true ? 'YES' : 'NO'],
             ['Record Binding Checksum Match', result.artifact_hash_match === true ? 'YES' : 'NO'],
             ['Selected File Bytes Match', fileBytesMatched ? 'YES' : 'NOT CHECKED'],
             ['Public Mode', formatMode(result.mode || 'not_reported')],
-            ['Verification Mode', formatMode(result.verification_mode)]
+            ['Recorded Mode', formatMode(result.verification_mode)]
         ];
 
         if (controlProfile.kind === 'hash_only') {
@@ -568,7 +568,7 @@
         if (!SERVICE_AVAILABLE) {
             if (isCurrentVerification(state)) {
                 if (buttonId) setButtonLoading(buttonId, false, '');
-                setError('Verification unavailable. Use manual email support.');
+                setError('Record check unavailable. Use manual email support.');
             }
             finishVerification(state);
             return;
@@ -596,10 +596,10 @@
                 if (response.status === 503 || errorCode === 'VERIFICATION_UNAVAILABLE') {
                     setVerificationUnavailable();
                 }
-                setError((result.detail && result.detail.message) || result.message || 'Verification failed.');
+                setError((result.detail && result.detail.message) || result.message || 'Record check failed.');
                 showVerificationTerminal(
-                    'Verification not completed',
-                    'The verification request did not complete successfully. No record metadata is displayed.'
+                    'Record check not completed',
+                    'The record check did not complete successfully. No record metadata is displayed.'
                 );
                 return;
             }
@@ -613,18 +613,18 @@
         } catch (err) {
             if (!isActiveVerificationState(state)) return;
             if (err && err.name === 'TimeoutError') {
-                setError('Verification timed out. You can retry this request.');
+                setError('Record check timed out. You can retry this request.');
                 showVerificationTerminal(
-                    'Verification timed out',
+                    'Record check timed out',
                     'The service did not respond within the bounded wait. No record metadata is displayed.'
                 );
                 return;
             }
             setVerificationUnavailable();
-            setError('Verification API unavailable. Use manual verification support.');
+            setError('Record-check API unavailable. Use manual support.');
             showVerificationTerminal(
-                'Verification unavailable',
-                'The verification service could not complete this request. No record metadata is displayed.'
+                'Record check unavailable',
+                'The record-check service could not complete this request. No record metadata is displayed.'
             );
         } finally {
             if (isActiveVerificationState(state) && buttonId) setButtonLoading(buttonId, false, '');
@@ -686,9 +686,9 @@
         try {
             var requestResult = await fetchJsonWithTimeout(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
             var response = requestResult.response;
-            if (!response.ok) throw new Error('Verification status request failed.');
+            if (!response.ok) throw new Error('Record-check status request failed.');
             var result = requestResult.result;
-            if (!result || result.status !== 'operational') throw new Error('Verification status was not operational.');
+            if (!result || result.status !== 'operational') throw new Error('Record-check status was not operational.');
             var releaseRequest = await fetchJsonWithTimeout(releaseMetadataUrl(), {
                 method: 'GET',
                 credentials: 'same-origin',
@@ -696,7 +696,7 @@
             });
             if (!releaseRequest.response.ok) throw new Error('Public site release metadata was unavailable.');
             var release = releaseRequest.result;
-            if (!isReviewedCompatibleBackendSiteSha(release, release.source_sha)) {
+            if (!isDeclaredSiteSourceSha(release, release.source_sha)) {
                 throw new Error('Public site release identity was not confirmed.');
             }
             applyStatusPanel({ empty_state: true });
@@ -743,7 +743,7 @@
         if (hashInput) hashInput.value = RETIRED_LEGACY_QR_BINDING ? '' : hash;
         if (exportInput) exportInput.value = RETIRED_LEGACY_QR_BINDING ? '' : (exportEventId || '');
 
-        var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Artifact Verification Support');
+        var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Record and File-Digest Match Support');
         var mailtoEl = byId('qr-mailto');
         if (mailtoEl) mailtoEl.href = mailto;
 

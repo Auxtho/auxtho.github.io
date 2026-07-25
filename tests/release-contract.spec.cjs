@@ -215,11 +215,11 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
       runAttempt: '1',
     });
 
-    assert.deepEqual(result.release.compatible_backend_site_shas, COMPATIBILITY);
-    assert.deepEqual(result.release.backend_site_sha_transition, {
-      bridge_reported_site_sha: LEGACY_SHA,
-      final_reported_site_sha: SITE_SHA,
-      rollback_reported_site_sha: LEGACY_SHA,
+    assert.deepEqual(result.release.declared_site_source_shas, COMPATIBILITY);
+    assert.deepEqual(result.release.planned_site_sha_transition, {
+      bridge_site_sha: LEGACY_SHA,
+      final_site_sha: SITE_SHA,
+      rollback_site_sha: LEGACY_SHA,
     });
     assert.equal(result.releaseManifest.evidence_boundaries.synthetic_only, true);
     assert.equal(result.releaseManifest.evidence_boundaries.customer_data_claimed, false);
@@ -695,7 +695,18 @@ test('public evidence manifest and homepage preserve synthetic and non-customer 
   assert.equal(appAsset.public_derivative, true);
 });
 
-test('technical foundation routes are stable, scoped, and explicitly bounded', () => {
+test('first screen preserves the exploratory proposition and human authority boundary', () => {
+  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const hero = index.match(/<section class="hero-section[^"]*"[\s\S]*?<\/section>/i)?.[0] || '';
+  assert.match(hero, /Make AI-assisted work reviewable before it moves forward/i);
+  assert.match(hero, /selected AI-assisted work to available evidence, visible review state, and a human decision/i);
+  assert.match(hero, /does not grant approval, release, or export authority/i);
+  assert.match(hero, /Request an Exploratory Briefing/i);
+  assert.match(hero, /Exploratory, synthetic, and non-production only/i);
+  assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval/i);
+});
+
+test('public reference routes are stable, scoped, and explicitly bounded', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const isp = fs.readFileSync(path.join(root, 'lineage', 'isp', 'index.html'), 'utf8');
   const ardamire = fs.readFileSync(path.join(root, 'security', 'ardamire', 'index.html'), 'utf8');
@@ -710,25 +721,32 @@ test('technical foundation routes are stable, scoped, and explicitly bounded', (
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.match(index, /href="\/verify\.html"/);
-  assert.match(index, /not the current Auxtho production core/i);
-  assert.match(index, /not customer-wide defense/i);
-  assert.match(index, /not certification/i);
+  assert.match(index, /Inspect each claim at its actual evidence level/i);
+  assert.match(index, /Publisher-documented prototype evidence/i);
+  assert.match(index, /Dated view-only observation; execution unproven/i);
+  assert.match(index, /Stored-record and optional local-file digest comparison/i);
+  assert.match(index, /do not establish one correlated production run/i);
 
   assert.match(isp, /<meta name="robots" content="index,follow">/);
-  assert.match(isp, /Public research lineage and prototype workflow proof/i);
-  assert.match(isp, /not presented here as the current Auxtho\s+production core/i);
+  assert.match(isp, /publisher-documented prototype run/i);
+  assert.match(isp, /ISP is not the current Auxtho production core/i);
+  assert.match(isp, /does not show a completed disposition/i);
   assert.match(isp, /not third-party certification or independent assurance/i);
   assert.doesNotMatch(isp, /AgentRunner/i);
 
-  assert.match(ardamire, /<meta name="robots" content="index,follow">/);
-  assert.match(ardamire, /does not establish live\s+enforcement, incident prevention, or operating effectiveness/i);
+  assert.match(ardamire, /<meta name="robots" content="noindex,follow">/);
+  assert.match(ardamire, /No live customer case, production incident prevention, detection rate, response time, or operating effectiveness is asserted here/i);
   assert.match(ardamire, /does not replace a customer's SOC, SIEM, EDR, IAM/i);
   assert.match(ardamire, /Review, approval, release, and export decisions remain human/i);
   assert.doesNotMatch(ardamire, /guarantees? prevention|certified defense|autonomous approval/i);
 
   assert.match(verify, /<meta name="robots" content="noindex">/);
+  assert.match(verify, /Record and File-Digest Match/i);
+  assert.match(verify, /does not establish substantive correctness, external provenance, audit assurance/i);
+  assert.equal((verify.match(/data-prohibited-data-warning/g) || []).length, 2);
+  assert.match(verify, /Do not submit regulated, personal, customer-confidential, secret, or production identifiers or data/i);
   assert.match(sitemap, /https:\/\/auxtho\.com\/lineage\/isp\//);
-  assert.match(sitemap, /https:\/\/auxtho\.com\/security\/ardamire\//);
+  assert.doesNotMatch(sitemap, /https:\/\/auxtho\.com\/security\/ardamire\//);
   assert.doesNotMatch(sitemap, /verify\.html/);
 
   for (const required of [

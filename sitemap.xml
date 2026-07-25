@@ -13,12 +13,6 @@
     <priority>0.4</priority>
   </url>
   <url>
-    <loc>https://auxtho.com/security/ardamire/</loc>
-    <lastmod>2026-07-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.4</priority>
-  </url>
-  <url>
     <loc>https://auxtho.com/privacy.html</loc>
     <lastmod>2026-07-17</lastmod>
     <changefreq>yearly</changefreq>
@@ -26,7 +20,7 @@
   </url>
   <url>
     <loc>https://auxtho.com/terms.html</loc>
-    <lastmod>2026-07-16</lastmod>
+    <lastmod>2026-07-17</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

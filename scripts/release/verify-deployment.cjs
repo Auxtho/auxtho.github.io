@@ -279,40 +279,40 @@ function validateSupportedResponseCsp(csp, label) {
 function validateRelease(release, provenance, expected) {
   const exactKeys = [
     'schema_version', 'publication_mode', 'source_sha', 'previous_approved_source_sha',
-    'compatible_backend_site_shas', 'backend_site_sha_transition', 'rollback_of_source_sha',
+    'declared_site_source_shas', 'planned_site_sha_transition', 'rollback_of_source_sha',
     'release_manifest', 'privacy_manifest',
   ];
   if (JSON.stringify(Object.keys(release)) !== JSON.stringify(exactKeys)) fail('release.json keys are not exact');
   if (release.schema_version !== 2 || release.publication_mode !== expected.mode) fail('release mode or schema mismatch');
   if (release.source_sha !== expected.sourceSha || provenance.source_sha !== expected.sourceSha) fail('release source SHA mismatch');
   if (release.previous_approved_source_sha !== provenance.previous_approved_source_sha) fail('previous approved source SHA mismatch');
-  if (JSON.stringify(release.compatible_backend_site_shas) !== JSON.stringify(expected.compatibleShas)) {
-    fail('deployed compatible backend site SHA list mismatch');
+  if (JSON.stringify(release.declared_site_source_shas) !== JSON.stringify(expected.compatibleShas)) {
+    fail('deployed declared site source SHA list mismatch');
   }
-  if (JSON.stringify(release.compatible_backend_site_shas) !== JSON.stringify([...release.compatible_backend_site_shas].sort())) {
-    fail('deployed compatibility list is not in canonical SHA sort order');
+  if (JSON.stringify(release.declared_site_source_shas) !== JSON.stringify([...release.declared_site_source_shas].sort())) {
+    fail('deployed site source declaration is not in canonical SHA sort order');
   }
-  if (!release.compatible_backend_site_shas.includes(release.source_sha)) fail('compatibility list omits current site source');
+  if (!release.declared_site_source_shas.includes(release.source_sha)) fail('site source declaration omits current site source');
   if (
     expected.mode === 'candidate'
-    && JSON.stringify(release.compatible_backend_site_shas)
+    && JSON.stringify(release.declared_site_source_shas)
       !== JSON.stringify([release.previous_approved_source_sha, expected.sourceSha].sort())
   ) {
-    fail('candidate compatibility is not the exact canonical legacy/candidate pair');
+    fail('candidate site source declaration is not the exact canonical legacy/candidate pair');
   }
   const expectedTransition = expected.mode === 'candidate'
     ? {
-      bridge_reported_site_sha: release.previous_approved_source_sha,
-      final_reported_site_sha: expected.sourceSha,
-      rollback_reported_site_sha: release.previous_approved_source_sha,
+      bridge_site_sha: release.previous_approved_source_sha,
+      final_site_sha: expected.sourceSha,
+      rollback_site_sha: release.previous_approved_source_sha,
     }
     : {
-      bridge_reported_site_sha: expected.sourceSha,
-      final_reported_site_sha: expected.sourceSha,
-      rollback_reported_site_sha: expected.sourceSha,
+      bridge_site_sha: expected.sourceSha,
+      final_site_sha: expected.sourceSha,
+      rollback_site_sha: expected.sourceSha,
     };
-  if (JSON.stringify(release.backend_site_sha_transition) !== JSON.stringify(expectedTransition)) {
-    fail('backend site SHA transition metadata mismatch');
+  if (JSON.stringify(release.planned_site_sha_transition) !== JSON.stringify(expectedTransition)) {
+    fail('planned site SHA transition metadata mismatch');
   }
   if (release.rollback_of_source_sha !== (expected.rollbackOfSha || null)) fail('rollback-of source SHA mismatch');
   if (release.release_manifest?.path !== '/assets/release-manifest.json') fail('release manifest path is not exact');

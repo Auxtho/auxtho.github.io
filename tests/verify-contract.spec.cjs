@@ -105,7 +105,7 @@ async function mockStatus(page, status = 'operational', options = {}) {
       ? options.releasePayload
       : {
         source_sha: releaseSourceSha,
-        compatible_backend_site_shas: options.compatibleBackendSiteShas || [releaseSourceSha],
+        declared_site_source_shas: options.declaredSiteSourceShas || [releaseSourceSha],
       };
     const body = Object.prototype.hasOwnProperty.call(options, 'releaseBody')
       ? options.releaseBody
@@ -177,7 +177,7 @@ test('verifier CSP allows reviewed endpoints and blocks an unlisted connection',
   });
 
   await page.goto(`${baseUrl}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint reachable');
   const blocked = await page.evaluate(async () => {
     try {
       await fetch('https://example.invalid/not-reviewed');
@@ -200,7 +200,7 @@ test('QR parameters prefill but never submit before an explicit click', async ({
 
   const hash = 'a'.repeat(64);
   await page.goto(`${baseUrl}/verify.html#report=RPT-VERIFY-001&h=${hash}&exp=EXP-VERIFY-001`);
-  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint reachable');
   expect(postCount).toBe(0);
   await expect(page.locator('#manual-report-id')).toHaveValue('RPT-VERIFY-001');
   expect(page.url()).toBe(`${baseUrl}/verify.html`);
@@ -252,7 +252,7 @@ test('invalid non-legacy artifact hashes never leave manual or QR controls busy'
   await expect(page.locator('#verify-error')).toContainText('complete 64-character record binding checksum');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   await expect(page.locator('#manual-verify-btn')).toHaveAttribute('aria-busy', 'false');
-  await expect(page.locator('#manual-verify-btn')).toHaveText('Verify Artifact');
+  await expect(page.locator('#manual-verify-btn')).toHaveText('Run Record Check');
 
   await page.goto(`${baseUrl}/verify.html#report=RPT-INVALID-HASH&h=still-not-a-hash`);
   // Fragment-only navigation on the same document does not rerun the page
@@ -263,7 +263,7 @@ test('invalid non-legacy artifact hashes never leave manual or QR controls busy'
   await expect(page.locator('#verify-error')).toContainText('complete 64-character record binding checksum');
   await expect(page.locator('#qr-verify-btn')).toBeEnabled();
   await expect(page.locator('#qr-verify-btn')).toHaveAttribute('aria-busy', 'false');
-  await expect(page.locator('#qr-verify-btn')).toHaveText('Run Verification');
+  await expect(page.locator('#qr-verify-btn')).toHaveText('Run Record Check');
   expect(postCount).toBe(0);
 });
 
@@ -338,50 +338,50 @@ test('matching rendered release identity enables verification with a cache-buste
   expect(releaseUrl.searchParams.get('cache_bust')).toMatch(/^\d+$/);
 });
 
-test('canonical static release history enables verification without backend source metadata', async ({ page }) => {
+test('canonical static release history enables record checks without backend build metadata', async ({ page }) => {
   await mockStatus(page, 'operational', {
     statusOverrides: { public_site_source_sha: undefined, backend_source_sha: undefined },
-    compatibleBackendSiteShas: [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA],
+    declaredSiteSourceShas: [ROLLBACK_SITE_SHA, MATCHED_SITE_SHA],
   });
   await page.goto(`${baseUrl}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint reachable');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
 });
 
 test('wildcard, duplicate, oversized, and non-current release history lists fail closed', async ({ browser }) => {
   const invalidCases = [
-    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, '*'] } },
-    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, MATCHED_SITE_SHA] } },
-    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA] } },
-    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA, 'c'.repeat(40)] } },
-    { releasePayload: { source_sha: MATCHED_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA] } },
-    { releasePayload: { source_sha: MATCHED_SITE_SHA.toUpperCase(), compatible_backend_site_shas: [MATCHED_SITE_SHA.toUpperCase()] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, declared_site_source_shas: [MATCHED_SITE_SHA, '*'] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, declared_site_source_shas: [MATCHED_SITE_SHA, MATCHED_SITE_SHA] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, declared_site_source_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, declared_site_source_shas: [MATCHED_SITE_SHA, ROLLBACK_SITE_SHA, 'c'.repeat(40)] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA, declared_site_source_shas: [ROLLBACK_SITE_SHA] } },
+    { releasePayload: { source_sha: MATCHED_SITE_SHA.toUpperCase(), declared_site_source_shas: [MATCHED_SITE_SHA.toUpperCase()] } },
   ];
   for (const options of invalidCases) {
     const context = await browser.newContext();
     const page = await context.newPage();
     await mockStatus(page, 'operational', options);
     await page.goto(`${baseUrl}/verify.html`);
-    await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+    await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
     await expect(page.locator('#manual-verify-btn')).toBeDisabled();
     await context.close();
   }
 });
 
-test('self-consistent exact static release identity is accepted independently of backend metadata', async ({ page }) => {
+test('self-consistent exact static release identity is accepted without implying backend compatibility', async ({ page }) => {
   await mockStatus(page, 'operational', {
     statusOverrides: { public_site_source_sha: undefined, backend_source_sha: undefined },
-    releasePayload: { source_sha: ROLLBACK_SITE_SHA, compatible_backend_site_shas: [ROLLBACK_SITE_SHA] },
+    releasePayload: { source_sha: ROLLBACK_SITE_SHA, declared_site_source_shas: [ROLLBACK_SITE_SHA] },
   });
   await page.goto(`${baseUrl}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint reachable');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
 });
 
 test('malformed release metadata fails closed', async ({ page }) => {
   await mockStatus(page, 'operational', { releaseBody: 'not-json' });
   await page.goto(`${baseUrl}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
 });
 
@@ -395,7 +395,7 @@ test('missing release or release-history metadata fails closed', async ({ browse
     const page = await context.newPage();
     await mockStatus(page, 'operational', options);
     await page.goto(`${baseUrl}/verify.html`);
-    await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+    await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
     await expect(page.locator('#manual-verify-btn')).toBeDisabled();
     await context.close();
   }
@@ -463,7 +463,7 @@ test('an aborted stale response cannot restore an invalidated or older result', 
   await page.locator('#manual-report-id').fill('RPT-STALE-ONE');
   await page.locator('#manual-artifact-hash').fill('d'.repeat(64));
   await page.locator('#manual-verify-btn').click();
-  await expect(page.locator('#verify-result-title')).toHaveText('Verifying Artifact...');
+  await expect(page.locator('#verify-result-title')).toHaveText('Checking Record...');
 
   await page.locator('#manual-report-id').fill('RPT-CURRENT-TWO');
   await expect(page.locator('#verify-result')).toBeHidden();
@@ -474,7 +474,7 @@ test('an aborted stale response cannot restore an invalidated or older result', 
   await page.waitForTimeout(400);
   await expect(page.locator('#verify-result-grid')).toContainText('RPT-CURRENT-TWO');
   await expect(page.locator('#verify-result-grid')).not.toContainText('RPT-STALE-ONE');
-  await expect(page.locator('#verification-service-status')).toContainText('Endpoint ready');
+  await expect(page.locator('#verification-service-status')).toContainText('Endpoint reachable');
   expect(requestCount).toBe(2);
 });
 
@@ -501,10 +501,10 @@ test('verification-unavailable response disables controls and removes prior meta
   await expect(page.locator('#verify-result-title')).toHaveText('Artifact Record Match');
 
   await page.locator('#manual-verify-btn').click();
-  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
   await expect(page.locator('#verify-result-grid')).toBeEmpty();
-  await expect(page.locator('#verify-result-title')).toHaveText('Verification not completed');
+  await expect(page.locator('#verify-result-title')).toHaveText('Record check not completed');
 });
 
 test('a bounded timeout restores the button and permits a successful retry', async ({ page }) => {
@@ -533,7 +533,7 @@ test('a bounded timeout restores the button and permits a successful retry', asy
   await page.locator('#manual-report-id').fill('RPT-TIMEOUT-001');
   await page.locator('#manual-artifact-hash').fill('e'.repeat(64));
   await page.locator('#manual-verify-btn').click();
-  await expect(page.locator('#verify-result-title')).toHaveText('Verification timed out');
+  await expect(page.locator('#verify-result-title')).toHaveText('Record check timed out');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
 
   await page.locator('#manual-verify-btn').click();
@@ -544,7 +544,7 @@ test('a bounded timeout restores the button and permits a successful retry', asy
 test('non-operational readiness keeps verification disabled', async ({ page }) => {
   await mockStatus(page, 'unavailable');
   await page.goto(`${baseUrl}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
 });
 
@@ -554,7 +554,7 @@ test('unknown preview origins fail closed instead of contacting production', asy
     if (request.url().startsWith('https://api.auxtho.com/')) productionRequests.push(request.url());
   });
   await page.goto(`${baseUrl.replace('127.0.0.1', 'preview.localhost')}/verify.html`);
-  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
   expect(productionRequests).toEqual([]);
 });
@@ -845,7 +845,7 @@ test('verifier fetches reject redirects instead of forwarding identifiers', asyn
   });
 
   await page.goto(`${baseUrl}/verify.html#report=RPT-REDIRECT&h=${'a'.repeat(64)}`);
-  await expect(page.locator('#verification-service-status')).toHaveText('Verification unavailable');
+  await expect(page.locator('#verification-service-status')).toHaveText('Record check unavailable');
   await expect(page.locator('#manual-verify-btn')).toBeDisabled();
   expect(externalRequests).toEqual([]);
 });
@@ -863,6 +863,6 @@ test('identifier-bearing verification POST rejects redirects', async ({ page }) 
   await page.locator('#manual-report-id').fill('RPT-REDIRECT');
   await page.locator('#manual-artifact-hash').fill('2'.repeat(64));
   await page.locator('#manual-verify-btn').click();
-  await expect(page.locator('#verify-result-title')).toHaveText('Verification unavailable');
+  await expect(page.locator('#verify-result-title')).toHaveText('Record check unavailable');
   expect(externalRequests).toEqual([]);
 });

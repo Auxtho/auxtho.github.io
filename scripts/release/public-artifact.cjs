@@ -481,9 +481,9 @@ function buildArtifact(options) {
   const previousSha = assertSha('previous approved source SHA', options.previousSha);
   if (!['candidate', 'rollback'].includes(options.mode)) fail('publication mode must be candidate or rollback');
   const rollbackOfSha = options.mode === 'rollback' ? assertSha('rollback-of source SHA', options.rollbackOfSha) : null;
-  const compatible = parseShaList('compatible backend site SHAs', options.compatibleJson, sourceSha);
-  if (options.mode === 'candidate' && JSON.stringify(compatible) !== JSON.stringify([previousSha, sourceSha].sort())) {
-    fail('candidate compatibility must be the canonical sorted legacy/candidate SHA pair');
+  const declaredSourceShas = parseShaList('declared site source SHAs', options.compatibleJson, sourceSha);
+  if (options.mode === 'candidate' && JSON.stringify(declaredSourceShas) !== JSON.stringify([previousSha, sourceSha].sort())) {
+    fail('candidate declaration must be the canonical sorted legacy/candidate SHA pair');
   }
   const legacyBootstrap = options.legacyBootstrap === true;
   if (legacyBootstrap && options.mode !== 'rollback') fail('legacy bootstrap packaging is allowed only for rollback');
@@ -527,10 +527,10 @@ function buildArtifact(options) {
       production_readiness_claimed: false,
       reviewed_candidate_claims_present: !legacyBootstrap,
     },
-    backend_site_sha_transition: {
-      bridge_reported_site_sha: options.mode === 'candidate' ? previousSha : sourceSha,
-      final_reported_site_sha: sourceSha,
-      rollback_reported_site_sha: options.mode === 'candidate' ? previousSha : sourceSha,
+    planned_site_sha_transition: {
+      bridge_site_sha: options.mode === 'candidate' ? previousSha : sourceSha,
+      final_site_sha: sourceSha,
+      rollback_site_sha: options.mode === 'candidate' ? previousSha : sourceSha,
     },
     removed_public_paths: [...removed].sort(),
     non_public_source_paths: [...nonPublicSource].sort(),
@@ -544,8 +544,8 @@ function buildArtifact(options) {
     publication_mode: options.mode,
     source_sha: sourceSha,
     previous_approved_source_sha: previousSha,
-    compatible_backend_site_shas: compatible,
-    backend_site_sha_transition: releaseManifest.backend_site_sha_transition,
+    declared_site_source_shas: declaredSourceShas,
+    planned_site_sha_transition: releaseManifest.planned_site_sha_transition,
     rollback_of_source_sha: rollbackOfSha,
     release_manifest: { path: '/assets/release-manifest.json', sha256: releaseManifestHash },
     privacy_manifest: privacyManifest,

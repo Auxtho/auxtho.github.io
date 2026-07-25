@@ -16,7 +16,7 @@
   background: var(--tf-bg);
   border-top: 1px solid #171a1f;
   border-bottom: 1px solid #171a1f;
-  padding: 5.5rem 0;
+  padding: 3.5rem 0;
 }
 
 .technical-foundations-shell {
@@ -26,7 +26,7 @@
 }
 
 .technical-foundations-header {
-  max-width: 48rem;
+  max-width: 52rem;
 }
 
 .technical-foundations-kicker,
@@ -44,95 +44,100 @@
 
 .technical-foundations-title {
   color: var(--tf-text);
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: 0;
-  line-height: 1.12;
+  line-height: 1.2;
   margin: 0;
 }
 
 .technical-foundations-copy {
   color: var(--tf-muted);
-  font-size: 1.0625rem;
-  line-height: 1.75;
-  margin: 1.25rem 0 0;
-}
-
-.technical-foundations-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 2.5rem;
-}
-
-.technical-foundation-card {
-  background: var(--tf-surface);
-  border: 1px solid var(--tf-border);
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  min-height: 19rem;
-  padding: 1.5rem;
-}
-
-.technical-foundation-card[data-foundation="isp"] {
-  border-top-color: var(--tf-isp);
-}
-
-.technical-foundation-card[data-foundation="ardamire"] {
-  border-top-color: var(--tf-ardamire);
-}
-
-.technical-foundation-card[data-foundation="verify"] {
-  border-top-color: var(--tf-verify);
-}
-
-.technical-card-title {
-  color: var(--tf-text);
-  font-size: 1.35rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1.3;
-  margin: 0;
-}
-
-.technical-card-copy {
-  color: var(--tf-muted);
-  font-size: 0.98rem;
+  font-size: 0.95rem;
   line-height: 1.7;
   margin: 1rem 0 0;
 }
 
-.technical-card-boundary {
-  border-top: 1px solid var(--tf-border);
-  color: var(--tf-dim);
-  font-size: 0.84rem;
-  line-height: 1.55;
-  margin: auto 0 0;
-  padding-top: 1.25rem;
+.technical-reference-strip {
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 2rem;
 }
 
-.technical-card-link {
-  align-items: center;
+.technical-reference-item {
+  border-bottom: 1px solid var(--tf-border);
+  border-top: 1px solid var(--tf-border);
   color: var(--tf-text);
-  display: inline-flex;
-  font-size: 0.9rem;
-  font-weight: 700;
-  gap: 0.55rem;
-  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 1.1rem 1.25rem;
   text-decoration: none;
 }
 
-.technical-card-link::after {
-  color: var(--tf-muted);
-  content: "\2192";
+.technical-reference-item + .technical-reference-item {
+  border-left: 1px solid var(--tf-border);
 }
 
-.technical-card-link:hover,
-.technical-card-link:focus-visible {
-  color: #ffffff;
+.technical-reference-item span {
+  color: var(--tf-dim);
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.technical-reference-item strong {
+  color: var(--tf-text);
+  font-size: 0.96rem;
+  line-height: 1.45;
+}
+
+.technical-reference-item small {
+  color: var(--tf-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.technical-reference-item:hover,
+.technical-reference-item:focus-visible {
+  background: var(--tf-surface);
+  outline: 0;
+}
+
+.technical-reference-item:hover strong,
+.technical-reference-item:focus-visible strong {
   text-decoration: underline;
   text-underline-offset: 0.25rem;
+}
+
+.hero-evaluation-boundary {
+  color: #7f8792;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  margin: 1rem auto 0;
+  max-width: 46rem;
+}
+
+@media (max-width: 640px) {
+  .hero-copy {
+    font-size: 1rem !important;
+    line-height: 1.65 !important;
+  }
+
+  .hero-actions {
+    margin-top: 1.25rem !important;
+  }
+
+  .hero-evaluation-boundary {
+    margin-top: 0.625rem;
+  }
+
+  .hero-product-proof {
+    margin-top: 1.75rem;
+  }
 }
 
 .technical-page {
@@ -398,12 +403,13 @@
 }
 
 @media (max-width: 900px) {
-  .technical-foundations-grid {
+  .technical-reference-strip {
     grid-template-columns: 1fr;
   }
 
-  .technical-foundation-card {
-    min-height: 0;
+  .technical-reference-item + .technical-reference-item {
+    border-left: 0;
+    border-top: 0;
   }
 
   .technical-flow {
@@ -428,11 +434,11 @@
 
 @media (max-width: 680px) {
   .technical-foundations-section {
-    padding: 4rem 0;
+    padding: 3rem 0;
   }
 
   .technical-foundations-title {
-    font-size: 1.9rem;
+    font-size: 1.55rem;
   }
 
   .technical-detail-hero {

@@ -1,6 +1,6 @@
 {
   "version": "2026-07-16",
-  "scope": "Auxtho homepage public-safe product evidence",
+  "scope": "Auxtho homepage publisher-attested public-safe synthetic interface fixtures",
   "attestation_class": "publisher_self_attestation",
   "attestation_limit": "The manifest binds published bytes and records the publisher's capture assertions; it is not an independently reproducible build or operating-effectiveness attestation.",
   "evidence_policy": {

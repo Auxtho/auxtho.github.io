@@ -74,7 +74,7 @@ async function openWithoutRuntimeErrors(page, route) {
   expect(failedRequests).toEqual([]);
 }
 
-test('homepage keeps technical foundations secondary and readable on desktop', async ({ page }) => {
+test('homepage keeps separate public references secondary and readable on desktop', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openWithoutRuntimeErrors(page, '/index.html#foundations');
 
@@ -82,11 +82,11 @@ test('homepage keeps technical foundations secondary and readable on desktop', a
   await expect(section).toBeVisible();
   await expect(section.getByRole('heading', {
     level: 2,
-    name: 'Technical foundations with explicit boundaries.',
+    name: 'Inspect each claim at its actual evidence level.',
   })).toBeVisible();
-  await expect(section.locator('.technical-foundation-card')).toHaveCount(3);
+  await expect(section.locator('.technical-reference-item')).toHaveCount(3);
 
-  const boxes = await section.locator('.technical-foundation-card').evaluateAll((cards) => cards.map((card) => {
+  const boxes = await section.locator('.technical-reference-item').evaluateAll((cards) => cards.map((card) => {
     const box = card.getBoundingClientRect();
     return { height: box.height, left: box.left, top: box.top, width: box.width };
   }));
@@ -96,18 +96,18 @@ test('homepage keeps technical foundations secondary and readable on desktop', a
   await expectNoHorizontalOverflow(page);
 });
 
-test('homepage technical-foundation cards stack without overflow on mobile', async ({ page }) => {
+test('homepage public references stack without overflow on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openWithoutRuntimeErrors(page, '/index.html#foundations');
 
   const section = page.locator('#foundations');
-  const boxes = await section.locator('.technical-foundation-card').evaluateAll((cards) => cards.map((card) => {
+  const boxes = await section.locator('.technical-reference-item').evaluateAll((cards) => cards.map((card) => {
     const box = card.getBoundingClientRect();
     return { bottom: box.bottom, left: box.left, right: box.right, top: box.top };
   }));
   expect(boxes).toHaveLength(3);
-  expect(boxes[1].top).toBeGreaterThan(boxes[0].bottom);
-  expect(boxes[2].top).toBeGreaterThan(boxes[1].bottom);
+  expect(boxes[1].top).toBeGreaterThanOrEqual(boxes[0].bottom - 1);
+  expect(boxes[2].top).toBeGreaterThanOrEqual(boxes[1].bottom - 1);
   expect(boxes.every((box) => box.left >= 0 && box.right <= 390)).toBe(true);
   await expectNoHorizontalOverflow(page);
 });
@@ -116,10 +116,12 @@ for (const detail of [
   {
     route: '/lineage/isp/',
     title: 'ISP records the research lineage behind a bounded AI workflow.',
+    flowCount: 5,
   },
   {
     route: '/security/ardamire/',
-    title: 'Ardamire keeps investigation context separate from decision authority.',
+    title: 'Ardamire is designed to separate investigation context from decision authority.',
+    flowCount: 0,
   },
 ]) {
   test(`${detail.route} renders a bounded desktop detail page`, async ({ page }) => {
@@ -127,8 +129,8 @@ for (const detail of [
     await openWithoutRuntimeErrors(page, detail.route);
     await expect(page.getByRole('heading', { level: 1, name: detail.title })).toBeVisible();
     await expect(page.locator('.technical-status-line')).toBeVisible();
-    await expect(page.locator('.technical-flow-step')).toHaveCount(5);
-    await expect(page.getByRole('link', { name: 'Back to technical foundations' })).toHaveAttribute(
+    await expect(page.locator('.technical-flow-step')).toHaveCount(detail.flowCount);
+    await expect(page.getByRole('link', { name: 'Back to public references' })).toHaveAttribute(
       'href',
       '/#foundations',
     );
@@ -152,6 +154,11 @@ for (const detail of [
       expect(steps[index].top).toBeGreaterThanOrEqual(steps[index - 1].bottom - 1);
     }
     expect(steps.every((box) => box.left >= 0 && box.right <= 390)).toBe(true);
+    if (detail.route === '/security/ardamire/') {
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex,follow');
+      await expect(page.locator('.technical-status-line')).toContainText('LIVE_VISIBLE_ONLY');
+      await expect(page.locator('.technical-status-line')).toContainText('zero investigation cases');
+    }
     await expectNoHorizontalOverflow(page);
   });
 }

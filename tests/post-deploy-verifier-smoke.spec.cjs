@@ -28,6 +28,8 @@ test('public pages render with packaged styles and images without CSP or same-or
 
   const pages = [
     { path: '/', status: 200, locator: 'main' },
+    { path: '/lineage/isp/', status: 200, locator: 'main' },
+    { path: '/security/ardamire/', status: 200, locator: 'main' },
     { path: '/privacy.html', status: 200, locator: 'main' },
     { path: '/terms.html', status: 200, locator: 'main' },
     { path: '/__auxtho_release_missing_page__', status: 404, locator: 'body' },
@@ -149,7 +151,7 @@ test('deployed verifier loads over HTTPS and performs no identifier-bearing requ
   }, null, 2)}\n`);
 
   expect(readinessWaitError).toBeNull();
-  expect(readinessText).toContain('Endpoint ready');
+  expect(readinessText).toContain('Endpoint reachable');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   await expect(page.locator('#manual-report-id')).toHaveValue('');
   await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
@@ -179,7 +181,7 @@ test('deployed query-form legacy binding is scrubbed into a tombstone without an
   expect(response.status()).toBe(200);
   await expect(page).toHaveURL(`${origin}/verify.html`);
   await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
-  await expect(page.locator('#legacy-binding-tombstone')).toContainText('start readiness or comparison API requests');
+  await expect(page.locator('#legacy-binding-tombstone')).toContainText('start service or comparison API requests');
   await expect(page.locator('#qr-verify-btn')).toBeDisabled();
   await expect(page.locator('#manual-report-id')).toHaveValue('');
   await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
