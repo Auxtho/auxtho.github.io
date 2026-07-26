@@ -23,6 +23,8 @@
     var VERIFICATION_GENERATION = 0;
     var ACTIVE_VERIFICATION = null;
     var RETIRED_LEGACY_QR_BINDING = false;
+    var REVIEWED_RELEASE_TUPLE = null;
+    var QR_CONTRACT_VERSION = null;
 
     function byId(id) {
         return document.getElementById(id);
@@ -32,13 +34,19 @@
         return /^(?:sha256:)?[0-9a-fA-F]{64}$/.test((value || '').trim());
     }
 
+    function normalizeArtifactRecordHash(value) {
+        var normalized = (value || '').trim();
+        if (!isValidArtifactRecordHash(normalized)) return null;
+        return normalized.replace(/^sha256:/, '').toLowerCase();
+    }
+
     function isRetiredLegacyArtifactRecordHash(value) {
         return /^(?:sha256:)?[0-9a-fA-F]{16}$/.test((value || '').trim());
     }
 
     function artifactRecordHashError(value) {
         if (isRetiredLegacyArtifactRecordHash(value)) {
-            return 'This 16-character legacy artifact binding was retired on July 17, 2026 and is not accepted. Request a current export with a 64-character record binding checksum or use manual record-check support.';
+            return 'This 16-character legacy artifact binding was retired on July 17, 2026 and is not accepted. Request a current export with a 64-character record binding checksum or use manual verification support.';
         }
         return 'Enter the complete 64-character record binding checksum exactly as shown in the current export.';
     }
@@ -47,19 +55,46 @@
         return typeof value === 'string' && /^[0-9a-f]{40}$/.test(value);
     }
 
-    function isDeclaredSiteSourceSha(release, candidateSiteSha) {
-        if (!release || !isFortyHex(release.source_sha) || !isFortyHex(candidateSiteSha)) return false;
-        var declared = release.declared_site_source_shas;
-        if (!Array.isArray(declared) || declared.length < 1 || declared.length > 2) return false;
-        if (JSON.stringify(declared) !== JSON.stringify(declared.slice().sort())) return false;
+    function reviewedReleaseTuple(status, release) {
+        if (!status || status.status !== 'operational' || status.readiness !== 'READY') return null;
+        if (status.verification_contract_version !== 'artifact-verification-v2') return null;
+        if (status.qr_contract_version !== '1' || status.registry_schema !== 'artifact-registry-v2') return null;
+        if (['pilot_hash_only', 'local_signed', 'production_signed'].indexOf(status.signing_mode) < 0) return null;
+        if (!isFortyHex(status.public_site_source_sha) || !isFortyHex(status.backend_source_sha)) return null;
+        if (!isReviewedCompatibleBackendSiteSha(release, status.public_site_source_sha)) return null;
+        return {
+            verification_contract_version: status.verification_contract_version,
+            qr_contract_version: status.qr_contract_version,
+            registry_schema: status.registry_schema,
+            signing_mode: status.signing_mode,
+            public_site_source_sha: status.public_site_source_sha,
+            backend_source_sha: status.backend_source_sha
+        };
+    }
+
+    function releaseTupleMatches(result) {
+        if (!REVIEWED_RELEASE_TUPLE || !result || typeof result !== 'object') return false;
+        if (result.verification_contract_version !== REVIEWED_RELEASE_TUPLE.verification_contract_version) return false;
+        var tuple = result.release_tuple;
+        if (!tuple || typeof tuple !== 'object' || Array.isArray(tuple)) return false;
+        return Object.keys(REVIEWED_RELEASE_TUPLE).every(function (key) {
+            return tuple[key] === REVIEWED_RELEASE_TUPLE[key];
+        }) && Object.keys(tuple).length === Object.keys(REVIEWED_RELEASE_TUPLE).length;
+    }
+
+    function isReviewedCompatibleBackendSiteSha(release, backendSiteSha) {
+        if (!release || !isFortyHex(release.source_sha) || !isFortyHex(backendSiteSha)) return false;
+        var compatible = release.compatible_backend_site_shas;
+        if (!Array.isArray(compatible) || compatible.length < 1 || compatible.length > 2) return false;
+        if (JSON.stringify(compatible) !== JSON.stringify(compatible.slice().sort())) return false;
         var seen = Object.create(null);
-        for (var index = 0; index < declared.length; index += 1) {
-            var siteSha = declared[index];
+        for (var index = 0; index < compatible.length; index += 1) {
+            var siteSha = compatible[index];
             if (!isFortyHex(siteSha) || seen[siteSha]) return false;
             seen[siteSha] = true;
         }
         if (!seen[release.source_sha]) return false;
-        return seen[candidateSiteSha] === true;
+        return seen[backendSiteSha] === true;
     }
 
     function releaseMetadataUrl() {
@@ -71,7 +106,7 @@
     async function hashSelectedFile(file) {
         if (!file) return null;
         if (file.size > MAX_LOCAL_FILE_BYTES) {
-            throw new Error('The selected file exceeds the 25 MB local file-check limit.');
+            throw new Error('The selected file exceeds the 25 MB local verification limit.');
         }
         if (!window.crypto || !window.crypto.subtle) {
             throw new Error('Local file hashing is unavailable in this browser.');
@@ -87,6 +122,11 @@
         var input = byId('manual-artifact-file');
         var file = input && input.files && input.files[0];
         return hashSelectedFile(file || null);
+    }
+
+    function hasSelectedFile() {
+        var input = byId('manual-artifact-file');
+        return !!(input && input.files && input.files[0]);
     }
 
     function setText(id, value) {
@@ -116,11 +156,11 @@
         el.classList.remove('checking', 'active', 'unavailable');
         el.classList.add(state === 'retired' ? 'unavailable' : state);
         el.textContent = state === 'active'
-            ? 'Endpoint reachable / no record check run'
+            ? 'Endpoint ready / request not yet checked'
             : state === 'retired'
             ? 'Legacy link retired / no request sent'
             : state === 'unavailable'
-            ? 'Record check unavailable'
+            ? 'Verification unavailable'
             : 'Checking / Not confirmed';
     }
 
@@ -187,16 +227,16 @@
         setServiceStatus('unavailable');
         setVerificationButtonsEnabled(false);
         setListItems('status-active-items', [
-            'Record-check service status not confirmed',
-            'Automated record check disabled',
+            'Verification service status not confirmed',
+            'Automated verification disabled',
             'Manual email support available'
         ]);
         setListItems('artifact-crypto-items', [
-            'Record-check mode unavailable.',
+            'Verification mode unavailable.',
             'Signature status unavailable.',
             'Timestamp status unavailable.'
         ]);
-        setText('status-footnote', 'Automated record check is disabled because service reachability could not be confirmed. Use email support instead.');
+        setText('status-footnote', 'Automated verification is disabled because service status could not be confirmed. Use email support instead.');
     }
 
     function showVerificationTerminal(title, message) {
@@ -204,7 +244,7 @@
         var grid = byId('verify-result-grid');
         if (!card || !grid) return;
         toggle(card, true);
-        setText('verify-result-kicker', 'Record Check Result');
+        setText('verify-result-kicker', 'Verification Result');
         setText('verify-result-title', title);
         setText('verify-result-message', message);
         grid.innerHTML = '';
@@ -226,7 +266,7 @@
             return { response: response, result: result };
         } catch (err) {
             if (didTimeout) {
-                var timeoutError = new Error('Record-check request timed out.');
+                var timeoutError = new Error('Verification request timed out.');
                 timeoutError.name = 'TimeoutError';
                 throw timeoutError;
             }
@@ -252,9 +292,9 @@
         var grid = byId('verify-result-grid');
         if (!card || !grid) return;
         toggle(card, true);
-        setText('verify-result-kicker', 'Record Check In Progress');
-        setText('verify-result-title', 'Checking Record...');
-        setText('verify-result-message', 'Please wait while Auxtho compares the submitted values with the stored record.');
+        setText('verify-result-kicker', 'Verification In Progress');
+        setText('verify-result-title', 'Verifying Artifact...');
+        setText('verify-result-message', 'Please wait while we verify the artifact. This can take a few seconds.');
         grid.innerHTML = '';
     }
 
@@ -292,7 +332,6 @@
         ];
         if (!requiredSignatureFields.every(function (field) { return hasOwn(signature, field); })) return null;
         if (!hasOwn(result, 'mode') || !hasOwn(result, 'verification_mode') || !hasOwn(result, 'timestamp_provider')) return null;
-        if (signature.validation_basis !== 'registry_record') return null;
 
         if (
             result.mode === 'pilot' &&
@@ -305,6 +344,7 @@
             signature.certificate_chain_recorded_status === 'not_enabled' &&
             signature.timestamp_present === false &&
             signature.timestamp_recorded_valid === false &&
+            signature.validation_basis === 'registry_record' &&
             signature.recorded_evidence_type === 'HASH_ONLY' &&
             signature.live_cryptographic_revalidation_performed === false &&
             signature.recorded_reason_code === 'SIGNATURE_NOT_ENABLED'
@@ -318,7 +358,6 @@
             signature.certificate_chain_recorded_status === 'verified' &&
             signature.timestamp_present === true &&
             signature.timestamp_recorded_valid === true &&
-            signature.live_cryptographic_revalidation_performed === false &&
             signature.recorded_reason_code === 'SIG_VALID';
         if (!completeSignedFields) return null;
 
@@ -327,6 +366,8 @@
             result.verification_mode === 'local_signed' &&
             result.timestamp_provider === 'local_mock' &&
             signature.enabled === false &&
+            signature.validation_basis === 'registry_record' &&
+            signature.live_cryptographic_revalidation_performed === false &&
             signature.recorded_evidence_type === 'LOCAL_SIGNED_TEST'
         ) {
             return { kind: 'local_signed', signature: signature, timestampProvider: 'local_mock' };
@@ -336,9 +377,22 @@
             result.verification_mode === 'production_signed' &&
             result.timestamp_provider === 'rfc3161_http' &&
             signature.enabled === true &&
-            signature.recorded_evidence_type === 'PRODUCTION_SIGNED'
+            signature.recorded_evidence_type === 'PRODUCTION_SIGNED' &&
+            signature.live_cryptographic_revalidation_performed === true &&
+            [
+                'durable_object_live_cryptographic_revalidation',
+                'caller_submitted_bytes_live_cryptographic_revalidation'
+            ].indexOf(signature.validation_basis) >= 0 &&
+            signature.signature_valid === true &&
+            signature.certificate_chain_status === 'verified' &&
+            signature.timestamp_valid === true &&
+            signature.reason_code === 'SIG_VALID'
         ) {
-            return { kind: 'production_signed', signature: signature, timestampProvider: 'rfc3161_http' };
+            return {
+                kind: 'production_signed_live',
+                signature: signature,
+                timestampProvider: 'rfc3161_http'
+            };
         }
         return null;
     }
@@ -347,8 +401,14 @@
         return 'API RECORDED AS ' + value + ' AT EXPORT / NOT REVALIDATED BY THIS BROWSER';
     }
 
-    function recordedReasonCodeLabel(signature) {
-        return 'API RECORDED: ' + signature.recorded_reason_code + ' / NOT REVALIDATED BY THIS BROWSER';
+    function liveApiLabel(value) {
+        return 'API LIVE REVALIDATION: ' + value + ' / BROWSER DID NOT REVALIDATE';
+    }
+
+    function reasonCodeLabel(profile) {
+        return profile.kind === 'production_signed_live'
+            ? liveApiLabel(profile.signature.reason_code)
+            : 'API RECORDED: ' + profile.signature.recorded_reason_code + ' / NOT REVALIDATED BY THIS BROWSER';
     }
 
     function signatureFormatLabel(signature) {
@@ -358,9 +418,9 @@
     }
 
     function timestampRowLabel(profile) {
-        return profile.kind === 'local_signed'
-            ? 'Local Test Timestamp Stored Status'
-            : 'RFC 3161 Timestamp Stored Status';
+        return profile.kind === 'production_signed_live'
+            ? 'RFC 3161 Timestamp API Live Status'
+            : 'Local Test Timestamp Stored Status';
     }
 
     function normalizeReportId(value) {
@@ -393,9 +453,9 @@
         result = result || {};
         var emptyState = !!result.empty_state;
         var profile = emptyState ? null : recordedControlProfile(result);
-        var items = ['Record binding checksum', 'Record-check endpoint configured'];
+        var items = ['Record binding checksum', 'Verification endpoint configured'];
         if (!profile) {
-            items.push('Manual record-check support');
+            items.push('Manual verification support');
         } else if (profile.kind === 'hash_only') {
             items.push('Hash-only artifact record');
         } else {
@@ -414,15 +474,25 @@
                 ]);
             } else if (profile.kind === 'hash_only') {
                 setListItems('artifact-crypto-items', [
-                    'Recorded mode (API record): PILOT HASH ONLY',
+                    'Verification mode (API record): PILOT HASH ONLY',
                     'Evidence type (API record): HASH ONLY',
                     'Signature metadata (API record): NOT ATTACHED',
                     'Timestamp metadata (API record): NOT ATTACHED',
                     'Live cryptographic revalidation: NOT PERFORMED'
                 ]);
+            } else if (profile.kind === 'production_signed_live') {
+                setListItems('artifact-crypto-items', [
+                    'Verification mode (API result): PRODUCTION SIGNED',
+                    'Evidence type (API record): ' + formatMode(profile.signature.recorded_evidence_type),
+                    'Signature format (API record): ' + signatureFormatLabel(profile.signature),
+                    'API live signature revalidation: VALID',
+                    'API live certificate chain status: VERIFIED',
+                    'API live RFC 3161 timestamp revalidation: VALID',
+                    'Browser cryptographic revalidation: NOT PERFORMED'
+                ]);
             } else {
                 setListItems('artifact-crypto-items', [
-                    'Recorded mode (API record): ' + formatMode(result.verification_mode),
+                    'Verification mode (API record): ' + formatMode(result.verification_mode),
                     'Evidence type (API record): ' + formatMode(profile.signature.recorded_evidence_type),
                     'Signature format (API record): ' + signatureFormatLabel(profile.signature),
                     'Signature stored status: ' + recordedAtExportLabel('VALID'),
@@ -438,6 +508,8 @@
                 ? 'Load an artifact to see only the complete cryptographic metadata returned for that stored record.'
                 : profile.kind === 'hash_only'
                 ? 'The hash-only API record reports no attached signature or timestamp.'
+                : profile.kind === 'production_signed_live'
+                ? 'The API reports live cryptographic revalidation of the durable artifact. This browser displays that API result and does not independently verify the signature, certificate chain, or timestamp.'
                 : 'The browser displays historical API-recorded cryptographic metadata and does not revalidate the signature, certificate chain, or timestamp.';
         }
     }
@@ -451,15 +523,37 @@
         var artifact = (result && result.artifact) || {};
         requestContext = requestContext || {};
         var fileCheckRequested = requestContext.fileCheckRequested === true;
-        var responseFileMatch = !!(
+        var responseSubmittedDigestMatch = !!(
             result &&
-            result.file_bytes_verified === true &&
-            result.verification_scope === 'FILE'
+            result.verification_outcome === 'SUBMITTED_DIGEST_MATCH' &&
+            result.reason === 'SUBMITTED_DIGEST_MATCH' &&
+            result.verification_scope === 'FILE' &&
+            result.file_bytes_verified === false &&
+            result.submitted_file_digest_match === true &&
+            result.file_verification &&
+            result.file_verification.available === true &&
+            result.file_verification.algorithm === 'SHA-256' &&
+            result.file_verification.method === 'CALLER_SUBMITTED_DIGEST_COMPARISON'
         );
         var responseIdentifierMatch = !!(
             result &&
             result.file_bytes_verified === false &&
-            result.verification_scope === 'IDENTIFIER'
+            result.submitted_file_digest_match === false &&
+            result.verification_scope === 'IDENTIFIER' &&
+            (
+                (
+                    result.verification_outcome === 'ISSUED_ARTIFACT_RECORD_MATCH' &&
+                    result.reason === 'ISSUED_RECORD_CONFIRMED' &&
+                    result.artifact &&
+                    result.artifact.durable_delivery_binding_recorded === true
+                ) ||
+                (
+                    result.verification_outcome === 'REGISTRY_RECORD_MATCH' &&
+                    result.reason === 'REGISTRY_RECORD_MATCH' &&
+                    result.artifact &&
+                    result.artifact.durable_delivery_binding_recorded === false
+                )
+            )
         );
         var reportBindingMatches = normalizeReportId(artifact.report_id) === normalizeReportId(requestContext.reportId);
         var exportBindingMatches = !requestContext.exportEventId ||
@@ -482,13 +576,16 @@
                 result.artifact_bytes_sha256 === requestContext.artifactBytesSha256
             )
             : !responseHasFileBinding;
-        var scopeMatchesRequest = fileCheckRequested ? responseFileMatch : responseIdentifierMatch;
+        var scopeMatchesRequest = fileCheckRequested ? responseSubmittedDigestMatch : responseIdentifierMatch;
         var controlProfile = recordedControlProfile(result);
         var confirmed = !!(
             result &&
-            result.verification_outcome === 'RECORDED_MATCH' &&
+            result.verified === false &&
+            result.record_verified === true &&
+            result.issued_record_match === true &&
             result.record_match_confirmed === true &&
             result.artifact_hash_match === true &&
+            artifact.lifecycle_status === 'ACTIVE' &&
             reportBindingMatches &&
             exportBindingMatches &&
             artifactHashBindingMatches &&
@@ -497,34 +594,35 @@
             scopeMatchesRequest
         );
         if (!confirmed) {
-            setText('verify-result-kicker', 'Record Check Result');
+            setText('verify-result-kicker', 'Verification Result');
             setText('verify-result-title', 'Not confirmed');
             setText('verify-result-message', 'The submitted values did not produce a recorded match under the requested scope. No record metadata is displayed.');
-            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Record Check Outcome</span><span class="verify-result-value">NO_MATCH</span></div>';
+            grid.innerHTML = '<div class="verify-result-row"><span class="verify-result-key">Verification Outcome</span><span class="verify-result-value">NO_MATCH</span></div>';
             applyStatusPanel({ empty_state: true });
             return;
         }
 
-        var fileBytesMatched = fileCheckRequested && responseFileMatch;
-        setText('verify-result-kicker', fileBytesMatched ? 'File Match Confirmed' : 'Recorded Match Confirmed');
-        setText('verify-result-title', fileBytesMatched ? 'Artifact File Match' : 'Artifact Record Match');
+        var submittedDigestMatched = fileCheckRequested && responseSubmittedDigestMatch;
+        setText('verify-result-kicker', submittedDigestMatched ? 'Submitted Digest Match' : 'Recorded Match Confirmed');
+        setText('verify-result-title', submittedDigestMatched ? 'Artifact Digest Match' : 'Artifact Record Match');
         setText(
             'verify-result-message',
-            fileBytesMatched
-                ? 'The selected file bytes and submitted identifiers match the stored Auxtho artifact record.'
+            submittedDigestMatched
+                ? 'The browser-computed SHA-256 digest and submitted identifiers match the stored Auxtho artifact record. The API received the digest, not the selected file bytes.'
                 : 'The submitted identifiers match a stored Auxtho artifact record. The surrounding file was not checked.'
         );
 
         var rows = [
             ['Report ID', artifact.report_id || '-'],
             ['Export Event ID', artifact.export_event_id || '-'],
-            ['Record Check Outcome', result.verification_outcome],
-            ['Record Check Scope', result.verification_scope],
+            ['Verification Outcome', result.verification_outcome],
+            ['Verification Scope', result.verification_scope],
             ['Record Match Confirmed', result.record_match_confirmed === true ? 'YES' : 'NO'],
             ['Record Binding Checksum Match', result.artifact_hash_match === true ? 'YES' : 'NO'],
-            ['Selected File Bytes Match', fileBytesMatched ? 'YES' : 'NOT CHECKED'],
+            ['Submitted File Digest Match', submittedDigestMatched ? 'YES' : 'NOT SUBMITTED'],
+            ['API File Bytes Verification', 'NOT PERFORMED'],
             ['Public Mode', formatMode(result.mode || 'not_reported')],
-            ['Recorded Mode', formatMode(result.verification_mode)]
+            ['Verification Mode', formatMode(result.verification_mode)]
         ];
 
         if (controlProfile.kind === 'hash_only') {
@@ -532,7 +630,19 @@
                 ['Cryptographic Controls (API Record)', 'NOT ATTACHED'],
                 ['Evidence Type (API Record)', formatMode(controlProfile.signature.recorded_evidence_type)],
                 ['Live Cryptographic Revalidation', 'NOT PERFORMED'],
-                ['Recorded Reason Code', recordedReasonCodeLabel(controlProfile.signature)]
+                ['Recorded Reason Code', reasonCodeLabel(controlProfile)]
+            );
+        } else if (controlProfile.kind === 'production_signed_live') {
+            rows.push(
+                ['Evidence Type (API Record)', formatMode(controlProfile.signature.recorded_evidence_type)],
+                ['Signature Format (API Record)', signatureFormatLabel(controlProfile.signature)],
+                ['Signature API Live Status', liveApiLabel('VALID')],
+                ['Certificate Chain API Live Status', liveApiLabel('VERIFIED')],
+                ['Timestamp Provider (API Result)', formatMode(controlProfile.timestampProvider)],
+                [timestampRowLabel(controlProfile), liveApiLabel('VALID')],
+                ['API Validation Basis', formatMode(controlProfile.signature.validation_basis)],
+                ['Browser Cryptographic Revalidation', 'NOT PERFORMED'],
+                ['API Reason Code', reasonCodeLabel(controlProfile)]
             );
         } else {
             rows.push(
@@ -543,7 +653,7 @@
                 ['Timestamp Provider (API Record)', formatMode(controlProfile.timestampProvider)],
                 [timestampRowLabel(controlProfile), recordedAtExportLabel('VALID')],
                 ['Live Cryptographic Revalidation', 'NOT PERFORMED'],
-                ['Recorded Reason Code', recordedReasonCodeLabel(controlProfile.signature)]
+                ['Recorded Reason Code', reasonCodeLabel(controlProfile)]
             );
         }
 
@@ -554,10 +664,11 @@
         applyStatusPanel(result);
     }
 
-    async function runVerification(reportId, artifactHash, exportEventId, buttonId, artifactBytesSha256, requestState) {
+    async function runVerification(reportId, artifactHash, exportEventId, buttonId, artifactBytesSha256, qrContractVersion, requestState) {
         var state = requestState || beginVerification();
         clearVerificationResult();
-        if (!isValidArtifactRecordHash(artifactHash)) {
+        var normalizedArtifactHash = normalizeArtifactRecordHash(artifactHash);
+        if (!normalizedArtifactHash) {
             if (isCurrentVerification(state)) {
                 if (buttonId) setButtonLoading(buttonId, false, '');
                 setError(artifactRecordHashError(artifactHash));
@@ -568,7 +679,7 @@
         if (!SERVICE_AVAILABLE) {
             if (isCurrentVerification(state)) {
                 if (buttonId) setButtonLoading(buttonId, false, '');
-                setError('Record check unavailable. Use manual email support.');
+                setError('Verification unavailable. Use manual email support.');
             }
             finishVerification(state);
             return;
@@ -576,8 +687,13 @@
         setError('');
         showVerificationPending();
         if (buttonId) setButtonLoading(buttonId, true, 'Please wait...');
-        var payload = { report_id: reportId, artifact_hash: artifactHash };
-        if (exportEventId) payload.export_event_id = exportEventId;
+        var payload = {
+            verification_contract_version: REVIEWED_RELEASE_TUPLE.verification_contract_version,
+            report_id: reportId,
+            artifact_hash: normalizedArtifactHash,
+            export_event_id: exportEventId,
+            qr_contract_version: qrContractVersion
+        };
         if (artifactBytesSha256) payload.artifact_bytes_sha256 = artifactBytesSha256;
 
         try {
@@ -596,10 +712,19 @@
                 if (response.status === 503 || errorCode === 'VERIFICATION_UNAVAILABLE') {
                     setVerificationUnavailable();
                 }
-                setError((result.detail && result.detail.message) || result.message || 'Record check failed.');
+                setError((result.detail && result.detail.message) || result.message || 'Verification failed.');
                 showVerificationTerminal(
-                    'Record check not completed',
-                    'The record check did not complete successfully. No record metadata is displayed.'
+                    'Verification not completed',
+                    'The verification request did not complete successfully. No record metadata is displayed.'
+                );
+                return;
+            }
+            if (!releaseTupleMatches(result)) {
+                setVerificationUnavailable();
+                setError('Verification release identity did not match the reviewed public release.');
+                showVerificationTerminal(
+                    'Verification unavailable',
+                    'The verification service returned an unreviewed release identity. No record metadata is displayed.'
                 );
                 return;
             }
@@ -607,24 +732,24 @@
                 fileCheckRequested: !!artifactBytesSha256,
                 reportId: reportId,
                 exportEventId: exportEventId || null,
-                artifactHash: artifactHash,
+                artifactHash: normalizedArtifactHash,
                 artifactBytesSha256: artifactBytesSha256 || null
             });
         } catch (err) {
             if (!isActiveVerificationState(state)) return;
             if (err && err.name === 'TimeoutError') {
-                setError('Record check timed out. You can retry this request.');
+                setError('Verification timed out. You can retry this request.');
                 showVerificationTerminal(
-                    'Record check timed out',
+                    'Verification timed out',
                     'The service did not respond within the bounded wait. No record metadata is displayed.'
                 );
                 return;
             }
             setVerificationUnavailable();
-            setError('Record-check API unavailable. Use manual support.');
+            setError('Verification API unavailable. Use manual verification support.');
             showVerificationTerminal(
-                'Record check unavailable',
-                'The record-check service could not complete this request. No record metadata is displayed.'
+                'Verification unavailable',
+                'The verification service could not complete this request. No record metadata is displayed.'
             );
         } finally {
             if (isActiveVerificationState(state) && buttonId) setButtonLoading(buttonId, false, '');
@@ -649,8 +774,8 @@
             var reportId = ((byId('manual-report-id') || {}).value || '').trim();
             var artifactHash = ((byId('manual-artifact-hash') || {}).value || '').trim();
             var exportEventId = ((byId('manual-export-event-id') || {}).value || '').trim();
-            if (!reportId || !artifactHash) {
-                setError('Report ID and record binding checksum are required.');
+            if (!reportId || !artifactHash || !exportEventId) {
+                setError('Report ID, export event ID, and record binding checksum are required.');
                 return;
             }
             if (!isValidArtifactRecordHash(artifactHash)) {
@@ -672,7 +797,7 @@
                 return;
             }
             if (!isCurrentVerification(requestState)) return;
-            await runVerification(reportId, artifactHash, exportEventId || null, 'manual-verify-btn', fileHash, requestState);
+            await runVerification(reportId, artifactHash, exportEventId, 'manual-verify-btn', fileHash, '1', requestState);
         });
     }
 
@@ -686,9 +811,8 @@
         try {
             var requestResult = await fetchJsonWithTimeout(STATUS_ENDPOINT, { method: 'GET', credentials: 'same-origin' });
             var response = requestResult.response;
-            if (!response.ok) throw new Error('Record-check status request failed.');
+            if (!response.ok) throw new Error('Verification status request failed.');
             var result = requestResult.result;
-            if (!result || result.status !== 'operational') throw new Error('Record-check status was not operational.');
             var releaseRequest = await fetchJsonWithTimeout(releaseMetadataUrl(), {
                 method: 'GET',
                 credentials: 'same-origin',
@@ -696,9 +820,8 @@
             });
             if (!releaseRequest.response.ok) throw new Error('Public site release metadata was unavailable.');
             var release = releaseRequest.result;
-            if (!isDeclaredSiteSourceSha(release, release.source_sha)) {
-                throw new Error('Public site release identity was not confirmed.');
-            }
+            REVIEWED_RELEASE_TUPLE = reviewedReleaseTuple(result, release);
+            if (!REVIEWED_RELEASE_TUPLE) throw new Error('Public and backend release identity was not confirmed.');
             applyStatusPanel({ empty_state: true });
             setServiceStatus('active');
             setVerificationButtonsEnabled(true);
@@ -707,29 +830,56 @@
         }
     }
 
+    function exactParameterKeys(params, expectedKeys) {
+        var entries = Array.from(params.entries());
+        if (entries.length !== expectedKeys.length) return false;
+        var counts = Object.create(null);
+        entries.forEach(function (entry) {
+            counts[entry[0]] = (counts[entry[0]] || 0) + 1;
+        });
+        return expectedKeys.every(function (key) { return counts[key] === 1; })
+            && Object.keys(counts).every(function (key) { return expectedKeys.indexOf(key) >= 0; });
+    }
+
+    function isValidVerificationIdentifier(value, maxLength) {
+        return typeof value === 'string'
+            && value.length >= 3
+            && value.length <= maxLength
+            && /^[A-Za-z0-9][A-Za-z0-9._:-]*$/.test(value);
+    }
+
     function initQrFlow() {
         var fragmentParams = new URLSearchParams((window.location.hash || '').replace(/^#/, ''));
         var queryParams = new URLSearchParams(window.location.search || '');
-        var fragmentHasVerificationParams = fragmentParams.has('report') || fragmentParams.has('h') || fragmentParams.has('exp');
-        var legacyQueryParamsPresent = queryParams.has('report') || queryParams.has('h') || queryParams.has('exp');
+        var fragmentHasVerificationParams = ['v', 'report', 'h', 'exp'].some(function (key) { return fragmentParams.has(key); });
+        var legacyQueryParamsPresent = ['v', 'report', 'h', 'exp'].some(function (key) { return queryParams.has(key); });
         var legacyQueryHash = queryParams.get('h');
         var retiredLegacyQuery = legacyQueryParamsPresent && isRetiredLegacyArtifactRecordHash(legacyQueryHash);
-        // Current identifier tuples are accepted only from the fragment so they
-        // never reach the public site's CDN or origin. A retired query-form
-        // 16-character link is recognized only to render a local tombstone. Its
-        // identifiers are scrubbed before any readiness or comparison request.
-        var params = retiredLegacyQuery ? queryParams : fragmentParams;
-        var reportId = params.get('report');
-        var hash = params.get('h');
-        var exportEventId = params.get('exp');
         var hasVerificationParams = fragmentHasVerificationParams || legacyQueryParamsPresent;
         if (hasVerificationParams && window.history && window.history.replaceState) {
             window.history.replaceState(null, document.title, window.location.pathname);
         }
-        if (legacyQueryParamsPresent && !retiredLegacyQuery) return 'ignored-query';
-        if (!reportId || !hash) return 'none';
+        if (legacyQueryParamsPresent && fragmentHasVerificationParams) return 'invalid';
+        if (legacyQueryParamsPresent && !retiredLegacyQuery) return 'invalid';
+        if (!hasVerificationParams) return 'none';
 
-        RETIRED_LEGACY_QR_BINDING = isRetiredLegacyArtifactRecordHash(hash);
+        var params = retiredLegacyQuery ? queryParams : fragmentParams;
+        var reportId = params.get('report');
+        var hash = params.get('h');
+        var exportEventId = params.get('exp');
+        var version = params.get('v');
+        var retiredFragment = !legacyQueryParamsPresent && !version && isRetiredLegacyArtifactRecordHash(hash);
+        var exactV1 = version === '1' && exactParameterKeys(params, ['v', 'report', 'h', 'exp']);
+        var exactLegacy = version === null && exactParameterKeys(params, ['report', 'h', 'exp']);
+        if (!retiredLegacyQuery && !retiredFragment && !exactV1 && !exactLegacy) return 'invalid';
+        if (!reportId || !hash || (!retiredLegacyQuery && !retiredFragment && !exportEventId)) return 'invalid';
+        if (!retiredLegacyQuery && !retiredFragment) {
+            if (!isValidVerificationIdentifier(reportId, 128) || !isValidVerificationIdentifier(exportEventId, 160)) return 'invalid';
+            if (!isValidArtifactRecordHash(hash)) return 'invalid';
+            QR_CONTRACT_VERSION = exactV1 ? '1' : 'legacy-0';
+        }
+
+        RETIRED_LEGACY_QR_BINDING = retiredLegacyQuery || retiredFragment;
 
         var card = byId('qr-verify');
         if (card) card.classList.add('qr-card-visible');
@@ -743,7 +893,7 @@
         if (hashInput) hashInput.value = RETIRED_LEGACY_QR_BINDING ? '' : hash;
         if (exportInput) exportInput.value = RETIRED_LEGACY_QR_BINDING ? '' : (exportEventId || '');
 
-        var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Record and File-Digest Match Support');
+        var mailto = 'mailto:verify@auxtho.com?subject=' + encodeURIComponent('Artifact Verification Support');
         var mailtoEl = byId('qr-mailto');
         if (mailtoEl) mailtoEl.href = mailto;
 
@@ -764,11 +914,15 @@
                     setError(artifactRecordHashError(hash));
                     return;
                 }
+                if (QR_CONTRACT_VERSION === 'legacy-0' && hasSelectedFile()) {
+                    setError('Legacy links do not support local file verification. Clear the selected file or use manual v1 verification.');
+                    return;
+                }
                 var requestState = beginVerification();
-                setButtonLoading('qr-verify-btn', true, 'Hashing locally...');
+                setButtonLoading('qr-verify-btn', true, QR_CONTRACT_VERSION === '1' ? 'Hashing locally...' : 'Preparing...');
                 var fileHash = null;
                 try {
-                    fileHash = await selectedFileHash();
+                    fileHash = QR_CONTRACT_VERSION === '1' ? await selectedFileHash() : null;
                 } catch (err) {
                     if (isCurrentVerification(requestState)) {
                         setButtonLoading('qr-verify-btn', false, '');
@@ -778,7 +932,7 @@
                     return;
                 }
                 if (!isCurrentVerification(requestState)) return;
-                await runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash, requestState);
+                await runVerification(reportId, hash, exportEventId, 'qr-verify-btn', fileHash, QR_CONTRACT_VERSION, requestState);
             });
         }
         return 'current';
@@ -790,6 +944,11 @@
         if (qrFlowState === 'retired') {
             setServiceStatus('retired');
             setVerificationButtonsEnabled(false);
+            return;
+        }
+        if (qrFlowState === 'invalid') {
+            setVerificationUnavailable();
+            setError('This verification link is malformed, incomplete, or uses an unsupported contract version.');
             return;
         }
         loadStatusPanel();

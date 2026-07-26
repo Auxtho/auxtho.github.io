@@ -380,6 +380,7 @@ test('postdeploy release validation accepts exact static candidate history metad
     publication_mode: 'candidate',
     source_sha: S,
     previous_approved_source_sha: L,
+    compatible_backend_site_shas: COMPATIBILITY,
     declared_site_source_shas: COMPATIBILITY,
     planned_site_sha_transition: transition,
     rollback_of_source_sha: null,

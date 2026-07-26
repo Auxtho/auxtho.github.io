@@ -1,4 +1,5 @@
 {
+  "schema_version": 1,
   "version": "2026-07-16",
   "scope": "Auxtho homepage publisher-attested public-safe synthetic interface fixtures",
   "attestation_class": "publisher_self_attestation",
@@ -15,11 +16,14 @@
     {
       "path": "/assets/proposal/app-overview-synthetic-replay-20260716.png",
       "sidecar": "/assets/proposal/app-overview-synthetic-replay-20260716.json",
-      "sidecar_sha256": "fd6acff60ba66b220c7c475f9da7c19ffa52f734b0e5510f2bea22b2f7b7a31d",
+      "sidecar_sha256": "a126ae339c5937968221796a4cb09b1e9a39c13da9608e83096fa4260398840e",
       "sha256": "c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",
-      "dimensions_px": [1920, 1280],
+      "dimensions_px": [
+        1920,
+        1280
+      ],
       "public_derivative": true,
       "public_derivative_note": "Downscaled from the controlled synthetic capture without semantic content alteration.",
       "surface": "Auxtho App",
@@ -28,7 +32,10 @@
       "source_revision_publicly_resolvable": false,
       "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
       "provenance_class": "publisher_self_attestation",
-      "fixture_relationship": "independent synthetic fixture; not correlated with the Console capture or a customer run",
+      "fixture_class": "independent_synthetic_fixture",
+      "synthetic_only": true,
+      "correlated_run_claimed": false,
+      "fixture_relationship": "Independent synthetic fixture; no correlated cross-surface or customer run is claimed.",
       "capture_annotation": "the visible synthetic replay label is a capture annotation and is not native product UI",
       "fixture_values": {
         "needs_review": 4,
@@ -57,11 +64,14 @@
     {
       "path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
       "sidecar": "/assets/proposal/console-synthetic-workflow-replay-20260716.json",
-      "sidecar_sha256": "c573e37efa46b7f8a0981bd28fa73473e26e28e4b3e4419a629ae7e31ee15763",
+      "sidecar_sha256": "11cb163972dfd6c3aa4d8c3114eeb203027b08d4310f5cb6ec891d7e38c3a9ad",
       "sha256": "03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712",
       "sha256_basis": "raw file bytes",
       "media_type": "image/png",
-      "dimensions_px": [1280, 509],
+      "dimensions_px": [
+        1280,
+        509
+      ],
       "public_derivative": false,
       "surface": "Auxtho Console",
       "captured_on": "2026-07-16",
@@ -69,7 +79,10 @@
       "source_revision_publicly_resolvable": false,
       "source_revision_note": "The public asset does not assert a publicly resolvable source revision.",
       "provenance_class": "publisher_self_attestation",
-      "fixture_relationship": "independent synthetic fixture; not correlated with the App capture or a customer run",
+      "fixture_class": "independent_synthetic_fixture",
+      "synthetic_only": true,
+      "correlated_run_claimed": false,
+      "fixture_relationship": "Independent synthetic fixture; no correlated cross-surface or customer run is claimed.",
       "fixture_values": {
         "review_attention": 4,
         "critical_signals": 2,

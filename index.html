@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auxtho - Evidence-linked human review for AI-assisted work</title>
+  <title>Auxtho - Approval-gated release control for AI-assisted work</title>
   <meta name="description"
-    content="Auxtho links selected AI-assisted work to available evidence, visible review state, and human decisions, with bounded operator oversight.">
+    content="Auxtho links AI-assisted output, evidence, accountable review, decision state, and the recorded human outcome before release.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="/assets/favicon.svg">
@@ -16,9 +16,9 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Auxtho - Evidence-linked human review for AI-assisted work">
+  <meta property="og:title" content="Auxtho - Approval-gated release control for AI-assisted work">
   <meta property="og:description"
-    content="Make selected AI-assisted work reviewable through evidence-linked context, visible state, human decisions, and bounded operator oversight.">
+    content="Evidence-linked release control that puts an accountable human decision before AI-assisted work moves forward.">
   <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
   <meta property="og:image:alt" content="Auxtho human review before release">
   <meta property="og:url" content="https://auxtho.com">
@@ -28,17 +28,17 @@
   <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Auxtho - Evidence-linked human review for AI-assisted work">
+  <meta name="twitter:title" content="Auxtho - Approval-gated release control for AI-assisted work">
   <meta name="twitter:description"
-    content="Make selected AI-assisted work reviewable through evidence-linked context, visible state, human decisions, and bounded operator oversight.">
+    content="Evidence-linked release control that puts an accountable human decision before AI-assisted work moves forward.">
   <meta name="twitter:image" content="https://auxtho.com/assets/og-image-v2-16.png">
 
-  <link rel="stylesheet" href="/assets/style.css?sha256=de6e49fedb56d12c7c7c8ec96db326ae66ad4f1de98a5973d25f71bfb7507b2b">
+  <link rel="stylesheet" href="/assets/style.css?sha256=e9d419da2c4af1bd500b89870f206a7d123aca783fe4681d1431b6f2abdaec49">
   <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
   
   <link rel="stylesheet" href="/assets/final-overrides.css?sha256=9d18c113b46b58d319852f3e00cfd6455d2e6b1de8ec97f48ecb52dd64f397c9">
-  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=a9af7817cf2ae28327322237be81948b668d1faf55ff7504d5cc3c9efa11831d">
-  <link rel="stylesheet" href="/assets/technical-foundations.css?sha256=cc7492b5d01c494e4496299055f60b09861b30d7411742325e3774971aeaa8b8">
+  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=e6c491f008415c1a1a304116f49efdf32bed6121ab608967a5bf41e935b76562">
+  <link rel="stylesheet" href="/assets/technical-foundations.css?sha256=d70455671ad7881b0ab69cda1fb8a8200e2359737fe853079e8c85bc176bda18">
 </head>
 
 <body class="antialiased">
@@ -61,12 +61,13 @@
       </button>
       <nav>
         <ul id="primary-navigation" data-visible="false" class="primary-navigation flex items-center space-x-8">
-          <li><a href="#problem" class="text-gray-300 hover:text-white transition-colors">Problem</a></li>
           <li><a href="#solution" class="text-gray-300 hover:text-white transition-colors">Product</a></li>
-          <li><a href="#overview" class="text-gray-300 hover:text-white transition-colors">Workflow</a></li>
-          <li><a href="#verify" class="text-gray-300 hover:text-white transition-colors">Boundary</a></li>
+          <li><a href="#overview" class="text-gray-300 hover:text-white transition-colors">How It Works</a></li>
+          <li><a href="#trust" class="text-gray-300 hover:text-white transition-colors">Decision Record</a></li>
+          <li><a href="#research" class="text-gray-300 hover:text-white transition-colors">Foundations</a></li>
+          <li><a href="/verify.html" class="text-gray-300 hover:text-white transition-colors">Verify</a></li>
           <li><a href="#contact"
-              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Contact</a>
+              class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-full transition-colors">Map a Workflow</a>
           </li>
         </ul>
       </nav>
@@ -86,10 +87,11 @@
     </div>
     <div id="scroll-nav-menu" aria-hidden="true" inert>
       <ul class="scroll-nav-menu-list">
-        <li><a href="#problem">Problem</a></li>
         <li><a href="#solution">Product</a></li>
-        <li><a href="#overview">Workflow</a></li>
-        <li><a href="#verify">Boundary</a></li>
+        <li><a href="#overview">How It Works</a></li>
+        <li><a href="#trust">Decision Record</a></li>
+        <li><a href="#research">Foundations</a></li>
+        <li><a href="/verify.html">Verify</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
@@ -98,26 +100,27 @@
   <main>
     <section class="hero-section text-center pt-24 pb-16">
       <div class="container mx-auto px-6">
-        <p class="hero-kicker">EVIDENCE-LINKED HUMAN REVIEW</p>
-        <h1 class="hero-title">Make AI-assisted work reviewable before it moves forward.</h1>
+        <p class="hero-kicker">AUXTHO APP + AUXTHO CONSOLE</p>
+        <h1 class="hero-title">Approval-gated, evidence-linked release control for AI-assisted work.</h1>
         <p class="hero-copy">
-          The Auxtho App links selected AI-assisted work to available evidence, visible review state, and a human decision. A separate internal Console provides bounded views for review attention and operator follow-up; it does not grant approval, release, or export authority.
+          Auxtho gives risk, compliance, and operations teams a controlled release path for selected AI-assisted work.
+          It links each output to its evidence, accountable reviewer, decision state, and recorded human outcome before
+          release. Auxtho App assembles the review workspace. Auxtho Console surfaces exceptions and follow-up.
         </p>
         <div class="hero-actions">
-          <a href="mailto:hello@auxtho.com?subject=Request%20an%20Exploratory%20Briefing" class="btn-primary">Request an Exploratory Briefing</a>
-          <a href="#solution" class="btn-secondary">See Synthetic Interface Evidence</a>
+          <a href="#overview" class="btn-primary">See the Review Path</a>
+          <a href="mailto:hello@auxtho.com?subject=Map%20One%20Workflow%20with%20Auxtho" class="btn-secondary">Map One Workflow</a>
         </div>
-        <p class="hero-evaluation-boundary">Exploratory, synthetic, and non-production only. Do not send regulated, personal, customer-confidential, or production data.</p>
 
         <figure class="hero-product-proof hero-replay-proof">
           <div class="verified-replay" data-verified-replay data-stage="0">
             <div class="verified-replay-header">
               <div>
                 <div class="verified-replay-kicker-line">
-                  <p class="verified-replay-kicker">Illustrative synthetic workflow replay</p>
-                  <span>Not live telemetry</span>
+                  <p class="verified-replay-kicker">Product walkthrough</p>
+                  <span>Synthetic example</span>
                 </div>
-                <h2>One queue. Visible human-decision boundaries.</h2>
+                <h2>One workflow. Four visible states. One accountable decision point.</h2>
               </div>
               <div class="verified-replay-status" aria-live="polite">
                 <span class="verified-replay-pulse" aria-hidden="true"></span>
@@ -153,7 +156,7 @@
               <div class="verified-replay-stage" aria-live="polite">
                 <span data-replay-step>Step 01</span>
                 <h3 data-replay-title>Four packets wait for human review.</h3>
-                <p data-replay-copy>In this illustrative sequence, no AI action is shown as granting approval, release, or export authority.</p>
+                <p data-replay-copy>The sequence shows where a designated person decides what can move forward.</p>
                 <div class="verified-replay-event">
                   <small>Illustrative state</small><strong data-replay-event>No human decision yet</strong>
                 </div>
@@ -161,8 +164,8 @@
             </div>
           </div>
           <figcaption>
-            <span>Interface scenario</span>
-            <strong>A deterministic synthetic sequence showing visible review states. It is not production activity, a customer outcome, or operating-effectiveness evidence.</strong>
+            <span>Illustrative workflow</span>
+            <strong>A synthetic product example showing how work moves from review to a recorded human outcome.</strong>
           </figcaption>
         </figure>
       </div>
@@ -172,9 +175,9 @@
       <div class="container mx-auto px-6">
         <div class="proposal-scenario-header text-center max-w-5xl mx-auto">
           <p class="hero-kicker">THE REVIEW GAP</p>
-          <h2 class="text-3xl md:text-5xl font-bold headline-balance">When a decision is challenged later, can you reconstruct what was reviewed?</h2>
-          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">AI-assisted output, available evidence, reviewer rationale, ownership, and the release boundary can sit in different places. Auxtho brings those elements into one selected review path while keeping operator follow-up separate.</p>
-          <p class="scenario-disclaimer">Illustrative workflow pattern, not an observed customer incident.</p>
+          <h2 class="text-3xl md:text-5xl font-bold headline-balance">When AI-assisted work moves, its evidence and decision should move with it.</h2>
+          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">Output, evidence, accountability, and the release decision often separate across tools. Auxtho keeps them in one visible control path so the decision does not have to be reconstructed later.</p>
+          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">Auxtho controls the work-level handoff: whether a selected AI-assisted output moves forward with its evidence and accountable human decision attached.</p>
         </div>
         <div class="proposal-failure-line" aria-label="Illustrative workflow failure pattern">
           <div><span>Work advances</span><small>AI-assisted output</small></div>
@@ -198,45 +201,43 @@
     <section id="solution" class="py-20">
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
-          <p class="hero-kicker">PUBLISHER-ATTESTED SYNTHETIC EVIDENCE</p>
-          <h2 class="text-3xl md:text-5xl font-bold">One review model, shown through two separate surfaces.</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">The App shows selected work, available evidence, visible state, and human disposition. The Console supports bounded operator follow-up. These images are independent synthetic fixtures; they do not establish a correlated run, live telemetry, deployment identity, or operating effectiveness.</p>
+          <p class="hero-kicker">AUXTHO APP + AUXTHO CONSOLE</p>
+          <h2 class="text-3xl md:text-5xl font-bold">Two product surfaces, one release-control model.</h2>
+          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">Auxtho App brings the work, evidence, accountable reviewer, and decision together. Auxtho Console gives operators a separate view of exceptions and follow-up without taking over approval authority.</p>
         </div>
 
         <div class="evidence-surface-grid">
-          <article class="evidence-surface-card">
+          <article class="evidence-surface-card" data-evidence-surface="Auxtho App">
             <div class="evidence-surface-copy">
-              <p class="proposal-surface-label">Auxtho App &middot; controlled synthetic rendering &middot; 16 Jul 2026</p>
-              <h3>App review queue</h3>
-              <p>A fixed QA scenario shows a bounded review queue: four items need review, two are blocked, three are release-ready, one is shown as released today, and two remain in progress.</p>
+              <p class="proposal-surface-label">AUXTHO APP</p>
+              <h3>Auxtho App - Human review workspace</h3>
+              <p>Review selected work, inspect the context available at decision time, and keep the human outcome visible before release.</p>
             </div>
               <a class="sample-card-media proposal-surface-media proposal-surface-media-app-overview" href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32"
               data-lightbox-mode="app-overview"
-              data-lightbox-title="Auxtho App synthetic workflow replay"
-              data-lightbox-caption="Controlled synthetic rendering using fixed QA records. The synthetic replay label is a capture annotation, not native product UI. This view does not represent live usage, customer activity, or completed customer releases."
-              aria-label="Open a larger view of the Auxtho App synthetic workflow replay">
+              data-lightbox-title="Auxtho App: Human review workspace"
+              data-lightbox-caption="Synthetic example showing review states and the point where a person decides."
+              aria-label="Open a larger view of the Auxtho App human review workspace">
                   <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="Auxtho App interface rendered with synthetic review states." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> fixed synthetic QA records, no customer data, no provider runtime, no export path, and no production mutation. This view does not establish deployment identity, live usage, customer adoption, completed approvals, or operating effectiveness.</p>
           </article>
 
-          <article class="evidence-surface-card">
+          <article class="evidence-surface-card" data-evidence-surface="Auxtho Console">
             <div class="evidence-surface-copy">
-            <p class="proposal-surface-label">Auxtho Console &middot; controlled synthetic rendering &middot; 16 Jul 2026</p>
-              <h3>Console exception signals</h3>
-              <p>A fixed QA scenario illustrates four review-attention signals, two critical signals, three synthetic account records, and one synthetic bootstrap state.</p>
+            <p class="proposal-surface-label">AUXTHO CONSOLE</p>
+              <h3>Auxtho Console - Operator oversight</h3>
+              <p>Help designated operators find review attention and critical signals for follow-up without making the review decision.</p>
             </div>
               <a class="sample-card-media proposal-surface-media proposal-surface-media-wide" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712"
               data-lightbox-mode="console-wide"
-              data-lightbox-title="Auxtho Console synthetic workflow replay"
-              data-lightbox-caption="Controlled synthetic rendering using fixed QA records. It illustrates operator attention and does not represent live telemetry, customer activity, or completed operational work."
-              aria-label="Open a larger view of the Auxtho Console synthetic QA fixture">
+              data-lightbox-title="Auxtho Console: Operator oversight"
+              data-lightbox-caption="Synthetic example showing review attention and operator follow-up."
+              aria-label="Open a larger view of the Auxtho Console operator oversight surface">
                   <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712" alt="Auxtho Console interface rendered with synthetic operator signals." loading="lazy" decoding="async">
             </a>
-            <p class="evidence-source-note"><strong>Fixture boundary:</strong> fixed synthetic QA records, no customer data, no provider runtime, no export path, and no production mutation. This independent view does not establish deployment identity, live telemetry, customer adoption, or operating effectiveness.</p>
           </article>
         </div>
-        <p class="proposal-scope-note">Evidence provenance and limits are recorded in the <a class="auxtho-subtle-link" href="/assets/proposal/evidence-manifest-20260716.json">public evidence manifest</a>.</p>
+        <p class="proposal-scope-note">Real Auxtho App and Console interfaces, shown with synthetic records for public demonstration. They are not live telemetry or customer data.</p>
       </div>
     </section>
 
@@ -244,109 +245,117 @@
       <div class="container mx-auto px-6">
         <div class="text-center mb-12">
           <p class="hero-kicker">SELECTED REVIEW PATH</p>
-          <h2 class="text-3xl md:text-5xl font-bold">A visible path from work to human decision.</h2>
-          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">The main path stays simple. An exception signal can branch to operator follow-up without granting the AI approval or release authority.</p>
+          <h2 class="text-3xl md:text-5xl font-bold">From selected work to an accountable release decision.</h2>
+          <p class="text-lg text-gray-400 mt-3 max-w-3xl mx-auto">The main path keeps the output, available evidence, accountable reviewer, and recorded outcome together. Exceptions can branch to operator follow-up without transferring approval authority.</p>
         </div>
         <div class="proposal-flow proposal-flow-review" aria-label="Auxtho selected review path">
           <article class="proposal-flow-step" data-tone="ai"><span class="proposal-flow-index">01</span><h3>Selected work</h3><p>One AI-assisted output enters review.</p></article>
           <span class="proposal-flow-arrow" aria-hidden="true">&rarr;</span>
-          <article class="proposal-flow-step" data-tone="evidence"><span class="proposal-flow-index">02</span><h3>Available evidence</h3><p>Linked context and visible state when present.</p></article>
+          <article class="proposal-flow-step" data-tone="evidence"><span class="proposal-flow-index">02</span><h3>Review package</h3><p>Output, evidence links, review owner, and visible state are assembled.</p></article>
           <span class="proposal-flow-arrow" aria-hidden="true">&rarr;</span>
-          <article class="proposal-flow-step" data-tone="human"><span class="proposal-flow-index">03</span><h3>Human disposition</h3><p>A human decision remains required before an item is shown as release-ready.</p></article>
+          <article class="proposal-flow-step" data-tone="human"><span class="proposal-flow-index">03</span><h3>Accountable decision</h3><p>A designated person records whether the work is held or can move forward.</p></article>
           <span class="proposal-flow-arrow" aria-hidden="true">&rarr;</span>
-          <article class="proposal-flow-step" data-tone="outcome"><span class="proposal-flow-index">04</span><h3>Held or release-ready</h3><p>The visible outcome remains explicit; export is represented as a separate boundary.</p></article>
+          <article class="proposal-flow-step" data-tone="outcome"><span class="proposal-flow-index">04</span><h3>Review outcome</h3><p>The recorded outcome shows held or release-ready; export remains a separate action.</p></article>
         </div>
         <aside class="operator-branch" aria-label="Exception signal branch">
-          <span>Exception signal</span>
-          <p>Review-attention or critical signals can appear in the separate Console for human follow-up. This is a side branch, not an automatic release step.</p>
+          <span>Operator follow-up</span>
+          <p>Review-attention or critical signals can appear in Auxtho Console as a separate operator path. Operator follow-up remains separate from approval and release.</p>
         </aside>
+      </div>
+    </section>
+
+    <section id="trust" class="py-24">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-14">
+          <p class="hero-kicker">DECISION + EVIDENCE RECORD</p>
+          <h2 class="text-3xl md:text-5xl font-bold">Keep the outcome and the evidence that supported it together.</h2>
+          <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">A review record should answer what moved, what evidence was available, who decided, and what the recorded outcome was.</p>
+        </div>
+        <div class="decision-evidence-proof max-w-5xl mx-auto" aria-label="Synthetic decision and evidence record">
+          <article class="decision-record-card">
+            <div class="decision-record-head">
+              <div><span>Decision record</span><strong>Release-ready</strong></div>
+              <span class="decision-record-status">Human decision recorded</span>
+            </div>
+            <dl class="decision-record-grid">
+              <div><dt>Selected work</dt><dd>Policy review package</dd></div>
+              <div><dt>Accountable reviewer</dt><dd>Designated compliance reviewer</dd></div>
+              <div><dt>Decision</dt><dd>Release-ready</dd></div>
+              <div><dt>Export state</dt><dd>Locked</dd></div>
+            </dl>
+          </article>
+          <article class="evidence-record-card">
+            <div class="evidence-record-head"><span>Evidence available at decision</span><strong>4 linked items</strong></div>
+            <ul class="evidence-record-list">
+              <li><span>AI-assisted output</span><strong>Linked</strong></li>
+              <li><span>Policy evidence</span><strong>Linked</strong></li>
+              <li><span>Run lineage</span><strong>Linked</strong></li>
+              <li><span>Recorded rationale</span><strong>Present</strong></li>
+            </ul>
+          </article>
+        </div>
+        <p class="decision-proof-note">Synthetic record illustrating the product structure; fields and workflow configuration vary by evaluation.</p>
+      </div>
+    </section>
+
+    <section id="research" class="technical-foundations-section" aria-labelledby="research-title">
+      <div class="technical-foundations-shell">
+        <div class="technical-foundations-header">
+          <p class="technical-foundations-kicker">TECHNICAL FOUNDATIONS</p>
+          <h2 id="research-title" class="technical-foundations-title">Control, coordination, and artifact verification beneath the product.</h2>
+          <p class="technical-foundations-copy">
+            Auxtho combines a visible product workflow with technical foundations for intent alignment, human-gated
+            defensive control, and artifact verification.
+          </p>
+        </div>
+
+        <div class="technical-reference-strip">
+          <a class="technical-reference-item" href="/lineage/isp/">
+            <span>Intent and execution alignment</span>
+            <strong>Intent Synchronization Protocol (ISP)</strong>
+            <small>Structures intent, authority, evidence, and handoffs across bounded multi-agent work.</small>
+            <em>Open protocol lineage</em>
+          </a>
+          <a class="technical-reference-item" href="/security/ardamire/">
+            <span>Human-gated defensive control</span>
+            <strong>Ardamire Defense Layer</strong>
+            <small>Maps six stages from signal detection to verification before rollout, with a human decision before continuation.</small>
+            <em>Run the control sequence</em>
+          </a>
+          <a class="technical-reference-item" href="/verify.html">
+            <span>Artifact verification</span>
+            <strong>Auxtho Artifact Verification</strong>
+            <small>Compare a caller-submitted SHA-256 digest with the digest recorded at export.</small>
+            <em>Open artifact verification</em>
+          </a>
+        </div>
       </div>
     </section>
 
     <section id="existing-systems" class="py-16">
       <div class="container mx-auto px-6 max-w-4xl">
         <div class="existing-systems-panel">
-          <p class="hero-kicker">BOUNDED ADJACENCY</p>
-          <h2 class="text-2xl md:text-3xl font-bold mb-4">Review one workflow alongside existing repositories and control systems.</h2>
-          <p class="text-gray-400">This preview does not demonstrate integrations and does not claim to replace a repository, approval system, GRC platform, audit tool, or system of record.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="verify" class="py-24">
-      <div class="container mx-auto px-6">
-        <div class="text-center mb-14">
-          <p class="hero-kicker">EVIDENCE BOUNDARY</p>
-          <h2 class="text-3xl md:text-5xl font-bold">What is visible here - and what is not established.</h2>
-        </div>
-        <div class="state-grid max-w-5xl mx-auto">
-          <section class="state-panel state-panel-live">
-            <p class="state-label">Visible in this bounded evidence set</p>
-            <ul class="state-list">
-              <li>App review queue rendered from fixed synthetic QA records</li>
-              <li>Console operator metrics rendered from fixed synthetic QA records</li>
-              <li>Image hashes, fixture values, and capture limits recorded in a public manifest</li>
-              <li>No customer data, provider runtime, export path, or production mutation in either capture</li>
-            </ul>
-          </section>
-          <section class="state-panel state-panel-scope">
-            <p class="state-label">Not established by this evidence</p>
-            <ul class="state-list">
-              <li>Live usage, customer adoption, deployment identity, or backend aggregation correctness</li>
-              <li>Completed customer approval, release, export, or operating effectiveness</li>
-              <li>Integrations with existing repositories or control systems</li>
-              <li>Compliance approval, regulatory suitability, or bank-production readiness</li>
-            </ul>
-          </section>
-        </div>
-      </div>
-    </section>
-
-    <section id="foundations" class="technical-foundations-section" aria-labelledby="foundations-title">
-      <div class="technical-foundations-shell">
-        <div class="technical-foundations-header">
-          <p class="technical-foundations-kicker">Public references</p>
-          <h2 id="foundations-title" class="technical-foundations-title">Inspect each claim at its actual evidence level.</h2>
-          <p class="technical-foundations-copy">
-            Research lineage, a dated view-only interface observation, and a bounded record/file-digest utility are
-            published separately. They do not establish one correlated production run, customer deployment, or
-            operating effectiveness.
-          </p>
-        </div>
-
-        <div class="technical-reference-strip">
-          <a class="technical-reference-item" href="/lineage/isp/">
-            <span>Research lineage</span>
-            <strong>ISP prototype record</strong>
-            <small>Publisher-documented prototype evidence.</small>
-          </a>
-          <a class="technical-reference-item" href="/security/ardamire/">
-            <span>Observed interface</span>
-            <strong>Ardamire boundary</strong>
-            <small>Dated view-only observation; execution unproven.</small>
-          </a>
-          <a class="technical-reference-item" href="/verify.html">
-            <span>Record check</span>
-            <strong>Record and file-digest match</strong>
-            <small>Stored-record and optional local-file digest comparison.</small>
-          </a>
+          <p class="hero-kicker">START WITH ONE WORKFLOW</p>
+          <h2 class="text-2xl md:text-3xl font-bold mb-4">Map the release-control path before integration.</h2>
+          <p class="text-gray-400">Identify where AI-assisted output and evidence originate, who is accountable for the decision, where the outcome is recorded, and which downstream action remains separately controlled. Then scope integration against the systems already in use.</p>
+          <p class="text-gray-400 mt-4">A first workflow can be a policy review, model-risk memo, audit response, or customer communication prepared with AI assistance.</p>
         </div>
       </div>
     </section>
 
     <section id="contact" class="py-20">
       <div class="container mx-auto px-6 text-center">
-        <p class="hero-kicker">EXPLORATORY BRIEFING</p>
-        <h2 class="text-3xl md:text-4xl font-bold">Start with one synthetic, non-production workflow.</h2>
-        <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">A useful first conversation defines the work, data boundary, provider path, reviewer authority, storage, export, and exit conditions before any evaluation is proposed.</p>
+        <p class="hero-kicker">MAP ONE WORKFLOW</p>
+        <h2 class="text-3xl md:text-4xl font-bold">Put an accountable decision before the next consequential step.</h2>
+        <p class="text-lg text-gray-400 mt-4 max-w-3xl mx-auto">Map the work, evidence, reviewer, systems, data boundary, and recorded outcome for one AI-assisted workflow.</p>
         <ul class="pilot-scope-grid" aria-label="Pilot scope checklist">
           <li>Workflow and output type</li><li>Data classification</li><li>Model or provider path</li>
           <li>Storage and retention</li><li>Reviewer roles</li><li>Export and release boundary</li><li>Exit and deletion</li>
         </ul>
         <div class="mt-8">
-          <a href="mailto:hello@auxtho.com?subject=Request%20an%20Exploratory%20Briefing" class="btn-primary">Request an Exploratory Briefing</a>
+          <a href="mailto:hello@auxtho.com?subject=Controlled%20Auxtho%20Product%20Walkthrough" class="btn-primary">Request a Controlled Walkthrough</a>
         </div>
-        <p class="text-sm text-gray-500 mt-4">Contact: hello@auxtho.com | No regulated, personal, customer-confidential, or production data. No regulatory-suitability or production-readiness claim.</p>
+        <p class="text-sm text-gray-500 mt-4">hello@auxtho.com</p>
       </div>
     </section>
   </main>
@@ -378,11 +387,8 @@
         <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
         <span class="text-gray-600" aria-hidden="true">&middot;</span>
         <a href="https://www.linkedin.com/company/auxtho" target="_blank" rel="noopener noreferrer"
-          class="hover:text-white">Company LinkedIn (Official)</a>
+          class="hover:text-white">LinkedIn</a>
       </div>
-      <p class="text-center md:text-right order-4 max-w-md text-xs text-gray-500">
-        Interface-level product description. No regulatory, compliance, or production-readiness claim.
-      </p>
     </div>
   </footer>
 

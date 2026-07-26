@@ -279,7 +279,8 @@ function validateSupportedResponseCsp(csp, label) {
 function validateRelease(release, provenance, expected) {
   const exactKeys = [
     'schema_version', 'publication_mode', 'source_sha', 'previous_approved_source_sha',
-    'declared_site_source_shas', 'planned_site_sha_transition', 'rollback_of_source_sha',
+    'compatible_backend_site_shas', 'declared_site_source_shas',
+    'planned_site_sha_transition', 'rollback_of_source_sha',
     'release_manifest', 'privacy_manifest',
   ];
   if (JSON.stringify(Object.keys(release)) !== JSON.stringify(exactKeys)) fail('release.json keys are not exact');
@@ -288,6 +289,12 @@ function validateRelease(release, provenance, expected) {
   if (release.previous_approved_source_sha !== provenance.previous_approved_source_sha) fail('previous approved source SHA mismatch');
   if (JSON.stringify(release.declared_site_source_shas) !== JSON.stringify(expected.compatibleShas)) {
     fail('deployed declared site source SHA list mismatch');
+  }
+  if (JSON.stringify(release.compatible_backend_site_shas) !== JSON.stringify(expected.compatibleShas)) {
+    fail('deployed backend-compatible site SHA list mismatch');
+  }
+  if (JSON.stringify(release.compatible_backend_site_shas) !== JSON.stringify(release.declared_site_source_shas)) {
+    fail('backend-compatible and declared site SHA lists differ');
   }
   if (JSON.stringify(release.declared_site_source_shas) !== JSON.stringify([...release.declared_site_source_shas].sort())) {
     fail('deployed site source declaration is not in canonical SHA sort order');

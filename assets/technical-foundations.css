@@ -101,6 +101,20 @@
   line-height: 1.5;
 }
 
+.technical-reference-item em {
+  color: #d7e6ff;
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin-top: auto;
+  padding-top: 0.9rem;
+}
+
+.technical-reference-item em::after {
+  content: " \2192";
+}
+
 .technical-reference-item:hover,
 .technical-reference-item:focus-visible {
   background: var(--tf-surface);
@@ -299,8 +313,15 @@
 .technical-boundary-grid {
   display: grid;
   gap: 1.25rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 2rem;
+}
+
+.technical-claim-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.technical-boundary-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .technical-claim-block {
@@ -403,6 +424,10 @@
 }
 
 @media (max-width: 900px) {
+  .technical-claim-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .technical-reference-strip {
     grid-template-columns: 1fr;
   }
