@@ -13,6 +13,7 @@ const {
   findImageSources,
   findScriptSources,
   findStylesheetSources,
+  isApprovedHistoricalRollbackEvidence,
 } = require('../scripts/release/public-artifact.cjs');
 const {
   validateGeneratedRelease,
@@ -32,6 +33,8 @@ const LEGACY_SHA = '1'.repeat(40);
 const SITE_SHA = 'a'.repeat(40);
 const COMPATIBILITY = [LEGACY_SHA, SITE_SHA].sort();
 const ACTUAL_LEGACY_SHA = '4b2f476c741b771519745930a6ebf244cf5d6433';
+const CURRENT_LIVE_SHA = '784ec29c658ed08ebccfcb3a107d3c7556262d96';
+const CURRENT_LIVE_EVIDENCE_SHA = 'dc5e5b15347e11b2e3da85df585c0d5b1ab414f37e63b3ce617cced98787e3ec';
 
 function sha256(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
@@ -601,6 +604,120 @@ test('rollback artifact preserves and hashes an approved legacy script URL exact
   }
 });
 
+test('historical rollback evidence is bound to the exact approved live source and manifest bytes', () => {
+  assert.equal(isApprovedHistoricalRollbackEvidence(CURRENT_LIVE_SHA, CURRENT_LIVE_EVIDENCE_SHA), true);
+  assert.equal(isApprovedHistoricalRollbackEvidence(CURRENT_LIVE_SHA, '0'.repeat(64)), false);
+  assert.equal(isApprovedHistoricalRollbackEvidence('0'.repeat(40), CURRENT_LIVE_EVIDENCE_SHA), false);
+});
+
+test('approved live rollback packages exact bytes and rejects modified historical public files', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-approved-live-rollback-'));
+  try {
+    const archive = path.join(temporary, 'live.tar');
+    const source = path.join(temporary, 'live');
+    const tampered = path.join(temporary, 'tampered');
+    const previous = path.join(temporary, 'previous');
+    fs.mkdirSync(source);
+    fs.mkdirSync(previous);
+    createSourceFixture(previous);
+
+    const archived = spawnSync('git', ['archive', '--format=tar', `--output=${archive}`, CURRENT_LIVE_SHA], {
+      cwd: gitRoot,
+      encoding: 'utf8',
+      windowsHide: true,
+    });
+    assert.equal(archived.status, 0, archived.stderr);
+    const extracted = spawnSync('tar', ['-xf', archive, '-C', source], { encoding: 'utf8', windowsHide: true });
+    assert.equal(extracted.status, 0, extracted.stderr);
+
+    const result = buildArtifact({
+      sourceRoot: source,
+      previousSourceRoot: previous,
+      outputRoot: path.join(temporary, 'site'),
+      provenanceRoot: path.join(temporary, 'provenance'),
+      sourceSha: CURRENT_LIVE_SHA,
+      previousSha: CURRENT_LIVE_SHA,
+      compatibleJson: JSON.stringify([CURRENT_LIVE_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    });
+    assert.equal(result.release.privacy_manifest.historical_approved, true);
+    assert.equal(result.releaseManifest.evidence_boundaries.reviewed_candidate_claims_present, false);
+
+    const wrongLegacySite = path.join(temporary, 'wrong-legacy-site');
+    assert.throws(() => buildArtifact({
+      sourceRoot: source,
+      previousSourceRoot: previous,
+      outputRoot: wrongLegacySite,
+      provenanceRoot: path.join(temporary, 'wrong-legacy-provenance'),
+      sourceSha: CURRENT_LIVE_SHA,
+      previousSha: CURRENT_LIVE_SHA,
+      compatibleJson: JSON.stringify([CURRENT_LIVE_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      legacyBootstrap: true,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    }), /exact approved bootstrap source SHA/);
+    assert.equal(fs.existsSync(wrongLegacySite), false);
+
+    const changedPage = path.join(temporary, 'changed-page');
+    fs.cpSync(source, changedPage, { recursive: true });
+    fs.appendFileSync(path.join(changedPage, 'index.html'), '\n');
+    assert.throws(() => buildArtifact({
+      sourceRoot: changedPage,
+      previousSourceRoot: previous,
+      outputRoot: path.join(temporary, 'changed-page-site'),
+      provenanceRoot: path.join(temporary, 'changed-page-provenance'),
+      sourceSha: CURRENT_LIVE_SHA,
+      previousSha: CURRENT_LIVE_SHA,
+      compatibleJson: JSON.stringify([CURRENT_LIVE_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    }), /historical rollback public tree differs/);
+
+    fs.cpSync(source, tampered, { recursive: true });
+    const sidecarPath = path.join(
+      tampered,
+      'assets',
+      'proposal',
+      'app-overview-synthetic-replay-20260716.json',
+    );
+    fs.appendFileSync(sidecarPath, '\n');
+    assert.throws(() => buildArtifact({
+      sourceRoot: tampered,
+      previousSourceRoot: previous,
+      outputRoot: path.join(temporary, 'tampered-site'),
+      provenanceRoot: path.join(temporary, 'tampered-provenance'),
+      sourceSha: CURRENT_LIVE_SHA,
+      previousSha: CURRENT_LIVE_SHA,
+      compatibleJson: JSON.stringify([CURRENT_LIVE_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    }), /historical rollback public tree differs/);
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test('bootstrap rollback packages the actual approved legacy tree without inventing a candidate evidence manifest', () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-actual-legacy-rollback-'));
   try {
@@ -645,6 +762,29 @@ test('bootstrap rollback packages the actual approved legacy tree without invent
     assert.equal(fs.existsSync(path.join(temporary, 'site', 'core', 'index.html')), true);
     assert.equal(fs.existsSync(path.join(temporary, 'site', 'lineage', 'isp', 'index.html')), true);
     assert.equal(fs.existsSync(path.join(temporary, 'site', 'release.json')), true);
+
+    const tampered = path.join(temporary, 'tampered-legacy');
+    fs.cpSync(source, tampered, { recursive: true });
+    fs.appendFileSync(path.join(tampered, 'index.html'), '\n');
+    const tamperedSite = path.join(temporary, 'tampered-site');
+    assert.throws(() => buildArtifact({
+      sourceRoot: tampered,
+      previousSourceRoot: previous,
+      outputRoot: tamperedSite,
+      provenanceRoot: path.join(temporary, 'tampered-provenance'),
+      sourceSha: ACTUAL_LEGACY_SHA,
+      previousSha: ACTUAL_LEGACY_SHA,
+      compatibleJson: JSON.stringify([ACTUAL_LEGACY_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      legacyBootstrap: true,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    }), /legacy bootstrap public tree differs/);
+    assert.equal(fs.existsSync(tamperedSite), false);
   } finally {
     fs.rmSync(temporary, { recursive: true, force: true });
   }

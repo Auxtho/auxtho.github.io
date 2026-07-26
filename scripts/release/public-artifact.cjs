@@ -14,6 +14,22 @@ const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
 const REVIEWED_PRIVACY_MANIFEST_SHA256 = '9a182c662c8586f55d8ae597c168effb0ac67af6e6120ab0b045cc1c4c76250f';
+const APPROVED_LEGACY_BOOTSTRAP = Object.freeze({
+  source_sha: '4b2f476c741b771519745930a6ebf244cf5d6433',
+  public_file_count: 52,
+  public_tree_sha256: '569bcbe744f92dceafdf0f4b2471b54f882d9cc0baa1803cb45be868312fd478',
+});
+const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
+  '784ec29c658ed08ebccfcb3a107d3c7556262d96': Object.freeze({
+    manifest_sha256: 'dc5e5b15347e11b2e3da85df585c0d5b1ab414f37e63b3ce617cced98787e3ec',
+    public_file_count: 28,
+    public_tree_sha256: '1f87a2bfb982701bbbebb0e3d510590232a70bad552f44678cddf67362a37d9e',
+    sidecar_sha256: Object.freeze({
+      '/assets/proposal/app-overview-synthetic-replay-20260716.json': 'ebfaf20d13e1660cfc3435f24efce4fe9e0ffa70520700b98239abc0684df38f',
+      '/assets/proposal/console-synthetic-workflow-replay-20260716.json': '97076584d54ed5a5b7e9557dd65acd960119ffbaabee44af4db4084652abb2ac',
+    }),
+  }),
+});
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '98641e29b55b1173af9dede4daac03b46fa573783105097abfda063d09a2af9c',
   'index.html': '91ad210a6daca0c9499a99e8c413c66a47249a7f11bece26c7087216d144162b',
@@ -93,6 +109,13 @@ function sha256(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
 }
 
+function publicTreeSha256(root, relativePaths) {
+  const rows = [...relativePaths].sort().map((relative) => (
+    `${sha256(fs.readFileSync(path.join(root, ...relative.split('/'))))}  ${relative}\n`
+  ));
+  return sha256(Buffer.from(rows.join(''), 'utf8'));
+}
+
 function assertSha(name, value) {
   if (typeof value !== 'string' || !SHA_PATTERN.test(value)) fail(`${name} must be an exact lowercase 40-character SHA`);
   return value;
@@ -128,6 +151,21 @@ function relativeFiles(root) {
   }
   visit(root);
   return files.sort();
+}
+
+function validateApprovedLegacyBootstrapSource(sourceRoot, sourceSha) {
+  if (sourceSha !== APPROVED_LEGACY_BOOTSTRAP.source_sha) {
+    fail('legacy bootstrap packaging is allowed only for the exact approved bootstrap source SHA');
+  }
+  const publicPaths = relativeFiles(sourceRoot).filter(
+    (relative) => !relative.split('/').some((segment) => segment.startsWith('.')),
+  );
+  if (
+    publicPaths.length !== APPROVED_LEGACY_BOOTSTRAP.public_file_count
+    || publicTreeSha256(sourceRoot, publicPaths) !== APPROVED_LEGACY_BOOTSTRAP.public_tree_sha256
+  ) {
+    fail('legacy bootstrap public tree differs from the exact approved artifact bytes');
+  }
 }
 
 function publicPathFromRelative(relative) {
@@ -247,6 +285,24 @@ function parseCanonicalEvidenceJson(bytes, relative, label) {
     fail(`${label} must use canonical JSON without duplicate keys`);
   }
   return value;
+}
+
+function parseHistoricalEvidenceJson(bytes, relative, label) {
+  const document = decodeCanonicalTextBytes(bytes, relative);
+  let value;
+  try {
+    value = JSON.parse(document);
+  } catch {
+    fail(`${label} must be valid JSON`);
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    fail(`${label} must be a JSON object`);
+  }
+  return value;
+}
+
+function isApprovedHistoricalRollbackEvidence(sourceSha, manifestSha256) {
+  return APPROVED_HISTORICAL_ROLLBACK_EVIDENCE[sourceSha]?.manifest_sha256 === manifestSha256;
 }
 
 const PNG_CRC_TABLE = Array.from({ length: 256 }, (_, index) => {
@@ -651,8 +707,130 @@ function validateImageReferences(outputRoot, mode = 'candidate') {
   ));
 }
 
-function validatePrivacyAndClaims(outputRoot, mode, legacyBootstrap = false, stagedPublicFiles = new Set()) {
+function validateHistoricalRollbackEvidence(outputRoot, sourceSha, stagedPublicFiles) {
   const manifestPath = path.join(outputRoot, ...PRIVACY_MANIFEST_PATH.slice(1).split('/'));
+  if (!fs.existsSync(manifestPath)) fail('approved historical rollback evidence manifest is absent');
+
+  const manifestBytes = fs.readFileSync(manifestPath);
+  const manifestSha256 = sha256(manifestBytes);
+  if (!isApprovedHistoricalRollbackEvidence(sourceSha, manifestSha256)) {
+    fail('historical rollback evidence is not bound to the exact approved source and manifest');
+  }
+  const approvedEvidence = APPROVED_HISTORICAL_ROLLBACK_EVIDENCE[sourceSha];
+  if (
+    stagedPublicFiles.size !== approvedEvidence.public_file_count
+    || publicTreeSha256(outputRoot, stagedPublicFiles) !== approvedEvidence.public_tree_sha256
+  ) {
+    fail('historical rollback public tree differs from the exact approved artifact bytes');
+  }
+
+  const manifest = parseHistoricalEvidenceJson(
+    manifestBytes,
+    PRIVACY_MANIFEST_PATH.slice(1),
+    'approved historical rollback evidence manifest',
+  );
+  if (
+    manifest.attestation_class !== 'publisher_self_attestation'
+    || manifest.evidence_policy?.surfaces_are_independent !== true
+    || manifest.evidence_policy?.matching_display_sequence_is_deliberate_synthetic_fixture !== true
+    || manifest.evidence_policy?.correlated_customer_run_claimed !== false
+    || manifest.evidence_policy?.live_telemetry_claimed !== false
+    || manifest.evidence_policy?.operating_effectiveness_claimed !== false
+    || manifest.evidence_policy?.production_readiness_claimed !== false
+    || !Array.isArray(manifest.assets)
+    || manifest.assets.length !== 2
+  ) {
+    fail('approved historical rollback evidence weakened its recorded boundaries');
+  }
+
+  const surfaces = new Set();
+  const imagePaths = new Set();
+  const sidecarPaths = new Set();
+  for (const asset of manifest.assets) {
+    if (
+      typeof asset.path !== 'string'
+      || typeof asset.sidecar !== 'string'
+      || !HASH_PATTERN.test(asset.sha256)
+      || !HASH_PATTERN.test(asset.sidecar_sha256)
+    ) {
+      fail('approved historical rollback evidence contains invalid asset metadata');
+    }
+    if (
+      !['Auxtho App', 'Auxtho Console'].includes(asset.surface)
+      || surfaces.has(asset.surface)
+      || imagePaths.has(asset.path)
+      || sidecarPaths.has(asset.sidecar)
+      || !/independent synthetic fixture/i.test(asset.fixture_relationship || '')
+      || !/not correlated.*customer run/i.test(asset.fixture_relationship || '')
+    ) {
+      fail('approved historical rollback evidence has an invalid synthetic fixture binding');
+    }
+    surfaces.add(asset.surface);
+    imagePaths.add(asset.path);
+    sidecarPaths.add(asset.sidecar);
+    const image = resolveReviewedEvidencePath(outputRoot, asset.path, 'historical rollback evidence image path');
+    const sidecar = resolveReviewedEvidencePath(
+      outputRoot,
+      asset.sidecar,
+      'historical rollback evidence sidecar path',
+    );
+    if (!stagedPublicFiles.has(image.relative) || !stagedPublicFiles.has(sidecar.relative)) {
+      fail('approved historical rollback evidence is outside the public file manifest');
+    }
+    if (!fs.existsSync(image.resolved) || !fs.existsSync(sidecar.resolved)) {
+      fail('approved historical rollback evidence asset is absent');
+    }
+    const actualSidecarSha256 = sha256(fs.readFileSync(sidecar.resolved));
+    if (
+      sha256(fs.readFileSync(image.resolved)) !== asset.sha256
+      || approvedEvidence.sidecar_sha256[asset.sidecar] !== actualSidecarSha256
+    ) {
+      fail('approved historical rollback evidence asset hash mismatch');
+    }
+    const sidecarValue = parseHistoricalEvidenceJson(
+      fs.readFileSync(sidecar.resolved),
+      sidecar.relative,
+      'approved historical rollback evidence sidecar',
+    );
+    if (
+      sidecarValue.customer_data_used !== false
+      || sidecarValue.output_path !== asset.path
+      || sidecarValue.sha256 !== asset.sha256
+      || !/independent synthetic fixture/i.test(sidecarValue.fixture_relationship || '')
+      || !/not correlated.*customer run/i.test(sidecarValue.fixture_relationship || '')
+    ) {
+      fail('approved historical rollback evidence sidecar weakened its customer-data boundary');
+    }
+  }
+
+  return {
+    path: PRIVACY_MANIFEST_PATH,
+    sha256: manifestSha256,
+    historical_approved: true,
+    reviewed_candidate_claims_present: false,
+    evidence_boundaries: {
+      synthetic_only: true,
+      customer_data_claimed: false,
+      surfaces_are_independent: true,
+      correlated_customer_run_claimed: false,
+      live_telemetry_claimed: false,
+      operating_effectiveness_claimed: false,
+      production_readiness_claimed: false,
+    },
+  };
+}
+
+function validatePrivacyAndClaims(
+  outputRoot,
+  mode,
+  legacyBootstrap = false,
+  stagedPublicFiles = new Set(),
+  sourceSha = null,
+) {
+  const manifestPath = path.join(outputRoot, ...PRIVACY_MANIFEST_PATH.slice(1).split('/'));
+  if (mode === 'rollback' && APPROVED_HISTORICAL_ROLLBACK_EVIDENCE[sourceSha]) {
+    return validateHistoricalRollbackEvidence(outputRoot, sourceSha, stagedPublicFiles);
+  }
   if (!fs.existsSync(manifestPath)) {
     if (mode === 'rollback' && legacyBootstrap) {
       return { path: null, sha256: null, legacy_absent: true };
@@ -1021,11 +1199,18 @@ function buildArtifact(options) {
   }
   const legacyBootstrap = options.legacyBootstrap === true;
   if (legacyBootstrap && options.mode !== 'rollback') fail('legacy bootstrap packaging is allowed only for rollback');
+  if (legacyBootstrap) validateApprovedLegacyBootstrapSource(sourceRoot, sourceSha);
   const staged = stageExplicitPublicFiles(sourceRoot, outputRoot, { mode: options.mode, legacyBootstrap });
   const scriptReferences = validateScriptReferences(outputRoot, options.mode, legacyBootstrap);
   const stylesheetReferences = legacyBootstrap ? [] : validateStylesheetReferences(outputRoot, options.mode);
   const imageReferences = legacyBootstrap ? [] : validateImageReferences(outputRoot, options.mode);
-  const privacyManifest = validatePrivacyAndClaims(outputRoot, options.mode, legacyBootstrap, new Set(staged));
+  const privacyManifest = validatePrivacyAndClaims(
+    outputRoot,
+    options.mode,
+    legacyBootstrap,
+    new Set(staged),
+    sourceSha,
+  );
 
   const generatedPaths = new Set(['/release.json', '/assets/release-manifest.json']);
   const publishedRoutes = pathsWithIndexAliases(staged);
@@ -1062,7 +1247,9 @@ function buildArtifact(options) {
       live_telemetry_claimed: privacyManifest.evidence_boundaries?.live_telemetry_claimed ?? false,
       operating_effectiveness_claimed: privacyManifest.evidence_boundaries?.operating_effectiveness_claimed ?? false,
       production_readiness_claimed: privacyManifest.evidence_boundaries?.production_readiness_claimed ?? false,
-      reviewed_candidate_claims_present: !legacyBootstrap,
+      reviewed_candidate_claims_present: (
+        privacyManifest.reviewed_candidate_claims_present ?? !legacyBootstrap
+      ),
     },
     planned_site_sha_transition: {
       bridge_site_sha: options.mode === 'candidate' ? previousSha : sourceSha,
@@ -1152,6 +1339,7 @@ module.exports = {
   findStylesheetSources,
   findImageSources,
   normalizeManifestPath,
+  isApprovedHistoricalRollbackEvidence,
   sha256,
   sourceCandidatePaths,
   validateScriptReferences,
