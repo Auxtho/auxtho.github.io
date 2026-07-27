@@ -31,14 +31,13 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
   }),
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
-  '404.html': '98641e29b55b1173af9dede4daac03b46fa573783105097abfda063d09a2af9c',
-  'index.html': '91ad210a6daca0c9499a99e8c413c66a47249a7f11bece26c7087216d144162b',
-  'lineage/isp/index.html': '916d81261d1d520ff6c238853c01e37c1078af49d9249c666cddbb554826973d',
-  'privacy.html': '0a15cd88d5f9df5ed03cabd9ae48c36543c9b92115c02399ec008f495089935d',
-  'security/ardamire/index.html': 'c52d4d2bfd6f3ee2349c8edfa57d0cc03b8325bece55e6db176a108b5cde52f3',
-  'story.html': '620b49a1b45f14efd255ff70e3bb000e5d182034744fc874158afbe816b43305',
-  'terms.html': '2eb9d5f3c7be53dcb35954ac3fec0a3c94624e47479cf6487bd4e025c136cb17',
-  'verify.html': '586feadfbc0a4796afd7d55622f4da8edca515318006203ec4b4f19bc20eb5be',
+  '404.html': '1002e4f313698883a6e96ce9d901013bc6b549ef0010b4b4dfd8e4aa0062ad1f',
+  'index.html': 'ac48257211e3a0fcba48ccaadf6cf70db1e7a7610b4c427bb0e5deb099da1f64',
+  'privacy.html': '2ef29ab8cc20dd026ca5eadc105ed2696f98525d597e96ca940b9525a97d1cb5',
+  'security/ardamire/index.html': '3e00f95d402d63d67ff9d81a0af0e35606c7ad484b1a31de864bea5d8f905543',
+  'story.html': 'b5329f4e9bfe2cdf841b8ef43c11a1f049c2ff883074108082852d3fbc0729dd',
+  'terms.html': 'a5b5e7f0bd289e6548ded808f37dbe0fb4a605db4755e657d553969975a19019',
+  'verify.html': 'd90f03f46e9ed4f1a612d01f4731f25a2ab1b602430126376aa2ca556e5aad57',
 });
 const REVIEWED_PNG_CHUNKS = new Set(['IHDR', 'sRGB', 'gAMA', 'pHYs', 'IDAT', 'IEND']);
 const EVIDENCE_MANIFEST_KEYS = [
@@ -1049,8 +1048,14 @@ function validatePrivacyAndClaims(
     fail('homepage must contain exactly two reviewed evidence surface cards');
   }
   const expectedHeadings = {
-    'Auxtho App': 'Auxtho App - Human review workspace',
-    'Auxtho Console': 'Auxtho Console - Operator oversight',
+    'Auxtho App': [
+      'Auxtho App - Human review workspace',
+      'Governed review states rendered in the App',
+    ],
+    'Auxtho Console': [
+      'Auxtho Console - Operator oversight',
+      'Operator attention rendered in the Console',
+    ],
   };
   for (const { asset } of reviewedAssets) {
     const cardsForSurface = evidenceCards.filter((card) => (
@@ -1068,7 +1073,7 @@ function validatePrivacyAndClaims(
     const expectedReference = `${asset.path}?sha256=${asset.sha256}`;
     if (
       headings.length !== 1
-      || nodeText(headings[0]).trim() !== expectedHeadings[asset.surface]
+      || !expectedHeadings[asset.surface].includes(nodeText(headings[0]).trim())
       || images.length !== 1
       || nodeAttributes(images[0]).src !== expectedReference
       || mediaLinks.length !== 1

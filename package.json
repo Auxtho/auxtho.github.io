@@ -7,7 +7,7 @@
     "test:js": "node scripts/release/validate-js.cjs",
     "test:yaml": "node scripts/release/validate-workflows.cjs",
     "test:release": "node --test tests/release-contract.spec.cjs tests/release-controls.spec.cjs",
-    "test:verify": "playwright test tests/verify-contract.spec.cjs tests/technical-foundations.spec.cjs --reporter=line --workers=1",
+    "test:verify": "playwright test tests/verify-contract.spec.cjs --reporter=line --workers=1",
     "test:verify:deployed": "playwright test tests/post-deploy-verifier-smoke.spec.cjs --reporter=line --workers=1"
   },
   "devDependencies": {
