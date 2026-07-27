@@ -37,7 +37,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   'security/ardamire/index.html': '3e00f95d402d63d67ff9d81a0af0e35606c7ad484b1a31de864bea5d8f905543',
   'story.html': 'b5329f4e9bfe2cdf841b8ef43c11a1f049c2ff883074108082852d3fbc0729dd',
   'terms.html': 'a5b5e7f0bd289e6548ded808f37dbe0fb4a605db4755e657d553969975a19019',
-  'verify.html': 'd90f03f46e9ed4f1a612d01f4731f25a2ab1b602430126376aa2ca556e5aad57',
+  'verify.html': '05365f90aabac17b23716ea4ea77e9e6ebb097ce00be938b8a7898204025505b',
 });
 const REVIEWED_PNG_CHUNKS = new Set(['IHDR', 'sRGB', 'gAMA', 'pHYs', 'IDAT', 'IEND']);
 const EVIDENCE_MANIFEST_KEYS = [

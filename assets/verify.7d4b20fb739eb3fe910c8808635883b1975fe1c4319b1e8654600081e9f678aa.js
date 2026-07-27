@@ -314,6 +314,8 @@
 
     function recordedControlProfile(result) {
         if (!result || typeof result !== 'object' || Array.isArray(result)) return null;
+        if (!releaseTupleMatches(result)) return null;
+        if (result.verification_mode !== result.release_tuple.signing_mode) return null;
         var signature = result.signature;
         if (!signature || typeof signature !== 'object' || Array.isArray(signature)) return null;
 

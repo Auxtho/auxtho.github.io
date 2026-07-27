@@ -930,6 +930,48 @@ test('contradictory recorded signature evidence fails closed', async ({ page }) 
   await expect(page.locator('#verify-result-grid')).toContainText('NO_MATCH');
 });
 
+test('record verification mode must match the reviewed readiness tuple signing mode', async ({ page }) => {
+  await mockStatus(page, 'operational');
+  await page.route(`${baseUrl}/api/verify`, async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(successPayloadForRequest(route.request(), {
+        verificationMode: 'production_signed',
+        responseReleaseTuple: releaseTuple({ signing_mode: 'pilot_hash_only' }),
+        signature: {
+          enabled: true,
+          present: true,
+          signature_recorded_valid: true,
+          signature_format: 'PKCS7_CMS_DETACHED_DER',
+          certificate_chain_recorded_status: 'verified',
+          timestamp_present: true,
+          timestamp_recorded_valid: true,
+          validation_basis: 'durable_object_live_cryptographic_revalidation',
+          recorded_evidence_type: 'PRODUCTION_SIGNED',
+          live_cryptographic_revalidation_performed: true,
+          recorded_reason_code: 'SIG_VALID',
+          signature_valid: true,
+          certificate_chain_status: 'verified',
+          timestamp_valid: true,
+          reason_code: 'SIG_VALID',
+        },
+      })),
+    });
+  });
+
+  await page.goto(`${baseUrl}/verify.html`);
+  await page.locator('#manual-report-id').fill('RPT-MODE-MISMATCH');
+  await page.locator('#manual-artifact-hash').fill('5'.repeat(64));
+  await page.locator('#manual-export-event-id').fill('EXP-MODE-MISMATCH');
+  await page.locator('#manual-verify-btn').click();
+
+  await expect(page.locator('#verify-result-title')).toHaveText('Not confirmed');
+  await expect(page.locator('#verify-result-grid')).toContainText('NO_MATCH');
+  await expect(page.locator('body')).not.toContainText('PKCS#7');
+  await expect(page.locator('body')).not.toContainText('PUBLIC TSA');
+});
+
 test('readiness hints alone never produce PKCS7 or public TSA claims', async ({ page }) => {
   await mockStatus(page, 'operational', {
     statusOverrides: {
