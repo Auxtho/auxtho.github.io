@@ -326,6 +326,23 @@ function validateRelease(release, provenance, expected) {
   if (!HASH_PATTERN.test(release.release_manifest?.sha256)) fail('release manifest digest is invalid');
 }
 
+function validateReleaseManifestIdentity(releaseManifest, release) {
+  for (const field of [
+    'schema_version',
+    'publication_mode',
+    'source_sha',
+    'previous_approved_source_sha',
+    'compatible_backend_site_shas',
+    'declared_site_source_shas',
+    'planned_site_sha_transition',
+    'rollback_of_source_sha',
+  ]) {
+    if (JSON.stringify(releaseManifest[field]) !== JSON.stringify(release[field])) {
+      fail(`release manifest identity mismatch: ${field}`);
+    }
+  }
+}
+
 function validateReadbackAttempts(value) {
   const attempts = Number(value);
   if (!Number.isSafeInteger(attempts) || attempts < 1 || attempts > MAX_READBACK_ATTEMPTS) {
@@ -586,6 +603,7 @@ async function verifyDeployment(options) {
     fail('selected provenance does not match requested publication');
   }
   const releaseReadback = await waitForExactRelease(options, allowedOrigins, provenance);
+  validateReleaseManifestIdentity(releaseManifest, releaseReadback.release);
   const records = [];
   const canonicalBodies = new Map();
 
@@ -794,6 +812,7 @@ module.exports = {
   relativeFromManifestPublicPath,
   resolveHttpsRedirect,
   validateRelease,
+  validateReleaseManifestIdentity,
   validatePublicPageSecurity,
   validateVerifierSecurity,
   verifyDeployment,

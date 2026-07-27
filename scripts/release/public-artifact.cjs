@@ -1234,6 +1234,8 @@ function buildArtifact(options) {
     publication_mode: options.mode,
     source_sha: sourceSha,
     previous_approved_source_sha: previousSha,
+    compatible_backend_site_shas: declaredSourceShas,
+    declared_site_source_shas: declaredSourceShas,
     rollback_of_source_sha: rollbackOfSha,
     script_references: scriptReferences,
     stylesheet_references: stylesheetReferences,

@@ -24,6 +24,9 @@ const {
   validateJavaScriptFiles,
 } = require('../scripts/release/validate-js.cjs');
 const { findBrokenImageSources } = require('../scripts/release/browser-readback.cjs');
+const {
+  validateReleaseManifestIdentity,
+} = require('../scripts/release/verify-deployment.cjs');
 
 const root = path.resolve(__dirname, '..');
 const gitRoot = path.resolve(
@@ -282,6 +285,8 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
 
     assert.deepEqual(result.release.compatible_backend_site_shas, COMPATIBILITY);
     assert.deepEqual(result.release.declared_site_source_shas, COMPATIBILITY);
+    assert.deepEqual(result.releaseManifest.compatible_backend_site_shas, COMPATIBILITY);
+    assert.deepEqual(result.releaseManifest.declared_site_source_shas, COMPATIBILITY);
     assert.deepEqual(result.release.planned_site_sha_transition, {
       bridge_site_sha: LEGACY_SHA,
       final_site_sha: SITE_SHA,
@@ -321,6 +326,13 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
     assert.equal(
       sha256(fs.readFileSync(path.join(output, 'assets', 'release-manifest.json'))),
       result.release.release_manifest.sha256,
+    );
+    assert.doesNotThrow(() => validateReleaseManifestIdentity(result.releaseManifest, result.release));
+    const tamperedManifest = structuredClone(result.releaseManifest);
+    tamperedManifest.declared_site_source_shas = [SITE_SHA];
+    assert.throws(
+      () => validateReleaseManifestIdentity(tamperedManifest, result.release),
+      /release manifest identity mismatch: declared_site_source_shas/,
     );
     assert.deepEqual(
       fs.readFileSync(path.join(provenance, 'robots.txt')),
@@ -593,6 +605,9 @@ test('rollback artifact preserves and hashes an approved legacy script URL exact
       (reference) => reference.url.endsWith('?legacy=approved'),
     );
     assert.ok(legacyReference);
+    assert.deepEqual(result.releaseManifest.compatible_backend_site_shas, [LEGACY_SHA]);
+    assert.deepEqual(result.releaseManifest.declared_site_source_shas, [LEGACY_SHA]);
+    assert.doesNotThrow(() => validateReleaseManifestIdentity(result.releaseManifest, result.release));
     assert.equal(legacyReference.content_addressed, false);
     assert.match(legacyReference.path, /^\/assets\/app\.[0-9a-f]{64}\.js$/);
     assert.equal(
