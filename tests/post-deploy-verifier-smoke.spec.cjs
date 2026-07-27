@@ -151,7 +151,7 @@ test('deployed verifier loads over HTTPS and performs no identifier-bearing requ
   }, null, 2)}\n`);
 
   expect(readinessWaitError).toBeNull();
-  expect(readinessText).toContain('Endpoint reachable');
+  expect(readinessText).toContain('Endpoint ready / request not yet checked');
   await expect(page.locator('#manual-verify-btn')).toBeEnabled();
   await expect(page.locator('#manual-report-id')).toHaveValue('');
   await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
