@@ -31,13 +31,15 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
   }),
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
-  '404.html': '1002e4f313698883a6e96ce9d901013bc6b549ef0010b4b4dfd8e4aa0062ad1f',
-  'index.html': 'ac48257211e3a0fcba48ccaadf6cf70db1e7a7610b4c427bb0e5deb099da1f64',
-  'privacy.html': '2ef29ab8cc20dd026ca5eadc105ed2696f98525d597e96ca940b9525a97d1cb5',
-  'security/ardamire/index.html': '3e00f95d402d63d67ff9d81a0af0e35606c7ad484b1a31de864bea5d8f905543',
-  'story.html': 'b5329f4e9bfe2cdf841b8ef43c11a1f049c2ff883074108082852d3fbc0729dd',
-  'terms.html': 'a5b5e7f0bd289e6548ded808f37dbe0fb4a605db4755e657d553969975a19019',
-  'verify.html': '05365f90aabac17b23716ea4ea77e9e6ebb097ce00be938b8a7898204025505b',
+  '404.html': '9b660cdd07210efaf50b329a50f34894b6e7c86d9a722347725616c7c9ff0924',
+  'evidence-notes.html': '0ea58c14673e8551d6276a28a59fe99713f055a2d16b9a5212a18a666e58ae33',
+  'index.html': 'd89c19673933d8a07bf8004829cdb43720de60936010cab23fe45e3dffa3afa0',
+  'lineage/isp/index.html': '5765f031ef6659a7067cd9ab986ae5af1812395f50d77b7c60ef089d55180f62',
+  'privacy.html': 'c2ec8826894afaec0d1481a1b1708ca63181ac50379c4787594c93e7d3457f16',
+  'security/ardamire/index.html': 'a93fa3dbccbd74b70b31bc654d245de9c1de558cbf8a8aaf2b15e670ee06a363',
+  'story.html': 'e8bdc1487f2b237a8a59aa817e98a39444f38a9de410b8d63f6b0c3c410d07b3',
+  'terms.html': '9e7a903c650b7454a81bfd21a0b58b20227f7ac6ea2f37096fdab1a585fdeddc',
+  'verify.html': '77409cc73fa82f9002da0f18d88efdba7f68153f670eb6d31faf9e1d79183cf2',
 });
 const REVIEWED_PNG_CHUNKS = new Set(['IHDR', 'sRGB', 'gAMA', 'pHYs', 'IDAT', 'IEND']);
 const EVIDENCE_MANIFEST_KEYS = [
@@ -1051,10 +1053,12 @@ function validatePrivacyAndClaims(
     'Auxtho App': [
       'Auxtho App - Human review workspace',
       'Governed review states rendered in the App',
+      'The human review workspace',
     ],
     'Auxtho Console': [
       'Auxtho Console - Operator oversight',
       'Operator attention rendered in the Console',
+      'The operator oversight surface',
     ],
   };
   for (const { asset } of reviewedAssets) {
@@ -1097,11 +1101,11 @@ function validatePrivacyAndClaims(
     fail('public evidence manifest must contain exactly one App asset and one Console asset');
   }
   if (
-    !/not live telemetry/i.test(index)
-    || !/synthetic/i.test(index)
+    !/synthetic workflow/i.test(index)
+    || /not live telemetry|no customer data|not production/i.test(index)
     || /evidence-manifest-20260716\.json/i.test(index)
   ) {
-    fail('homepage must preserve concise non-live synthetic boundaries without linking raw fixture metadata');
+    fail('homepage must label synthetic workflow media once, avoid defensive front-page copy, and keep raw fixture metadata behind the human-readable evidence page');
   }
   if (sha256(manifestBytes) !== REVIEWED_PRIVACY_MANIFEST_SHA256) {
     fail('public evidence manifest differs from the exact reviewed evidence contract');

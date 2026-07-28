@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Intent Synchronization Protocol (ISP) | Auxtho</title>
+  <meta name="description" content="Intent Synchronization Protocol structures intent, authority, evidence, and handoffs before AI-generated plans proceed to execution.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#060708">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="canonical" href="https://auxtho.com/lineage/isp/">
+  <link rel="icon" href="/assets/favicon.svg">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Intent Synchronization Protocol (ISP) | Auxtho">
+  <meta property="og:description" content="ISP's historical role in intent verification and a bounded public prototype workflow.">
+  <meta property="og:url" content="https://auxtho.com/lineage/isp/">
+  <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
+  <meta property="og:image:alt" content="Auxtho human review before release">
+  <link rel="stylesheet" href="/assets/style.css?sha256=9f54bf242434c3bdca0cd7fd723ab26d21a7e6fcef36cc50efdda63626413624">
+  <link rel="stylesheet" href="/assets/technical-foundations.css?sha256=d70455671ad7881b0ab69cda1fb8a8200e2359737fe853079e8c85bc176bda18">
+</head>
+<body class="technical-page">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black">
+    Skip to content
+  </a>
+
+  <header class="technical-site-header">
+    <div class="technical-site-header-inner">
+      <a class="technical-site-header-logo" href="/" aria-label="Auxtho home">
+        <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho">
+      </a>
+      <a class="technical-back-link" href="/">Back to Auxtho</a>
+    </div>
+  </header>
+
+  <main id="main-content" class="technical-detail-main">
+    <section class="technical-detail-hero">
+      <div class="technical-detail-hero-inner">
+        <p class="technical-detail-kicker">Intent, authority, evidence, and handoffs</p>
+        <h1 class="technical-detail-title">Intent Synchronization Protocol (ISP)</h1>
+        <p class="technical-detail-summary">
+          ISP structures how intended work is captured, planned, checked, and returned for accountable review before
+          AI-generated plans proceed to execution in the protocol model.
+        </p>
+        <p class="technical-status-line">
+          Protocol lineage / public prototype package available
+        </p>
+      </div>
+    </section>
+
+    <section class="technical-detail-section">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Alignment before execution</p>
+        <h2 class="technical-detail-heading">Keep generated plans aligned before execution.</h2>
+        <p class="technical-detail-lead">
+          ISP separates a requested outcome, the authority to act, the evidence available for review, and the handoff
+          into execution. A generated plan remains inspectable before the next consequential step.
+        </p>
+        <div class="technical-claim-grid">
+          <article class="technical-claim-block">
+            <h3>Capture intent</h3>
+            <p>Turn a request into a bounded intended outcome that can be inspected.</p>
+          </article>
+          <article class="technical-claim-block">
+            <h3>Bind authority</h3>
+            <p>Keep the authority to plan, review, and execute explicit rather than inherited.</p>
+          </article>
+          <article class="technical-claim-block">
+            <h3>Return evidence</h3>
+            <p>Bring the plan, generated artifacts, progress, and outcome back into an inspectable handoff.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="technical-detail-section">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Protocol lineage</p>
+        <h2 class="technical-detail-heading">Intent verification inside the earlier Auxtho Core architecture.</h2>
+        <p class="technical-detail-lead">
+          Historically, Auxtho Core described the broader execution-control architecture. ISP was the
+          intent-verification protocol within it: check whether a generated plan remained aligned with the requested
+          outcome before execution was permitted.
+        </p>
+        <p class="technical-detail-lead">
+          That principle continues in Auxtho App and Auxtho Console: intent, evidence, authority, and outcome remain
+          visible at the handoff where an accountable person decides what moves forward.
+        </p>
+      </div>
+    </section>
+
+    <section class="technical-detail-section">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Protocol walkthrough</p>
+        <h2 class="technical-detail-heading">A bounded path from intent to an accountable handoff.</h2>
+        <p class="technical-detail-lead">
+          The public package shows a bounded request, visible progress, generated files, and closing states returning
+          to a review-ready surface.
+        </p>
+        <div class="technical-flow" aria-label="ISP public prototype flow">
+          <article class="technical-flow-step">
+            <span class="technical-flow-index">01</span>
+            <strong>Request</strong>
+            <p>A bounded task is selected for the prototype run.</p>
+          </article>
+          <article class="technical-flow-step">
+            <span class="technical-flow-index">02</span>
+            <strong>Controlled run</strong>
+            <p>The run stays inside the declared prototype scope.</p>
+          </article>
+          <article class="technical-flow-step">
+            <span class="technical-flow-index">03</span>
+            <strong>Visible progress</strong>
+            <p>Progress and review-relevant state are surfaced rather than implied.</p>
+          </article>
+          <article class="technical-flow-step">
+            <span class="technical-flow-index">04</span>
+            <strong>Review-ready</strong>
+            <p>The generated files return to an inspectable review surface.</p>
+          </article>
+          <article class="technical-flow-step">
+            <span class="technical-flow-index">05</span>
+            <strong>Closing options shown</strong>
+            <p>Ready, Pass, Partial, and Blocked are visible; no option is selected in the package.</p>
+          </article>
+        </div>
+        <p class="technical-detail-lead">The package records two bounded prototype runs and their review states.</p>
+      </div>
+    </section>
+
+    <section class="technical-detail-section">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Public package</p>
+        <h2 class="technical-detail-heading">Inspect the recorded prototype runs.</h2>
+        <p class="technical-detail-lead">
+          The package contains the prototype outputs, visible closing states, and pinned revision history.
+        </p>
+        <div class="technical-reference">
+          <div>
+            <h3>ISP public proof package</h3>
+            <p>
+              Public source package pinned to a specific prototype revision.
+            </p>
+          </div>
+          <a href="https://github.com/AuxthoAdmin/isp-public-proof-package/tree/45ba6c5996c2ccba7d82e19760c9bd81a8ff2052" target="_blank" rel="noopener noreferrer">
+            Open public package
+          </a>
+        </div>
+        <p class="technical-detail-lead">
+          The package records the ISP Layer prototype workflow. It is a public proof of the bounded sequence, while
+          current product operation is evaluated through Auxtho App and Auxtho Console.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="technical-detail-footer">
+    <div class="technical-detail-footer-inner">
+      <p>&copy; 2025-2026 Auxtho. All rights reserved.</p>
+      <div>
+        <a href="/privacy.html">Privacy</a>
+        <span aria-hidden="true"> &middot; </span>
+        <a href="/terms.html">Public Site Notice</a>
+        <span aria-hidden="true"> &middot; </span>
+        <a href="mailto:hello@auxtho.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
