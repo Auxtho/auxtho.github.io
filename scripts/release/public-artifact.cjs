@@ -17,7 +17,7 @@ const REVIEWED_PRIVACY_MANIFEST_SHA256 = '9a182c662c8586f55d8ae597c168effb0ac67a
 const APPROVED_LEGACY_BOOTSTRAP = Object.freeze({
   source_sha: '4b2f476c741b771519745930a6ebf244cf5d6433',
   public_file_count: 52,
-  public_tree_sha256: '569bcbe744f92dceafdf0f4b2471b54f882d9cc0baa1803cb45be868312fd478',
+  public_tree_sha256: 'd90365ebda61477e60ea66a3fe17b165c9c43033ede8cf4e6a8570eaf4fc2105',
 });
 const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
   '784ec29c658ed08ebccfcb3a107d3c7556262d96': Object.freeze({
