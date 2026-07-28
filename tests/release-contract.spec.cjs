@@ -24,6 +24,9 @@ const {
 const { findBrokenImageSources } = require('../scripts/release/browser-readback.cjs');
 
 const root = path.resolve(__dirname, '..');
+const gitRoot = path.resolve(
+  process.env.AUXTHO_PUBLIC_VERIFY_GIT_ROOT || root,
+);
 const LEGACY_SHA = '1'.repeat(40);
 const SITE_SHA = 'a'.repeat(40);
 const COMPATIBILITY = [LEGACY_SHA, SITE_SHA].sort();
@@ -46,6 +49,31 @@ function createSourceFixture(targetRoot) {
     'CNAME', 'robots.txt', 'sitemap.xml', 'security/ardamire/index.html', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
+}
+
+function materializeExactGitTree(commitSha, targetRoot) {
+  const listed = spawnSync(
+    'git',
+    ['ls-tree', '-rz', '--full-tree', commitSha],
+    { cwd: gitRoot, encoding: null, windowsHide: true },
+  );
+  assert.equal(listed.status, 0, listed.stderr?.toString('utf8'));
+
+  for (const entry of listed.stdout.toString('utf8').split('\0').filter(Boolean)) {
+    const match = entry.match(/^([0-9]+) (blob) ([0-9a-f]{40})\t(.+)$/s);
+    assert.ok(match, `unsupported git tree entry: ${entry}`);
+    const [, mode, , objectSha, relative] = match;
+    assert.notEqual(mode, '120000', `symbolic links are forbidden: ${relative}`);
+    const blob = spawnSync(
+      'git',
+      ['cat-file', 'blob', objectSha],
+      { cwd: gitRoot, encoding: null, windowsHide: true },
+    );
+    assert.equal(blob.status, 0, blob.stderr?.toString('utf8'));
+    const output = path.join(targetRoot, ...relative.split('/'));
+    fs.mkdirSync(path.dirname(output), { recursive: true });
+    fs.writeFileSync(output, blob.stdout);
+  }
 }
 
 test('legacy branch metadata remains an exact build-revision-only hold contract', () => {
@@ -190,10 +218,10 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
     });
 
     assert.deepEqual(result.release.compatible_backend_site_shas, COMPATIBILITY);
-    assert.deepEqual(result.release.backend_site_sha_transition, {
-      bridge_reported_site_sha: LEGACY_SHA,
-      final_reported_site_sha: SITE_SHA,
-      rollback_reported_site_sha: LEGACY_SHA,
+    assert.deepEqual(result.release.planned_site_sha_transition, {
+      bridge_site_sha: LEGACY_SHA,
+      final_site_sha: SITE_SHA,
+      rollback_site_sha: LEGACY_SHA,
     });
     assert.equal(result.releaseManifest.evidence_boundaries.synthetic_only, true);
     assert.equal(result.releaseManifest.evidence_boundaries.customer_data_claimed, false);
@@ -507,20 +535,12 @@ test('rollback artifact preserves and hashes an approved legacy script URL exact
 test('bootstrap rollback packages the actual approved legacy tree without inventing a candidate evidence manifest', () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-actual-legacy-rollback-'));
   try {
-    const archive = path.join(temporary, 'legacy.tar');
     const source = path.join(temporary, 'legacy');
     const previous = path.join(temporary, 'previous');
     fs.mkdirSync(source);
     fs.mkdirSync(previous);
     createSourceFixture(previous);
-    const archived = spawnSync('git', ['archive', '--format=tar', `--output=${archive}`, ACTUAL_LEGACY_SHA], {
-      cwd: root,
-      encoding: 'utf8',
-      windowsHide: true,
-    });
-    assert.equal(archived.status, 0, archived.stderr);
-    const extracted = spawnSync('tar', ['-xf', archive, '-C', source], { encoding: 'utf8', windowsHide: true });
-    assert.equal(extracted.status, 0, extracted.stderr);
+    materializeExactGitTree(ACTUAL_LEGACY_SHA, source);
     assert.equal(fs.existsSync(path.join(source, 'assets', 'proposal', 'evidence-manifest-20260716.json')), false);
 
     const result = buildArtifact({
@@ -613,12 +633,13 @@ test('verifier production CSP has no loopback and local tests use same-origin AP
   assert.doesNotMatch(script, /http:\/\/127\.0\.0\.1:8000/);
 });
 
-test('public notice is explicitly non-contractual and preserves unresolved legal identity', () => {
+test('public notice is explicitly non-contractual and requires separately signed commercial scope', () => {
   const terms = fs.readFileSync(path.join(root, 'terms.html'), 'utf8');
   assert.match(terms, /Public Site Notice/);
   assert.match(terms, /non-contractual notice/i);
-  assert.match(terms, /registered legal entity, jurisdiction, and legal data-controller identity remain unresolved/i);
-  assert.match(terms, /does not create legal duties/i);
+  assert.match(terms, /do not by themselves create a commercial relationship, an offer, acceptance, or a warranty/i);
+  assert.match(terms, /commercial or data-processing relationship requires a separately signed agreement/i);
+  assert.match(terms, /identifying the parties, jurisdiction, data roles, security controls, retention, and operating boundary/i);
   assert.doesNotMatch(terms, /Terms of Service|agree to be bound|binding terms/i);
 });
 
@@ -628,7 +649,8 @@ test('public evidence manifest and homepage preserve synthetic and non-customer 
     path.join(root, 'assets', 'proposal', 'evidence-manifest-20260716.json'),
     'utf8',
   ));
-  assert.match(index, /public evidence manifest/i);
+  assert.match(index, /reviewed release evidence/i);
+  assert.doesNotMatch(index, /evidence-manifest-20260716\.json/i);
   assert.match(index, /no customer data/i);
   assert.match(index, /synthetic/i);
   assert.equal(manifest.attestation_class, 'publisher_self_attestation');

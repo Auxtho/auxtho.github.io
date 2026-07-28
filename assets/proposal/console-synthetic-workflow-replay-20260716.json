@@ -1,4 +1,5 @@
 {
+  "schema_version": 1,
   "decision": "PUBLIC_SYNTHETIC_CONSOLE_CAPTURE_READY",
   "output_path": "/assets/proposal/console-synthetic-workflow-replay-20260716.png",
   "source_revision": null,
@@ -17,6 +18,9 @@
     "active_synthetic_bootstraps": 1
   },
   "customer_data_used": false,
-  "fixture_relationship": "Independent synthetic fixture; it is not correlated with the App capture or a customer run.",
+  "fixture_class": "independent_synthetic_fixture",
+  "synthetic_only": true,
+  "correlated_run_claimed": false,
+  "fixture_relationship": "Independent synthetic fixture; no correlated cross-surface or customer run is claimed.",
   "claim_boundary": "This controlled synthetic rendering demonstrates operator attention states. It does not prove deployment identity, live telemetry, customer adoption, completed operational work, export, or operating effectiveness."
 }
