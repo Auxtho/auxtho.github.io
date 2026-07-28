@@ -22,8 +22,6 @@
     "/assets/style.css",
     "/assets/technical-foundations.css",
     "/assets/tw-init.3a46d349f310cfb8aee19f2f69d6d2caf2393f7d975b1b386c5db6451f2a8dd5.js",
-    "/assets/verify.7f3052256aaf732742482d6e1a1ef1d70389e802a6543c0e9ffd6684e5247049.js",
-    "/assets/verify.css",
     "/evidence-notes.html",
     "/index.html",
     "/lineage/isp/index.html",
@@ -32,7 +30,6 @@
     "/security/ardamire/index.html",
     "/sitemap.xml",
     "/story.html",
-    "/terms.html",
-    "/verify.html"
+    "/terms.html"
   ]
 }

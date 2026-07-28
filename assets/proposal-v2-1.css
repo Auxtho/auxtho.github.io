@@ -2277,7 +2277,8 @@ body > a[href="#problem"]:focus {
   line-height: 1.4;
 }
 
-.sales-foundation > strong {
+.sales-foundation > strong,
+.sales-foundation > h3 {
   margin-top: 1rem;
   color: var(--sales-white);
   font-size: 24px;
@@ -2309,6 +2310,12 @@ body > a[href="#problem"]:focus {
 .sales-foundation:hover > em,
 .sales-foundation:focus-visible > em {
   color: var(--sales-red);
+}
+
+.sales-foundation-static > em,
+.sales-foundation-static:hover > em {
+  color: var(--sales-copy);
+  font-weight: 600;
 }
 
 .sales-start {

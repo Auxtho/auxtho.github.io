@@ -5,8 +5,6 @@ const { findBrokenImageSources } = require('../scripts/release/browser-readback.
 
 const origin = process.env.PUBLIC_SITE_ORIGIN;
 const sourceSha = process.env.EXPECTED_SITE_SHA;
-const runId = process.env.GITHUB_RUN_ID;
-const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const evidenceDirectory = path.resolve(__dirname, '..', 'post-deploy-evidence');
 
 test.describe.configure({ mode: 'serial', timeout: 120_000 });
@@ -60,8 +58,7 @@ test('public pages render with packaged styles and images without CSP or same-or
           && !lightbox.open,
       };
     }));
-    const brokenImages = findBrokenImageSources(imageStates);
-    expect(brokenImages).toEqual([]);
+    expect(findBrokenImageSources(imageStates)).toEqual([]);
     checked.push({ path: item.path, status: response.status(), style_sheet_count: styleSheets.length });
   }
 
@@ -79,89 +76,7 @@ test('public pages render with packaged styles and images without CSP or same-or
   }, null, 2)}\n`);
 });
 
-test('deployed verifier loads over HTTPS and performs no identifier-bearing request', async ({ page }) => {
-  expect(origin).toBe('https://auxtho.com');
-  expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
-
-  const verificationPosts = [];
-  const readinessEvents = [];
-  const pageErrors = [];
-  const recordReadinessEvent = (event) => {
-    if (readinessEvents.length < 12) readinessEvents.push(event);
-  };
-  const readinessTarget = (value) => {
-    const url = new URL(value);
-    return { origin: url.origin, path: url.pathname };
-  };
-  page.on('request', (request) => {
-    if (request.method() === 'POST' && request.url().includes('/api/verify')) {
-      verificationPosts.push(request.url());
-    }
-    if (request.url().includes('/api/verify/status') || request.url().includes('/release.json')) {
-      recordReadinessEvent({ type: 'request', method: request.method(), ...readinessTarget(request.url()) });
-    }
-  });
-  page.on('response', (response) => {
-    if (response.url().includes('/api/verify/status') || response.url().includes('/release.json')) {
-      recordReadinessEvent({ type: 'response', status: response.status(), ...readinessTarget(response.url()) });
-    }
-  });
-  page.on('requestfailed', (request) => {
-    if (request.url().includes('/api/verify/status') || request.url().includes('/release.json')) {
-      recordReadinessEvent({
-        type: 'requestfailed',
-        ...readinessTarget(request.url()),
-        error: request.failure()?.errorText || 'unknown',
-      });
-    }
-  });
-  page.on('pageerror', (error) => pageErrors.push(error.message));
-
-  const cacheBust = `${sourceSha}-${runId}-${runAttempt}-browser`;
-  const response = await page.goto(`${origin}/verify.html?cache_bust=${cacheBust}`, {
-    waitUntil: 'domcontentloaded',
-    timeout: 20_000,
-  });
-
-  expect(response).not.toBeNull();
-  expect(response.status()).toBe(200);
-  expect(new URL(page.url()).protocol).toBe('https:');
-  await expect(page.locator('#manual-verify-form')).toBeVisible({ timeout: 10_000 });
-  const readinessStatus = page.locator('#verification-service-status');
-  let readinessWaitError = null;
-  try {
-    // The page performs two sequential requests, each bounded to 20 seconds.
-    // The deployment check must cover their combined budget plus browser overhead.
-    await expect(readinessStatus).not.toHaveText('Checking / Not confirmed', { timeout: 45_000 });
-  } catch (error) {
-    readinessWaitError = error;
-  }
-  const readinessText = await readinessStatus.textContent();
-
-  fs.mkdirSync(evidenceDirectory, { recursive: true });
-  fs.writeFileSync(path.join(evidenceDirectory, 'browser-smoke.json'), `${JSON.stringify({
-    checked_at: new Date().toISOString(),
-    source_sha: sourceSha,
-    url: page.url(),
-    response_status: response.status(),
-    verification_status: readinessText,
-    readiness_events: readinessEvents,
-    readiness_wait_error: readinessWaitError ? readinessWaitError.message : null,
-    identifier_bearing_post_count: verificationPosts.length,
-    page_errors: pageErrors,
-  }, null, 2)}\n`);
-
-  expect(readinessWaitError).toBeNull();
-  expect(readinessText).toContain('Endpoint ready / request not yet checked');
-  await expect(page.locator('#manual-verify-btn')).toBeEnabled();
-  await expect(page.locator('#manual-report-id')).toHaveValue('');
-  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
-  expect(verificationPosts).toEqual([]);
-  expect(pageErrors).toEqual([]);
-
-});
-
-test('deployed query-form legacy binding is scrubbed into a tombstone without any API request', async ({ page }) => {
+test('public verifier route is absent and triggers no verification API request', async ({ page }) => {
   expect(origin).toBe('https://auxtho.com');
   expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
 
@@ -172,32 +87,21 @@ test('deployed query-form legacy binding is scrubbed into a tombstone without an
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
-  const retiredHash = 'a'.repeat(16);
   const response = await page.goto(
-    `${origin}/verify.html?report=RPT-RETIRED-QUERY&h=${retiredHash}&exp=EXP-RETIRED-QUERY`,
-    { waitUntil: 'domcontentloaded', timeout: 20_000 },
+    `${origin}/verify.html?report=RPT-RETIRED&h=${'a'.repeat(64)}&exp=EXP-RETIRED`,
+    { waitUntil: 'networkidle', timeout: 25_000 },
   );
 
   expect(response).not.toBeNull();
-  expect(response.status()).toBe(200);
-  await expect(page).toHaveURL(`${origin}/verify.html`);
-  await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
-  await expect(page.locator('#legacy-binding-tombstone')).toContainText('start readiness or comparison API requests');
-  await expect(page.locator('#qr-verify-btn')).toBeDisabled();
-  await expect(page.locator('#manual-report-id')).toHaveValue('');
-  await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
-  await expect(page.locator('#manual-export-event-id')).toHaveValue('');
-  await expect(page.locator('#verification-service-status')).toHaveText('Legacy link retired / no request sent');
+  expect(response.status()).toBe(404);
   expect(apiRequests).toEqual([]);
   expect(pageErrors).toEqual([]);
 
   fs.mkdirSync(evidenceDirectory, { recursive: true });
-  fs.writeFileSync(path.join(evidenceDirectory, 'legacy-query-tombstone-smoke.json'), `${JSON.stringify({
+  fs.writeFileSync(path.join(evidenceDirectory, 'retired-verifier-smoke.json'), `${JSON.stringify({
     checked_at: new Date().toISOString(),
     source_sha: sourceSha,
-    url_after_scrub: page.url(),
     response_status: response.status(),
-    tombstone_visible: true,
     api_request_count: apiRequests.length,
     page_errors: pageErrors,
   }, null, 2)}\n`);

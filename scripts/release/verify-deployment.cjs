@@ -731,10 +731,6 @@ async function verifyDeployment(options) {
       if (relative.endsWith('.html')) validatePublicPageSecurity(value.response, value.body.toString('utf8'), `/${relative}`);
     }
   }
-  const verifier = canonicalBodies.get('verify.html');
-  if (!verifier) fail('canonical verifier readback is absent');
-  if (options.mode === 'candidate') validateVerifierSecurity(verifier.response, verifier.body.toString('utf8'));
-
   for (const publicPath of releaseManifest.must_be_absent_public_paths) {
     for (const variant of ['canonical', 'cache_busted']) {
       const url = new URL(publicPath, options.origin);
