@@ -181,7 +181,7 @@ test('deployed query-form legacy binding is scrubbed into a tombstone without an
   expect(response.status()).toBe(200);
   await expect(page).toHaveURL(`${origin}/verify.html`);
   await expect(page.locator('#legacy-binding-tombstone')).toBeVisible();
-  await expect(page.locator('#legacy-binding-tombstone')).toContainText('start service or comparison API requests');
+  await expect(page.locator('#legacy-binding-tombstone')).toContainText('cannot start readiness or comparison API requests');
   await expect(page.locator('#qr-verify-btn')).toBeDisabled();
   await expect(page.locator('#manual-report-id')).toHaveValue('');
   await expect(page.locator('#manual-artifact-hash')).toHaveValue('');
