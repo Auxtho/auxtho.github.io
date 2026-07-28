@@ -763,7 +763,10 @@ test('current marketing live source packages as the exact rollback despite older
   try {
     const archive = path.join(temporary, 'live.tar');
     const source = path.join(temporary, 'live');
+    const previous = path.join(temporary, 'previous');
     fs.mkdirSync(source);
+    fs.mkdirSync(previous);
+    createSourceFixture(previous);
 
     const archived = spawnSync(
       'git',
@@ -776,7 +779,7 @@ test('current marketing live source packages as the exact rollback despite older
 
     const result = buildArtifact({
       sourceRoot: source,
-      previousSourceRoot: root,
+      previousSourceRoot: previous,
       outputRoot: path.join(temporary, 'site'),
       provenanceRoot: path.join(temporary, 'provenance'),
       sourceSha: CURRENT_MARKETING_LIVE_SHA,
