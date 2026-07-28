@@ -31,6 +31,8 @@
     "/assets/verify.d506ceee01b92108f835155def553aac2705f26937275ce62bd118c78f598ad9.js",
     "/assets/verify.d92c0fba449ae64bfc28889c9d1ba8155f5f5bf7ac61c0ea52c2ae10a69707af.js",
     "/assets/verify.ed06bb16b987a7aca385ab625bcd668d907b4b21a665bc46b355ed153025c487.js",
+    "/assets/verify.7f3052256aaf732742482d6e1a1ef1d70389e802a6543c0e9ffd6684e5247049.js",
+    "/assets/verify.css",
     "/assets/verify.js",
     "/core/",
     "/core/index.html",
@@ -40,6 +42,7 @@
     "/src/build-core-overview.js",
     "/src/core-overview.json",
     "/src/input.css",
-    "/tailwind.config.js"
+    "/tailwind.config.js",
+    "/verify.html"
   ]
 }

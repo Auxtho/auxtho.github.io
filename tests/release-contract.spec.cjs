@@ -38,6 +38,7 @@ const COMPATIBILITY = [LEGACY_SHA, SITE_SHA].sort();
 const ACTUAL_LEGACY_SHA = '4b2f476c741b771519745930a6ebf244cf5d6433';
 const CURRENT_LIVE_SHA = '784ec29c658ed08ebccfcb3a107d3c7556262d96';
 const CURRENT_LIVE_EVIDENCE_SHA = 'dc5e5b15347e11b2e3da85df585c0d5b1ab414f37e63b3ce617cced98787e3ec';
+const CURRENT_MARKETING_LIVE_SHA = '4cce39436434f6815bf0c8610596396686c31cef';
 
 function sha256(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
@@ -110,7 +111,7 @@ function copy(relative, targetRoot) {
 
 function createSourceFixture(targetRoot) {
   for (const relative of [
-    '404.html', 'evidence-notes.html', 'index.html', 'privacy.html', 'story.html', 'terms.html', 'verify.html',
+    '404.html', 'evidence-notes.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'security/ardamire/index.html', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
@@ -757,6 +758,48 @@ test('approved live rollback packages exact bytes and rejects modified historica
   }
 });
 
+test('current marketing live source packages as the exact rollback despite older front-page copy', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-current-marketing-live-rollback-'));
+  try {
+    const archive = path.join(temporary, 'live.tar');
+    const source = path.join(temporary, 'live');
+    fs.mkdirSync(source);
+
+    const archived = spawnSync(
+      'git',
+      ['archive', '--format=tar', `--output=${archive}`, CURRENT_MARKETING_LIVE_SHA],
+      { cwd: gitRoot, encoding: 'utf8', windowsHide: true },
+    );
+    assert.equal(archived.status, 0, archived.stderr);
+    const extracted = spawnSync('tar', ['-xf', archive, '-C', source], { encoding: 'utf8', windowsHide: true });
+    assert.equal(extracted.status, 0, extracted.stderr);
+
+    const result = buildArtifact({
+      sourceRoot: source,
+      previousSourceRoot: root,
+      outputRoot: path.join(temporary, 'site'),
+      provenanceRoot: path.join(temporary, 'provenance'),
+      sourceSha: CURRENT_MARKETING_LIVE_SHA,
+      previousSha: CURRENT_MARKETING_LIVE_SHA,
+      compatibleJson: JSON.stringify([CURRENT_MARKETING_LIVE_SHA]),
+      mode: 'rollback',
+      rollbackOfSha: SITE_SHA,
+      retiredManifestPath: path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
+      artifactName: 'github-pages-rollback',
+      repository: 'auxtho/auxtho.github.io',
+      runId: '123',
+      runAttempt: '1',
+    });
+
+    assert.equal(result.release.source_sha, CURRENT_MARKETING_LIVE_SHA);
+    assert.equal(result.releaseManifest.source_sha, CURRENT_MARKETING_LIVE_SHA);
+    assert.deepEqual(result.releaseManifest.compatible_backend_site_shas, [CURRENT_MARKETING_LIVE_SHA]);
+    assert.doesNotThrow(() => validateReleaseManifestIdentity(result.releaseManifest, result.release));
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test('bootstrap rollback packages the actual approved legacy tree without inventing a candidate evidence manifest', () => {
   const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-actual-legacy-rollback-'));
   try {
@@ -823,7 +866,7 @@ test('bootstrap rollback packages the actual approved legacy tree without invent
 
 test('every HTML script reference is query-free and bound to exact SHA-256 bytes', () => {
   const htmlFiles = [
-    '404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html',
+    '404.html', 'index.html', 'privacy.html', 'terms.html',
     'story.html', 'lineage/isp/index.html', 'security/ardamire/index.html',
   ];
   const referenced = new Set();
@@ -837,12 +880,12 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
       referenced.add(source);
     }
   }
-  assert.equal(referenced.size, 4);
+  assert.equal(referenced.size, 3);
 });
 
 test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', () => {
   const htmlFiles = [
-    '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html', 'verify.html',
+    '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
   ];
   for (const relative of htmlFiles) {
@@ -858,7 +901,7 @@ test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', ()
 
 test('every candidate-rendered image URL carries the exact SHA-256 of its bytes', () => {
   const htmlFiles = [
-    '404.html', 'index.html', 'privacy.html', 'terms.html', 'verify.html',
+    '404.html', 'index.html', 'privacy.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
   ];
   for (const relative of htmlFiles) {
@@ -872,46 +915,27 @@ test('every candidate-rendered image URL carries the exact SHA-256 of its bytes'
   }
 });
 
-test('verifier production CSP has no loopback and local tests use same-origin API routing', () => {
-  const verify = fs.readFileSync(path.join(root, 'verify.html'), 'utf8');
-  const scriptPath = findScriptSources(verify).find((source) => /\/verify\./.test(source));
-  const script = fs.readFileSync(path.join(root, ...scriptPath.slice(1).split('/')), 'utf8');
-  const match = verify.match(/<meta http-equiv="Content-Security-Policy" content="([^"]+)">/i);
-  assert.ok(match);
-  assert.match(match[1], /connect-src 'self' https:\/\/api\.auxtho\.com;/);
-  assert.doesNotMatch(match[1], /127\.0\.0\.1|localhost|http:/i);
-  assert.match(script, /return window\.location\.origin/);
-  assert.doesNotMatch(script, /http:\/\/127\.0\.0\.1:8000/);
-});
-
 test('public notice separates public information from signed commercial scope', () => {
   const terms = fs.readFileSync(path.join(root, 'terms.html'), 'utf8');
   assert.match(terms, /Public Site Notice/);
   assert.match(terms, /do not by themselves create a commercial relationship/i);
   assert.match(terms, /separate signed agreement/i);
-  assert.match(terms, /identifying the parties, jurisdiction, data roles, security controls, retention, and operating boundary/i);
+  assert.match(terms, /identif(?:y|ies|ying) the parties, jurisdiction, data roles, security controls, retention, and operating boundary/i);
   assert.doesNotMatch(terms, /unresolved legal identity|remains HOLD/i);
   assert.doesNotMatch(terms, /verify-audit-v1|HMAC-SHA-256|pseudonymization key identifier/i);
   assert.doesNotMatch(terms, /Terms of Service|agree to be bound|binding terms/i);
 });
 
-test('privacy notice describes Verify pseudonym linkability and transient rate-limit processing', () => {
+test('privacy notice describes public-site data handling without exposing a verifier service', () => {
   const privacy = fs.readFileSync(path.join(root, 'privacy.html'), 'utf8');
-  assert.match(privacy, /pseudonymous rather than anonymous/i);
-  assert.match(privacy, /deterministic fingerprint can link repeated submissions/i);
-  assert.match(privacy, /transiently uses the request IP address to derive pseudonymous application-level rate-limit state/i);
-  assert.match(privacy, /state may include request timing/i);
-  assert.match(privacy, /configured expiry when shared storage is available/i);
-  assert.match(privacy, /process lifetime when the permitted local fallback is used/i);
-  assert.match(privacy, /raw request IP is not written to the verification application audit record/i);
-  assert.match(privacy, /Automatic deletion requires the deployment TTL policy .* <code>ACTIVE<\/code>/i);
-  assert.match(privacy, /not guaranteed to occur at the exact recorded expiry time/i);
-  assert.match(privacy, /report ID, record binding checksum, and export event ID are required/i);
-  assert.match(privacy, /public or synthetic evaluation data/i);
-  assert.doesNotMatch(privacy, /optional export event ID/i);
+  assert.match(privacy, /describes the Auxtho public website/i);
+  assert.match(privacy, /respond to inquiries you explicitly send/i);
+  assert.match(privacy, /does not intentionally configure site analytics/i);
+  assert.match(privacy, /Website, CDN, hosting, and security providers may process/i);
+  assert.match(privacy, /Do not send personal, customer-confidential, regulated, production, or secret data/i);
   assert.doesNotMatch(
     privacy,
-    /audit contract version|pseudonymization key identifier|HMAC-SHA-256|Redis|anonymous fingerprint|guaranteed deletion|all logs are deleted|bounded rate-limit window key|remains HOLD|unresolved legal identity/i,
+    /verify\.html|verification API|audit contract version|pseudonymization key identifier|HMAC-SHA-256|Redis|anonymous fingerprint|guaranteed deletion|all logs are deleted|bounded rate-limit window key|remains HOLD|unresolved legal identity/i,
   );
 });
 
@@ -1335,30 +1359,32 @@ test('first screen presents the product proposition and human authority boundary
   assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval|masked data/i);
 });
 
-test('post-deploy browser smoke covers Evidence Notes and matches the legacy-link tombstone', () => {
-  const verify = fs.readFileSync(path.join(root, 'verify.html'), 'utf8');
+test('post-deploy browser smoke covers Evidence Notes and the retired verifier route', () => {
   const smoke = fs.readFileSync(path.join(root, 'tests', 'post-deploy-verifier-smoke.spec.cjs'), 'utf8');
-  assert.match(verify, /start readiness or comparison API requests/i);
   assert.match(smoke, /path: '\/evidence-notes\.html'/i);
-  assert.match(smoke, /start readiness or comparison API requests/i);
-  assert.doesNotMatch(smoke, /start service or comparison API requests/i);
+  assert.match(smoke, /public verifier route is absent/i);
+  assert.match(smoke, /response\.status\(\)\)\.toBe\(404\)/i);
+  assert.match(smoke, /api_request_count/i);
 });
 
 test('public research and trust routes are stable, scoped, and buyer-readable', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const isp = fs.readFileSync(path.join(root, 'lineage', 'isp', 'index.html'), 'utf8');
   const ardamire = fs.readFileSync(path.join(root, 'security', 'ardamire', 'index.html'), 'utf8');
-  const verify = fs.readFileSync(path.join(root, 'verify.html'), 'utf8');
   const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');
   const publicFiles = JSON.parse(fs.readFileSync(
     path.join(root, 'scripts', 'release', 'public-files.json'),
+    'utf8',
+  ));
+  const retiredPaths = JSON.parse(fs.readFileSync(
+    path.join(root, 'scripts', 'release', 'retired-public-paths.json'),
     'utf8',
   ));
 
   assert.match(index, /id="research"/);
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
-  assert.match(index, /href="\/verify\.html"/);
+  assert.doesNotMatch(index, /href="\/verify\.html"/);
   assert.match(index, /Auxtho App brings the decision into review/i);
   assert.match(index, /Auxtho Console keeps review attention and operational follow-up visible/i);
   assert.match(index, /a human decision is a required, recorded step before work is marked release-ready or enters controlled export/i);
@@ -1403,16 +1429,15 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.doesNotMatch(ardamire, /Ardamire Workbench|Ardamire Watch|Ardamire Agent|Operator Board|Replay Lab|Reviewer Handoff|Dated publisher observation/i);
   assert.doesNotMatch(ardamire, /guarantees? prevention|certified defense|autonomous approval/i);
 
-  assert.match(verify, /<meta name="robots" content="noindex">/);
-  assert.match(verify, /Artifact Verification/i);
-  assert.match(verify, /record match/i);
-  assert.match(verify, /submitted digest match/i);
-  assert.match(verify, /Use the PDF file check to compare the digital document digest/i);
-  assert.match(verify, /Keep the PDF in your browser/i);
-  assert.match(verify, /A digest match does not mean the API received or inspected the selected file bytes/i);
   assert.match(sitemap, /https:\/\/auxtho\.com\/lineage\/isp\//);
   assert.match(sitemap, /https:\/\/auxtho\.com\/security\/ardamire\//);
   assert.doesNotMatch(sitemap, /verify\.html/);
+  assert.equal(fs.existsSync(path.join(root, 'verify.html')), false);
+  assert.equal(publicFiles.paths.includes('/verify.html'), false);
+  assert.equal(publicFiles.paths.some((publicPath) => /\/assets\/verify(?:\.|$)/.test(publicPath)), false);
+  assert.ok(retiredPaths.paths.includes('/verify.html'));
+  assert.ok(retiredPaths.paths.includes('/assets/verify.css'));
+  assert.ok(retiredPaths.paths.includes('/assets/verify.7f3052256aaf732742482d6e1a1ef1d70389e802a6543c0e9ffd6684e5247049.js'));
 
   for (const required of [
     '/assets/technical-foundations.css',
