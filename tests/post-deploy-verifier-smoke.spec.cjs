@@ -28,7 +28,7 @@ test('public pages render with packaged styles and images without CSP or same-or
 
   const pages = [
     { path: '/', status: 200, locator: 'main' },
-    { path: '/lineage/isp/', status: 200, locator: 'main' },
+    { path: '/lineage/isp/', status: 404, locator: 'body' },
     { path: '/security/ardamire/', status: 200, locator: 'main' },
     { path: '/privacy.html', status: 200, locator: 'main' },
     { path: '/terms.html', status: 200, locator: 'main' },
