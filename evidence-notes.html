@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auxtho - Public Evidence Notes</title>
+  <meta name="description" content="A human-readable guide to the product evidence shown on the Auxtho public site.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark light">
+  <link rel="icon" href="/assets/favicon.svg">
+  <link rel="canonical" href="https://auxtho.com/evidence-notes.html">
+  <meta name="theme-color" content="#050607">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <link rel="stylesheet" href="/assets/style.css?sha256=9f54bf242434c3bdca0cd7fd723ab26d21a7e6fcef36cc50efdda63626413624">
+  <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
+  <link rel="stylesheet" href="/assets/final-overrides.css?sha256=9d18c113b46b58d319852f3e00cfd6455d2e6b1de8ec97f48ecb52dd64f397c9">
+  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=c9825f01123fb7b866e49e84d33fa783022bed2494b05f2519329b231335f395">
+</head>
+
+<body class="antialiased sales-site evidence-notes-page">
+  <a href="#evidence-notes" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black rounded-lg">Skip to content</a>
+
+  <header class="primary-header sticky top-0 z-50 bg-black/50 backdrop-blur-lg border-b border-white/10">
+    <div class="container mx-auto px-6 py-5 flex justify-between items-center">
+      <a href="/" class="z-50" aria-label="Auxtho Home">
+        <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho Logo" class="h-6 w-auto">
+      </a>
+      <nav aria-label="Evidence notes navigation">
+        <ul class="evidence-notes-nav">
+          <li><a href="/">Home</a></li>
+          <li><a href="/lineage/isp/">ISP</a></li>
+          <li><a href="/security/ardamire/">Ardamire</a></li>
+          <li><a href="/verify.html">Verify</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="evidence-notes" class="evidence-notes-main">
+    <div class="evidence-notes-shell">
+      <header class="evidence-notes-hero">
+        <p class="sales-eyebrow">PUBLIC EVIDENCE NOTES</p>
+        <h1>Evidence behind the public product views.</h1>
+        <p>The Auxtho App and Auxtho Console images on this site use fixed synthetic workflow records. Each image is an independent example of its named product surface rather than a recording of one correlated operational run. This page explains what each view demonstrates and provides the source files and recorded hashes behind them.</p>
+      </header>
+
+      <section class="evidence-notes-section" aria-labelledby="app-evidence-title">
+        <div>
+          <p class="sales-product-name">AUXTHO APP</p>
+          <h2 id="app-evidence-title">Human review workspace</h2>
+          <p>The App view demonstrates a prioritised review queue, visible review states, evidence context, and the point where a designated person decides what can move forward.</p>
+        </div>
+        <dl>
+          <div><dt>Evidence type</dt><dd>Publisher-attested synthetic interface capture</dd></div>
+          <div><dt>Public use</dt><dd>Understand the review workspace and release-control model</dd></div>
+          <div><dt>SHA-256</dt><dd><code>c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32</code></dd></div>
+        </dl>
+        <div class="evidence-notes-links">
+          <a href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32">View image</a>
+          <a href="/assets/proposal/app-overview-synthetic-replay-20260716.json">View evidence record</a>
+        </div>
+      </section>
+
+      <section class="evidence-notes-section" aria-labelledby="console-evidence-title">
+        <div>
+          <p class="sales-product-name">AUXTHO CONSOLE</p>
+          <h2 id="console-evidence-title">Operator oversight surface</h2>
+          <p>The Console view demonstrates review attention, critical signals, and operational follow-up around the human review path.</p>
+        </div>
+        <dl>
+          <div><dt>Evidence type</dt><dd>Publisher-attested synthetic interface capture</dd></div>
+          <div><dt>Public use</dt><dd>Understand the operator oversight surface and follow-up model</dd></div>
+          <div><dt>SHA-256</dt><dd><code>03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712</code></dd></div>
+        </dl>
+        <div class="evidence-notes-links">
+          <a href="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712">View image</a>
+          <a href="/assets/proposal/console-synthetic-workflow-replay-20260716.json">View evidence record</a>
+        </div>
+      </section>
+
+      <section class="evidence-notes-machine" aria-labelledby="machine-evidence-title">
+        <div>
+          <p class="sales-product-name">MACHINE-READABLE RECORD</p>
+          <h2 id="machine-evidence-title">Public evidence manifest</h2>
+          <p>The App and Console views are independent synthetic examples. The manifest binds the published image bytes to their evidence records and states how the examples relate.</p>
+        </div>
+        <a href="/assets/proposal/evidence-manifest-20260716.json" class="sales-text-link">Open machine-readable manifest <span aria-hidden="true">&rarr;</span></a>
+      </section>
+    </div>
+  </main>
+
+  <footer class="border-t border-gray-800">
+    <div class="container mx-auto px-6 py-8 text-gray-400 text-sm flex flex-col md:flex-row items-center justify-center md:justify-between gap-4 md:gap-6">
+      <p class="text-center md:text-left">&copy; 2025-2026 Auxtho. All rights reserved.</p>
+      <div class="space-x-4">
+        <a href="/privacy.html" class="hover:text-white">Privacy</a>
+        <span class="text-gray-600" aria-hidden="true">&middot;</span>
+        <a href="/terms.html" class="hover:text-white">Terms</a>
+        <span class="text-gray-600" aria-hidden="true">&middot;</span>
+        <a href="mailto:hello@auxtho.com" class="hover:text-white">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

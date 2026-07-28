@@ -467,14 +467,10 @@
         setListItems('status-active-items', items);
 
         if (cryptoBlock && cryptoItems) {
-            toggle(cryptoBlock, true);
             if (!profile) {
-                setListItems('artifact-crypto-items', [
-                    'Artifact cryptographic metadata appears only after a confirmed artifact response.',
-                    'Signature and timestamp claims require a complete, consistent API field set.',
-                    'This browser does not cryptographically revalidate stored metadata.'
-                ]);
+                toggle(cryptoBlock, false);
             } else if (profile.kind === 'hash_only') {
+                toggle(cryptoBlock, true);
                 setListItems('artifact-crypto-items', [
                     'Verification mode (API record): PILOT HASH ONLY',
                     'Evidence type (API record): HASH ONLY',
@@ -483,6 +479,7 @@
                     'Live cryptographic revalidation: NOT PERFORMED'
                 ]);
             } else if (profile.kind === 'production_signed_live') {
+                toggle(cryptoBlock, true);
                 setListItems('artifact-crypto-items', [
                     'Verification mode (API result): PRODUCTION SIGNED',
                     'Evidence type (API record): ' + formatMode(profile.signature.recorded_evidence_type),
@@ -493,6 +490,7 @@
                     'Browser cryptographic revalidation: NOT PERFORMED'
                 ]);
             } else {
+                toggle(cryptoBlock, true);
                 setListItems('artifact-crypto-items', [
                     'Verification mode (API record): ' + formatMode(result.verification_mode),
                     'Evidence type (API record): ' + formatMode(profile.signature.recorded_evidence_type),
@@ -507,7 +505,7 @@
 
         if (footnote) {
             footnote.textContent = !profile
-                ? 'Load an artifact to see only the complete cryptographic metadata returned for that stored record.'
+                ? 'Run a verification to see the recorded evidence profile for that artifact.'
                 : profile.kind === 'hash_only'
                 ? 'The hash-only API record reports no attached signature or timestamp.'
                 : profile.kind === 'production_signed_live'

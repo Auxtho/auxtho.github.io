@@ -1,24 +1,185 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Retired Security URL | Auxtho</title>
-  <meta name="description" content="This Auxtho security URL has been retired.">
-  <meta name="robots" content="noindex,nofollow,noarchive">
-  <link rel="canonical" href="https://auxtho.com/">
+  <title>Ardamire Defense Layer | Auxtho Security</title>
+  <meta name="description" content="Ardamire keeps detection, investigation, defensive proposals, human decisions, and verification in one visible path before rollout.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#060708">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="canonical" href="https://auxtho.com/security/ardamire/">
   <link rel="icon" href="/assets/favicon.svg">
-  <link rel="stylesheet" href="/assets/style.css?sha256=de6e49fedb56d12c7c7c8ec96db326ae66ad4f1de98a5973d25f71bfb7507b2b">
-  <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
-  <link rel="stylesheet" href="/assets/final-overrides.css?sha256=9d18c113b46b58d319852f3e00cfd6455d2e6b1de8ec97f48ecb52dd64f397c9">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Ardamire Defense Layer | Auxtho Security">
+  <meta property="og:description" content="A human-gated defense path connecting signals, investigation context, defensive proposals, decisions, and verification before rollout.">
+  <meta property="og:url" content="https://auxtho.com/security/ardamire/">
+  <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
+  <meta property="og:image:alt" content="Auxtho human review before release">
+  <link rel="stylesheet" href="/assets/style.css?sha256=9f54bf242434c3bdca0cd7fd723ab26d21a7e6fcef36cc50efdda63626413624">
+  <link rel="stylesheet" href="/assets/technical-foundations.css?sha256=d70455671ad7881b0ab69cda1fb8a8200e2359737fe853079e8c85bc176bda18">
+  <link rel="stylesheet" href="/assets/ardamire-motion.css?sha256=25e6ca7849db6f5f93699b4c4a782fdd0308df85192ce947c218ee8d979ae367">
 </head>
-<body class="antialiased">
-  <main class="pt-24 md:pt-28 pb-20">
-    <section class="container mx-auto px-6 max-w-4xl text-center">
-      <h1 class="text-4xl md:text-5xl font-bold text-white">This security URL is retired</h1>
-      <p class="text-lg text-gray-400 mt-4">Its previous content is not current and is not evidence of any security control, certification, compliance status, deployment, operating effectiveness, or customer outcome.</p>
-      <a href="/" class="inline-block mt-8 bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 transition-colors">Go to the current site</a>
+<body class="technical-page">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black">
+    Skip to content
+  </a>
+
+  <header class="technical-site-header">
+    <div class="technical-site-header-inner">
+      <a class="technical-site-header-logo" href="/" aria-label="Auxtho home">
+        <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho">
+      </a>
+      <a class="technical-back-link" href="/">Back to Auxtho</a>
+    </div>
+  </header>
+
+  <main id="main-content" class="technical-detail-main">
+    <section class="technical-detail-hero">
+      <div class="technical-detail-hero-inner">
+        <p class="technical-detail-kicker">Human-gated defensive change control</p>
+        <h1 class="technical-detail-title">Ardamire Defense Layer</h1>
+        <p class="technical-detail-summary">
+          Ardamire keeps detection, investigation, a defensive proposal, human approval, and verification in one
+          visible path before rollout.
+        </p>
+        <p class="technical-status-line">
+          Detect &rarr; Quarantine &rarr; Analyze &rarr; Harden proposal &rarr; Human review &rarr; Verify before rollout
+        </p>
+      </div>
+    </section>
+
+    <section class="technical-detail-section ardamire-motion-section" id="control-loop">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Six-stage defense path</p>
+        <h2 class="technical-detail-heading">Move from detection to verification before rollout.</h2>
+        <p class="technical-detail-lead">
+          Investigate the signal, prepare a defensive change, stop for an accountable human decision, and verify the
+          approved proposal before rollout.
+        </p>
+
+        <div class="ardamire-motion" data-ardamire-motion data-state="idle">
+          <div class="ardamire-motion-header">
+            <div>
+              <p class="ardamire-motion-eyebrow">Ardamire / six-stage control sequence</p>
+              <p class="ardamire-motion-disclosure">Interactive control sequence / modelled signal scenario</p>
+            </div>
+            <div class="ardamire-motion-controls" aria-label="Ardamire sequence controls">
+              <button type="button" data-ardamire-play>Play</button>
+              <button type="button" data-ardamire-pause disabled>Pause</button>
+              <button type="button" data-ardamire-replay>Replay</button>
+              <button type="button" data-ardamire-continue hidden>Continue to verification</button>
+            </div>
+          </div>
+
+          <div class="ardamire-motion-status" aria-live="polite">
+            <span>Current stage</span>
+            <strong data-ardamire-status>Ready to run sequence</strong>
+          </div>
+
+          <ol class="ardamire-motion-sequence">
+            <li class="ardamire-motion-stage" data-ardamire-stage>
+              <span>01</span>
+              <strong>Detect</strong>
+              <p>A security signal enters the defensive control path.</p>
+            </li>
+            <li class="ardamire-motion-stage" data-ardamire-stage>
+              <span>02</span>
+              <strong>Quarantine</strong>
+              <p>The affected path enters a hold state while the signal is investigated.</p>
+            </li>
+            <li class="ardamire-motion-stage" data-ardamire-stage>
+              <span>03</span>
+              <strong>Analyze + Profile</strong>
+              <p>Signal, artifact, and policy context are assembled for review.</p>
+            </li>
+            <li class="ardamire-motion-stage" data-ardamire-stage>
+              <span>04</span>
+              <strong>Harden proposal</strong>
+              <p>A defensive change is prepared as a proposal, not executed.</p>
+            </li>
+            <li class="ardamire-motion-stage ardamire-motion-stage-human" data-ardamire-stage>
+              <span>05</span>
+              <strong>Human review</strong>
+              <p>An accountable person decides whether the proposal advances.</p>
+            </li>
+            <li class="ardamire-motion-stage" data-ardamire-stage>
+              <span>06</span>
+              <strong>Verify before rollout</strong>
+              <p>The approved proposal enters a separate verification stage before rollout.</p>
+            </li>
+          </ol>
+
+          <div class="ardamire-motion-footer">
+            <p><strong>Human authority is required</strong> before the proposal advances to verification.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="technical-detail-section">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Control structure</p>
+        <h2 class="technical-detail-heading">Investigate first. Decide explicitly. Verify before rollout.</h2>
+        <p class="technical-detail-lead">
+          Ardamire keeps each consequential transition visible. Teams can assemble context and prepare a defensive
+          proposal without granting it authority to execute.
+        </p>
+        <div class="technical-claim-grid">
+          <article class="technical-claim-block">
+            <h3>Inspect the signal</h3>
+            <p>Bring the signal and its available context into one inspectable path.</p>
+          </article>
+          <article class="technical-claim-block">
+            <h3>Control the proposal</h3>
+            <p>Keep the defensive change separate from execution while its supporting context is reviewed.</p>
+          </article>
+          <article class="technical-claim-block">
+            <h3>Record the decision</h3>
+            <p>Continue to verification only after an accountable person explicitly approves the next stage.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="technical-detail-section">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Enterprise control mapping</p>
+        <h2 class="technical-detail-heading">Connect defensive decisions to the controls already in use.</h2>
+        <p class="technical-detail-lead">
+          Start with one defensive-change workflow and map its signal, accountable reviewer, supporting evidence, and
+          verification point into the current control environment.
+        </p>
+        <ul class="technical-scope-list">
+          <li>Map the review and verification stages against SOC, SIEM, EDR, IAM, incident-response, and security-control environments.</li>
+          <li>Define the responsible people, required evidence, and controlled handoffs for the selected workflow.</li>
+          <li>Keep review, approval, release, and export decisions with designated people and controlled systems.</li>
+        </ul>
+        <div class="technical-reference">
+          <div>
+            <h3>Start with one defensive-change workflow</h3>
+            <p>Identify the signal, proposal, human decision, and verification point that should remain connected.</p>
+          </div>
+          <a href="mailto:hello@auxtho.com?subject=Discuss%20a%20defensive-change%20workflow">Discuss one workflow</a>
+        </div>
+      </div>
     </section>
   </main>
+
+  <footer class="technical-detail-footer">
+    <div class="technical-detail-footer-inner">
+      <p>&copy; 2025-2026 Auxtho. All rights reserved.</p>
+      <div>
+        <a href="/privacy.html">Privacy</a>
+        <span aria-hidden="true"> &middot; </span>
+        <a href="/terms.html">Public Site Notice</a>
+        <span aria-hidden="true"> &middot; </span>
+        <a href="mailto:hello@auxtho.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+  <script src="/assets/ardamire-motion.cda2fde1fd14e8c4f11e2cb8f85fefb65c9a0485c01a8822e079670868b7abc6.js" defer></script>
 </body>
 </html>

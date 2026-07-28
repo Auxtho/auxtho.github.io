@@ -17,6 +17,47 @@
     margin-right: auto;
 }
 
+.verify-capability-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 2rem 0 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.verify-capability {
+    min-width: 0;
+    padding: 1.25rem 1.35rem;
+}
+
+.verify-capability + .verify-capability {
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.verify-capability span {
+    display: block;
+    color: #8f99a8;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.verify-capability strong {
+    display: block;
+    margin-top: 0.5rem;
+    color: #fff;
+    font-size: 0.98rem;
+    line-height: 1.45;
+}
+
+.verify-capability p {
+    margin: 0.55rem 0 0;
+    color: #b5bec9;
+    font-size: 0.86rem;
+    line-height: 1.6;
+}
+
 /* QR verification card (shown when verify.js finds URL params) */
 .qr-card {
     display: none;
@@ -77,6 +118,33 @@
     color: #8f99a8;
     font-size: 0.8rem;
     line-height: 1.55;
+}
+
+.verification-details {
+    margin-top: 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 0.8rem;
+}
+
+.verification-details + .verification-details {
+    margin-top: 0.65rem;
+}
+
+.verification-details summary {
+    color: #c8d0da;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+.verification-details summary:hover,
+.verification-details summary:focus-visible {
+    color: #fff;
+}
+
+.verification-details[open] summary {
+    color: #fff;
 }
 
 .btn-primary:disabled {
@@ -250,6 +318,15 @@
 }
 
 @media (max-width: 768px) {
+    .verify-capability-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .verify-capability + .verify-capability {
+        border-left: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
     .manual-panel,
     .status-panel {
         padding: 1.1rem;
