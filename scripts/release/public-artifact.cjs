@@ -34,12 +34,12 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '9b660cdd07210efaf50b329a50f34894b6e7c86d9a722347725616c7c9ff0924',
   'evidence-notes.html': '0ea58c14673e8551d6276a28a59fe99713f055a2d16b9a5212a18a666e58ae33',
   'index.html': 'd89c19673933d8a07bf8004829cdb43720de60936010cab23fe45e3dffa3afa0',
-  'lineage/isp/index.html': '5765f031ef6659a7067cd9ab986ae5af1812395f50d77b7c60ef089d55180f62',
+  'lineage/isp/index.html': '4362874a87470f10923631ac4e32f3d0079294e1e224685b149ea95ebb0ced76',
   'privacy.html': 'c2ec8826894afaec0d1481a1b1708ca63181ac50379c4787594c93e7d3457f16',
-  'security/ardamire/index.html': 'a93fa3dbccbd74b70b31bc654d245de9c1de558cbf8a8aaf2b15e670ee06a363',
+  'security/ardamire/index.html': '0b4f0a869e11f4c832450e12793d08859b13b78e6ab7c8378fe34a14085d0ad1',
   'story.html': 'e8bdc1487f2b237a8a59aa817e98a39444f38a9de410b8d63f6b0c3c410d07b3',
   'terms.html': '9e7a903c650b7454a81bfd21a0b58b20227f7ac6ea2f37096fdab1a585fdeddc',
-  'verify.html': '77409cc73fa82f9002da0f18d88efdba7f68153f670eb6d31faf9e1d79183cf2',
+  'verify.html': '679a62d6c2e2f9ff0fdb856bc3ae932ab7ef4066d67f324205a5fcbd13edb857',
 });
 const REVIEWED_PNG_CHUNKS = new Set(['IHDR', 'sRGB', 'gAMA', 'pHYs', 'IDAT', 'IEND']);
 const EVIDENCE_MANIFEST_KEYS = [

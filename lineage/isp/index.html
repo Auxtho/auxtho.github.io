@@ -14,7 +14,7 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Intent Synchronization Protocol (ISP) | Auxtho">
-  <meta property="og:description" content="ISP's historical role in intent verification and a bounded public prototype workflow.">
+  <meta property="og:description" content="ISP keeps intended outcomes, authority, evidence, and handoffs aligned before AI-generated plans proceed to execution.">
   <meta property="og:url" content="https://auxtho.com/lineage/isp/">
   <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
   <meta property="og:image:alt" content="Auxtho human review before release">
@@ -38,14 +38,14 @@
   <main id="main-content" class="technical-detail-main">
     <section class="technical-detail-hero">
       <div class="technical-detail-hero-inner">
-        <p class="technical-detail-kicker">Intent, authority, evidence, and handoffs</p>
+        <p class="technical-detail-kicker">Intent control before execution</p>
         <h1 class="technical-detail-title">Intent Synchronization Protocol (ISP)</h1>
         <p class="technical-detail-summary">
-          ISP structures how intended work is captured, planned, checked, and returned for accountable review before
-          AI-generated plans proceed to execution in the protocol model.
+          ISP keeps the requested outcome, delegated authority, generated plan, and returned evidence aligned at the
+          handoff before consequential execution.
         </p>
         <p class="technical-status-line">
-          Protocol lineage / public prototype package available
+          Capture intent &rarr; Bind authority &rarr; Return evidence
         </p>
       </div>
     </section>
@@ -55,21 +55,21 @@
         <p class="technical-detail-label">Alignment before execution</p>
         <h2 class="technical-detail-heading">Keep generated plans aligned before execution.</h2>
         <p class="technical-detail-lead">
-          ISP separates a requested outcome, the authority to act, the evidence available for review, and the handoff
-          into execution. A generated plan remains inspectable before the next consequential step.
+          ISP turns an AI-generated plan into an accountable handoff: what was requested, who can authorize the next
+          step, and what evidence returns for review.
         </p>
         <div class="technical-claim-grid">
           <article class="technical-claim-block">
             <h3>Capture intent</h3>
-            <p>Turn a request into a bounded intended outcome that can be inspected.</p>
+            <p>Define the intended outcome, constraints, and expected work before a plan moves forward.</p>
           </article>
           <article class="technical-claim-block">
             <h3>Bind authority</h3>
-            <p>Keep the authority to plan, review, and execute explicit rather than inherited.</p>
+            <p>Make the authority to plan, review, and execute explicit instead of allowing it to be inherited.</p>
           </article>
           <article class="technical-claim-block">
             <h3>Return evidence</h3>
-            <p>Bring the plan, generated artifacts, progress, and outcome back into an inspectable handoff.</p>
+            <p>Return the plan, generated artifacts, progress, and outcome to one inspectable handoff.</p>
           </article>
         </div>
       </div>
@@ -77,81 +77,96 @@
 
     <section class="technical-detail-section">
       <div class="technical-detail-section-inner">
-        <p class="technical-detail-label">Protocol lineage</p>
-        <h2 class="technical-detail-heading">Intent verification inside the earlier Auxtho Core architecture.</h2>
+        <p class="technical-detail-label">Human release control</p>
+        <h2 class="technical-detail-heading">Carry aligned intent into the human decision.</h2>
         <p class="technical-detail-lead">
-          Historically, Auxtho Core described the broader execution-control architecture. ISP was the
-          intent-verification protocol within it: check whether a generated plan remained aligned with the requested
-          outcome before execution was permitted.
+          Auxtho App presents the selected work and its supporting evidence for review. Auxtho Console keeps
+          ownership, status, and follow-up visible around the decision.
         </p>
         <p class="technical-detail-lead">
-          That principle continues in Auxtho App and Auxtho Console: intent, evidence, authority, and outcome remain
-          visible at the handoff where an accountable person decides what moves forward.
+          ISP supplies the alignment structure beneath that path so the requested outcome, authority, evidence, and
+          returned work stay connected when an accountable person decides what moves forward.
         </p>
+        <div class="technical-reference">
+          <div>
+            <h3>See the review and oversight surfaces</h3>
+            <p>Follow how Auxtho App and Auxtho Console make the human decision and operational follow-up visible.</p>
+          </div>
+          <a href="/#product">See the product path</a>
+        </div>
       </div>
     </section>
 
     <section class="technical-detail-section">
       <div class="technical-detail-section-inner">
-        <p class="technical-detail-label">Protocol walkthrough</p>
-        <h2 class="technical-detail-heading">A bounded path from intent to an accountable handoff.</h2>
+        <p class="technical-detail-label">Intent-to-decision path</p>
+        <h2 class="technical-detail-heading">Move from request to an accountable handoff.</h2>
         <p class="technical-detail-lead">
-          The public package shows a bounded request, visible progress, generated files, and closing states returning
-          to a review-ready surface.
+          ISP keeps the request, authority, progress, generated work, and closing review state visible across the
+          handoff.
         </p>
-        <div class="technical-flow" aria-label="ISP public prototype flow">
+        <div class="technical-flow" aria-label="ISP intent-to-decision flow">
           <article class="technical-flow-step">
             <span class="technical-flow-index">01</span>
             <strong>Request</strong>
-            <p>A bounded task is selected for the prototype run.</p>
+            <p>Define the intended outcome and constraints for the selected work.</p>
           </article>
           <article class="technical-flow-step">
             <span class="technical-flow-index">02</span>
             <strong>Controlled run</strong>
-            <p>The run stays inside the declared prototype scope.</p>
+            <p>Keep the plan and work inside the declared intent and authority.</p>
           </article>
           <article class="technical-flow-step">
             <span class="technical-flow-index">03</span>
             <strong>Visible progress</strong>
-            <p>Progress and review-relevant state are surfaced rather than implied.</p>
+            <p>Surface progress and review-relevant state as the work develops.</p>
           </article>
           <article class="technical-flow-step">
             <span class="technical-flow-index">04</span>
-            <strong>Review-ready</strong>
-            <p>The generated files return to an inspectable review surface.</p>
+            <strong>Review-ready handoff</strong>
+            <p>Return generated files, evidence, and outcome to an inspectable review surface.</p>
           </article>
           <article class="technical-flow-step">
             <span class="technical-flow-index">05</span>
-            <strong>Closing options shown</strong>
-            <p>Ready, Pass, Partial, and Blocked are visible; no option is selected in the package.</p>
+            <strong>Human decision</strong>
+            <p>Record whether the work is ready, passed, partial, or blocked.</p>
           </article>
         </div>
-        <p class="technical-detail-lead">The package records two bounded prototype runs and their review states.</p>
       </div>
     </section>
 
     <section class="technical-detail-section">
       <div class="technical-detail-section-inner">
-        <p class="technical-detail-label">Public package</p>
-        <h2 class="technical-detail-heading">Inspect the recorded prototype runs.</h2>
+        <p class="technical-detail-label">Protocol lineage and proof</p>
+        <h2 class="technical-detail-heading">Inspect the public ISP proof package.</h2>
         <p class="technical-detail-lead">
-          The package contains the prototype outputs, visible closing states, and pinned revision history.
+          Historically, Auxtho Core described the broader execution-control architecture. ISP was its
+          intent-verification protocol: check whether a generated plan remained aligned with the requested outcome
+          before execution was permitted.
+        </p>
+        <p class="technical-detail-lead">
+          The public package records two prototype runs, their generated outputs, visible closing options, and pinned
+          revision history. It provides evidence of the protocol sequence; current product operation is evaluated
+          through Auxtho App and Auxtho Console.
         </p>
         <div class="technical-reference">
           <div>
             <h3>ISP public proof package</h3>
             <p>
-              Public source package pinned to a specific prototype revision.
+              Source, generated outputs, review states, and revision history pinned to a specific prototype revision.
             </p>
           </div>
           <a href="https://github.com/AuxthoAdmin/isp-public-proof-package/tree/45ba6c5996c2ccba7d82e19760c9bd81a8ff2052" target="_blank" rel="noopener noreferrer">
             Open public package
           </a>
         </div>
-        <p class="technical-detail-lead">
-          The package records the ISP Layer prototype workflow. It is a public proof of the bounded sequence, while
-          current product operation is evaluated through Auxtho App and Auxtho Console.
-        </p>
+        <div class="technical-reference">
+          <div>
+            <h3>Apply ISP to one consequential workflow</h3>
+            <p>Start with the handoff where intent, authority, evidence, and a human decision must stay connected.</p>
+          </div>
+          <a href="mailto:hello@auxtho.com?subject=Discuss%20an%20intent-to-execution%20workflow">Discuss one workflow</a>
+        </div>
       </div>
     </section>
   </main>

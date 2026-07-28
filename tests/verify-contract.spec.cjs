@@ -252,6 +252,19 @@ test('verifier CSP allows reviewed endpoints and blocks an unlisted connection',
   expect(unlistedRequestCount).toBe(0);
 });
 
+test('verifier leads with supported comparisons and defers cryptographic metadata until a result', async ({ page }) => {
+  await mockStatus(page);
+  await page.goto(`${baseUrl}/verify.html`);
+
+  await expect(page.getByRole('heading', { level: 1, name: 'Artifact Verification' })).toBeVisible();
+  await expect(page.locator('.verify-capability')).toHaveCount(3);
+  await expect(page.locator('.verify-capability-grid')).toContainText('Check the issued export record');
+  await expect(page.locator('.verify-capability-grid')).toContainText('Compare the digital document');
+  await expect(page.locator('.verify-capability-grid')).toContainText('Keep the PDF in your browser');
+  await expect(page.locator('#artifact-crypto-block')).toBeHidden();
+  await expect(page.locator('.manual-verify-panel .verification-details')).toHaveCount(2);
+});
+
 test('QR parameters prefill but never submit before an explicit click', async ({ page }) => {
   let postCount = 0;
   let postedBody;
@@ -736,7 +749,9 @@ test('missing release or release-history metadata fails closed', async ({ browse
 test('verifier disclosure does not promise an application audit record for every submit', async ({ page }) => {
   await mockStatus(page);
   await page.goto(`${baseUrl}/verify.html`);
-  const disclosure = page.locator('.manual-verify-panel .verification-disclosure');
+  const disclosure = page.locator('.manual-verify-panel .verification-disclosure')
+    .filter({ hasText: 'not guaranteed for every submit' });
+  await expect(disclosure).toHaveCount(1);
   await expect(disclosure).toContainText('not guaranteed for every submit');
   await expect(disclosure).toContainText('Infrastructure access and security logs are separate');
   await expect(disclosure).not.toContainText('records a verification/security audit event');
@@ -761,6 +776,8 @@ test('changing identifiers or the selected file invalidates a prior success resu
   await page.locator('#manual-verify-btn').click();
   await expect(page.locator('#verify-result-title')).toHaveText('Artifact Digest Match');
   await expect(page.locator('#verify-result-grid')).toContainText('FILE');
+  await expect(page.locator('#artifact-crypto-block')).toBeVisible();
+  await expect(page.locator('#artifact-crypto-block')).toContainText('PILOT HASH ONLY');
 
   await page.locator('#manual-report-id').fill('RPT-VERIFY-CHANGED');
   await expect(page.locator('#verify-result')).toBeHidden();

@@ -178,7 +178,7 @@ for (const detail of [
     if (detail.route === '/security/ardamire/') {
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index,follow');
       await expect(page.locator('.technical-status-line')).toContainText(
-        'Implemented interactive sequence / modelled signals',
+        'Detect',
       );
       await expect(page.locator('body')).not.toContainText('Ardamire Workbench');
       await expect(page.locator('body')).not.toContainText('Ardamire Watch');
@@ -188,7 +188,7 @@ for (const detail of [
       await expect(page.locator('body')).toContainText(
         'Historically, Auxtho Core described the broader execution-control architecture.',
       );
-      await expect(page.locator('body')).toContainText('ISP Layer prototype workflow');
+      await expect(page.locator('body')).toContainText('Inspect the public ISP proof package');
     }
     await expectNoHorizontalOverflow(page);
   });
@@ -233,7 +233,7 @@ test('Ardamire motion stays idle, pauses at human review, and requires explicit 
   await motion.locator('[data-ardamire-continue]').click();
   await expect(motion).toHaveAttribute('data-state', 'verification');
   await expect(motion.locator('[data-ardamire-status]')).toHaveText(
-    'Verification stage shown - rollout is not shown',
+    'Verification stage active - rollout remains separately controlled',
   );
   await expect(motion.locator('.is-complete')).toHaveCount(5);
   await expect(motion.locator('[data-ardamire-stage]').nth(5)).toHaveClass(/is-active/);
@@ -277,7 +277,7 @@ test('Ardamire reduced-motion mode stays static without implying completed stage
   await expect(motion.locator('.is-complete')).toHaveCount(0);
   await expect(motion.locator('.is-active')).toHaveCount(0);
   await expect(motion.locator('[data-ardamire-status]')).toHaveText(
-    'Static illustration - human review remains required',
+    'Static control path - human review remains required',
   );
   await expect(motion.getByRole('button', { name: 'Play', exact: true })).toBeDisabled();
   await expect(motion.locator('[data-ardamire-continue]')).toBeHidden();
