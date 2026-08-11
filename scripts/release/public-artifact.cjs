@@ -9,7 +9,8 @@ const HASH_PATTERN = /^[0-9a-f]{64}$/;
 const SCRIPT_PATH_PATTERN = /^\/assets\/[A-Za-z0-9._/-]+\.([0-9a-f]{64})\.js$/;
 const STYLESHEET_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/;
 const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/;
-const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.png', '.svg']);
+const MEDIA_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.mp4)\?sha256=([0-9a-f]{64})$/;
+const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.mp4', '.png', '.svg']);
 const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
@@ -32,8 +33,8 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
-  'evidence-notes.html': '68e647dda633d709746208f12a19cdec06038e38dafc266db0d0e78c65e0524c',
-  'index.html': '10f5024eba49683afc7f50478f219bf25e34d2be923b3d042e20578bd7325abf',
+  'evidence-notes.html': 'fb4e58cd8e5cb0a9cc993745c9c05946b51ace1bc8759234f9d9c1f311d2c752',
+  'index.html': '2fae03f6875ce04a4dad170adcfc5fbea6e49f28a624e47906eab17e9349b21d',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
   'security/ardamire/index.html': '3b1df81e4bb7452f4f1e2549e0eee300f007283450e652ad85ffef0d370a9a9e',
@@ -544,8 +545,32 @@ function findImageSources(document) {
   function visit(node) {
     const attributes = Object.fromEntries((node.attrs || []).map((attribute) => [attribute.name, attribute.value]));
     if (node.nodeName === 'img' && attributes.src) sources.push(attributes.src);
+    if (node.nodeName === 'video' && attributes.poster) sources.push(attributes.poster);
+    if (node.nodeName === 'source' && attributes.srcset && /\.(?:png|svg)(?:\?|$)/i.test(attributes.srcset)) {
+      for (const candidate of attributes.srcset.split(',')) {
+        const source = candidate.trim().split(/\s+/)[0];
+        if (source) sources.push(source);
+      }
+    }
     if (node.nodeName === 'a' && attributes.href && /^\/assets\/.+\.(?:png|svg)(?:\?|$)/i.test(attributes.href)) {
       sources.push(attributes.href);
+    }
+    for (const child of node.childNodes || []) visit(child);
+  }
+  visit(parsed);
+  return sources;
+}
+
+function findMediaSources(document) {
+  const parsed = parse5.parse(document);
+  const sources = [];
+  function visit(node) {
+    const attributes = Object.fromEntries((node.attrs || []).map((attribute) => [attribute.name, attribute.value]));
+    if (node.nodeName === 'video' && attributes.src && /\.mp4(?:\?|$)/i.test(attributes.src)) {
+      sources.push(attributes.src);
+    }
+    if (node.nodeName === 'source' && attributes.src && /\.mp4(?:\?|$)/i.test(attributes.src)) {
+      sources.push(attributes.src);
     }
     for (const child of node.childNodes || []) visit(child);
   }
@@ -690,6 +715,39 @@ function validateImageReferences(outputRoot, mode = 'candidate') {
       const contentAddressed = Boolean(match && actualHash === match[2]);
       if (mode === 'candidate' && !contentAddressed) {
         fail(`candidate image URL must contain the exact SHA-256 bytes: ${htmlPath} -> ${source}`);
+      }
+      references.push({
+        html_path: publicPathFromRelative(htmlPath),
+        url: source,
+        path: url.pathname,
+        sha256: actualHash,
+        content_addressed: contentAddressed,
+      });
+    }
+  }
+  return references.sort((left, right) => (
+    `${left.html_path}\0${left.url}`.localeCompare(`${right.html_path}\0${right.url}`)
+  ));
+}
+
+function validateMediaReferences(outputRoot, mode = 'candidate') {
+  const references = [];
+  const htmlFiles = relativeFiles(outputRoot).filter((relative) => relative.endsWith('.html'));
+  for (const htmlPath of htmlFiles) {
+    const document = fs.readFileSync(path.join(outputRoot, ...htmlPath.split('/')), 'utf8');
+    for (const source of findMediaSources(document)) {
+      const url = new URL(source, 'https://auxtho.invalid');
+      if (url.origin !== 'https://auxtho.invalid' || !source.startsWith('/') || url.hash) {
+        fail(`media reference must be an absolute local URL without a fragment: ${htmlPath} -> ${source}`);
+      }
+      const relative = decodeURIComponent(url.pathname.slice(1));
+      const mediaPath = path.join(outputRoot, ...relative.split('/'));
+      if (!fs.existsSync(mediaPath)) fail(`referenced media is absent: ${source}`);
+      const actualHash = sha256(fs.readFileSync(mediaPath));
+      const match = source.match(MEDIA_URL_PATTERN);
+      const contentAddressed = Boolean(match && actualHash === match[2]);
+      if (mode === 'candidate' && !contentAddressed) {
+        fail(`candidate media URL must contain the exact SHA-256 bytes: ${htmlPath} -> ${source}`);
       }
       references.push({
         html_path: publicPathFromRelative(htmlPath),
@@ -1212,6 +1270,7 @@ function buildArtifact(options) {
   const scriptReferences = validateScriptReferences(outputRoot, options.mode, legacyBootstrap);
   const stylesheetReferences = legacyBootstrap ? [] : validateStylesheetReferences(outputRoot, options.mode);
   const imageReferences = legacyBootstrap ? [] : validateImageReferences(outputRoot, options.mode);
+  const mediaReferences = legacyBootstrap ? [] : validateMediaReferences(outputRoot, options.mode);
   const privacyManifest = validatePrivacyAndClaims(
     outputRoot,
     options.mode,
@@ -1248,6 +1307,7 @@ function buildArtifact(options) {
     script_references: scriptReferences,
     stylesheet_references: stylesheetReferences,
     image_references: imageReferences,
+    media_references: mediaReferences,
     privacy_manifest: privacyManifest,
     evidence_boundaries: {
       synthetic_only: privacyManifest.evidence_boundaries?.synthetic_only ?? false,
@@ -1348,6 +1408,7 @@ module.exports = {
   findScriptSources,
   findStylesheetSources,
   findImageSources,
+  findMediaSources,
   normalizeManifestPath,
   isApprovedHistoricalRollbackEvidence,
   sha256,
@@ -1355,4 +1416,5 @@ module.exports = {
   validateScriptReferences,
   validateStylesheetReferences,
   validateImageReferences,
+  validateMediaReferences,
 };

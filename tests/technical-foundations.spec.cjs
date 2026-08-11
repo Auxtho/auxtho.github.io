@@ -35,6 +35,7 @@ function contentType(filePath) {
   if (filePath.endsWith('.css')) return 'text/css; charset=utf-8';
   if (filePath.endsWith('.js')) return 'application/javascript; charset=utf-8';
   if (filePath.endsWith('.json')) return 'application/json; charset=utf-8';
+  if (filePath.endsWith('.mp4')) return 'video/mp4';
   if (filePath.endsWith('.svg')) return 'image/svg+xml';
   if (filePath.endsWith('.png')) return 'image/png';
   return 'application/octet-stream';
@@ -89,11 +90,79 @@ async function openWithoutRuntimeErrors(page, route) {
   const failedRequests = [];
   page.on('pageerror', (error) => runtimeErrors.push(error.message));
   page.on('requestfailed', (request) => failedRequests.push(request.url()));
-  const response = await page.goto(`${baseUrl}${route}`, { waitUntil: 'networkidle' });
+  const response = await page.goto(`${baseUrl}${route}`, { waitUntil: 'load' });
+  await page.waitForTimeout(150);
   expect(response.status()).toBe(200);
   expect(runtimeErrors).toEqual([]);
   expect(failedRequests).toEqual([]);
 }
+
+test('homepage vision film selects the desktop master and leaves the product proposition visible below', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await openWithoutRuntimeErrors(page, '/index.html');
+
+  const film = page.locator('[data-vision-film]');
+  const video = film.locator('video');
+  await expect(film).toBeVisible();
+  await expect.poll(() => video.evaluate((element) => ({
+    currentSrc: element.currentSrc,
+    duration: element.duration,
+    height: element.videoHeight,
+    width: element.videoWidth,
+  }))).toEqual(expect.objectContaining({
+    currentSrc: expect.stringContaining('auxtho-incident-led-hero-v9.mp4'),
+    duration: 26,
+    height: 1080,
+    width: 1920,
+  }));
+  await expect.poll(() => video.evaluate((element) => !element.paused && element.currentTime > 0)).toBe(true);
+  await expect(film).toHaveClass(/has-film-frame/);
+
+  const productTop = await page.locator('.sales-hero').evaluate((element) => element.getBoundingClientRect().top);
+  expect(productTop).toBeLessThan(900);
+  await expectNoHorizontalOverflow(page);
+});
+
+test('homepage vision film selects the portrait master on mobile without overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openWithoutRuntimeErrors(page, '/index.html');
+
+  const film = page.locator('[data-vision-film]');
+  const video = film.locator('video');
+  await expect.poll(() => video.evaluate((element) => ({
+    currentSrc: element.currentSrc,
+    height: element.videoHeight,
+    width: element.videoWidth,
+  }))).toEqual(expect.objectContaining({
+    currentSrc: expect.stringContaining('auxtho-incident-led-hero-mobile-v9.mp4'),
+    height: 1920,
+    width: 1080,
+  }));
+  const productTop = await page.locator('.sales-hero').evaluate((element) => element.getBoundingClientRect().top);
+  expect(productTop).toBeLessThan(844);
+  const controlHeights = await film.locator('.vision-film-toggle, .vision-film-continue')
+    .evaluateAll((controls) => controls.map((control) => control.getBoundingClientRect().height));
+  expect(controlHeights.every((height) => height >= 44)).toBe(true);
+  await expectNoHorizontalOverflow(page);
+});
+
+test('homepage vision film respects reduced motion until the visitor explicitly plays it', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openWithoutRuntimeErrors(page, '/index.html');
+
+  const film = page.locator('[data-vision-film]');
+  const video = film.locator('video');
+  const toggle = film.getByRole('button', { name: 'Play film' });
+  await expect(toggle).toBeVisible();
+  await expect(video).toHaveJSProperty('paused', true);
+  await expect(film).not.toHaveClass(/has-film-frame/);
+
+  await toggle.click();
+  await expect.poll(() => video.evaluate((element) => !element.paused && element.currentTime > 0)).toBe(true);
+  await expect(film).toHaveClass(/has-film-frame/);
+  await expect(film.getByRole('button', { name: 'Pause film' })).toBeVisible();
+});
 
 test('homepage keeps technical references secondary and readable on desktop', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });

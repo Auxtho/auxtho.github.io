@@ -1671,6 +1671,176 @@ body > a[href="#problem"]:focus {
   background: #fff !important;
 }
 
+.vision-film {
+  position: relative;
+  overflow: hidden;
+  color: var(--sales-white);
+  background: #000;
+  isolation: isolate;
+}
+
+.vision-film-stage {
+  position: relative;
+  height: clamp(22rem, 66svh, 50rem);
+  overflow: hidden;
+  background: #000;
+}
+
+.vision-film-poster,
+.vision-film-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.vision-film-poster img,
+.vision-film-video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.vision-film-poster {
+  opacity: 1;
+  transition: opacity 220ms ease;
+}
+
+.vision-film-video {
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.vision-film.has-film-frame .vision-film-poster {
+  opacity: 0;
+}
+
+.vision-film.has-film-frame .vision-film-video {
+  opacity: 1;
+}
+
+.vision-film-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(100% - 3rem, 1180px);
+  min-height: 60px;
+  margin: 0 auto;
+  gap: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.vision-film-lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  color: #d5d6d8;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.vision-film-lockup::before {
+  content: "";
+  width: 22px;
+  height: 2px;
+  background: var(--sales-red);
+}
+
+.vision-film-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.vision-film-toggle,
+.vision-film-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: #d5d6d8;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+  text-transform: uppercase;
+  transition: color 160ms ease, background-color 160ms ease;
+}
+
+.vision-film-toggle {
+  gap: 0.6rem;
+  padding: 0 0.85rem;
+  cursor: pointer;
+}
+
+.vision-film-continue {
+  padding: 0 0 0 1rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.vision-film-toggle:hover,
+.vision-film-toggle:focus-visible,
+.vision-film-continue:hover,
+.vision-film-continue:focus-visible {
+  color: var(--sales-white);
+}
+
+.vision-film-toggle:focus-visible,
+.vision-film-continue:focus-visible {
+  outline: 2px solid var(--sales-white);
+  outline-offset: 3px;
+}
+
+.vision-film-icon {
+  position: relative;
+  display: inline-block;
+  width: 12px;
+  height: 14px;
+  flex: 0 0 auto;
+}
+
+.vision-film-toggle[data-state="paused"] .vision-film-icon::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 8px solid currentColor;
+}
+
+.vision-film-toggle[data-state="playing"] .vision-film-icon::before,
+.vision-film-toggle[data-state="playing"] .vision-film-icon::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  width: 3px;
+  height: 10px;
+  background: currentColor;
+}
+
+.vision-film-toggle[data-state="playing"] .vision-film-icon::before {
+  left: 2px;
+}
+
+.vision-film-toggle[data-state="playing"] .vision-film-icon::after {
+  right: 2px;
+}
+
+.vision-film-arrow {
+  margin-left: 0.55rem;
+  font-size: 16px;
+  line-height: 1;
+}
+
 .sales-hero {
   position: relative;
   display: flex;
@@ -2440,6 +2610,41 @@ body > a[href="#problem"]:focus {
     width: min(100% - 2rem, 1180px) !important;
   }
 
+  .vision-film-stage {
+    height: clamp(28rem, 68svh, 45rem);
+  }
+
+  .vision-film-controls {
+    width: min(100% - 2rem, 1180px);
+    min-height: 58px;
+    gap: 0.75rem;
+  }
+
+  .vision-film-actions {
+    gap: 0;
+  }
+
+  .vision-film-toggle {
+    padding: 0 0.65rem;
+  }
+
+  .vision-film-continue {
+    padding-left: 0.75rem;
+  }
+
+  .vision-film-toggle span:last-child,
+  .vision-film-continue span:first-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
   .sales-hero {
     align-items: flex-end;
     min-height: 84svh;
@@ -2639,7 +2844,11 @@ body > a[href="#problem"]:focus {
 
 @media (prefers-reduced-motion: reduce) {
   .sales-button,
-  .sales-product-media img {
+  .sales-product-media img,
+  .vision-film-poster,
+  .vision-film-video,
+  .vision-film-toggle,
+  .vision-film-continue {
     transition: none;
   }
 }

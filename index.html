@@ -37,7 +37,7 @@
   <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
   
   <link rel="stylesheet" href="/assets/final-overrides.css?sha256=9d18c113b46b58d319852f3e00cfd6455d2e6b1de8ec97f48ecb52dd64f397c9">
-  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=7b3df31e84cace1ac06bf83f6d63935fc7a7b3ef176003722b00244330187ab2">
+  <link rel="stylesheet" href="/assets/proposal-v2-1.css?sha256=b5d4a80d44dc4f04a28311eb9268d0d636e0ac09113c3bc4a66e4c0dd2b898fe">
   <link rel="stylesheet" href="/assets/technical-foundations.css?sha256=d70455671ad7881b0ab69cda1fb8a8200e2359737fe853079e8c85bc176bda18">
 </head>
 
@@ -96,6 +96,45 @@
   </nav>
 
   <main>
+    <section class="vision-film" aria-labelledby="vision-film-title" data-vision-film
+      data-desktop-poster="/assets/vision-film/auxtho-incident-led-hero-v9-poster.png?sha256=7c91e3dfad7df7e64b046e05e869b6ad064965bf6309ca125972de9ff2d4c9fc"
+      data-mobile-poster="/assets/vision-film/auxtho-incident-led-hero-mobile-v9-poster.png?sha256=15fc53fa019094954023fc50f508f0fd0127dd873bb49913201234d554fb3e03">
+      <h2 id="vision-film-title" class="sr-only">Auxtho release control film</h2>
+      <p id="vision-film-description" class="sr-only">
+        A silent 26-second film follows AI-assisted work from public incident records to an Auxtho
+        release record that binds the exact output, evidence, policy, accountable owner, and human decision.
+      </p>
+      <div class="vision-film-stage">
+        <picture class="vision-film-poster" aria-hidden="true">
+          <source media="(max-width: 760px), (orientation: portrait)"
+            srcset="/assets/vision-film/auxtho-incident-led-hero-mobile-v9-poster.png?sha256=15fc53fa019094954023fc50f508f0fd0127dd873bb49913201234d554fb3e03">
+          <img src="/assets/vision-film/auxtho-incident-led-hero-v9-poster.png?sha256=7c91e3dfad7df7e64b046e05e869b6ad064965bf6309ca125972de9ff2d4c9fc" alt="">
+        </picture>
+        <video id="auxtho-vision-film" class="vision-film-video" muted loop playsinline preload="metadata"
+          poster="/assets/vision-film/auxtho-incident-led-hero-v9-poster.png?sha256=7c91e3dfad7df7e64b046e05e869b6ad064965bf6309ca125972de9ff2d4c9fc"
+          aria-describedby="vision-film-description">
+          <source media="(max-width: 760px), (orientation: portrait)"
+            src="/assets/vision-film/auxtho-incident-led-hero-mobile-v9.mp4?sha256=eb778522527df0b093fd2474f4d571d5210d19e6500c4ba9f0e6793d216fa93c"
+            type="video/mp4">
+          <source src="/assets/vision-film/auxtho-incident-led-hero-v9.mp4?sha256=9cfc640ba9bdcd5d5f205957f307f2b97c28e64c39bf6419a11e70c9af14be9e"
+            type="video/mp4">
+        </video>
+      </div>
+      <div class="vision-film-controls">
+        <p class="vision-film-lockup">Auxtho / Release control</p>
+        <div class="vision-film-actions">
+          <button type="button" class="vision-film-toggle" data-vision-film-toggle data-state="paused"
+            aria-label="Play film" aria-controls="auxtho-vision-film">
+            <span class="vision-film-icon" aria-hidden="true"></span>
+            <span data-vision-film-label>Play film</span>
+          </button>
+          <a class="vision-film-continue" href="#sales-hero-title">
+            <span>Continue to product</span><span class="vision-film-arrow" aria-hidden="true">&darr;</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
     <section class="sales-hero" aria-labelledby="sales-hero-title">
       <div class="sales-hero-media" aria-hidden="true">
         <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="">
@@ -331,6 +370,7 @@
   </footer>
 
   <script src="/assets/tw-init.3a46d349f310cfb8aee19f2f69d6d2caf2393f7d975b1b386c5db6451f2a8dd5.js" defer></script>
+  <script src="/assets/vision-film.093ae9dfbe99eb67e6c17beff333e47baef2fdf38c906c18aa91959666116e13.js" defer></script>
   <script src="/assets/app.eb0dad8c9eb83e2e9ec71879749daea7fcad30d3ffee6fdc69fc6aba18139665.js" defer></script>
 </body>
 
