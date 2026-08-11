@@ -4,7 +4,12 @@ const https = require('node:https');
 const path = require('node:path');
 const { performance } = require('node:perf_hooks');
 const { TextDecoder } = require('node:util');
-const { findImageSources, findScriptSources, findStylesheetSources } = require('./public-artifact.cjs');
+const {
+  findImageSources,
+  findMediaSources,
+  findScriptSources,
+  findStylesheetSources,
+} = require('./public-artifact.cjs');
 
 const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
@@ -718,6 +723,35 @@ async function verifyDeployment(options) {
     records.push({
       type: 'published',
       variant: 'exact_image_reference',
+      path: reference.url,
+      status: referencedResponse.status,
+      sha256: reference.sha256,
+      attempt: referencedReadback.attempt,
+      observations: referencedReadback.observations,
+      chain: referencedResponse.chain,
+    });
+  }
+  for (const reference of releaseManifest.media_references || []) {
+    if (digestByPath.get(reference.path) !== reference.sha256) fail(`media reference is not bound to package digest: ${reference.url}`);
+    const html = canonicalBodies.get(relativeFromManifestPublicPath(reference.html_path))?.body?.toString('utf8');
+    if (!html || !findMediaSources(html).includes(reference.url)) {
+      fail(`deployed HTML does not reference exact media URL: ${reference.html_path}`);
+    }
+    if (options.mode === 'candidate' && reference.content_addressed !== true) {
+      fail(`candidate media reference is not content-addressed: ${reference.url}`);
+    }
+    const referencedReadback = await waitForExpectedPublicFile({
+      url: new URL(reference.url, options.origin),
+      allowedOrigins,
+      expectedHash: reference.sha256,
+      attempts: options.attempts,
+      statusMessage: `exact referenced media URL returned: ${reference.url}`,
+      mismatchMessage: `exact referenced media URL bytes mismatch: ${reference.url}`,
+    });
+    const referencedResponse = referencedReadback.response;
+    records.push({
+      type: 'published',
+      variant: 'exact_media_reference',
       path: reference.url,
       status: referencedResponse.status,
       sha256: reference.sha256,

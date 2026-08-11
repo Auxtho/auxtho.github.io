@@ -11,6 +11,7 @@ const YAML = require('yaml');
 const {
   buildArtifact,
   findImageSources,
+  findMediaSources,
   findScriptSources,
   findStylesheetSources,
   isApprovedHistoricalRollbackEvidence,
@@ -341,6 +342,12 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
     }
     for (const reference of result.releaseManifest.image_references) {
       assert.match(reference.url, /^\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg)\?sha256=[0-9a-f]{64}$/);
+      assert.equal(reference.content_addressed, true);
+      const bytes = fs.readFileSync(path.join(output, ...reference.path.slice(1).split('/')));
+      assert.equal(sha256(bytes), reference.sha256);
+    }
+    for (const reference of result.releaseManifest.media_references) {
+      assert.match(reference.url, /^\/assets\/[A-Za-z0-9._/-]+\.mp4\?sha256=[0-9a-f]{64}$/);
       assert.equal(reference.content_addressed, true);
       const bytes = fs.readFileSync(path.join(output, ...reference.path.slice(1).split('/')));
       assert.equal(sha256(bytes), reference.sha256);
@@ -883,7 +890,7 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
       referenced.add(source);
     }
   }
-  assert.equal(referenced.size, 3);
+  assert.equal(referenced.size, 4);
 });
 
 test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', () => {
@@ -916,6 +923,25 @@ test('every candidate-rendered image URL carries the exact SHA-256 of its bytes'
       assert.equal(sha256(bytes), match[2]);
     }
   }
+});
+
+test('every candidate-rendered MP4 URL carries the exact SHA-256 of its bytes', () => {
+  const htmlFiles = [
+    '404.html', 'index.html', 'privacy.html', 'terms.html',
+    'lineage/isp/index.html', 'security/ardamire/index.html',
+  ];
+  const referenced = new Set();
+  for (const relative of htmlFiles) {
+    const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
+    for (const source of findMediaSources(document)) {
+      const match = source.match(/^(\/assets\/[A-Za-z0-9._/-]+\.mp4)\?sha256=([0-9a-f]{64})$/);
+      assert.ok(match, `${relative} -> ${source}`);
+      const bytes = fs.readFileSync(path.join(root, ...match[1].slice(1).split('/')));
+      assert.equal(sha256(bytes), match[2]);
+      referenced.add(source);
+    }
+  }
+  assert.equal(referenced.size, 2);
 });
 
 test('public notice separates public information from signed commercial scope', () => {
