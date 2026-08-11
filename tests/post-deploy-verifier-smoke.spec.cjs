@@ -46,6 +46,21 @@ test('public pages render with packaged styles and images without CSP or same-or
     for (const stylesheet of styleSheets.filter((href) => new URL(href).origin === origin)) {
       expect(stylesheet).toMatch(/\?sha256=[0-9a-f]{64}$/);
     }
+    const images = page.locator('img');
+    const imageCount = await images.count();
+    for (let index = 0; index < imageCount; index += 1) {
+      const image = images.nth(index);
+      const inactiveSampleLightboxPlaceholder = await image.evaluate((element) => {
+        const lightbox = element.closest('dialog#sample-lightbox');
+        return element.id === 'sample-lightbox-image' && Boolean(lightbox) && !lightbox.open;
+      });
+      if (inactiveSampleLightboxPlaceholder) continue;
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(
+        () => image.evaluate((element) => element.complete && element.naturalWidth > 0),
+        { message: `image did not load or decode: ${await image.getAttribute('src')}` },
+      ).toBe(true);
+    }
     const imageStates = await page.locator('img').evaluateAll((images) => images.map((image) => {
       const lightbox = image.closest('dialog#sample-lightbox');
       return {
