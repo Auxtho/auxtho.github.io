@@ -6,6 +6,7 @@ const { expect, test } = require('@playwright/test');
 test.describe.configure({ mode: 'serial' });
 
 const root = path.resolve(__dirname, '..');
+const desktopVisionPosterPath = '/assets/vision-film/auxtho-incident-led-hero-v9-poster.png';
 let server;
 let baseUrl;
 
@@ -89,7 +90,15 @@ async function openWithoutRuntimeErrors(page, route) {
   const runtimeErrors = [];
   const failedRequests = [];
   page.on('pageerror', (error) => runtimeErrors.push(error.message));
-  page.on('requestfailed', (request) => failedRequests.push(request.url()));
+  page.on('requestfailed', (request) => {
+    const failure = request.failure();
+    const isResponsivePosterSwap = request.resourceType() === 'image'
+      && failure?.errorText === 'net::ERR_ABORTED'
+      && new URL(request.url()).pathname === desktopVisionPosterPath;
+    if (!isResponsivePosterSwap) {
+      failedRequests.push(`${request.url()} (${failure?.errorText || 'unknown failure'})`);
+    }
+  });
   const response = await page.goto(`${baseUrl}${route}`, { waitUntil: 'load' });
   await page.waitForTimeout(150);
   expect(response.status()).toBe(200);
