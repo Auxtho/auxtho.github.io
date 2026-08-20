@@ -34,7 +34,7 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': 'fb4e58cd8e5cb0a9cc993745c9c05946b51ace1bc8759234f9d9c1f311d2c752',
-  'index.html': '2fae03f6875ce04a4dad170adcfc5fbea6e49f28a624e47906eab17e9349b21d',
+  'index.html': 'acab1643f6dd0020da80adda767e0a6efc9e73e69efa5f1dd5dfedd349af3651',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
   'security/ardamire/index.html': '3b1df81e4bb7452f4f1e2549e0eee300f007283450e652ad85ffef0d370a9a9e',
