@@ -1374,17 +1374,19 @@ test('candidate artifact rejects evidence traversal, cross-binding, duplicate pa
   }
 });
 
-test('first screen presents the product proposition and human authority boundary', () => {
+test('first screen presents the exact release-object proposition and failure boundary', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-  const hero = index.match(/<section class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
+  const hero = index.match(/<section[^>]*class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
   assert.match(hero, /For regulated teams overseeing high-risk AI work/i);
-  assert.match(hero, /Put human approval between high-risk AI work and release/i);
-  assert.match(hero, /supporting evidence, accountable ownership/i);
-  assert.match(hero, /recorded human decision before release or export/i);
+  assert.match(hero, /Control the exact AI-assisted deliverable before it leaves the organization/i);
+  assert.match(hero, /reviewed version, evidence and policy context, accountable authority/i);
   assert.match(hero, /Discuss one high-risk workflow/i);
   assert.match(hero, /See the review path/i);
   assert.match(hero, /Synthetic workflow/i);
   assert.match(hero, /Accountability should not take days to reconstruct/i);
+  assert.match(hero, /connected through one release object/i);
+  assert.match(index, /moves the record to reconciliation instead of inventing success or retrying blindly/i);
+  assert.match(index, /class="vision-film-continue" href="#sales-hero"/i);
   assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval|masked data/i);
 });
 
