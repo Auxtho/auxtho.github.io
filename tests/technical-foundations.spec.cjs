@@ -339,6 +339,12 @@ test('Release Core proof uses CSP-compatible external styles with deliberate des
     await expect(page.locator('style')).toHaveCount(0);
     await expect(page.locator('[style]')).toHaveCount(0);
     await expect(page.locator('link[href^="/assets/proof-release-core.css?sha256="]')).toHaveCount(1);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      'content',
+      /\/assets\/proof\/release-core\/rc02-linkedin\.png\?sha256=[0-9a-f]{64}$/,
+    );
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1200');
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '630');
 
     const layout = await page.evaluate(() => {
       const title = document.querySelector('.proof-hero h1');
