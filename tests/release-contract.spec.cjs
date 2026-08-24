@@ -1387,7 +1387,7 @@ test('first screen presents the exact release-object proposition and failure bou
   assert.match(hero, /Control the exact AI-assisted deliverable before it leaves the organization/i);
   assert.match(hero, /reviewed version, evidence and policy context, accountable authority/i);
   assert.match(hero, /Discuss one high-risk workflow/i);
-  assert.match(hero, /See the review path/i);
+  assert.match(hero, /View Release Core proof/i);
   assert.match(hero, /Synthetic workflow/i);
   assert.match(hero, /Accountability should not take days to reconstruct/i);
   assert.match(hero, /connected through one release object/i);
