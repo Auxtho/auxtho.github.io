@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Release Core Proof | Auxtho</title>
+  <meta name="description" content="Public-safe local proof of Auxtho Release Core across exact match, changed artifact, and uncertain receipt scenarios.">
+  <link rel="canonical" href="https://auxtho.com/proof/release-core/">
+  <link rel="icon" href="../../assets/favicon.svg">
+  <link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b0f0f">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Release Core Proof | Auxtho">
+  <meta property="og:description" content="Three outcomes. One release contract. Synthetic, local, provider-free proof.">
+  <meta property="og:url" content="https://auxtho.com/proof/release-core/">
+  <meta property="og:image" content="https://auxtho.com/assets/proof/release-core/rc10.png">
+  <meta property="og:image:alt" content="Auxtho RC10 local proof showing UNKNOWN, reconciliation required, and no automatic retry">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="../../assets/style.css?v=2026-03-19d">
+  <link rel="stylesheet" href="../../assets/custom.css?v=2026-03-19d">
+  <style>
+    :root {
+      --proof-bg: #0b0f0f;
+      --proof-ink: #f4f7f6;
+      --proof-muted: #a7b0ad;
+      --proof-line: #26302d;
+      --proof-teal: #49d3b6;
+      --proof-green: #15957d;
+      --proof-coral: #ff6f68;
+      --proof-amber: #ffbb5c;
+      --proof-paper: #f3f5f3;
+      --proof-black: #101514;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--proof-bg); }
+    body {
+      margin: 0;
+      color: var(--proof-ink);
+      background: var(--proof-bg);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    .proof-wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+    .proof-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(11, 15, 15, 0.96);
+      border-bottom: 1px solid var(--proof-line);
+    }
+    .proof-nav {
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .proof-logo { width: 112px; height: auto; }
+    .proof-nav-link {
+      color: var(--proof-muted);
+      font-size: 14px;
+      text-decoration: none;
+    }
+    .proof-nav-link:hover { color: var(--proof-ink); }
+
+    .proof-hero {
+      min-height: 700px;
+      display: grid;
+      align-content: center;
+      padding: 88px 0 108px;
+    }
+    .proof-kicker {
+      margin: 0 0 22px;
+      color: var(--proof-teal);
+      font-size: 14px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+    .proof-hero h1 {
+      max-width: 930px;
+      margin: 0;
+      font-size: 72px;
+      line-height: 1.02;
+      font-weight: 780;
+    }
+    .proof-lede {
+      max-width: 760px;
+      margin: 30px 0 0;
+      color: #d1d8d5;
+      font-size: 22px;
+      line-height: 1.6;
+    }
+    .proof-scope {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 26px;
+      margin-top: 44px;
+      color: var(--proof-muted);
+      font-size: 14px;
+    }
+    .proof-scope span::before {
+      content: "";
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      margin-right: 10px;
+      background: var(--proof-teal);
+      vertical-align: 1px;
+    }
+    .proof-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 42px; }
+    .proof-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border: 1px solid var(--proof-teal);
+      border-radius: 4px;
+      color: var(--proof-black);
+      background: var(--proof-teal);
+      font-size: 14px;
+      font-weight: 760;
+      text-decoration: none;
+    }
+    .proof-button.secondary { color: var(--proof-ink); background: transparent; border-color: #52605c; }
+    .proof-button:hover { filter: brightness(1.06); }
+
+    .proof-definition {
+      padding: 88px 0;
+      background: var(--proof-paper);
+      color: var(--proof-black);
+    }
+    .proof-definition .proof-section-title { color: var(--proof-black); }
+    .proof-definition-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 64px;
+      align-items: center;
+    }
+    .proof-section-title { margin: 0; font-size: 46px; line-height: 1.08; }
+    .proof-body { margin: 22px 0 0; color: #48514f; font-size: 18px; line-height: 1.7; }
+    .proof-chain { margin-top: 34px; border-top: 1px solid #cbd2cf; }
+    .proof-chain-row {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 18px;
+      padding: 15px 0;
+      border-bottom: 1px solid #cbd2cf;
+    }
+    .proof-chain-index { color: var(--proof-green); font-weight: 780; }
+    .proof-chain-label { font-weight: 720; }
+    .proof-definition img { border: 1px solid #d9dedc; }
+
+    .proof-scenarios { padding: 96px 0 20px; }
+    .proof-scenarios .proof-body { color: #aeb8b4; }
+    .proof-scenarios-intro { max-width: 720px; margin-bottom: 64px; }
+    .proof-scenario {
+      display: grid;
+      grid-template-columns: 0.8fr 1.2fr;
+      gap: 64px;
+      align-items: center;
+      padding: 64px 0;
+      border-top: 1px solid var(--proof-line);
+    }
+    .proof-scenario:last-child { border-bottom: 1px solid var(--proof-line); }
+    .proof-scenario-code { margin: 0 0 18px; font-size: 15px; font-weight: 780; }
+    .proof-scenario.rc02 .proof-scenario-code { color: var(--proof-coral); }
+    .proof-scenario.rc10 .proof-scenario-code { color: var(--proof-amber); }
+    .proof-scenario.rc01 .proof-scenario-code { color: var(--proof-teal); }
+    .proof-scenario h3 { margin: 0; font-size: 40px; line-height: 1.12; }
+    .proof-scenario p { margin: 22px 0 0; color: var(--proof-muted); font-size: 18px; line-height: 1.65; }
+    .proof-result { margin-top: 34px; padding-left: 18px; border-left: 4px solid currentColor; }
+    .proof-scenario.rc02 .proof-result { color: var(--proof-coral); }
+    .proof-scenario.rc10 .proof-result { color: var(--proof-amber); }
+    .proof-scenario.rc01 .proof-result { color: var(--proof-teal); }
+    .proof-result strong { display: block; color: currentColor; font-size: 20px; }
+    .proof-result span { display: block; margin-top: 6px; color: var(--proof-muted); font-size: 14px; }
+    .proof-scenario-media { background: #eef1ef; }
+    .proof-scenario-media img { width: 100%; height: auto; }
+
+    .proof-verification {
+      margin-top: 96px;
+      padding: 92px 0;
+      background: #141a18;
+      border-top: 1px solid var(--proof-line);
+      border-bottom: 1px solid var(--proof-line);
+    }
+    .proof-verification-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 72px;
+    }
+    .proof-list { margin: 30px 0 0; padding: 0; list-style: none; }
+    .proof-list li {
+      padding: 14px 0;
+      border-top: 1px solid var(--proof-line);
+      color: #d3dad7;
+      line-height: 1.55;
+    }
+    .proof-list li:last-child { border-bottom: 1px solid var(--proof-line); }
+    .proof-list.negative li::before { content: "Not claimed: "; color: var(--proof-coral); font-weight: 720; }
+    .proof-list.positive li::before { content: "Verified: "; color: var(--proof-teal); font-weight: 720; }
+
+    .proof-anchors { padding: 96px 0; }
+    .proof-anchor-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 44px;
+      background: var(--proof-line);
+      border: 1px solid var(--proof-line);
+    }
+    .proof-anchor { min-width: 0; padding: 28px; background: var(--proof-bg); }
+    .proof-anchor dt { color: var(--proof-muted); font-size: 13px; }
+    .proof-anchor dd { margin: 12px 0 0; font-size: 16px; line-height: 1.5; }
+    .proof-anchor code { color: var(--proof-teal); overflow-wrap: anywhere; }
+    .proof-footer { padding: 40px 0 56px; border-top: 1px solid var(--proof-line); color: var(--proof-muted); font-size: 13px; }
+
+    @media (max-width: 860px) {
+      .proof-wrap { width: min(100% - 28px, 680px); }
+      .proof-nav { min-height: 64px; }
+      .proof-logo { width: 100px; }
+      .proof-hero { min-height: 620px; padding: 72px 0 86px; }
+      .proof-hero h1 { font-size: 46px; }
+      .proof-lede { font-size: 18px; }
+      .proof-definition-grid,
+      .proof-scenario,
+      .proof-verification-grid { grid-template-columns: 1fr; gap: 38px; }
+      .proof-definition { padding: 72px 0; }
+      .proof-section-title { font-size: 36px; }
+      .proof-scenarios { padding-top: 76px; }
+      .proof-scenario { padding: 52px 0; }
+      .proof-scenario h3 { font-size: 34px; }
+      .proof-scenario-media { order: 2; }
+      .proof-verification { margin-top: 72px; padding: 72px 0; }
+      .proof-anchors { padding: 76px 0; }
+      .proof-anchor-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .proof-nav-link { font-size: 13px; }
+      .proof-hero { min-height: 560px; padding-top: 56px; }
+      .proof-hero h1 { font-size: 39px; }
+      .proof-actions { display: grid; grid-template-columns: 1fr; }
+      .proof-button { width: 100%; }
+      .proof-section-title { font-size: 32px; }
+      .proof-scenario h3 { font-size: 30px; }
+      .proof-anchor { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="proof-header">
+    <div class="proof-wrap proof-nav">
+      <a href="/" aria-label="Auxtho home"><img class="proof-logo" src="../../assets/logo-white.svg" alt="Auxtho"></a>
+      <a class="proof-nav-link" href="/">Back to Auxtho</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="proof-hero">
+      <div class="proof-wrap">
+        <p class="proof-kicker">Release Core / Public-safe local proof</p>
+        <h1>Three outcomes.<br>One release contract.</h1>
+        <p class="proof-lede">An exact match completes once. A changed artifact is blocked. An uncertain result is held for reconciliation instead of being retried blindly.</p>
+        <div class="proof-scope" aria-label="Proof scope">
+          <span>Versioned synthetic scenarios</span>
+          <span>Local execution</span>
+          <span>No external providers</span>
+          <span>Separate verifier</span>
+        </div>
+        <div class="proof-actions">
+          <a class="proof-button" href="#scenarios">Inspect the three outcomes</a>
+          <a class="proof-button secondary" href="../../assets/proof/release-core/When_Approval_Should_Not_Travel_With_the_Output.pdf">Download the six-page proof</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof-definition" aria-labelledby="release-object-title">
+      <div class="proof-wrap proof-definition-grid">
+        <div>
+          <p class="proof-kicker">The release object</p>
+          <h2 id="release-object-title" class="proof-section-title">Approval is only valid while every required relationship remains valid.</h2>
+          <p class="proof-body">Auxtho keeps the reviewed state and the permitted action connected at the consequence boundary.</p>
+          <div class="proof-chain" aria-label="Release object components">
+            <div class="proof-chain-row"><span class="proof-chain-index">01</span><span class="proof-chain-label">Exact reviewed output</span></div>
+            <div class="proof-chain-row"><span class="proof-chain-index">02</span><span class="proof-chain-label">Evidence and policy state</span></div>
+            <div class="proof-chain-row"><span class="proof-chain-index">03</span><span class="proof-chain-label">Accountable human authority</span></div>
+            <div class="proof-chain-row"><span class="proof-chain-index">04</span><span class="proof-chain-label">Authorized downstream action</span></div>
+            <div class="proof-chain-row"><span class="proof-chain-index">05</span><span class="proof-chain-label">Receipt or reconciliation state</span></div>
+          </div>
+        </div>
+        <img src="../../assets/proof/release-core/release-object.png" alt="Release object diagram connecting exact output, evidence and policy, human authority, authorized action, and resulting state">
+      </div>
+    </section>
+
+    <section id="scenarios" class="proof-scenarios" aria-labelledby="scenario-title">
+      <div class="proof-wrap">
+        <div class="proof-scenarios-intro">
+          <p class="proof-kicker">Implemented outcomes</p>
+          <h2 id="scenario-title" class="proof-section-title">The same boundary handles denial, uncertainty, and success.</h2>
+          <p class="proof-body">These results come from three frozen, synthetic Level A scenarios. They are not customer or production results.</p>
+        </div>
+
+        <article class="proof-scenario rc02">
+          <div>
+            <p class="proof-scenario-code">RC02 / Changed artifact</p>
+            <h3>The reviewed state changed. Release stopped.</h3>
+            <p>Artifact version A was reviewed. Version B reached the release boundary. Revalidation failed before any downstream action began.</p>
+            <div class="proof-result"><strong>BLOCKED</strong><span>0 downstream actions</span></div>
+          </div>
+          <div class="proof-scenario-media"><img src="../../assets/proof/release-core/rc02.png" alt="RC02 local proof: changed artifact blocked with zero downstream actions"></div>
+        </article>
+
+        <article class="proof-scenario rc10">
+          <div>
+            <p class="proof-scenario-code">RC10 / Uncertain receipt</p>
+            <h3>The action may have started. Certainty was not invented.</h3>
+            <p>One controlled action occurred, but a trustworthy receipt could not be established. The path required reconciliation and did not retry automatically.</p>
+            <div class="proof-result"><strong>UNKNOWN / RECONCILIATION REQUIRED</strong><span>1 controlled effect / 0 automatic retries</span></div>
+          </div>
+          <div class="proof-scenario-media"><img src="../../assets/proof/release-core/rc10.png" alt="RC10 local proof: unknown state, reconciliation required, and no automatic retry"></div>
+        </article>
+
+        <article class="proof-scenario rc01">
+          <div>
+            <p class="proof-scenario-code">RC01 / Exact match</p>
+            <h3>The reviewed state remained valid. The path completed once.</h3>
+            <p>The exact reviewed state reached the boundary, one controlled action completed, and one linked receipt remained available for readback.</p>
+            <div class="proof-result"><strong>COMPLETED ONCE</strong><span>1 action / 1 linked receipt</span></div>
+          </div>
+          <div class="proof-scenario-media"><img src="../../assets/proof/release-core/rc01.png" alt="RC01 local proof: exact match completed once with one action and one receipt"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="proof-verification" aria-labelledby="verification-title">
+      <div class="proof-wrap proof-verification-grid">
+        <div>
+          <p class="proof-kicker">Proof boundary</p>
+          <h2 id="verification-title" class="proof-section-title">What was verified</h2>
+          <ul class="proof-list positive">
+            <li>Versioned synthetic inputs and expected states</li>
+            <li>Persisted state readback, response bytes, and digests</li>
+            <li>One separate local verifier</li>
+            <li>Provider-free Level A release mechanics</li>
+          </ul>
+        </div>
+        <div>
+          <p class="proof-kicker" style="color: var(--proof-coral);">Claim boundary</p>
+          <h2 class="proof-section-title">What is not claimed</h2>
+          <ul class="proof-list negative">
+            <li>Customer deployment</li>
+            <li>Production operation</li>
+            <li>External-provider delivery</li>
+            <li>Operating effectiveness</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="proof-anchors" aria-labelledby="anchor-title">
+      <div class="proof-wrap">
+        <p class="proof-kicker">Verification anchors</p>
+        <h2 id="anchor-title" class="proof-section-title">Dated and inspectable</h2>
+        <dl class="proof-anchor-grid">
+          <div class="proof-anchor"><dt>Frozen Level A commit</dt><dd><code>1d1a4fdd252178766d0f58b3c980e151b423a235</code></dd></div>
+          <div class="proof-anchor"><dt>Public proof PDF SHA-256</dt><dd><code>113AB18459E6EDB95DD6EC67F280FA4B6D9C6C25707BF5677968ED1A4D7E8B7B</code></dd></div>
+          <div class="proof-anchor"><dt>Public LinkedIn proof</dt><dd><a href="https://www.linkedin.com/feed/update/urn:li:ugcPost:7495752797892562944/">Published August 19, 2026</a></dd></div>
+        </dl>
+      </div>
+    </section>
+  </main>
+
+  <footer class="proof-footer">
+    <div class="proof-wrap">Auxtho Release Core. Synthetic, local, provider-free proof. No customer or production claim.</div>
+  </footer>
+</body>
+</html>
