@@ -114,7 +114,7 @@ function createSourceFixture(targetRoot) {
   for (const relative of [
     '404.html', 'evidence-notes.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
-    'security/ardamire/index.html', 'assets',
+    'proof/release-core/index.html', 'security/ardamire/index.html', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
@@ -454,6 +454,12 @@ test('candidate artifact rejects unreviewed assets and non-UTF-8 public text enc
       relative: 'robots.txt',
       bytes: Buffer.from([0x55, 0xff, 0x0a]),
       expected: /public text file must be valid UTF-8/,
+    },
+    {
+      name: 'invalid public PDF signature',
+      relative: 'assets/proof/release-core/When_Approval_Should_Not_Travel_With_the_Output.pdf',
+      bytes: Buffer.from('not a PDF\n'),
+      expected: /public PDF does not have a valid PDF signature boundary/,
     },
   ];
 

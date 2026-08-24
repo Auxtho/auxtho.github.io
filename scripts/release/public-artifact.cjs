@@ -10,7 +10,7 @@ const SCRIPT_PATH_PATTERN = /^\/assets\/[A-Za-z0-9._/-]+\.([0-9a-f]{64})\.js$/;
 const STYLESHEET_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/;
 const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/;
 const MEDIA_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.mp4)\?sha256=([0-9a-f]{64})$/;
-const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.mp4', '.png', '.svg']);
+const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.mp4', '.pdf', '.png', '.svg']);
 const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
@@ -37,6 +37,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   'index.html': 'acab1643f6dd0020da80adda767e0a6efc9e73e69efa5f1dd5dfedd349af3651',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
+  'proof/release-core/index.html': 'f06a725e2f81a4e60158d684b473b16c5e5d1e69ab9db61d67e720827687bf2b',
   'security/ardamire/index.html': '3b1df81e4bb7452f4f1e2549e0eee300f007283450e652ad85ffef0d370a9a9e',
   'story.html': '6853310c4058a7d87f8a4373953d4d22da34bb87a4bdf91a477bd009f6da690b',
   'terms.html': '20efc6042ff1141854fbcedd25d910df3432d277b6c440e4ecc7e1eaf721e335',
@@ -464,6 +465,17 @@ function assertCanonicalPublicTextBytes(sourceRoot, relative) {
   decodeCanonicalTextBytes(fs.readFileSync(path.join(sourceRoot, ...relative.split('/'))), relative);
 }
 
+function assertReviewedPublicBinaryBytes(sourceRoot, relative) {
+  if (path.posix.extname(relative) !== '.pdf') return;
+  const bytes = fs.readFileSync(path.join(sourceRoot, ...relative.split('/')));
+  if (bytes.length < 8 || bytes.length > 10 * 1024 * 1024) {
+    fail(`public PDF size is outside the reviewed range: ${relative}`);
+  }
+  if (!bytes.subarray(0, 5).equals(Buffer.from('%PDF-')) || !bytes.subarray(-1024).includes(Buffer.from('%%EOF'))) {
+    fail(`public PDF does not have a valid PDF signature boundary: ${relative}`);
+  }
+}
+
 function stageExplicitPublicFiles(sourceRoot, outputRoot, options = {}) {
   if (fs.existsSync(outputRoot)) fail(`artifact output already exists: ${outputRoot}`);
   fs.mkdirSync(outputRoot, { recursive: false });
@@ -494,6 +506,7 @@ function stageExplicitPublicFiles(sourceRoot, outputRoot, options = {}) {
     }
     if (!approvedPublicFiles.has(relative)) fail(`unreviewed public source path: ${relative}`);
     assertCanonicalPublicTextBytes(sourceRoot, relative);
+    assertReviewedPublicBinaryBytes(sourceRoot, relative);
     copyFile(sourceRoot, outputRoot, relative);
     staged.push(relative);
   }
