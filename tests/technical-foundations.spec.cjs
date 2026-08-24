@@ -350,17 +350,23 @@ test('Release Core proof uses CSP-compatible external styles with deliberate des
       const title = document.querySelector('.proof-hero h1');
       const logo = document.querySelector('.proof-logo');
       const primaryAction = document.querySelector('.proof-button');
+      const homeLink = logo.closest('a');
       return {
         titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
         titleLineHeight: Number.parseFloat(getComputedStyle(title).lineHeight),
         logoWidth: logo.getBoundingClientRect().width,
+        logoHeight: logo.getBoundingClientRect().height,
+        homePath: new URL(homeLink.href).pathname,
         primaryActionHeight: primaryAction.getBoundingClientRect().height,
       };
     });
     expect(layout.titleFontSize).toBeGreaterThanOrEqual(viewport.minimumTitleSize);
     expect(layout.titleLineHeight).toBeGreaterThan(layout.titleFontSize);
-    expect(layout.logoWidth).toBeGreaterThanOrEqual(95);
-    expect(layout.logoWidth).toBeLessThanOrEqual(115);
+    expect(layout.logoWidth).toBeGreaterThanOrEqual(190);
+    expect(layout.logoWidth).toBeLessThanOrEqual(198);
+    expect(layout.logoHeight).toBeGreaterThanOrEqual(23.5);
+    expect(layout.logoHeight).toBeLessThanOrEqual(24.5);
+    expect(layout.homePath).toBe('/');
     expect(layout.primaryActionHeight).toBeGreaterThanOrEqual(44);
     await expectNoHorizontalOverflow(page);
   }

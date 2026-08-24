@@ -52,14 +52,19 @@ test('public pages render with packaged styles and images without CSP or same-or
         inlineStyleCount: document.querySelectorAll('style, [style]').length,
         titleFontSize: Number.parseFloat(getComputedStyle(document.querySelector('.proof-hero h1')).fontSize),
         logoWidth: document.querySelector('.proof-logo').getBoundingClientRect().width,
+        logoHeight: document.querySelector('.proof-logo').getBoundingClientRect().height,
+        logoHomePath: new URL(document.querySelector('.proof-logo').closest('a').href).pathname,
         proofStyleSheets: [...document.styleSheets]
           .map((sheet) => sheet.href)
           .filter((href) => href && href.includes('/assets/proof-release-core.css')),
       }));
       expect(proofLayout.inlineStyleCount).toBe(0);
       expect(proofLayout.titleFontSize).toBeGreaterThanOrEqual(70);
-      expect(proofLayout.logoWidth).toBeGreaterThanOrEqual(95);
-      expect(proofLayout.logoWidth).toBeLessThanOrEqual(115);
+      expect(proofLayout.logoWidth).toBeGreaterThanOrEqual(190);
+      expect(proofLayout.logoWidth).toBeLessThanOrEqual(198);
+      expect(proofLayout.logoHeight).toBeGreaterThanOrEqual(23.5);
+      expect(proofLayout.logoHeight).toBeLessThanOrEqual(24.5);
+      expect(proofLayout.logoHomePath).toBe('/');
       expect(proofLayout.proofStyleSheets).toHaveLength(1);
     }
     const images = page.locator('img');

@@ -38,7 +38,7 @@ img { display: block; max-width: 100%; }
   justify-content: space-between;
   gap: 20px;
 }
-.proof-logo { width: 112px; height: auto; }
+.proof-logo { width: auto; height: 24px; }
 .proof-nav-link {
   color: var(--proof-muted);
   font-size: 14px;
@@ -203,7 +203,6 @@ img { display: block; max-width: 100%; }
 @media (max-width: 860px) {
   .proof-wrap { width: min(100% - 28px, 680px); }
   .proof-nav { min-height: 64px; }
-  .proof-logo { width: 100px; }
   .proof-hero { min-height: 620px; padding: 72px 0 86px; }
   .proof-hero h1 { font-size: 46px; }
   .proof-lede { font-size: 18px; }
