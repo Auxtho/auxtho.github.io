@@ -28,6 +28,7 @@ test('public pages render with packaged styles and images without CSP or same-or
     { path: '/', status: 200, locator: 'main' },
     { path: '/evidence-notes.html', status: 200, locator: 'main' },
     { path: '/lineage/isp/', status: 200, locator: 'main' },
+    { path: '/proof/release-core/', status: 200, locator: 'main' },
     { path: '/security/ardamire/', status: 200, locator: 'main' },
     { path: '/privacy.html', status: 200, locator: 'main' },
     { path: '/terms.html', status: 200, locator: 'main' },
@@ -45,6 +46,21 @@ test('public pages render with packaged styles and images without CSP or same-or
     expect(styleSheets.length).toBeGreaterThan(0);
     for (const stylesheet of styleSheets.filter((href) => new URL(href).origin === origin)) {
       expect(stylesheet).toMatch(/\?sha256=[0-9a-f]{64}$/);
+    }
+    if (item.path === '/proof/release-core/') {
+      const proofLayout = await page.evaluate(() => ({
+        inlineStyleCount: document.querySelectorAll('style, [style]').length,
+        titleFontSize: Number.parseFloat(getComputedStyle(document.querySelector('.proof-hero h1')).fontSize),
+        logoWidth: document.querySelector('.proof-logo').getBoundingClientRect().width,
+        proofStyleSheets: [...document.styleSheets]
+          .map((sheet) => sheet.href)
+          .filter((href) => href && href.includes('/assets/proof-release-core.css')),
+      }));
+      expect(proofLayout.inlineStyleCount).toBe(0);
+      expect(proofLayout.titleFontSize).toBeGreaterThanOrEqual(70);
+      expect(proofLayout.logoWidth).toBeGreaterThanOrEqual(95);
+      expect(proofLayout.logoWidth).toBeLessThanOrEqual(115);
+      expect(proofLayout.proofStyleSheets).toHaveLength(1);
     }
     const images = page.locator('img');
     const imageCount = await images.count();
