@@ -23,6 +23,20 @@ body {
 a { color: inherit; }
 img { display: block; max-width: 100%; }
 
+.proof-skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 40;
+  padding: 10px 14px;
+  color: var(--proof-black);
+  background: var(--proof-teal);
+  font-weight: 760;
+  text-decoration: none;
+  transform: translateY(-160%);
+}
+.proof-skip-link:focus { transform: translateY(0); }
+
 .proof-wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
 .proof-header {
   position: sticky;
@@ -188,7 +202,7 @@ img { display: block; max-width: 100%; }
 .proof-anchors { padding: 96px 0; }
 .proof-anchor-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   margin-top: 44px;
   background: var(--proof-line);
@@ -199,6 +213,74 @@ img { display: block; max-width: 100%; }
 .proof-anchor dd { margin: 12px 0 0; font-size: 16px; line-height: 1.5; }
 .proof-anchor code { color: var(--proof-teal); overflow-wrap: anywhere; }
 .proof-footer { padding: 40px 0 56px; border-top: 1px solid var(--proof-line); color: var(--proof-muted); font-size: 13px; }
+
+.proof-transcript-hero {
+  min-height: auto;
+  padding: 96px 0 82px;
+}
+.proof-transcript-hero h1 {
+  max-width: 880px;
+  font-size: 58px;
+  line-height: 1.05;
+}
+.proof-transcript {
+  padding: 28px 0 96px;
+  color: var(--proof-black);
+  background: var(--proof-paper);
+}
+.proof-transcript-intro {
+  max-width: 800px;
+  padding: 50px 0 56px;
+}
+.proof-transcript-intro p,
+.proof-transcript-page p,
+.proof-transcript-page li {
+  color: #48514f;
+  font-size: 18px;
+  line-height: 1.7;
+}
+.proof-transcript .proof-section-title,
+.proof-transcript-page h2,
+.proof-transcript-page h3 { color: var(--proof-black); }
+.proof-transcript-pages { border-top: 1px solid #cbd2cf; }
+.proof-transcript-page {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 56px;
+  padding: 62px 0;
+  border-bottom: 1px solid #cbd2cf;
+}
+.proof-transcript-page-number {
+  margin: 0;
+  color: var(--proof-green);
+  font-size: 14px;
+  font-weight: 760;
+  text-transform: uppercase;
+}
+.proof-transcript-page h2 {
+  margin: 0;
+  max-width: 820px;
+  font-size: 40px;
+  line-height: 1.12;
+}
+.proof-transcript-page h3 {
+  margin: 34px 0 0;
+  font-size: 20px;
+  line-height: 1.35;
+}
+.proof-transcript-page p { margin: 18px 0 0; }
+.proof-transcript-list {
+  margin: 20px 0 0;
+  padding-left: 24px;
+}
+.proof-transcript-list li { margin: 10px 0; }
+.proof-transcript-result {
+  margin-top: 28px;
+  padding-left: 18px;
+  border-left: 4px solid var(--proof-green);
+}
+.proof-transcript-result strong { display: block; font-size: 20px; }
+.proof-transcript-result span { display: block; margin-top: 6px; color: #48514f; }
 
 @media (max-width: 860px) {
   .proof-wrap { width: min(100% - 28px, 680px); }
@@ -218,6 +300,9 @@ img { display: block; max-width: 100%; }
   .proof-verification { margin-top: 72px; padding: 72px 0; }
   .proof-anchors { padding: 76px 0; }
   .proof-anchor-grid { grid-template-columns: 1fr; }
+  .proof-transcript-hero { padding: 72px 0 64px; }
+  .proof-transcript-hero h1 { font-size: 46px; }
+  .proof-transcript-page { grid-template-columns: 1fr; gap: 16px; padding: 48px 0; }
 }
 
 @media (max-width: 480px) {
@@ -229,4 +314,9 @@ img { display: block; max-width: 100%; }
   .proof-section-title { font-size: 32px; }
   .proof-scenario h3 { font-size: 30px; }
   .proof-anchor { padding: 22px; }
+  .proof-transcript-hero h1 { font-size: 38px; }
+  .proof-transcript-intro p,
+  .proof-transcript-page p,
+  .proof-transcript-page li { font-size: 17px; }
+  .proof-transcript-page h2 { font-size: 30px; }
 }

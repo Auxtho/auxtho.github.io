@@ -21,9 +21,10 @@
   <meta name="twitter:image" content="https://auxtho.com/assets/proof/release-core/rc02-linkedin.png?sha256=e1e2c27b24cc0f58924e81d47c10f0ce3f2698e867bcc2a0a283655c58715405">
   <link rel="stylesheet" href="/assets/style.css?sha256=dae86678fceee76a0e55b6af31c0107f79aa2ce7980b900121e8d6a540bef9f5">
   <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
-  <link rel="stylesheet" href="/assets/proof-release-core.css?sha256=c0afd3cc3145516bb263c9941a1e48cdb4d57da643899466fa69702c250778d2">
+  <link rel="stylesheet" href="/assets/proof-release-core.css?sha256=b1ce972b90c9ecbcd6becebe4a052986f67f45e210ef0eb204a2b92ff4422825">
 </head>
 <body>
+  <a class="proof-skip-link" href="#proof-content">Skip to proof content</a>
   <header class="proof-header">
     <div class="proof-wrap proof-nav">
       <a href="/" aria-label="Auxtho home"><img class="proof-logo" src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho"></a>
@@ -31,7 +32,7 @@
     </div>
   </header>
 
-  <main>
+  <main id="proof-content">
     <section class="proof-hero">
       <div class="proof-wrap">
         <p class="proof-kicker">Auxtho Release Core</p>
@@ -45,6 +46,7 @@
         </div>
         <div class="proof-actions">
           <a class="proof-button" href="#scenarios">Inspect the three outcomes</a>
+          <a class="proof-button secondary" href="/proof/release-core/transcript/">Read accessible transcript</a>
           <a class="proof-button secondary" href="/assets/proof/release-core/When_Approval_Should_Not_Travel_With_the_Output.pdf">Download the six-page proof</a>
         </div>
       </div>
@@ -136,10 +138,11 @@
     <section class="proof-anchors" aria-labelledby="anchor-title">
       <div class="proof-wrap">
         <p class="proof-kicker">Verification anchors</p>
-        <h2 id="anchor-title" class="proof-section-title">Dated and inspectable</h2>
+        <h2 id="anchor-title" class="proof-section-title">Dated and hash-pinned</h2>
         <dl class="proof-anchor-grid">
-          <div class="proof-anchor"><dt>Frozen Level A commit</dt><dd><code>1d1a4fdd252178766d0f58b3c980e151b423a235</code></dd></div>
+          <div class="proof-anchor"><dt>Internal frozen Level A commit (private)</dt><dd><code>1d1a4fdd252178766d0f58b3c980e151b423a235</code></dd></div>
           <div class="proof-anchor"><dt>Public proof PDF SHA-256</dt><dd><code>113AB18459E6EDB95DD6EC67F280FA4B6D9C6C25707BF5677968ED1A4D7E8B7B</code></dd></div>
+          <div class="proof-anchor"><dt>Public proof asset manifest</dt><dd><a href="/assets/proof/release-core/manifest.json">Open machine-readable manifest</a></dd></div>
           <div class="proof-anchor"><dt>Public LinkedIn proof</dt><dd><a href="https://www.linkedin.com/feed/update/urn:li:ugcPost:7495752797892562944/">Published August 19, 2026</a></dd></div>
         </dl>
       </div>

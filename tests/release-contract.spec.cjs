@@ -114,7 +114,8 @@ function createSourceFixture(targetRoot) {
   for (const relative of [
     '404.html', 'evidence-notes.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
-    'proof/release-core/index.html', 'security/ardamire/index.html', 'assets',
+    'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
+    'security/ardamire/index.html', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
@@ -1400,9 +1401,44 @@ test('post-deploy browser smoke covers Evidence Notes and the retired verifier r
   const smoke = fs.readFileSync(path.join(root, 'tests', 'post-deploy-verifier-smoke.spec.cjs'), 'utf8');
   assert.match(smoke, /path: '\/evidence-notes\.html'/i);
   assert.match(smoke, /path: '\/proof\/release-core\/'/i);
+  assert.match(smoke, /path: '\/proof\/release-core\/transcript\/'/i);
   assert.match(smoke, /public verifier route is absent/i);
   assert.match(smoke, /response\.status\(\)\)\.toBe\(404\)/i);
   assert.match(smoke, /api_request_count/i);
+});
+
+test('Release Core public manifest binds the exact public proof assets and private-source boundary', () => {
+  const manifestPath = path.join(root, 'assets', 'proof', 'release-core', 'manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  assert.equal(manifest.schema_version, 1);
+  assert.equal(manifest.proof_id, 'auxtho-release-core-public-safe-level-a');
+  assert.equal(manifest.public_site_repository, 'https://github.com/Auxtho/auxtho.github.io');
+  assert.equal(manifest.internal_frozen_source.visibility, 'private');
+  assert.equal(manifest.internal_frozen_source.publicly_resolvable, false);
+  assert.equal(manifest.scope.customer_results_claimed, false);
+  assert.equal(manifest.scope.production_results_claimed, false);
+  assert.equal(manifest.scope.operating_effectiveness_claimed, false);
+
+  const manifestPaths = new Set();
+  for (const asset of manifest.assets) {
+    assert.match(asset.path, /^\//);
+    assert.equal(manifestPaths.has(asset.path), false, `duplicate proof manifest path: ${asset.path}`);
+    manifestPaths.add(asset.path);
+    const sourcePath = path.join(root, ...asset.path.slice(1).split('/'));
+    const bytes = fs.readFileSync(sourcePath);
+    assert.equal(bytes.length, asset.bytes, `proof manifest size mismatch: ${asset.path}`);
+    assert.equal(sha256(bytes), asset.sha256, `proof manifest digest mismatch: ${asset.path}`);
+  }
+
+  for (const requiredPath of [
+    '/proof/release-core/index.html',
+    '/proof/release-core/transcript/index.html',
+    '/assets/proof-release-core.css',
+    '/assets/proof/release-core/When_Approval_Should_Not_Travel_With_the_Output.pdf',
+    '/assets/proof/release-core/rc01.png',
+    '/assets/proof/release-core/rc02.png',
+    '/assets/proof/release-core/rc10.png',
+  ]) assert.equal(manifestPaths.has(requiredPath), true, `missing proof manifest path: ${requiredPath}`);
 });
 
 test('public research and trust routes are stable, scoped, and buyer-readable', () => {

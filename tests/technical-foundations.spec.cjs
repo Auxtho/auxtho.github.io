@@ -372,6 +372,46 @@ test('Release Core proof uses CSP-compatible external styles with deliberate des
   }
 });
 
+test('Release Core transcript preserves six-page reading order on desktop and mobile', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900, minimumTitleSize: 54 },
+    { width: 390, height: 844, minimumTitleSize: 36 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await openWithoutRuntimeErrors(page, '/proof/release-core/transcript/');
+
+    await expect(page.locator('style')).toHaveCount(0);
+    await expect(page.locator('[style]')).toHaveCount(0);
+    await expect(page.locator('link[href^="/assets/proof-release-core.css?sha256="]')).toHaveCount(1);
+    await expect(page.locator('.proof-transcript-page')).toHaveCount(6);
+    await expect(page.locator('#transcript-page-1')).toContainText('approval should not travel');
+    await expect(page.locator('#transcript-page-4')).toContainText('receipt is not trustworthy');
+    await expect(page.locator('#transcript-page-6')).toContainText('Control the exact object');
+    await expect(page.locator('a[href$="When_Approval_Should_Not_Travel_With_the_Output.pdf"]')).toBeVisible();
+
+    const layout = await page.evaluate(() => ({
+      titleFontSize: Number.parseFloat(getComputedStyle(document.querySelector('.proof-transcript-hero h1')).fontSize),
+      transcriptBackground: getComputedStyle(document.querySelector('.proof-transcript')).backgroundColor,
+      introHeadingColor: getComputedStyle(document.querySelector('.proof-transcript-intro h2')).color,
+      pageHeadingColor: getComputedStyle(document.querySelector('.proof-transcript-page h2')).color,
+      pageSubheadingColor: getComputedStyle(document.querySelector('.proof-transcript-page h3')).color,
+      pageLabels: [...document.querySelectorAll('.proof-transcript-page-number')]
+        .map((element) => element.textContent.trim()),
+      transcriptTextLength: document.querySelector('#transcript').innerText.trim().length,
+    }));
+    expect(layout.titleFontSize).toBeGreaterThanOrEqual(viewport.minimumTitleSize);
+    expect(contrastRatio(layout.introHeadingColor, layout.transcriptBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(layout.pageHeadingColor, layout.transcriptBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(layout.pageSubheadingColor, layout.transcriptBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(layout.pageLabels).toEqual([
+      'Page 1 of 6', 'Page 2 of 6', 'Page 3 of 6',
+      'Page 4 of 6', 'Page 5 of 6', 'Page 6 of 6',
+    ]);
+    expect(layout.transcriptTextLength).toBeGreaterThan(2500);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test('Ardamire idle stages keep readable copy on desktop and mobile', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   for (const viewport of [

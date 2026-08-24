@@ -29,6 +29,7 @@ test('public pages render with packaged styles and images without CSP or same-or
     { path: '/evidence-notes.html', status: 200, locator: 'main' },
     { path: '/lineage/isp/', status: 200, locator: 'main' },
     { path: '/proof/release-core/', status: 200, locator: 'main' },
+    { path: '/proof/release-core/transcript/', status: 200, locator: '#transcript' },
     { path: '/security/ardamire/', status: 200, locator: 'main' },
     { path: '/privacy.html', status: 200, locator: 'main' },
     { path: '/terms.html', status: 200, locator: 'main' },

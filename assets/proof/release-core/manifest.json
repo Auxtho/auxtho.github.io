@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "proof_id": "auxtho-release-core-public-safe-level-a",
+  "published_on": "2026-08-24",
+  "public_site_repository": "https://github.com/Auxtho/auxtho.github.io",
+  "hash_basis": "SHA-256 of exact published file bytes",
+  "scope": {
+    "scenario_class": "versioned synthetic Level A",
+    "execution": "local",
+    "external_providers": false,
+    "separate_verifier": true,
+    "customer_results_claimed": false,
+    "production_results_claimed": false,
+    "operating_effectiveness_claimed": false
+  },
+  "internal_frozen_source": {
+    "sha": "1d1a4fdd252178766d0f58b3c980e151b423a235",
+    "visibility": "private",
+    "publicly_resolvable": false
+  },
+  "external_record": {
+    "type": "linkedin_post",
+    "published_on": "2026-08-19",
+    "url": "https://www.linkedin.com/feed/update/urn:li:ugcPost:7495752797892562944/"
+  },
+  "assets": [
+    {
+      "path": "/proof/release-core/index.html",
+      "media_type": "text/html",
+      "bytes": 10741,
+      "sha256": "9bb21f6b85737e4aa7ac982e3e66e43118c4067c224a9f7e7ed2165aea62204b"
+    },
+    {
+      "path": "/proof/release-core/transcript/index.html",
+      "media_type": "text/html",
+      "bytes": 9845,
+      "sha256": "40938725f8bc6434329a47f5987b23b758ca23fcdcf8705051b26ef903ec6f2d"
+    },
+    {
+      "path": "/assets/proof-release-core.css",
+      "media_type": "text/css",
+      "bytes": 9573,
+      "sha256": "b1ce972b90c9ecbcd6becebe4a052986f67f45e210ef0eb204a2b92ff4422825"
+    },
+    {
+      "path": "/assets/proof/release-core/When_Approval_Should_Not_Travel_With_the_Output.pdf",
+      "media_type": "application/pdf",
+      "bytes": 814785,
+      "sha256": "113ab18459e6edb95dd6ec67f280fa4b6d9c6c25707bf5677968ed1a4d7e8b7b"
+    },
+    {
+      "path": "/assets/proof/release-core/proof-boundary.png",
+      "media_type": "image/png",
+      "bytes": 165755,
+      "sha256": "db183b3e0b8a2c45aeb9429dacb1cd47e55eed67ddd31a95017f4e36c247e015"
+    },
+    {
+      "path": "/assets/proof/release-core/rc01.png",
+      "media_type": "image/png",
+      "bytes": 139658,
+      "sha256": "d34bba45a8ec8cd18f5c8f9fcfd219d62e5abc16782dfa013309a986cfe78083"
+    },
+    {
+      "path": "/assets/proof/release-core/rc02-linkedin.png",
+      "media_type": "image/png",
+      "bytes": 46319,
+      "sha256": "e1e2c27b24cc0f58924e81d47c10f0ce3f2698e867bcc2a0a283655c58715405"
+    },
+    {
+      "path": "/assets/proof/release-core/rc02.png",
+      "media_type": "image/png",
+      "bytes": 131842,
+      "sha256": "0990a0da6cd0c74a4ecddec8a43ea0896ffe23c512df0670dda42adb0fbbada3"
+    },
+    {
+      "path": "/assets/proof/release-core/rc10.png",
+      "media_type": "image/png",
+      "bytes": 142884,
+      "sha256": "b675239db8520df6bc302bd3583ae748545210d79e81debaa0e93caba0c8d901"
+    },
+    {
+      "path": "/assets/proof/release-core/release-object.png",
+      "media_type": "image/png",
+      "bytes": 155263,
+      "sha256": "8a9a77424b9da5063494c9341f98ace9a07c6d7020bb6bfc5bb5a2163e2944d9"
+    }
+  ]
+}
