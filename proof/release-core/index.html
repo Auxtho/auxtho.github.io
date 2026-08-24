@@ -13,9 +13,12 @@
   <meta property="og:title" content="Auxtho Release Core: Public Proof">
   <meta property="og:description" content="See Auxtho block a changed artifact, hold an uncertain result for reconciliation without automatic retry, and complete an exact-match release once. Synthetic, local, provider-free proof; not customer or production results.">
   <meta property="og:url" content="https://auxtho.com/proof/release-core/">
-  <meta property="og:image" content="https://auxtho.com/assets/proof/release-core/rc10.png">
-  <meta property="og:image:alt" content="Auxtho RC10 local proof showing UNKNOWN, reconciliation required, and no automatic retry">
+  <meta property="og:image" content="https://auxtho.com/assets/proof/release-core/rc02-linkedin.png?sha256=e1e2c27b24cc0f58924e81d47c10f0ce3f2698e867bcc2a0a283655c58715405">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Auxtho RC02 local proof showing a changed artifact blocked with zero downstream actions">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://auxtho.com/assets/proof/release-core/rc02-linkedin.png?sha256=e1e2c27b24cc0f58924e81d47c10f0ce3f2698e867bcc2a0a283655c58715405">
   <link rel="stylesheet" href="/assets/style.css?sha256=dae86678fceee76a0e55b6af31c0107f79aa2ce7980b900121e8d6a540bef9f5">
   <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
   <link rel="stylesheet" href="/assets/proof-release-core.css?sha256=08268708e4b5d7c760b8b6d1966824e0d0ec4254a06ea8925a33696f0b34d709">
@@ -70,7 +73,7 @@
         <div class="proof-scenarios-intro">
           <p class="proof-kicker">Implemented outcomes</p>
           <h2 id="scenario-title" class="proof-section-title">The same boundary handles denial, uncertainty, and success.</h2>
-          <p class="proof-body">These results come from three frozen, synthetic Level A scenarios. They are not customer or production results.</p>
+          <p class="proof-body">These results come from three frozen, synthetic Level A scenarios. They are not customer or production results. Each scenario reports the observed consequence count for one attempted release.</p>
         </div>
 
         <article class="proof-scenario rc02">
@@ -87,8 +90,8 @@
           <div>
             <p class="proof-scenario-code">RC10 / Uncertain receipt</p>
             <h3>The action may have started. Certainty was not invented.</h3>
-            <p>One controlled action occurred, but a trustworthy receipt could not be established. The path required reconciliation and did not retry automatically.</p>
-            <div class="proof-result"><strong>UNKNOWN / RECONCILIATION REQUIRED</strong><span>1 controlled effect / 0 automatic retries</span></div>
+            <p>The separate local verifier observed one effect in the synthetic path, but Release Core could not establish a trustworthy receipt. The state required reconciliation and the path did not retry automatically.</p>
+            <div class="proof-result"><strong>UNKNOWN / RECONCILIATION REQUIRED</strong><span>1 verifier-observed local effect / 0 automatic retries</span></div>
           </div>
           <div class="proof-scenario-media"><img src="/assets/proof/release-core/rc10.png?sha256=b675239db8520df6bc302bd3583ae748545210d79e81debaa0e93caba0c8d901" alt="RC10 local proof: unknown state, reconciliation required, and no automatic retry"></div>
         </article>
