@@ -328,6 +328,38 @@ test('Ardamire motion stays idle, pauses at human review, and requires explicit 
   await expectNoHorizontalOverflow(page);
 });
 
+test('Release Core proof uses CSP-compatible external styles with deliberate desktop and mobile layout', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900, minimumTitleSize: 70 },
+    { width: 390, height: 844, minimumTitleSize: 38 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await openWithoutRuntimeErrors(page, '/proof/release-core/');
+
+    await expect(page.locator('style')).toHaveCount(0);
+    await expect(page.locator('[style]')).toHaveCount(0);
+    await expect(page.locator('link[href^="/assets/proof-release-core.css?sha256="]')).toHaveCount(1);
+
+    const layout = await page.evaluate(() => {
+      const title = document.querySelector('.proof-hero h1');
+      const logo = document.querySelector('.proof-logo');
+      const primaryAction = document.querySelector('.proof-button');
+      return {
+        titleFontSize: Number.parseFloat(getComputedStyle(title).fontSize),
+        titleLineHeight: Number.parseFloat(getComputedStyle(title).lineHeight),
+        logoWidth: logo.getBoundingClientRect().width,
+        primaryActionHeight: primaryAction.getBoundingClientRect().height,
+      };
+    });
+    expect(layout.titleFontSize).toBeGreaterThanOrEqual(viewport.minimumTitleSize);
+    expect(layout.titleLineHeight).toBeGreaterThan(layout.titleFontSize);
+    expect(layout.logoWidth).toBeGreaterThanOrEqual(95);
+    expect(layout.logoWidth).toBeLessThanOrEqual(115);
+    expect(layout.primaryActionHeight).toBeGreaterThanOrEqual(44);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test('Ardamire idle stages keep readable copy on desktop and mobile', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   for (const viewport of [

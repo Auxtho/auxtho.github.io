@@ -1399,6 +1399,7 @@ test('first screen presents the exact release-object proposition and failure bou
 test('post-deploy browser smoke covers Evidence Notes and the retired verifier route', () => {
   const smoke = fs.readFileSync(path.join(root, 'tests', 'post-deploy-verifier-smoke.spec.cjs'), 'utf8');
   assert.match(smoke, /path: '\/evidence-notes\.html'/i);
+  assert.match(smoke, /path: '\/proof\/release-core\/'/i);
   assert.match(smoke, /public verifier route is absent/i);
   assert.match(smoke, /response\.status\(\)\)\.toBe\(404\)/i);
   assert.match(smoke, /api_request_count/i);
