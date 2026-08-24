@@ -152,6 +152,15 @@ test('homepage vision film selects the portrait master on mobile without overflo
   const controlHeights = await film.locator('.vision-film-toggle, .vision-film-continue')
     .evaluateAll((controls) => controls.map((control) => control.getBoundingClientRect().height));
   expect(controlHeights.every((height) => height >= 44)).toBe(true);
+
+  const heroButtons = await page.locator('.sales-hero-actions .sales-button')
+    .evaluateAll((buttons) => buttons.map((button) => {
+      const box = button.getBoundingClientRect();
+      return { bottom: box.bottom, height: box.height, left: box.left, right: box.right, top: box.top };
+    }));
+  expect(heroButtons).toHaveLength(2);
+  expect(heroButtons[1].top).toBeGreaterThanOrEqual(heroButtons[0].bottom - 1);
+  expect(heroButtons.every((box) => box.height >= 44 && box.left >= 0 && box.right <= 390)).toBe(true);
   await expectNoHorizontalOverflow(page);
 });
 
