@@ -37,7 +37,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   'index.html': '081c4419656cea1f107edf3f09f1dfe0199f2cd6841d5d3d257a1a9811c4c804',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
-  'proof/release-core/index.html': '4bc96c76a8a3ee42009d3967872044d9158191aa5a9d7df0bb0a9f67710add6b',
+  'proof/release-core/index.html': 'b49aacc6728399791904759f1b61d712cfc05e129f7f6a4883c7221028a69824',
   'security/ardamire/index.html': '3b1df81e4bb7452f4f1e2549e0eee300f007283450e652ad85ffef0d370a9a9e',
   'story.html': '6853310c4058a7d87f8a4373953d4d22da34bb87a4bdf91a477bd009f6da690b',
   'terms.html': '20efc6042ff1141854fbcedd25d910df3432d277b6c440e4ecc7e1eaf721e335',
