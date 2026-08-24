@@ -25,6 +25,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://auxtho.com/proof/release-core/transcript/</loc>
+    <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://auxtho.com/security/ardamire/</loc>
     <lastmod>2026-07-27</lastmod>
     <changefreq>monthly</changefreq>
