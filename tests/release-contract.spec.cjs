@@ -1408,6 +1408,10 @@ test('post-deploy browser smoke covers Evidence Notes and the retired verifier r
   assert.match(smoke, /public verifier route is absent/i);
   assert.match(smoke, /response\.status\(\)\)\.toBe\(404\)/i);
   assert.match(smoke, /api_request_count/i);
+  assert.match(smoke, /request\.resourceType\(\) === 'media'/i);
+  assert.match(smoke, /request\.failure\(\)\?\.errorText === 'net::ERR_ABORTED'/i);
+  assert.match(smoke, /auxtho-incident-led-hero-\(\?:mobile-\)\?v9\\\.mp4/i);
+  assert.match(smoke, /expectedVisionMediaCancellations\.length\)\.toBeLessThanOrEqual\(2\)/i);
 });
 
 test('Release Core public manifest binds the exact public proof assets and private-source boundary', () => {
