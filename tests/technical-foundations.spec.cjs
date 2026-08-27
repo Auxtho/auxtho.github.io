@@ -106,13 +106,24 @@ async function openWithoutRuntimeErrors(page, route) {
   expect(failedRequests).toEqual([]);
 }
 
-test('homepage vision film selects the desktop master and leaves the product proposition visible below', async ({ page }) => {
+test('homepage shows the product proposition before the desktop vision film', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openWithoutRuntimeErrors(page, '/index.html');
 
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
   await expect(film).toBeVisible();
+  const sectionTops = await page.locator('.sales-hero, #why-now, [data-vision-film], #how-it-works')
+    .evaluateAll((sections) => sections.map((section) => (
+      section.getBoundingClientRect().top + window.scrollY
+    )));
+  expect(sectionTops).toHaveLength(4);
+  expect(sectionTops[0]).toBeLessThan(900);
+  expect(sectionTops[1]).toBeGreaterThan(sectionTops[0]);
+  expect(sectionTops[2]).toBeGreaterThan(sectionTops[1]);
+  expect(sectionTops[3]).toBeGreaterThan(sectionTops[2]);
+
+  await film.scrollIntoViewIfNeeded();
   await expect.poll(() => video.evaluate((element) => ({
     currentSrc: element.currentSrc,
     duration: element.duration,
@@ -127,31 +138,24 @@ test('homepage vision film selects the desktop master and leaves the product pro
   await expect.poll(() => video.evaluate((element) => !element.paused && element.currentTime > 0)).toBe(true);
   await expect(film).toHaveClass(/has-film-frame/);
 
-  const productTop = await page.locator('.sales-hero').evaluate((element) => element.getBoundingClientRect().top);
-  expect(productTop).toBeLessThan(900);
   await expectNoHorizontalOverflow(page);
 });
 
-test('homepage vision film selects the portrait master on mobile without overflow', async ({ page }) => {
+test('homepage shows the product proposition before the mobile vision film without overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await openWithoutRuntimeErrors(page, '/index.html');
 
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
-  await expect.poll(() => video.evaluate((element) => ({
-    currentSrc: element.currentSrc,
-    height: element.videoHeight,
-    width: element.videoWidth,
-  }))).toEqual(expect.objectContaining({
-    currentSrc: expect.stringContaining('auxtho-incident-led-hero-mobile-v9.mp4'),
-    height: 1920,
-    width: 1080,
-  }));
-  const productTop = await page.locator('.sales-hero').evaluate((element) => element.getBoundingClientRect().top);
-  expect(productTop).toBeLessThan(844);
-  const controlHeights = await film.locator('.vision-film-toggle, .vision-film-continue')
-    .evaluateAll((controls) => controls.map((control) => control.getBoundingClientRect().height));
-  expect(controlHeights.every((height) => height >= 44)).toBe(true);
+  const sectionTops = await page.locator('.sales-hero, #why-now, [data-vision-film], #how-it-works')
+    .evaluateAll((sections) => sections.map((section) => (
+      section.getBoundingClientRect().top + window.scrollY
+    )));
+  expect(sectionTops).toHaveLength(4);
+  expect(sectionTops[0]).toBeLessThan(844);
+  expect(sectionTops[1]).toBeGreaterThan(sectionTops[0]);
+  expect(sectionTops[2]).toBeGreaterThan(sectionTops[1]);
+  expect(sectionTops[3]).toBeGreaterThan(sectionTops[2]);
 
   const heroButtons = await page.locator('.sales-hero-actions .sales-button')
     .evaluateAll((buttons) => buttons.map((button) => {
@@ -161,6 +165,21 @@ test('homepage vision film selects the portrait master on mobile without overflo
   expect(heroButtons).toHaveLength(2);
   expect(heroButtons[1].top).toBeGreaterThanOrEqual(heroButtons[0].bottom - 1);
   expect(heroButtons.every((box) => box.height >= 44 && box.left >= 0 && box.right <= 390)).toBe(true);
+
+  await film.scrollIntoViewIfNeeded();
+  await expect.poll(() => video.evaluate((element) => ({
+    currentSrc: element.currentSrc,
+    height: element.videoHeight,
+    width: element.videoWidth,
+  }))).toEqual(expect.objectContaining({
+    currentSrc: expect.stringContaining('auxtho-incident-led-hero-mobile-v9.mp4'),
+    height: 1920,
+    width: 1080,
+  }));
+  const controlHeights = await film.locator('.vision-film-toggle, .vision-film-continue')
+    .evaluateAll((controls) => controls.map((control) => control.getBoundingClientRect().height));
+  expect(controlHeights.every((height) => height >= 44)).toBe(true);
+
   await expectNoHorizontalOverflow(page);
 });
 
@@ -176,6 +195,7 @@ test('homepage vision film respects reduced motion until the visitor explicitly 
   await expect(video).toHaveJSProperty('paused', true);
   await expect(film).not.toHaveClass(/has-film-frame/);
 
+  await film.scrollIntoViewIfNeeded();
   await toggle.click();
   await expect.poll(() => video.evaluate((element) => !element.paused && element.currentTime > 0)).toBe(true);
   await expect(film).toHaveClass(/has-film-frame/);

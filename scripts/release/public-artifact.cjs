@@ -34,7 +34,7 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': 'fb4e58cd8e5cb0a9cc993745c9c05946b51ace1bc8759234f9d9c1f311d2c752',
-  'index.html': '081c4419656cea1f107edf3f09f1dfe0199f2cd6841d5d3d257a1a9811c4c804',
+  'index.html': '511894e6017576c2b542e3305f862feab62b81efc1b5ef555ee461eec8e5bc86',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
   'proof/release-core/index.html': '9bb21f6b85737e4aa7ac982e3e66e43118c4067c224a9f7e7ed2165aea62204b',
@@ -1123,11 +1123,13 @@ function validatePrivacyAndClaims(
       'Auxtho App - Human review workspace',
       'Governed review states rendered in the App',
       'The human review workspace',
+      'Review the document and supporting evidence',
     ],
     'Auxtho Console': [
       'Auxtho Console - Operator oversight',
       'Operator attention rendered in the Console',
       'The operator oversight surface',
+      'See what needs attention',
     ],
   };
   for (const { asset } of reviewedAssets) {

@@ -1381,19 +1381,22 @@ test('candidate artifact rejects evidence traversal, cross-binding, duplicate pa
   }
 });
 
-test('first screen presents the exact release-object proposition and failure boundary', () => {
+test('first screen presents the reviewed-version check and failure boundary in plain language', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const hero = index.match(/<section[^>]*class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
-  assert.match(hero, /For regulated teams overseeing high-risk AI work/i);
-  assert.match(hero, /Control the exact AI-assisted deliverable before it leaves the organization/i);
-  assert.match(hero, /reviewed version, evidence and policy context, accountable authority/i);
-  assert.match(hero, /Discuss one high-risk workflow/i);
-  assert.match(hero, /View Release Core proof/i);
+  assert.match(hero, /For regulated teams responsible for customer responses and client reports/i);
+  assert.match(hero, /Auxtho checks that the version being sent is still the one a person reviewed and approved/i);
+  assert.match(hero, /stops it before sending and requires another review/i);
+  assert.match(hero, /leaves the status unconfirmed and does not send again automatically/i);
+  assert.match(hero, /Discuss one workflow/i);
+  assert.match(hero, /View public proof/i);
   assert.match(hero, /Synthetic workflow/i);
-  assert.match(hero, /Accountability should not take days to reconstruct/i);
-  assert.match(hero, /connected through one release object/i);
-  assert.match(index, /moves the record to reconciliation instead of inventing success or retrying blindly/i);
-  assert.match(index, /class="vision-film-continue" href="#sales-hero"/i);
+  assert.match(hero, /A person still decides what is sent/i);
+  assert.match(hero, /Public proof: synthetic data, local execution, no external providers/i);
+  assert.match(hero, /Not customer or production results/i);
+  assert.doesNotMatch(hero, /release object|accountable authority|evidence and policy context|reconciliation/i);
+  assert.match(index, /does not send again automatically/i);
+  assert.match(index, /class="vision-film-continue" href="#how-it-works"/i);
   assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval|masked data/i);
 });
 
@@ -1459,20 +1462,23 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.doesNotMatch(index, /href="\/verify\.html"/);
-  assert.match(index, /Auxtho App brings the decision into review/i);
-  assert.match(index, /Auxtho Console keeps review attention and operational follow-up visible/i);
-  assert.match(index, /a human decision is a required, recorded step before work is marked release-ready or enters controlled export/i);
+  assert.match(index, /Auxtho App supports the review decision/i);
+  assert.match(index, /Auxtho Console keeps items needing attention and follow-up visible/i);
+  assert.match(index, /For one workflow, Auxtho records which version was reviewed, who approved it/i);
   assert.match(index, /Example release record/i);
-  assert.match(index, /The human review workspace/i);
-  assert.match(index, /The operator oversight surface/i);
+  assert.match(index, /Review the document and supporting evidence/i);
+  assert.match(index, /See what needs attention/i);
+  assert.match(index, /Track items awaiting review, blocked items, and follow-up/i);
+  assert.doesNotMatch(index, /critical signals/i);
   assert.match(index, /Control beneath the interface/i);
   assert.match(index, /Intent Synchronization Protocol \(ISP\)/i);
   assert.match(index, /Ardamire Defense Layer/i);
   assert.match(index, /Auxtho Artifact Verification/i);
-  assert.match(index, /Policy review/i);
+  assert.match(index, /Workflows to evaluate/i);
+  assert.match(index, /Financial complaint response/i);
+  assert.match(index, /Compliance or assurance report/i);
   assert.match(index, /Model-risk memo/i);
   assert.match(index, /Audit response/i);
-  assert.match(index, /Customer communication/i);
   assert.doesNotMatch(index, /controlled synthetic rendering|captured \d{1,2} Jul 2026|Evidence record:/i);
 
   assert.match(isp, /<meta name="robots" content="index,follow">/);
