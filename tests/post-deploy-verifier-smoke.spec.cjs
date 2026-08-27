@@ -9,15 +9,33 @@ const evidenceDirectory = path.resolve(__dirname, '..', 'post-deploy-evidence');
 
 test.describe.configure({ mode: 'serial', timeout: 120_000 });
 
+function isExpectedVisionMediaCancellation(request) {
+  const url = new URL(request.url());
+  return request.resourceType() === 'media'
+    && request.failure()?.errorText === 'net::ERR_ABORTED'
+    && /^\/assets\/vision-film\/auxtho-incident-led-hero-(?:mobile-)?v9\.mp4$/.test(url.pathname)
+    && /^[0-9a-f]{64}$/.test(url.searchParams.get('sha256') || '');
+}
+
 test('public pages render with packaged styles and images without CSP or same-origin resource failures', async ({ page }) => {
   expect(origin).toBe('https://auxtho.com');
   expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
 
   const failures = [];
+  const expectedVisionMediaCancellations = [];
   const consoleErrors = [];
   const pageErrors = [];
   page.on('requestfailed', (request) => {
-    if (new URL(request.url()).origin === origin) failures.push(`${request.method()} ${request.url()}`);
+    if (new URL(request.url()).origin !== origin) return;
+    if (isExpectedVisionMediaCancellation(request)) {
+      expectedVisionMediaCancellations.push({
+        error: request.failure()?.errorText,
+        method: request.method(),
+        url: request.url(),
+      });
+      return;
+    }
+    failures.push(`${request.method()} ${request.url()} (${request.failure()?.errorText || 'unknown failure'})`);
   });
   page.on('console', (message) => {
     if (message.type() === 'error') consoleErrors.push(message.text());
@@ -100,6 +118,7 @@ test('public pages render with packaged styles and images without CSP or same-or
   }
 
   expect(failures).toEqual([]);
+  expect(expectedVisionMediaCancellations.length).toBeLessThanOrEqual(2);
   expect(consoleErrors.filter((message) => /content security policy|refused to load|blocked/i.test(message))).toEqual([]);
   expect(pageErrors).toEqual([]);
   fs.mkdirSync(evidenceDirectory, { recursive: true });
@@ -108,6 +127,7 @@ test('public pages render with packaged styles and images without CSP or same-or
     source_sha: sourceSha,
     pages: checked,
     same_origin_request_failures: failures,
+    expected_vision_media_cancellations: expectedVisionMediaCancellations,
     csp_console_errors: consoleErrors,
     page_errors: pageErrors,
   }, null, 2)}\n`);
