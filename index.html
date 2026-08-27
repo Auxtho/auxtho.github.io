@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auxtho - Human release control for high-risk AI work</title>
+  <title>Auxtho - Check the approved version before AI-assisted work is sent</title>
   <meta name="description"
-    content="Auxtho puts evidence-linked human approval between high-risk AI-assisted work and release.">
+    content="Auxtho checks that the version being sent is still the approved version. If it changed, release stops; if delivery is unconfirmed, there is no automatic retry.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="/assets/favicon.svg">
@@ -16,11 +16,11 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Auxtho - Human release control for high-risk AI work">
+  <meta property="og:title" content="Auxtho - Check the approved version before AI-assisted work is sent">
   <meta property="og:description"
-    content="Link AI-assisted work to evidence, accountable ownership, and a recorded human decision before release.">
+    content="Auxtho checks that the version being sent is still the one a person reviewed and approved. If it changed, release stops.">
   <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
-  <meta property="og:image:alt" content="Auxtho human review before release">
+  <meta property="og:image:alt" content="Auxtho checks the approved version before AI-assisted work is sent">
   <meta property="og:url" content="https://auxtho.com">
   <meta property="og:site_name" content="Auxtho">
   <meta property="og:locale" content="en_US">
@@ -28,9 +28,9 @@
   <meta property="og:image:height" content="630">
 
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Auxtho - Human release control for high-risk AI work">
+  <meta name="twitter:title" content="Auxtho - Check the approved version before AI-assisted work is sent">
   <meta name="twitter:description"
-    content="Link AI-assisted work to evidence, accountable ownership, and a recorded human decision before release.">
+    content="Auxtho checks that the version being sent is still the one a person reviewed and approved. If it changed, release stops.">
   <meta name="twitter:image" content="https://auxtho.com/assets/og-image-v2-16.png">
 
   <link rel="stylesheet" href="/assets/style.css?sha256=dae86678fceee76a0e55b6af31c0107f79aa2ce7980b900121e8d6a540bef9f5">
@@ -42,7 +42,7 @@
 </head>
 
 <body class="antialiased sales-site">
-  <a href="#why-now"
+  <a href="#sales-hero"
     class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black rounded-lg">
     Skip to content
   </a>
@@ -61,8 +61,8 @@
       </button>
       <nav>
         <ul id="primary-navigation" data-visible="false" class="primary-navigation flex items-center space-x-8">
-          <li><a href="#product" class="text-gray-300 hover:text-white transition-colors">Product</a></li>
           <li><a href="#how-it-works" class="text-gray-300 hover:text-white transition-colors">How It Works</a></li>
+          <li><a href="#product" class="text-gray-300 hover:text-white transition-colors">Product</a></li>
           <li><a href="#outcome" class="text-gray-300 hover:text-white transition-colors">Outcomes</a></li>
           <li><a href="#research" class="text-gray-300 hover:text-white transition-colors">Foundations</a></li>
           <li><a href="#contact"
@@ -86,8 +86,8 @@
     </div>
     <div id="scroll-nav-menu" aria-hidden="true" inert>
       <ul class="scroll-nav-menu-list">
-        <li><a href="#product">Product</a></li>
         <li><a href="#how-it-works">How It Works</a></li>
+        <li><a href="#product">Product</a></li>
         <li><a href="#outcome">Outcomes</a></li>
         <li><a href="#research">Foundations</a></li>
         <li><a href="#contact">Contact</a></li>
@@ -96,13 +96,50 @@
   </nav>
 
   <main>
+    <section id="sales-hero" class="sales-hero" aria-labelledby="sales-hero-title">
+      <div class="sales-hero-media" aria-hidden="true">
+        <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="">
+      </div>
+      <div class="sales-hero-scrim" aria-hidden="true"></div>
+      <div class="container mx-auto px-6 sales-hero-content">
+        <p class="sales-eyebrow">FOR REGULATED TEAMS RESPONSIBLE FOR CUSTOMER RESPONSES AND CLIENT REPORTS</p>
+        <h1 id="sales-hero-title">Auxtho checks that the version being sent is still the one a person reviewed and approved.</h1>
+        <p class="sales-hero-copy">
+          If the version changes after approval, Auxtho stops it before sending and requires another review.
+          If the result of a sending attempt cannot be confirmed, Auxtho leaves the status unconfirmed and does not send again automatically.
+        </p>
+        <div class="sales-hero-actions">
+          <a href="/proof/release-core/" class="sales-button sales-button-primary">View public proof</a>
+          <a href="mailto:hello@auxtho.com?subject=Discuss%20One%20AI-Assisted%20Document%20Workflow" class="sales-button sales-button-secondary">Discuss one workflow</a>
+        </div>
+        <p class="sales-urgency"><strong>AI can help prepare the work. A person still decides what is sent.</strong><br>Public proof: synthetic data, local execution, no external providers. Not customer or production results.</p>
+      </div>
+      <p class="sales-media-label">Synthetic workflow</p>
+    </section>
+
+    <section id="why-now" class="sales-section sales-why">
+      <div class="sales-shell">
+        <div class="sales-section-heading">
+          <p class="sales-eyebrow">WHY NOW</p>
+          <h2>In some workflows, the version prepared for delivery can change after approval.</h2>
+          <p>AI can help prepare a customer response or client report. A person reviews and approves one version. Auxtho checks whether the version about to be sent still matches it.</p>
+        </div>
+        <div class="sales-fracture" aria-label="The final review and delivery gap">
+          <div><span>01</span><strong>Draft prepared</strong><small>AI helps prepare a response, report, or other document.</small></div>
+          <div><span>02</span><strong>Version approved</strong><small>A person reviews the content and decides whether it can move forward.</small></div>
+          <div><span>03</span><strong>Version checked</strong><small>Before sending, Auxtho checks that the approved version has not changed.</small></div>
+        </div>
+        <p class="sales-fracture-answer">If the versions do not match, Auxtho stops the send and requires another review. If the result of a sending attempt is unconfirmed, it does not send again automatically.</p>
+      </div>
+    </section>
+
     <section class="vision-film" aria-labelledby="vision-film-title" data-vision-film
       data-desktop-poster="/assets/vision-film/auxtho-incident-led-hero-v9-poster.png?sha256=7c91e3dfad7df7e64b046e05e869b6ad064965bf6309ca125972de9ff2d4c9fc"
       data-mobile-poster="/assets/vision-film/auxtho-incident-led-hero-mobile-v9-poster.png?sha256=15fc53fa019094954023fc50f508f0fd0127dd873bb49913201234d554fb3e03">
       <h2 id="vision-film-title" class="sr-only">Auxtho release control film</h2>
       <p id="vision-film-description" class="sr-only">
-        A silent 26-second film follows AI-assisted work from public incident records to an Auxtho
-        release record that binds the exact output, evidence, policy, accountable owner, and human decision.
+        A silent 26-second film follows AI-assisted work from public incident records to the point where
+        a person reviews what will be released and Auxtho records the decision.
       </p>
       <div class="vision-film-stage">
         <picture class="vision-film-poster" aria-hidden="true">
@@ -121,54 +158,17 @@
         </video>
       </div>
       <div class="vision-film-controls">
-        <p class="vision-film-lockup">Auxtho / Release control</p>
+        <p class="vision-film-lockup">Auxtho / Final check before release</p>
         <div class="vision-film-actions">
           <button type="button" class="vision-film-toggle" data-vision-film-toggle data-state="paused"
             aria-label="Play film" aria-controls="auxtho-vision-film">
             <span class="vision-film-icon" aria-hidden="true"></span>
             <span data-vision-film-label>Play film</span>
           </button>
-          <a class="vision-film-continue" href="#sales-hero">
-            <span>Continue to product</span><span class="vision-film-arrow" aria-hidden="true">&darr;</span>
+          <a class="vision-film-continue" href="#how-it-works">
+            <span>Continue to how it works</span><span class="vision-film-arrow" aria-hidden="true">&darr;</span>
           </a>
         </div>
-      </div>
-    </section>
-
-    <section id="sales-hero" class="sales-hero" aria-labelledby="sales-hero-title">
-      <div class="sales-hero-media" aria-hidden="true">
-        <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="">
-      </div>
-      <div class="sales-hero-scrim" aria-hidden="true"></div>
-      <div class="container mx-auto px-6 sales-hero-content">
-        <p class="sales-eyebrow">FOR REGULATED TEAMS OVERSEEING HIGH-RISK AI WORK</p>
-        <h1 id="sales-hero-title">Control the exact AI-assisted deliverable before it leaves the organization.</h1>
-        <p class="sales-hero-copy">
-          Auxtho keeps the reviewed version, evidence and policy context, accountable authority,
-          permitted action, and delivery state connected through one release object.
-        </p>
-        <div class="sales-hero-actions">
-          <a href="mailto:hello@auxtho.com?subject=Discuss%20One%20High-Risk%20AI%20Workflow" class="sales-button sales-button-primary">Discuss one high-risk workflow</a>
-          <a href="/proof/release-core/" class="sales-button sales-button-secondary">View Release Core proof</a>
-        </div>
-        <p class="sales-urgency">AI can produce work in seconds. Accountability should not take days to reconstruct.</p>
-      </div>
-      <p class="sales-media-label">Synthetic workflow</p>
-    </section>
-
-    <section id="why-now" class="sales-section sales-why">
-      <div class="sales-shell">
-        <div class="sales-section-heading">
-          <p class="sales-eyebrow">WHY NOW</p>
-          <h2>AI moves in seconds. Accountability cannot arrive days later.</h2>
-          <p>When outputs, evidence, ownership, and decisions separate across tools, the most expensive question arrives after the work has already moved: <strong>why was this released?</strong></p>
-        </div>
-        <div class="sales-fracture" aria-label="The accountability gap">
-          <div><span>01</span><strong>Work moves</strong><small>An AI-assisted output is ready quickly.</small></div>
-          <div><span>02</span><strong>Context fragments</strong><small>Evidence, ownership, and rationale live elsewhere.</small></div>
-          <div><span>03</span><strong>Review becomes reconstruction</strong><small>Teams rebuild the decision after the fact.</small></div>
-        </div>
-        <p class="sales-fracture-answer">If the reviewed object changes, its release authority no longer applies. If delivery becomes uncertain, Auxtho moves the record to reconciliation instead of inventing success or retrying blindly.</p>
       </div>
     </section>
 
@@ -176,14 +176,14 @@
       <div class="sales-shell">
         <div class="sales-section-heading sales-section-heading-compact">
           <p class="sales-eyebrow">HOW IT WORKS</p>
-          <h2>One controlled path from work to release.</h2>
-          <p>For the selected workflow, a human decision is a required, recorded step before work is marked release-ready or enters controlled export.</p>
+          <h2>Check the approved version before delivery.</h2>
+          <p>For one workflow, Auxtho records which version was reviewed, who approved it, and whether the version presented for delivery still matches.</p>
         </div>
         <ol class="sales-process-rail">
-          <li><span>01</span><strong>Select the workflow</strong><p>Choose the AI-assisted work and the consequential action that follows it.</p></li>
-          <li><span>02</span><strong>Link the context</strong><p>Bring the output, supporting evidence, and accountable owner into review.</p></li>
-          <li><span>03</span><strong>Make the decision</strong><p>A designated person approves, holds, or rejects the work.</p></li>
-          <li><span>04</span><strong>Preserve the record</strong><p>Keep the outcome and the evidence behind it available for later review.</p></li>
+          <li><span>01</span><strong>Name the document</strong><p>Choose the customer response, client report, or other work being controlled.</p></li>
+          <li><span>02</span><strong>Review the version</strong><p>Link the reviewed document to the evidence considered and the responsible reviewer.</p></li>
+          <li><span>03</span><strong>Make the decision</strong><p>A designated person approves, holds, or rejects that version.</p></li>
+          <li><span>04</span><strong>Check and record</strong><p>Before delivery, Auxtho checks that approval still applies and records the result.</p></li>
         </ol>
       </div>
     </section>
@@ -192,26 +192,26 @@
       <div class="sales-shell">
         <div class="sales-section-heading">
           <p class="sales-eyebrow">THE PRODUCT</p>
-          <h2>Reviewers decide. Operators keep the path visible.</h2>
-          <p>Auxtho App brings the decision into review. Auxtho Console keeps review attention and operational follow-up visible around it.</p>
+          <h2>People review the work. Auxtho ties their approval to the specific version being sent.</h2>
+          <p>Auxtho App supports the review decision. Auxtho Console keeps items needing attention and follow-up visible.</p>
         </div>
 
         <article class="sales-product-band sales-product-band-app evidence-surface-card" data-evidence-surface="Auxtho App">
           <div class="sales-product-copy">
             <p class="sales-product-name">AUXTHO APP</p>
-            <h3>The human review workspace</h3>
-            <p>Bring selected work, evidence, ownership, and decision state into one review surface before release.</p>
+            <h3>Review the document and supporting evidence</h3>
+            <p>See the selected work, supporting evidence, responsible owner, and decision state in one review surface.</p>
             <ul>
-              <li>Prioritised review queue</li>
-              <li>Evidence and lineage in context</li>
-              <li>Human hold, reject, or release-ready decision</li>
+              <li>Work waiting for review</li>
+              <li>Evidence and earlier versions in context</li>
+              <li>Hold, reject, or mark release-ready</li>
             </ul>
           </div>
           <a class="sample-card-media proposal-surface-media sales-product-media sales-product-media-app" href="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32"
             data-lightbox-mode="app-overview"
-            data-lightbox-title="Auxtho App: Human review workspace"
+            data-lightbox-title="Auxtho App: Review workspace"
             data-lightbox-caption="Synthetic workflow showing review states and the point where a person decides."
-            aria-label="Open a larger view of the Auxtho App human review workspace">
+            aria-label="Open a larger view of the Auxtho App review workspace">
             <img src="/assets/proposal/app-overview-synthetic-replay-20260716.png?sha256=c46939e26b9c7e8c16f2c16a54f2a5690dd590133bf4b20bd00ca4a22c3ddf32" alt="Auxtho App review workspace showing synthetic review states." loading="lazy" decoding="async">
             <span class="sales-product-media-label">Synthetic workflow</span>
           </a>
@@ -220,19 +220,19 @@
         <article class="sales-product-band sales-product-band-console evidence-surface-card" data-evidence-surface="Auxtho Console">
           <div class="sales-product-copy">
             <p class="sales-product-name">AUXTHO CONSOLE</p>
-            <h3>The operator oversight surface</h3>
-            <p>Surface review attention, critical signals, and follow-up without moving the human decision out of the review path.</p>
+            <h3>See what needs attention</h3>
+            <p>Track items awaiting review, blocked items, and follow-up without moving the decision away from the reviewer.</p>
             <ul>
-              <li>Review attention and critical signals</li>
-              <li>Operational follow-up</li>
-              <li>Separate oversight and approval roles</li>
+              <li>Items awaiting review</li>
+              <li>Blocked items</li>
+              <li>Follow-up kept separate from approval</li>
             </ul>
           </div>
           <a class="sample-card-media proposal-surface-media sales-product-media sales-product-media-console" href="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712"
             data-lightbox-mode="console-wide"
-            data-lightbox-title="Auxtho Console: Operator oversight"
+            data-lightbox-title="Auxtho Console: Items needing attention"
             data-lightbox-caption="Synthetic workflow showing review attention and operator follow-up."
-            aria-label="Open a larger view of the Auxtho Console operator oversight surface">
+            aria-label="Open a larger view of the Auxtho Console items needing attention">
             <img src="/assets/proposal/console-synthetic-workflow-replay-20260716.png?sha256=03623bc225367452f87bf9c4ce0cb8503a7d0ade189c53105d4830b70e9b9712" alt="Auxtho Console showing synthetic review-attention signals." loading="lazy" decoding="async">
             <span class="sales-product-media-label">Synthetic workflow</span>
           </a>
@@ -244,8 +244,8 @@
       <div class="sales-shell">
         <div class="sales-section-heading">
           <p class="sales-eyebrow">THE OUTCOME</p>
-          <h2>Know what moved forward - and why.</h2>
-          <p>A release record keeps the decision legible after the moment has passed.</p>
+          <h2>See what was reviewed, who decided, and what happened next.</h2>
+          <p>The release record keeps those facts together after the decision.</p>
         </div>
         <div class="sales-record" aria-label="Example decision and evidence record">
           <div class="sales-record-state">
@@ -254,16 +254,16 @@
             <small>Decision state &middot; Human decision recorded</small>
           </div>
           <dl class="sales-record-grid">
-            <div><dt>What moved?</dt><dd>Policy review package</dd></div>
-            <div><dt>Who owned the decision?</dt><dd>Designated compliance reviewer</dd></div>
+            <div><dt>What was reviewed?</dt><dd>Client report</dd></div>
+            <div><dt>Who approved it?</dt><dd>Designated report reviewer</dd></div>
             <div><dt>What supported it?</dt><dd>Four linked evidence items</dd></div>
-            <div><dt>What happened next?</dt><dd>Release-ready; export remains controlled</dd></div>
+            <div><dt>What happened next?</dt><dd>Approved version matched; release-ready</dd></div>
           </dl>
         </div>
         <div class="sales-verify-strip">
           <div>
             <p class="sales-product-name">ARTIFACT VERIFICATION</p>
-            <h3>Compare the artifact after export.</h3>
+            <h3>Check the file after export.</h3>
             <p>Auxtho can compare a submitted SHA-256 digest with the digest recorded at export.</p>
           </div>
         </div>
@@ -306,15 +306,16 @@
         <div class="sales-start-layout">
           <div>
             <p class="sales-eyebrow">START WITH ONE WORKFLOW</p>
-            <h2>Begin where a wrong release would be hardest to explain.</h2>
+            <h2>Start with one customer response or client report.</h2>
           </div>
           <div>
-            <p>Map the output, evidence, accountable owner, human decision, and downstream release boundary around one consequential workflow.</p>
-            <ul class="sales-use-cases" aria-label="Example high-risk workflows">
-              <li>Policy review</li>
-              <li>Model-risk memo</li>
+            <p>Map who reviews it, which version is approved, what system sends it, and how delivery is confirmed.</p>
+            <p class="sales-product-name">WORKFLOWS TO EVALUATE</p>
+            <ul class="sales-use-cases" aria-label="Workflows to evaluate">
+              <li>Financial complaint response</li>
+              <li>Compliance or assurance report</li>
               <li>Audit response</li>
-              <li>Customer communication</li>
+              <li>Model-risk memo</li>
             </ul>
           </div>
         </div>
@@ -325,10 +326,10 @@
       <div class="sales-shell sales-contact-layout">
         <div>
           <p class="sales-eyebrow">AUXTHO</p>
-          <h2>Put an accountable human decision before the next consequential step.</h2>
+          <h2>Start with the document that must match the approved version.</h2>
         </div>
         <div class="sales-contact-action">
-          <a href="mailto:hello@auxtho.com?subject=Discuss%20One%20High-Risk%20AI%20Workflow" class="sales-button sales-button-primary">Discuss one high-risk workflow</a>
+          <a href="mailto:hello@auxtho.com?subject=Discuss%20One%20AI-Assisted%20Document%20Workflow" class="sales-button sales-button-primary">Discuss one workflow</a>
           <span>hello@auxtho.com</span>
         </div>
       </div>
