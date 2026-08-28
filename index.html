@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Auxtho - Check the approved version before AI-assisted work is sent</title>
   <meta name="description"
-    content="Auxtho checks that the version being sent is still the approved version. If it changed, release stops; if delivery is unconfirmed, there is no automatic retry.">
+    content="Auxtho lets the approved version move forward, stops a changed version before sending, and prevents automatic resend when the result is unconfirmed.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark light">
   <link rel="icon" href="/assets/favicon.svg">
@@ -18,9 +18,9 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Auxtho - Check the approved version before AI-assisted work is sent">
   <meta property="og:description"
-    content="Auxtho checks that the version being sent is still the one a person reviewed and approved. If it changed, release stops.">
+    content="Auxtho lets the approved version move forward, stops a changed version before sending, and prevents automatic resend when the result is unconfirmed.">
   <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
-  <meta property="og:image:alt" content="Auxtho checks the approved version before AI-assisted work is sent">
+  <meta property="og:image:alt" content="Auxtho lets the approved version move forward and stops a changed version before sending">
   <meta property="og:url" content="https://auxtho.com">
   <meta property="og:site_name" content="Auxtho">
   <meta property="og:locale" content="en_US">
@@ -30,7 +30,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Auxtho - Check the approved version before AI-assisted work is sent">
   <meta name="twitter:description"
-    content="Auxtho checks that the version being sent is still the one a person reviewed and approved. If it changed, release stops.">
+    content="Auxtho lets the approved version move forward, stops a changed version before sending, and prevents automatic resend when the result is unconfirmed.">
   <meta name="twitter:image" content="https://auxtho.com/assets/og-image-v2-16.png">
 
   <link rel="stylesheet" href="/assets/style.css?sha256=dae86678fceee76a0e55b6af31c0107f79aa2ce7980b900121e8d6a540bef9f5">
@@ -103,16 +103,16 @@
       <div class="sales-hero-scrim" aria-hidden="true"></div>
       <div class="container mx-auto px-6 sales-hero-content">
         <p class="sales-eyebrow">FOR REGULATED TEAMS RESPONSIBLE FOR CUSTOMER RESPONSES AND CLIENT REPORTS</p>
-        <h1 id="sales-hero-title">Auxtho checks that the version being sent is still the one a person reviewed and approved.</h1>
+        <h1 id="sales-hero-title">Auxtho lets the approved version move forward and stops the changed one.</h1>
         <p class="sales-hero-copy">
-          If the version changes after approval, Auxtho stops it before sending and requires another review.
-          If the result of a sending attempt cannot be confirmed, Auxtho leaves the status unconfirmed and does not send again automatically.
+          For AI-assisted customer responses and client reports, a person makes the final decision.
+          Auxtho enforces it at the sending step and prevents an automatic resend when the result is unconfirmed.
         </p>
         <div class="sales-hero-actions">
           <a href="/proof/release-core/" class="sales-button sales-button-primary">View public proof</a>
           <a href="mailto:hello@auxtho.com?subject=Discuss%20One%20AI-Assisted%20Document%20Workflow" class="sales-button sales-button-secondary">Discuss one workflow</a>
         </div>
-        <p class="sales-urgency"><strong>AI can help prepare the work. A person still decides what is sent.</strong><br>Public proof: synthetic data, local execution, no external providers. Not customer or production results.</p>
+        <p class="sales-urgency"><strong>AI can help prepare the work. A person still decides what is sent.</strong><br>Public proof: three versioned local synthetic tests.</p>
       </div>
       <p class="sales-media-label">Synthetic workflow</p>
     </section>
@@ -121,15 +121,15 @@
       <div class="sales-shell">
         <div class="sales-section-heading">
           <p class="sales-eyebrow">WHY NOW</p>
-          <h2>In some workflows, the version prepared for delivery can change after approval.</h2>
-          <p>AI can help prepare a customer response or client report. A person reviews and approves one version. Auxtho checks whether the version about to be sent still matches it.</p>
+          <h2>Approval should not follow a changed version.</h2>
+          <p>A person approves one version of a customer response or client report. If another version reaches the sending step, that approval no longer applies. Auxtho stops it and returns it for review.</p>
         </div>
         <div class="sales-fracture" aria-label="The final review and delivery gap">
           <div><span>01</span><strong>Draft prepared</strong><small>AI helps prepare a response, report, or other document.</small></div>
           <div><span>02</span><strong>Version approved</strong><small>A person reviews the content and decides whether it can move forward.</small></div>
-          <div><span>03</span><strong>Version checked</strong><small>Before sending, Auxtho checks that the approved version has not changed.</small></div>
+          <div><span>03</span><strong>Approval enforced</strong><small>Before sending, Auxtho enforces the decision against the version that earned it.</small></div>
         </div>
-        <p class="sales-fracture-answer">If the versions do not match, Auxtho stops the send and requires another review. If the result of a sending attempt is unconfirmed, it does not send again automatically.</p>
+        <p class="sales-fracture-answer">A matching version moves forward. A mismatch stops. If the result is unconfirmed, Auxtho does not send the work again automatically.</p>
       </div>
     </section>
 
@@ -176,14 +176,14 @@
       <div class="sales-shell">
         <div class="sales-section-heading sales-section-heading-compact">
           <p class="sales-eyebrow">HOW IT WORKS</p>
-          <h2>Check the approved version before delivery.</h2>
-          <p>For one workflow, Auxtho records which version was reviewed, who approved it, and whether the version presented for delivery still matches.</p>
+          <h2>Keep approval with the version that earned it.</h2>
+          <p>Auxtho records the reviewed version, the person who approved it, and the result at the sending step.</p>
         </div>
         <ol class="sales-process-rail">
           <li><span>01</span><strong>Name the document</strong><p>Choose the customer response, client report, or other work being controlled.</p></li>
           <li><span>02</span><strong>Review the version</strong><p>Link the reviewed document to the evidence considered and the responsible reviewer.</p></li>
           <li><span>03</span><strong>Make the decision</strong><p>A designated person approves, holds, or rejects that version.</p></li>
-          <li><span>04</span><strong>Check and record</strong><p>Before delivery, Auxtho checks that approval still applies and records the result.</p></li>
+          <li><span>04</span><strong>Enforce and record</strong><p>At the sending step, Auxtho lets the approved version move forward, stops a mismatch, and records the result.</p></li>
         </ol>
       </div>
     </section>
@@ -192,15 +192,15 @@
       <div class="sales-shell">
         <div class="sales-section-heading">
           <p class="sales-eyebrow">THE PRODUCT</p>
-          <h2>People review the work. Auxtho ties their approval to the specific version being sent.</h2>
-          <p>Auxtho App supports the review decision. Auxtho Console keeps items needing attention and follow-up visible.</p>
+          <h2>People decide. Auxtho enforces that decision at the sending step.</h2>
+          <p>Auxtho App puts the document and evidence in front of the reviewer. Auxtho Console shows what is waiting, blocked, or ready for follow-up.</p>
         </div>
 
         <article class="sales-product-band sales-product-band-app evidence-surface-card" data-evidence-surface="Auxtho App">
           <div class="sales-product-copy">
             <p class="sales-product-name">AUXTHO APP</p>
-            <h3>Review the document and supporting evidence</h3>
-            <p>See the selected work, supporting evidence, responsible owner, and decision state in one review surface.</p>
+            <h3>Review the work and make the decision</h3>
+            <p>Review the document, examine the evidence, and approve, hold, or reject it in one place.</p>
             <ul>
               <li>Work waiting for review</li>
               <li>Evidence and earlier versions in context</li>
@@ -244,8 +244,8 @@
       <div class="sales-shell">
         <div class="sales-section-heading">
           <p class="sales-eyebrow">THE OUTCOME</p>
-          <h2>See what was reviewed, who decided, and what happened next.</h2>
-          <p>The release record keeps those facts together after the decision.</p>
+          <h2>Know which version was approved and what happened next.</h2>
+          <p>The release record keeps the reviewed version, reviewer, decision, and result together.</p>
         </div>
         <div class="sales-record" aria-label="Example decision and evidence record">
           <div class="sales-record-state">
@@ -263,8 +263,8 @@
         <div class="sales-verify-strip">
           <div>
             <p class="sales-product-name">ARTIFACT VERIFICATION</p>
-            <h3>Check the file after export.</h3>
-            <p>Auxtho can compare a submitted SHA-256 digest with the digest recorded at export.</p>
+            <h3>Verify the exported file.</h3>
+            <p>Auxtho compares a submitted SHA-256 digest with the digest recorded at export.</p>
           </div>
         </div>
       </div>

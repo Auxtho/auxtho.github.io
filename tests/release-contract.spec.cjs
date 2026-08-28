@@ -1381,21 +1381,23 @@ test('candidate artifact rejects evidence traversal, cross-binding, duplicate pa
   }
 });
 
-test('first screen presents the reviewed-version check and failure boundary in plain language', () => {
+test('first screen presents the approved path and enforcement boundary in plain language', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const hero = index.match(/<section[^>]*class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
   assert.match(hero, /For regulated teams responsible for customer responses and client reports/i);
-  assert.match(hero, /Auxtho checks that the version being sent is still the one a person reviewed and approved/i);
-  assert.match(hero, /stops it before sending and requires another review/i);
-  assert.match(hero, /leaves the status unconfirmed and does not send again automatically/i);
+  assert.match(hero, /Auxtho lets the approved version move forward and stops the changed one/i);
+  assert.match(hero, /a person makes the final decision/i);
+  assert.match(hero, /Auxtho enforces it at the sending step/i);
+  assert.match(hero, /prevents an automatic resend when the result is unconfirmed/i);
   assert.match(hero, /Discuss one workflow/i);
   assert.match(hero, /View public proof/i);
   assert.match(hero, /Synthetic workflow/i);
   assert.match(hero, /A person still decides what is sent/i);
-  assert.match(hero, /Public proof: synthetic data, local execution, no external providers/i);
-  assert.match(hero, /Not customer or production results/i);
+  assert.match(hero, /Public proof: three versioned local synthetic tests/i);
+  assert.doesNotMatch(hero, /Not customer or production results/i);
   assert.doesNotMatch(hero, /release object|accountable authority|evidence and policy context|reconciliation/i);
-  assert.match(index, /does not send again automatically/i);
+  assert.match(index, /A matching version moves forward\. A mismatch stops\. If the result is unconfirmed, Auxtho does not send the work again automatically\./i);
+  assert.doesNotMatch(index, /An unconfirmed result is not sent again automatically/i);
   assert.match(index, /class="vision-film-continue" href="#how-it-works"/i);
   assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval|masked data/i);
 });
@@ -1466,11 +1468,11 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.doesNotMatch(index, /href="\/verify\.html"/);
-  assert.match(index, /Auxtho App supports the review decision/i);
-  assert.match(index, /Auxtho Console keeps items needing attention and follow-up visible/i);
-  assert.match(index, /For one workflow, Auxtho records which version was reviewed, who approved it/i);
+  assert.match(index, /Auxtho App puts the document and evidence in front of the reviewer/i);
+  assert.match(index, /Auxtho Console shows what is waiting, blocked, or ready for follow-up/i);
+  assert.match(index, /Auxtho records the reviewed version, the person who approved it, and the result at the sending step/i);
   assert.match(index, /Example release record/i);
-  assert.match(index, /Review the document and supporting evidence/i);
+  assert.match(index, /Review the work and make the decision/i);
   assert.match(index, /See what needs attention/i);
   assert.match(index, /Track items awaiting review, blocked items, and follow-up/i);
   assert.doesNotMatch(index, /critical signals/i);
