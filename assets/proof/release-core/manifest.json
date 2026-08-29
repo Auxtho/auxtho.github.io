@@ -27,8 +27,8 @@
     {
       "path": "/proof/release-core/index.html",
       "media_type": "text/html",
-      "bytes": 10741,
-      "sha256": "9bb21f6b85737e4aa7ac982e3e66e43118c4067c224a9f7e7ed2165aea62204b"
+      "bytes": 11032,
+      "sha256": "f781d7246fa4ee7c6a689cd9e881d16ed61173efeedc401d7140edd4730e3dcc"
     },
     {
       "path": "/proof/release-core/transcript/index.html",

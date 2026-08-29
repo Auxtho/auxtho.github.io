@@ -115,6 +115,7 @@ function createSourceFixture(targetRoot) {
     '404.html', 'evidence-notes.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
+    'proof/singapore-source-review/index.html',
     'security/ardamire/index.html', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
@@ -1381,23 +1382,23 @@ test('candidate artifact rejects evidence traversal, cross-binding, duplicate pa
   }
 });
 
-test('first screen presents the approved path and enforcement boundary in plain language', () => {
+test('first screen presents evidence-backed review and controlled release in plain language', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const hero = index.match(/<section[^>]*class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
-  assert.match(hero, /For regulated teams responsible for customer responses and client reports/i);
-  assert.match(hero, /Auxtho lets the approved version move forward and stops the changed one/i);
-  assert.match(hero, /a person makes the final decision/i);
-  assert.match(hero, /Auxtho enforces it at the sending step/i);
-  assert.match(hero, /prevents an automatic resend when the result is unconfirmed/i);
+  assert.match(hero, /For regulated financial teams/i);
+  assert.match(hero, /AI can do the work\. A person must own the consequence/i);
+  assert.match(hero, /checks selected claims/i);
+  assert.match(hero, /approved sources and review rules/i);
+  assert.match(hero, /accountable reviewer/i);
+  assert.match(hero, /exact reviewed version, authorized next action, and recorded result/i);
   assert.match(hero, /Discuss one workflow/i);
   assert.match(hero, /View public proof/i);
   assert.match(hero, /Synthetic workflow/i);
-  assert.match(hero, /A person still decides what is sent/i);
-  assert.match(hero, /Public proof: three versioned local synthetic tests/i);
-  assert.doesNotMatch(hero, /Not customer or production results/i);
-  assert.doesNotMatch(hero, /release object|accountable authority|evidence and policy context|reconciliation/i);
-  assert.match(index, /A matching version moves forward\. A mismatch stops\. If the result is unconfirmed, Auxtho does not send the work again automatically\./i);
-  assert.doesNotMatch(index, /An unconfirmed result is not sent again automatically/i);
+  assert.match(hero, /Public proof: a local synthetic Singapore source-review demo and a separate Release Core proof/i);
+  assert.doesNotMatch(hero, /customer adoption|production readiness|regulatory approval/i);
+  assert.match(index, /Source-based review helps determine what a person should approve/i);
+  assert.match(index, /A changed or unconfirmed result does not inherit approval or trigger an automatic resend/i);
+  assert.doesNotMatch(index, /important statements|material claims|Policy Packs?/i);
   assert.match(index, /class="vision-film-continue" href="#how-it-works"/i);
   assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval|masked data/i);
 });
@@ -1407,6 +1408,7 @@ test('post-deploy browser smoke covers Evidence Notes and the retired verifier r
   assert.match(smoke, /path: '\/evidence-notes\.html'/i);
   assert.match(smoke, /path: '\/proof\/release-core\/'/i);
   assert.match(smoke, /path: '\/proof\/release-core\/transcript\/'/i);
+  assert.match(smoke, /path: '\/proof\/singapore-source-review\/'/i);
   assert.match(smoke, /public verifier route is absent/i);
   assert.match(smoke, /response\.status\(\)\)\.toBe\(404\)/i);
   assert.match(smoke, /api_request_count/i);
@@ -1450,6 +1452,53 @@ test('Release Core public manifest binds the exact public proof assets and priva
   ]) assert.equal(manifestPaths.has(requiredPath), true, `missing proof manifest path: ${requiredPath}`);
 });
 
+test('Singapore source-review proof preserves exact source roles, claim boundary, and release result', () => {
+  const page = fs.readFileSync(
+    path.join(root, 'proof', 'singapore-source-review', 'index.html'),
+    'utf8',
+  );
+  const manifestPath = path.join(
+    root,
+    'assets',
+    'proof',
+    'singapore-source-review',
+    'manifest.json',
+  );
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const frozenScreen = fs.readFileSync(
+    path.join(root, 'assets', 'proof', 'singapore-source-review', 'frozen-demo.png'),
+  );
+
+  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v1');
+  assert.equal(manifest.status, 'MAS_DEMO_FREEZE_GO');
+  assert.equal(manifest.product_source.repository_visibility, 'private');
+  assert.equal(manifest.source_set.sources.length, 3);
+  assert.equal(manifest.source_set.sources[0].release_support, 'primary or supporting');
+  assert.equal(manifest.source_set.sources[1].release_support, 'supporting only');
+  assert.equal(manifest.source_set.sources[2].release_support, 'not eligible');
+  assert.equal(manifest.synthetic_case.materiality_classifier, false);
+  assert.equal(manifest.synthetic_case.claim_statuses.C1, 'supported');
+  assert.equal(manifest.synthetic_case.claim_statuses.C2, 'evidence mismatch');
+  assert.equal(manifest.synthetic_case.claim_statuses.C3, 'proposed-only support');
+  assert.equal(manifest.release_result.mutation_blocked, true);
+  assert.equal(manifest.release_result.unknown_retry_directive, 'NO_AUTOMATIC_RETRY');
+  assert.equal(manifest.release_result.provider_calls, 0);
+  assert.equal(manifest.release_result.customer_data_used, false);
+  assert.equal(manifest.release_result.external_dispatch_executed, false);
+  assert.equal(
+    sha256(frozenScreen),
+    '224abdb98cfb582a4a42335786400a7d285df277a7722f70fd76ea9560f97e52',
+  );
+
+  assert.match(page, /Claims defined for review/i);
+  assert.match(page, /source-policy eligibility separate from PDF traceability/i);
+  assert.match(page, /2026 TRM Consultation Paper/i);
+  assert.match(page, /Not eligible/i);
+  assert.match(page, /Changed artifact blocked/i);
+  assert.match(page, /No automatic retry/i);
+  assert.doesNotMatch(page, /material claims|important statements|MAS approved|compliance certified/i);
+});
+
 test('public research and trust routes are stable, scoped, and buyer-readable', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const isp = fs.readFileSync(path.join(root, 'lineage', 'isp', 'index.html'), 'utf8');
@@ -1468,23 +1517,23 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.doesNotMatch(index, /href="\/verify\.html"/);
-  assert.match(index, /Auxtho App puts the document and evidence in front of the reviewer/i);
-  assert.match(index, /Auxtho Console shows what is waiting, blocked, or ready for follow-up/i);
-  assert.match(index, /Auxtho records the reviewed version, the person who approved it, and the result at the sending step/i);
+  assert.match(index, /Auxtho checks selected claims in AI-assisted financial complaint responses/i);
+  assert.match(index, /Source-based review helps determine what a person should approve/i);
+  assert.match(index, /Release Core keeps that decision tied to the exact reviewed version/i);
   assert.match(index, /Example release record/i);
-  assert.match(index, /Review the work and make the decision/i);
+  assert.match(index, /See each selected claim, its source, and what needs judgment/i);
   assert.match(index, /See what needs attention/i);
   assert.match(index, /Track items awaiting review, blocked items, and follow-up/i);
   assert.doesNotMatch(index, /critical signals/i);
-  assert.match(index, /Control beneath the interface/i);
+  assert.doesNotMatch(index, /material claims|important statements|Policy Packs?|source strength/i);
+  assert.match(index, /Deeper technical work, outside the first buyer story/i);
   assert.match(index, /Intent Synchronization Protocol \(ISP\)/i);
   assert.match(index, /Ardamire Defense Layer/i);
   assert.match(index, /Auxtho Artifact Verification/i);
   assert.match(index, /Workflows to evaluate/i);
   assert.match(index, /Financial complaint response/i);
   assert.match(index, /Compliance or assurance report/i);
-  assert.match(index, /Model-risk memo/i);
-  assert.match(index, /Audit response/i);
+  assert.match(index, /One other high-consequence workflow after its review scope is defined/i);
   assert.doesNotMatch(index, /controlled synthetic rendering|captured \d{1,2} Jul 2026|Evidence record:/i);
 
   assert.match(isp, /<meta name="robots" content="index,follow">/);
@@ -1516,6 +1565,7 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.doesNotMatch(ardamire, /guarantees? prevention|certified defense|autonomous approval/i);
 
   assert.match(sitemap, /https:\/\/auxtho\.com\/lineage\/isp\//);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/proof\/singapore-source-review\//);
   assert.match(sitemap, /https:\/\/auxtho\.com\/security\/ardamire\//);
   assert.doesNotMatch(sitemap, /verify\.html/);
   assert.equal(fs.existsSync(path.join(root, 'verify.html')), false);
@@ -1527,7 +1577,11 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
 
   for (const required of [
     '/assets/technical-foundations.css',
+    '/assets/proof-singapore-source-review.css',
+    '/assets/proof/singapore-source-review/frozen-demo.png',
+    '/assets/proof/singapore-source-review/manifest.json',
     '/lineage/isp/index.html',
+    '/proof/singapore-source-review/index.html',
     '/security/ardamire/index.html',
   ]) assert.ok(publicFiles.paths.includes(required), required);
 });

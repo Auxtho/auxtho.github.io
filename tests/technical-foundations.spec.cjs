@@ -162,8 +162,10 @@ test('homepage shows the product proposition before the mobile vision film witho
       const box = button.getBoundingClientRect();
       return { bottom: box.bottom, height: box.height, left: box.left, right: box.right, top: box.top };
     }));
-  expect(heroButtons).toHaveLength(2);
-  expect(heroButtons[1].top).toBeGreaterThanOrEqual(heroButtons[0].bottom - 1);
+  expect(heroButtons).toHaveLength(3);
+  expect(heroButtons.slice(1).every((box, index) => (
+    box.top >= heroButtons[index].bottom - 1
+  ))).toBe(true);
   expect(heroButtons.every((box) => box.height >= 44 && box.left >= 0 && box.right <= 390)).toBe(true);
 
   await film.scrollIntoViewIfNeeded();
@@ -210,7 +212,7 @@ test('homepage keeps technical references secondary and readable on desktop', as
   await expect(section).toBeVisible();
   await expect(section.getByRole('heading', {
     level: 2,
-    name: 'Control beneath the interface.',
+    name: 'Deeper technical work, outside the first buyer story.',
   })).toBeVisible();
   await expect(section.locator('.sales-foundation')).toHaveCount(3);
 
