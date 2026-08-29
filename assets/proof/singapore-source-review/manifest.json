@@ -8,6 +8,26 @@
     "tree": "cd50d272e45f79824fd38ee210821657e17f5a41",
     "repository_visibility": "private"
   },
+  "presentation_capture": {
+    "status": "CLEAN_CAPTURE_GO",
+    "capture_source_commit": "07b9a36abcc4ef3b22da813101887721ada9d3e9",
+    "capture_source_tree": "feed5da2b590345ef2cd077c1d9fcc6543bbe2b7",
+    "parent_frozen_commit": "de7ee8dc183ff3846068a0c1a9e2cc88e36676d8",
+    "runtime_mode": "next-production-capture-only",
+    "ordinary_production_route": "not_found",
+    "screenshot": {
+      "path": "/assets/proof/singapore-source-review/frozen-demo.png",
+      "byte_length": 424355,
+      "width": 1280,
+      "height": 2132,
+      "sha256": "D4CE3A63F2E0F5E55BE47C7854D2BF4D308ABAEADD99448E89D50836FC75933E"
+    },
+    "capture_manifest": {
+      "path": "/assets/proof/singapore-source-review/capture-manifest.json",
+      "byte_length": 3812,
+      "sha256": "64E44BDA2841FDF0B63CB2927DD5AA5FE5792154245B5E902FE71DA66E4E4383"
+    }
+  },
   "source_set": {
     "version": "mas-source-pack-2026-08-29.v2",
     "sha256": "8BC5DE02D55B91BE813C500E4C151B68461587DE40CEC43A230B81A73C502EC0",
@@ -60,10 +80,15 @@
     }
   },
   "release_result": {
+    "thread_id": "mas-regulatory-demo-64268a87e238691e",
+    "run_id": "mas-regulatory-run-64268a87e238691e",
+    "human_decision_id": "decision-5cc965351a476ba31e149f9c75d3d852",
     "human_decision": "APPROVE",
-    "reviewed_artifact_sha256": "A3D69873558E56E715533BF8B12B1950DF8C8C648F5212016A80FFB62D47D5FC",
-    "mutated_artifact_sha256": "F1906D3C78D8F0D5B4C36103709F1805F93721EDF2C3CE768022292401B5A02E",
+    "authorization_id": "authorization-460c7ef104734338767b7dd5e2144167",
+    "reviewed_artifact_sha256": "1BBCD04323278FEF27C9441EB49C5C59C1AF1C4E2D5BBE9702736A1BAD583060",
+    "mutated_artifact_sha256": "7B1A8DB63A5DBDF2702170FEE580E42B19E0978696CCA4D334DD39EDA62EB30E",
     "mutation_blocked": true,
+    "release_core_state": "INTENT_RECORDED",
     "unknown_state": "UNKNOWN",
     "unknown_retry_directive": "NO_AUTOMATIC_RETRY",
     "provider_calls": 0,
@@ -76,7 +101,17 @@
     "typescript": "pass",
     "eslint": "pass",
     "independent_live_verifier": "MAS_DEMO_FREEZE_GO",
-    "offline_verifier": "MAS_DEMO_FREEZE_GO"
+    "offline_verifier": "MAS_DEMO_FREEZE_GO",
+    "clean_capture_verifier": "CLEAN_CAPTURE_GO"
+  },
+  "capture_absence_assertions": {
+    "nextjs_portal": false,
+    "nextjs_development_indicator": false,
+    "localhost_or_address_bar_visible": false,
+    "personal_identifier_visible": false,
+    "secret_or_credential_visible": false,
+    "admin_email_visible": false,
+    "customer_data_used": false
   },
   "claim_boundary": [
     "not legal advice",

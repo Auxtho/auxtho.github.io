@@ -1485,9 +1485,12 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.equal(manifest.release_result.provider_calls, 0);
   assert.equal(manifest.release_result.customer_data_used, false);
   assert.equal(manifest.release_result.external_dispatch_executed, false);
+  assert.equal(manifest.presentation_capture.status, 'CLEAN_CAPTURE_GO');
+  assert.equal(manifest.capture_absence_assertions.nextjs_development_indicator, false);
+  assert.equal(manifest.capture_absence_assertions.nextjs_portal, false);
   assert.equal(
     sha256(frozenScreen),
-    '224abdb98cfb582a4a42335786400a7d285df277a7722f70fd76ea9560f97e52',
+    'd4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e',
   );
 
   assert.match(page, /Claims defined for review/i);
@@ -1495,6 +1498,7 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.match(page, /2026 TRM Consultation Paper/i);
   assert.match(page, /Not eligible/i);
   assert.match(page, /Changed artifact blocked/i);
+  assert.match(page, /Clean capture/i);
   assert.match(page, /No automatic retry/i);
   assert.doesNotMatch(page, /material claims|important statements|MAS approved|compliance certified/i);
 });

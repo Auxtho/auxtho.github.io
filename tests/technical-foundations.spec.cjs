@@ -394,6 +394,35 @@ test('Release Core proof uses CSP-compatible external styles with deliberate des
   }
 });
 
+test('Singapore source-review proof serves the clean capture on desktop and mobile', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await openWithoutRuntimeErrors(page, '/proof/singapore-source-review/');
+
+    const cleanCapture = page.locator(
+      'img[src^="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63"]',
+    );
+    await expect(cleanCapture).toBeVisible();
+    await expect(page.getByText('Clean browser capture', { exact: true })).toBeVisible();
+    await expect(page.getByText('CLEAN_CAPTURE_GO', { exact: true })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Open capture manifest' })).toHaveAttribute(
+      'href',
+      /capture-manifest\.json\?sha256=64e44bda[0-9a-f]{56}$/,
+    );
+
+    const image = await cleanCapture.evaluate((element) => ({
+      complete: element.complete,
+      naturalWidth: element.naturalWidth,
+      naturalHeight: element.naturalHeight,
+    }));
+    expect(image).toEqual({ complete: true, naturalWidth: 1280, naturalHeight: 2132 });
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test('Release Core transcript preserves six-page reading order on desktop and mobile', async ({ page }) => {
   for (const viewport of [
     { width: 1440, height: 900, minimumTitleSize: 54 },
