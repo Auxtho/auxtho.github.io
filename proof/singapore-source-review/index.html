@@ -47,9 +47,9 @@
         </div>
         <div class="sg-proof-actions">
           <a class="proof-button" href="#sources">Inspect the source set</a>
-          <a class="proof-button secondary" href="/assets/proof/singapore-source-review/frozen-demo.png?sha256=224abdb98cfb582a4a42335786400a7d285df277a7722f70fd76ea9560f97e52">Open the frozen screen</a>
+          <a class="proof-button secondary" href="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e">Open the clean capture</a>
           <a class="proof-button secondary" href="/proof/release-core/">View Release Core proof</a>
-          <a class="proof-button secondary" href="/assets/proof/singapore-source-review/manifest.json?sha256=a4232fc8d6db9828b279cd17e3e0ab6f055fc50aa45199045ce6d01fcef36c96">Open public manifest</a>
+          <a class="proof-button secondary" href="/assets/proof/singapore-source-review/manifest.json?sha256=04429134d0c744e1e2c77346f743bd5c4f46dd003d84fe20bec3e8bbb3078809">Open public manifest</a>
         </div>
       </div>
     </section>
@@ -152,12 +152,12 @@
 
     <section class="sg-proof-screen" aria-labelledby="screen-title">
       <div class="proof-wrap">
-        <p class="proof-kicker">Frozen browser outcome</p>
+        <p class="proof-kicker">Clean browser capture</p>
         <h2 id="screen-title" class="proof-section-title">One screen connects review and release.</h2>
-        <p class="proof-body">The browser path completed after source inspection, human approval, durable readback, post-approval mutation blocking, and the preloaded UNKNOWN/no-retry branch.</p>
+        <p class="proof-body">A fresh local replay from the frozen product lineage completed after source inspection, human approval, durable readback, post-approval mutation blocking, and the preloaded UNKNOWN/no-retry branch.</p>
         <figure>
-          <a href="/assets/proof/singapore-source-review/frozen-demo.png?sha256=224abdb98cfb582a4a42335786400a7d285df277a7722f70fd76ea9560f97e52"><img src="/assets/proof/singapore-source-review/frozen-demo.png?sha256=224abdb98cfb582a4a42335786400a7d285df277a7722f70fd76ea9560f97e52" alt="Frozen Auxtho local synthetic Singapore source-review screen showing selected claims, source cards, human decision, Release Core, mutation blocking, and UNKNOWN no-retry state."></a>
-          <figcaption>Frozen local synthetic workflow. The screenshot was generated only after the single browser E2E completed. It is not customer, production, or external-delivery evidence.</figcaption>
+          <a href="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e"><img src="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e" alt="Clean Auxtho local synthetic Singapore source-review capture showing selected claims, source cards, human decision, Release Core, mutation blocking, and UNKNOWN no-retry state."></a>
+          <figcaption>Clean capture of a new local synthetic replay from the frozen product lineage. It was generated only after the single browser E2E completed. It is not customer, production, or external-delivery evidence.</figcaption>
         </figure>
       </div>
     </section>
@@ -170,12 +170,12 @@
           <article class="sg-result-card">
             <h3>Reviewed and authorized</h3>
             <p>The synthetic accountable reviewer approved the exact reviewed artifact. The local path recorded intent but executed no external dispatch.</p>
-            <code>A3D69873558E56E715533BF8B12B1950DF8C8C648F5212016A80FFB62D47D5FC</code>
+            <code>1BBCD04323278FEF27C9441EB49C5C59C1AF1C4E2D5BBE9702736A1BAD583060</code>
           </article>
           <article class="sg-result-card">
             <h3>Changed artifact blocked</h3>
             <p>A different artifact reached the boundary after approval. The prior authorization did not apply.</p>
-            <code>F1906D3C78D8F0D5B4C36103709F1805F93721EDF2C3CE768022292401B5A02E</code>
+            <code>7B1A8DB63A5DBDF2702170FEE580E42B19E0978696CCA4D334DD39EDA62EB30E</code>
           </article>
           <article class="sg-result-card">
             <h3>Unresolved result stays UNKNOWN</h3>
@@ -197,12 +197,16 @@
         <h2 id="anchors-title" class="proof-section-title">Frozen, hash-pinned, and independently replayed.</h2>
         <dl class="proof-anchor-grid">
           <div class="proof-anchor"><dt>Frozen product source (private)</dt><dd><code>bba1fc04c0f79426c45d49532e937edb5f2cbb79</code></dd></div>
+          <div class="proof-anchor"><dt>Clean capture source (private)</dt><dd><code>07b9a36abcc4ef3b22da813101887721ada9d3e9</code></dd></div>
+          <div class="proof-anchor"><dt>Clean capture SHA-256</dt><dd><code>D4CE3A63F2E0F5E55BE47C7854D2BF4D308ABAEADD99448E89D50836FC75933E</code></dd></div>
           <div class="proof-anchor"><dt>Source-set manifest SHA-256</dt><dd><code>8BC5DE02D55B91BE813C500E4C151B68461587DE40CEC43A230B81A73C502EC0</code></dd></div>
           <div class="proof-anchor"><dt>Claim-map SHA-256</dt><dd><code>C1B4183DDBA55F2D544522B255B4C3A4638405E6D53AE3B57242F7CC16371B38</code></dd></div>
           <div class="proof-anchor"><dt>Changed-risk backend owners</dt><dd><code>150 passed</code></dd></div>
           <div class="proof-anchor"><dt>Browser E2E</dt><dd><code>1 passed</code></dd></div>
           <div class="proof-anchor"><dt>Independent verifier</dt><dd><code>MAS_DEMO_FREEZE_GO</code></dd></div>
-          <div class="proof-anchor"><dt>Public machine-readable manifest</dt><dd><a href="/assets/proof/singapore-source-review/manifest.json?sha256=a4232fc8d6db9828b279cd17e3e0ab6f055fc50aa45199045ce6d01fcef36c96">Open manifest</a></dd></div>
+          <div class="proof-anchor"><dt>Clean capture verifier</dt><dd><code>CLEAN_CAPTURE_GO</code></dd></div>
+          <div class="proof-anchor"><dt>Public machine-readable manifest</dt><dd><a href="/assets/proof/singapore-source-review/manifest.json?sha256=04429134d0c744e1e2c77346f743bd5c4f46dd003d84fe20bec3e8bbb3078809">Open manifest</a></dd></div>
+          <div class="proof-anchor"><dt>Clean capture manifest</dt><dd><a href="/assets/proof/singapore-source-review/capture-manifest.json?sha256=64e44bda2841fdf0b63cb2927dd5aa5fe5792154245b5e902fe71da66e4e4383">Open capture manifest</a></dd></div>
           <div class="proof-anchor"><dt>Separate release proof</dt><dd><a href="/proof/release-core/">Open Release Core proof</a></dd></div>
         </dl>
         <div class="sg-proof-boundary">

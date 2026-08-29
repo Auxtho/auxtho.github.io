@@ -1,0 +1,97 @@
+{
+  "schema_version": "auxtho-mas-regulatory-demo-clean-capture-v1",
+  "status": "CLEAN_CAPTURE_GO",
+  "frozen_lineage": {
+    "final_commit": "de7ee8dc183ff3846068a0c1a9e2cc88e36676d8",
+    "final_tree": "77864fdcbd0d92980cee8c4b4637ff8406cd893f",
+    "product_source_commit": "bba1fc04c0f79426c45d49532e937edb5f2cbb79",
+    "product_source_tree": "cd50d272e45f79824fd38ee210821657e17f5a41"
+  },
+  "capture_source": {
+    "commit": "07b9a36abcc4ef3b22da813101887721ada9d3e9",
+    "tree": "feed5da2b590345ef2cd077c1d9fcc6543bbe2b7",
+    "branch": "codex/mas-regulatory-demo-clean-capture-20260829"
+  },
+  "runtime": {
+    "mode": "next-production-capture-only",
+    "next_version": "16.2.12",
+    "dev_indicators": false,
+    "route": "/mas-demo",
+    "local_url": "http://127.0.0.1:13002/mas-demo",
+    "ordinary_production_route": "not_found",
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "device_scale_factor": 1,
+    "full_page": true,
+    "screenshot_masked": false,
+    "screenshot_cropped": false,
+    "screenshot_css_injected": false
+  },
+  "capture_artifact": {
+    "filename": "singapore-mas-demo-clean-capture-2026-08-29.png",
+    "byte_length": 424355,
+    "sha256": "d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e",
+    "width": 1280,
+    "height": 2132
+  },
+  "run": {
+    "case_id": "synthetic-mas-financial-report-review-v1",
+    "thread_id": "mas-regulatory-demo-64268a87e238691e",
+    "run_id": "mas-regulatory-run-64268a87e238691e",
+    "release_snapshot_id": "5592019c65d7caaad0e1263f",
+    "level_a_authority_id": "level-a-mas-demo-ac27e84164268a87e238691e",
+    "source_pack_version": "mas-source-pack-2026-08-29.v2",
+    "source_roles": [
+      {
+        "source_manifest_key": "mas_notice_fsm_n05",
+        "source_role": "PRIMARY_ELIGIBLE",
+        "source_policy_release_eligibility": "PRIMARY_OR_SUPPORTING",
+        "traceability_release_eligibility": "releasable"
+      },
+      {
+        "source_manifest_key": "mas_trm_notice_faq",
+        "source_role": "SUPPORTING_ONLY",
+        "source_policy_release_eligibility": "SUPPORTING_ONLY",
+        "traceability_release_eligibility": "releasable"
+      },
+      {
+        "source_manifest_key": "mas_trm_notice_consultation_p012_2026",
+        "source_role": "EXCLUDED",
+        "source_policy_release_eligibility": "NOT_ELIGIBLE",
+        "traceability_release_eligibility": "releasable"
+      }
+    ],
+    "human_decision_id": "decision-5cc965351a476ba31e149f9c75d3d852",
+    "human_decision": "APPROVE",
+    "authorization_id": "authorization-460c7ef104734338767b7dd5e2144167",
+    "reviewed_artifact_sha256": "sha256:1bbcd04323278fef27c9441eb49c5c59c1af1c4e2d5bbe9702736a1bad583060",
+    "release_core_state": "INTENT_RECORDED",
+    "dispatch_executed": false,
+    "mutation_status": "BLOCKED_PRIOR_AUTHORIZATION_ARTIFACT_MISMATCH",
+    "mutation_candidate_sha256": "sha256:7b1a8db63a5dbdf2702170fee580e42b19e0978696cca4d334dd39eda62eb30e",
+    "mutation_blocked": true,
+    "automatic_retry_performed": false,
+    "unknown_state": "UNKNOWN",
+    "unknown_retry_directive": "NO_AUTOMATIC_RETRY",
+    "unknown_second_dispatch_performed": false,
+    "decision_response_state": "INTENT_RECORDED"
+  },
+  "absence_assertions": {
+    "nextjs_portal": false,
+    "nextjs_development_indicator": false,
+    "localhost_or_address_bar_visible": false,
+    "personal_identifier_visible": false,
+    "secret_or_credential_visible": false,
+    "admin_email_visible": false,
+    "customer_data_used": false
+  },
+  "known_boundary": [
+    "new capture run; not byte-identical to the old screenshot",
+    "local synthetic provider-free workflow",
+    "no customer data",
+    "no external delivery",
+    "not production, customer, legal-advice, compliance-certification, or MAS-approval evidence"
+  ]
+}
