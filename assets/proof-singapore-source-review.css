@@ -62,6 +62,7 @@
 .sg-proof-claims,
 .sg-proof-result,
 .sg-proof-screen,
+.sg-proof-details,
 .sg-proof-anchors {
   padding: 6rem 0;
 }
@@ -148,6 +149,13 @@
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
+}
+
+.sg-source-identity {
+  margin: 1.15rem 0 0;
+  color: #8f949a;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .sg-source-link:hover,
@@ -239,6 +247,174 @@
   line-height: 1.6;
 }
 
+.sg-proof-details {
+  background: #0b0e11;
+}
+
+.sg-proof-sources .proof-body,
+.sg-proof-screen .proof-body,
+.sg-proof-details .proof-body,
+.sg-proof-result .proof-body,
+.sg-proof-anchors .proof-body {
+  color: #a7abb0;
+}
+
+.sg-proof-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.65fr);
+  gap: 2rem;
+  align-items: start;
+  margin-top: 2.5rem;
+}
+
+.sg-proof-detail-figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.sg-proof-traceability-record {
+  min-width: 0;
+  padding: 1.5rem;
+  background: #07090a;
+  border: 1px solid #30343a;
+  border-radius: 6px;
+}
+
+.sg-proof-traceability-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1.1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sg-proof-traceability-heading span {
+  color: #858a91;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sg-proof-traceability-heading strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #f4f5f2;
+  font-size: 24px;
+}
+
+.sg-proof-traceability-heading p {
+  margin: 0;
+  padding: 0.45rem 0.55rem;
+  color: #8ee8cc;
+  background: rgba(75, 208, 173, 0.08);
+  border: 1px solid rgba(75, 208, 173, 0.3);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.sg-proof-traceability-record dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.sg-proof-traceability-record dl > div {
+  min-width: 0;
+  padding: 1rem 0.75rem 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sg-proof-traceability-record dt {
+  color: #858a91;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sg-proof-traceability-record dd {
+  margin: 0.35rem 0 0;
+  color: #f4f5f2;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.sg-proof-traceability-record code {
+  color: #d8dadd;
+  font-size: 11px;
+}
+
+.sg-proof-traceability-hash {
+  grid-column: 1 / -1;
+}
+
+.sg-proof-traceability-record > p {
+  margin: 1rem 0 0;
+  color: #a7abb0;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.sg-proof-detail-image-link {
+  display: block;
+  overflow: hidden;
+  background: #07090a;
+  border: 1px solid #30343a;
+  border-radius: 6px;
+}
+
+.sg-proof-detail-image-link:hover,
+.sg-proof-detail-image-link:focus-visible {
+  border-color: #4bd0ad;
+}
+
+.sg-proof-detail-image-link:focus-visible {
+  outline: 3px solid rgba(75, 208, 173, 0.3);
+  outline-offset: 3px;
+}
+
+.sg-proof-detail-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sg-proof-detail-figure figcaption {
+  margin-top: 1rem;
+  color: #a7abb0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.sg-proof-detail-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  margin-top: 0.6rem;
+  color: #f4f5f2;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sg-proof-detail-link:hover,
+.sg-proof-detail-link:focus-visible {
+  color: #4bd0ad;
+  text-decoration: underline;
+}
+
+.sg-proof-detail-figure-decision {
+  width: 100%;
+  max-width: 434px;
+  justify-self: center;
+}
+
 .sg-proof-result {
   background: #101318;
 }
@@ -305,6 +481,7 @@
 @media (max-width: 900px) {
   .sg-proof-overview-grid,
   .sg-source-grid,
+  .sg-proof-detail-grid,
   .sg-result-grid,
   .sg-proof-boundary {
     grid-template-columns: minmax(0, 1fr);
@@ -312,6 +489,10 @@
 
   .sg-proof-overview-grid {
     gap: 2.5rem;
+  }
+
+  .sg-proof-detail-figure-decision {
+    justify-self: start;
   }
 
   .sg-claim-row {
@@ -329,8 +510,34 @@
   .sg-proof-claims,
   .sg-proof-result,
   .sg-proof-screen,
+  .sg-proof-details,
   .sg-proof-anchors {
     padding: 4.5rem 0;
+  }
+
+  .sg-proof-detail-grid {
+    gap: 2.5rem;
+  }
+
+  .sg-proof-detail-figure-decision {
+    max-width: 100%;
+  }
+
+  .sg-proof-traceability-heading {
+    display: grid;
+  }
+
+  .sg-proof-traceability-heading p {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .sg-proof-traceability-record dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sg-proof-traceability-hash {
+    grid-column: auto;
   }
 
   .sg-source-card dl {

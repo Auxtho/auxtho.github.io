@@ -6,7 +6,10 @@ const { expect, test } = require('@playwright/test');
 test.describe.configure({ mode: 'serial' });
 
 const root = path.resolve(__dirname, '..');
-const desktopVisionPosterPath = '/assets/vision-film/auxtho-incident-led-hero-v9-poster.png';
+const visionPosterPaths = new Set([
+  '/assets/vision-film/auxtho-incident-led-hero-v9-poster.png',
+  '/assets/vision-film/auxtho-incident-led-hero-mobile-v9-poster.png',
+]);
 let server;
 let baseUrl;
 
@@ -94,8 +97,13 @@ async function openWithoutRuntimeErrors(page, route) {
     const failure = request.failure();
     const isResponsivePosterSwap = request.resourceType() === 'image'
       && failure?.errorText === 'net::ERR_ABORTED'
-      && new URL(request.url()).pathname === desktopVisionPosterPath;
-    if (!isResponsivePosterSwap) {
+      && visionPosterPaths.has(new URL(request.url()).pathname);
+    const isInactiveVisionMediaCancellation = request.resourceType() === 'media'
+      && failure?.errorText === 'net::ERR_ABORTED'
+      && /\/assets\/vision-film\/auxtho-incident-led-hero-(?:mobile-)?v9\.mp4$/.test(
+        new URL(request.url()).pathname,
+      );
+    if (!isResponsivePosterSwap && !isInactiveVisionMediaCancellation) {
       failedRequests.push(`${request.url()} (${failure?.errorText || 'unknown failure'})`);
     }
   });
@@ -394,7 +402,29 @@ test('Release Core proof uses CSP-compatible external styles with deliberate des
   }
 });
 
-test('Singapore source-review proof serves the clean capture on desktop and mobile', async ({ page }) => {
+test('homepage shows the frozen Singapore source identity without reproducing the source page', async ({ page }) => {
+  for (const viewport of [
+    { width: 1440, height: 900 },
+    { width: 390, height: 844 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await openWithoutRuntimeErrors(page, '/');
+
+    const sourceReviewBand = page.locator('.sales-product-band-source-review');
+    await sourceReviewBand.scrollIntoViewIfNeeded();
+    const sourceRecord = sourceReviewBand.locator('.sales-source-record');
+    await expect(sourceRecord).toBeVisible();
+    await expect(sourceReviewBand).toContainText(
+      'Exact source bytes, the page locator, and the review result remain bound to one frozen proof record.',
+    );
+    await expect(sourceRecord).toContainText('MAS Notice FSM-N05');
+    await expect(sourceRecord).toContainText('Page 3');
+    await expect(sourceReviewBand.locator('img[src*="source-traceability.png"]')).toHaveCount(0);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
+test('Singapore source-review proof serves the overview, source identity, and human decision detail on desktop and mobile', async ({ page }) => {
   for (const viewport of [
     { width: 1440, height: 900 },
     { width: 390, height: 844 },
@@ -413,12 +443,40 @@ test('Singapore source-review proof serves the clean capture on desktop and mobi
       /capture-manifest\.json\?sha256=64e44bda[0-9a-f]{56}$/,
     );
 
+    const humanDecisionDetail = page.locator(
+      'img[src^="/assets/proof/singapore-source-review/human-decision-exact-artifact.png?sha256=c7c6458b"]',
+    );
+    const sourceRecord = page.locator('.sg-proof-traceability-record');
+    await sourceRecord.scrollIntoViewIfNeeded();
+    await expect(sourceRecord).toBeVisible();
+    await expect(humanDecisionDetail).toBeVisible();
+    await humanDecisionDetail.evaluate((element) => element.decode());
+    await expect(page.getByText('Evidence detail', { exact: true })).toBeVisible();
+    await expect(page.getByText('Follow the source identity into the human decision.', { exact: true })).toBeVisible();
+    await expect(sourceRecord).toContainText('Supported in selected source set');
+    await expect(sourceRecord).toContainText('Page 3');
+    await expect(page.getByRole('link', { name: 'Open full decision detail' })).toBeVisible();
+
     const image = await cleanCapture.evaluate((element) => ({
       complete: element.complete,
       naturalWidth: element.naturalWidth,
       naturalHeight: element.naturalHeight,
     }));
     expect(image).toEqual({ complete: true, naturalWidth: 1280, naturalHeight: 2132 });
+
+    const detail = await humanDecisionDetail.evaluate((element) => ({
+      complete: element.complete,
+      naturalWidth: element.naturalWidth,
+      naturalHeight: element.naturalHeight,
+    }));
+    expect(detail).toEqual({ complete: true, naturalWidth: 434, naturalHeight: 1194 });
+    const detailColors = await page.evaluate(() => ({
+      background: getComputedStyle(document.querySelector('.sg-proof-details')).backgroundColor,
+      body: getComputedStyle(document.querySelector('.sg-proof-details .proof-body')).color,
+      caption: getComputedStyle(document.querySelector('.sg-proof-detail-figure figcaption')).color,
+    }));
+    expect(contrastRatio(detailColors.body, detailColors.background)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(detailColors.caption, detailColors.background)).toBeGreaterThanOrEqual(4.5);
     await expectNoHorizontalOverflow(page);
   }
 });

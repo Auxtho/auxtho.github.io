@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="/assets/style.css?sha256=dae86678fceee76a0e55b6af31c0107f79aa2ce7980b900121e8d6a540bef9f5">
   <link rel="stylesheet" href="/assets/custom.css?sha256=9cc5df03283f74b411325e1dd0f9fba719255e75c4d3c53650fd1cd2299c529c">
   <link rel="stylesheet" href="/assets/proof-release-core.css?sha256=b1ce972b90c9ecbcd6becebe4a052986f67f45e210ef0eb204a2b92ff4422825">
-  <link rel="stylesheet" href="/assets/proof-singapore-source-review.css?sha256=9dad684124ad84746fb8cff9a5dce30fddc64fca72a33096c00325ee2d278022">
+  <link rel="stylesheet" href="/assets/proof-singapore-source-review.css?sha256=af1b3ac22490d21bbab4180c640f64c20133de7d90a0ed7bdc6013cdd98c1bbb">
 </head>
 <body>
   <a class="proof-skip-link" href="#proof-content">Skip to proof content</a>
@@ -49,7 +49,7 @@
           <a class="proof-button" href="#sources">Inspect the source set</a>
           <a class="proof-button secondary" href="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e">Open the clean capture</a>
           <a class="proof-button secondary" href="/proof/release-core/">View Release Core proof</a>
-          <a class="proof-button secondary" href="/assets/proof/singapore-source-review/manifest.json?sha256=04429134d0c744e1e2c77346f743bd5c4f46dd003d84fe20bec3e8bbb3078809">Open public manifest</a>
+          <a class="proof-button secondary" href="/assets/proof/singapore-source-review/manifest.json?sha256=e7b3744e5cd7d08a6009968aba0dc066ce1926e49c99a5a063bebaaf08e14c82">Open public manifest</a>
         </div>
       </div>
     </section>
@@ -98,7 +98,7 @@
               <div><dt>Pages</dt><dd>3</dd></div>
               <div><dt>SHA-256</dt><dd><code>4DB66F0F...7D2D26B6</code></dd></div>
             </dl>
-            <a class="sg-source-link" href="https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf">Open official MAS source &rarr;</a>
+            <p class="sg-source-identity">Public identity record: title, issuer, status, page count, and SHA-256.</p>
           </article>
           <article class="sg-source-card supporting">
             <p class="sg-source-state">Supporting clarification</p>
@@ -111,7 +111,7 @@
               <div><dt>Pages</dt><dd>5</dd></div>
               <div><dt>SHA-256</dt><dd><code>F6173D1E...8B0BD2AB</code></dd></div>
             </dl>
-            <a class="sg-source-link" href="https://www.mas.gov.sg/-/media/mas-media-library/regulation/faqs/trpd/faqs---notice-on-technology-risk-management/faqs---notice-on-trm/faq---notice-on-technology-risk-management.pdf">Open official MAS source &rarr;</a>
+            <p class="sg-source-identity">Public identity record: title, issuer, status, page count, and SHA-256.</p>
           </article>
           <article class="sg-source-card excluded">
             <p class="sg-source-state">Proposed only / excluded</p>
@@ -124,7 +124,7 @@
               <div><dt>Pages</dt><dd>88</dd></div>
               <div><dt>SHA-256</dt><dd><code>43A65B57...75A9404</code></dd></div>
             </dl>
-            <a class="sg-source-link" href="https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/trpd/2026/consultation-paper-on-proposed-amendments-to-notices-on-technology-risk-management.pdf">Open official MAS source &rarr;</a>
+            <p class="sg-source-identity">Public identity record: title, issuer, status, page count, and SHA-256.</p>
           </article>
         </div>
         <p class="sg-source-separation">These documents are publicly available MAS materials used in an independent synthetic demonstration. Auxtho is not affiliated with or endorsed by MAS.</p>
@@ -159,6 +159,40 @@
           <a href="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e"><img src="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e" alt="Clean Auxtho local synthetic Singapore source-review capture showing selected claims, source cards, human decision, Release Core, mutation blocking, and UNKNOWN no-retry state."></a>
           <figcaption>Clean capture of a new local synthetic replay from the frozen product lineage. It was generated only after the single browser E2E completed. It is not customer, production, or external-delivery evidence.</figcaption>
         </figure>
+      </div>
+    </section>
+
+    <section class="sg-proof-details" aria-labelledby="details-title">
+      <div class="proof-wrap">
+        <p class="proof-kicker">Evidence detail</p>
+        <h2 id="details-title" class="proof-section-title">Follow the source identity into the human decision.</h2>
+        <p class="proof-body">The complete screen shows the workflow. These two records make the source identity, review result, and accountable human decision readable without reproducing the original source page.</p>
+        <div class="sg-proof-detail-grid">
+          <article class="sg-proof-traceability-record" aria-label="Frozen source traceability record">
+            <div class="sg-proof-traceability-heading">
+              <div><span>Selected synthetic claim</span><strong>C1</strong></div>
+              <p>Supported in selected source set</p>
+            </div>
+            <dl>
+              <div><dt>Source</dt><dd>MAS Notice FSM-N05</dd></div>
+              <div><dt>Issuer</dt><dd>Monetary Authority of Singapore</dd></div>
+              <div><dt>Instrument</dt><dd>Notice</dd></div>
+              <div><dt>Publication</dt><dd>Published in force</dd></div>
+              <div><dt>Review role</dt><dd>Primary eligible</dd></div>
+              <div><dt>Locator</dt><dd>Page 3</dd></div>
+              <div class="sg-proof-traceability-hash"><dt>Source SHA-256</dt><dd><code>4DB66F0FEABB9E24E017B3D96FDF0306C3B7C02BC7945B0B49FFB8727D2D26B6</code></dd></div>
+              <div class="sg-proof-traceability-hash"><dt>Claim-map SHA-256</dt><dd><code>C1B4183DDBA55F2D544522B255B4C3A4638405E6D53AE3B57242F7CC16371B38</code></dd></div>
+            </dl>
+            <p>The frozen product record retains the exact source bytes, page locator, and review result. This public detail shows the identity record without reproducing the source page.</p>
+          </article>
+          <figure class="sg-proof-detail-figure sg-proof-detail-figure-decision">
+            <a class="sg-proof-detail-image-link" href="/assets/proof/singapore-source-review/human-decision-exact-artifact.png?sha256=c7c6458b6b307a47c3b35d6215d65ba7c603ceaf6bfd141ab84260a3788d1b61" aria-label="Open the accountable human decision and exact artifact detail">
+              <img src="/assets/proof/singapore-source-review/human-decision-exact-artifact.png?sha256=c7c6458b6b307a47c3b35d6215d65ba7c603ceaf6bfd141ab84260a3788d1b61" alt="Local synthetic MAS review showing the accountable reviewer, exact artifact, authorized next action, recorded result, and changed-artifact check." width="434" height="1194" loading="lazy" decoding="async">
+            </a>
+            <figcaption>The reviewer’s decision stays tied to this exact reviewed artifact, the sources and rules considered, the authorized next action, and the recorded result. No external delivery occurs in this local synthetic example.</figcaption>
+            <a class="sg-proof-detail-link" href="/assets/proof/singapore-source-review/human-decision-exact-artifact.png?sha256=c7c6458b6b307a47c3b35d6215d65ba7c603ceaf6bfd141ab84260a3788d1b61">Open full decision detail <span aria-hidden="true">&rarr;</span></a>
+          </figure>
+        </div>
       </div>
     </section>
 
@@ -205,7 +239,7 @@
           <div class="proof-anchor"><dt>Browser E2E</dt><dd><code>1 passed</code></dd></div>
           <div class="proof-anchor"><dt>Independent verifier</dt><dd><code>MAS_DEMO_FREEZE_GO</code></dd></div>
           <div class="proof-anchor"><dt>Clean capture verifier</dt><dd><code>CLEAN_CAPTURE_GO</code></dd></div>
-          <div class="proof-anchor"><dt>Public machine-readable manifest</dt><dd><a href="/assets/proof/singapore-source-review/manifest.json?sha256=04429134d0c744e1e2c77346f743bd5c4f46dd003d84fe20bec3e8bbb3078809">Open manifest</a></dd></div>
+          <div class="proof-anchor"><dt>Public machine-readable manifest</dt><dd><a href="/assets/proof/singapore-source-review/manifest.json?sha256=e7b3744e5cd7d08a6009968aba0dc066ce1926e49c99a5a063bebaaf08e14c82">Open manifest</a></dd></div>
           <div class="proof-anchor"><dt>Clean capture manifest</dt><dd><a href="/assets/proof/singapore-source-review/capture-manifest.json?sha256=64e44bda2841fdf0b63cb2927dd5aa5fe5792154245b5e902fe71da66e4e4383">Open capture manifest</a></dd></div>
           <div class="proof-anchor"><dt>Separate release proof</dt><dd><a href="/proof/release-core/">Open Release Core proof</a></dd></div>
         </dl>
