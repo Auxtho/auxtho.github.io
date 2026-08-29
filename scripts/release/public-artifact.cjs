@@ -33,13 +33,13 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
-  'evidence-notes.html': '9cfeeafa88312510e003bf74850fea577a1f957c0f5ff5f9c031f2b082171167',
-  'index.html': 'ca29e34660de8d09027db598e1c9b04b237d508bfb61e902b09873ba78f16eb4',
+  'evidence-notes.html': '000b82646ee76336c0bdb71b064da63b914b71462654874d7c20cb75361bef4f',
+  'index.html': 'b46cb1b5d7f7483b46d3490a35d132824cae6075fbee4ffe6ad75f1d78639464',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
   'proof/release-core/index.html': 'f781d7246fa4ee7c6a689cd9e881d16ed61173efeedc401d7140edd4730e3dcc',
   'proof/release-core/transcript/index.html': '40938725f8bc6434329a47f5987b23b758ca23fcdcf8705051b26ef903ec6f2d',
-  'proof/singapore-source-review/index.html': 'db4101b0504e16f8358b79eccf48222e47c60f0f790c69b00f2541575144d19e',
+  'proof/singapore-source-review/index.html': '606cded2d47c06e3b3df91ef4086f031c2bf383e6fb7d3647c58062fe7aaaa6e',
   'security/ardamire/index.html': '3b1df81e4bb7452f4f1e2549e0eee300f007283450e652ad85ffef0d370a9a9e',
   'story.html': '6853310c4058a7d87f8a4373953d4d22da34bb87a4bdf91a477bd009f6da690b',
   'terms.html': '20efc6042ff1141854fbcedd25d910df3432d277b6c440e4ecc7e1eaf721e335',
