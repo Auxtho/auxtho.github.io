@@ -1,0 +1,88 @@
+{
+  "schema_version": "auxtho-public-singapore-source-review-proof-v1",
+  "proof_id": "AUXTHO_SINGAPORE_SOURCE_REVIEW_2026-08-29",
+  "status": "MAS_DEMO_FREEZE_GO",
+  "scope": "local synthetic provider-free demonstration",
+  "product_source": {
+    "commit": "bba1fc04c0f79426c45d49532e937edb5f2cbb79",
+    "tree": "cd50d272e45f79824fd38ee210821657e17f5a41",
+    "repository_visibility": "private"
+  },
+  "source_set": {
+    "version": "mas-source-pack-2026-08-29.v2",
+    "sha256": "8BC5DE02D55B91BE813C500E4C151B68461587DE40CEC43A230B81A73C502EC0",
+    "sources": [
+      {
+        "title": "MAS Notice FSM-N05.pdf",
+        "issuer": "Monetary Authority of Singapore",
+        "instrument_type": "notice",
+        "publication_status": "published in force",
+        "review_role": "primary eligible",
+        "release_support": "primary or supporting",
+        "page_count": 3,
+        "sha256": "4DB66F0FEABB9E24E017B3D96FDF0306C3B7C02BC7945B0B49FFB8727D2D26B6",
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf"
+      },
+      {
+        "title": "FAQ - Notice on Technology Risk Management.pdf",
+        "issuer": "Monetary Authority of Singapore",
+        "instrument_type": "faq",
+        "publication_status": "published supporting clarification",
+        "review_role": "supporting only",
+        "release_support": "supporting only",
+        "page_count": 5,
+        "sha256": "F6173D1E46E273BE206B6E9DD29C5DB0914A5F24AAC66AB688EB892B8B0BD2AB",
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/faqs/trpd/faqs---notice-on-technology-risk-management/faqs---notice-on-trm/faq---notice-on-technology-risk-management.pdf"
+      },
+      {
+        "title": "Consultation Paper on Proposed Amendments to Notices on Technology Risk Management.pdf",
+        "issuer": "Monetary Authority of Singapore",
+        "instrument_type": "consultation",
+        "publication_status": "closed consultation, proposed only",
+        "review_role": "excluded",
+        "release_support": "not eligible",
+        "page_count": 88,
+        "sha256": "43A65B572E3C580853C256508F7DF977A8A3084880B80ED05DA642BCD75A9404",
+        "url": "https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/trpd/2026/consultation-paper-on-proposed-amendments-to-notices-on-technology-risk-management.pdf"
+      }
+    ]
+  },
+  "synthetic_case": {
+    "case_id": "synthetic-mas-financial-report-review-v1",
+    "workflow": "compliance_assurance.client_report_delivery.v1",
+    "claim_selection": "claims defined for review",
+    "materiality_classifier": false,
+    "claim_map_sha256": "C1B4183DDBA55F2D544522B255B4C3A4638405E6D53AE3B57242F7CC16371B38",
+    "claim_statuses": {
+      "C1": "supported",
+      "C2": "evidence mismatch",
+      "C3": "proposed-only support"
+    }
+  },
+  "release_result": {
+    "human_decision": "APPROVE",
+    "reviewed_artifact_sha256": "A3D69873558E56E715533BF8B12B1950DF8C8C648F5212016A80FFB62D47D5FC",
+    "mutated_artifact_sha256": "F1906D3C78D8F0D5B4C36103709F1805F93721EDF2C3CE768022292401B5A02E",
+    "mutation_blocked": true,
+    "unknown_state": "UNKNOWN",
+    "unknown_retry_directive": "NO_AUTOMATIC_RETRY",
+    "provider_calls": 0,
+    "customer_data_used": false,
+    "external_dispatch_executed": false
+  },
+  "verification": {
+    "changed_risk_backend_tests": 150,
+    "browser_e2e_tests": 1,
+    "typescript": "pass",
+    "eslint": "pass",
+    "independent_live_verifier": "MAS_DEMO_FREEZE_GO",
+    "offline_verifier": "MAS_DEMO_FREEZE_GO"
+  },
+  "claim_boundary": [
+    "not legal advice",
+    "not a regulatory compliance determination",
+    "not affiliated with or endorsed by MAS",
+    "not customer or production evidence",
+    "no external delivery"
+  ]
+}

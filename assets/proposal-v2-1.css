@@ -2264,6 +2264,10 @@ body > a[href="#problem"]:focus {
   aspect-ratio: 16 / 9;
 }
 
+.sales-product-media-tall {
+  aspect-ratio: 4 / 3;
+}
+
 #product .sales-product-media-app img {
   width: 100%;
   margin: 0;
@@ -2271,6 +2275,25 @@ body > a[href="#problem"]:focus {
   height: 100%;
   object-fit: cover;
   object-position: 50% 31%;
+}
+
+#product .sales-product-media-tall img {
+  object-position: 50% 0;
+}
+
+.sales-product-media-core {
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  background: #f1f2ef;
+}
+
+#product .sales-product-media-core img {
+  width: auto;
+  max-width: 100%;
+  height: min(520px, 62vw);
+  margin: 0;
+  object-fit: contain;
 }
 
 #product .sales-product-media-console img {
@@ -2795,6 +2818,18 @@ body > a[href="#problem"]:focus {
     object-position: 46% 32%;
   }
 
+  .sales-product-media-tall img {
+    object-position: 50% 0;
+  }
+
+  .sales-product-media-core {
+    min-height: 360px;
+  }
+
+  #product .sales-product-media-core img {
+    height: 360px;
+  }
+
   .sales-product-media-console {
     overflow-x: auto;
   }
@@ -2984,6 +3019,121 @@ body > a[href="#problem"]:focus {
   padding: 3rem 0;
   border-top: 1px solid var(--sales-line);
   border-bottom: 1px solid var(--sales-line);
+}
+
+/* Accountability and Policy Pack product layer */
+.sales-policy-packs {
+  background: #f2f1ed;
+  color: #111318;
+}
+
+.sales-policy-packs .sales-eyebrow,
+.sales-policy-packs .sales-product-name {
+  color: #9c2432;
+}
+
+.sales-policy-packs .sales-section-heading h2,
+.sales-policy-packs .sales-section-heading > p:last-child {
+  color: #111318;
+}
+
+.sales-policy-packs .sales-section-heading > p:last-child {
+  max-width: 780px;
+}
+
+.sales-pack-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(17, 19, 24, 0.2);
+  border-bottom: 1px solid rgba(17, 19, 24, 0.2);
+}
+
+.sales-pack-item {
+  min-width: 0;
+  padding: 2.2rem 2rem 2.4rem 0;
+}
+
+.sales-pack-item + .sales-pack-item {
+  padding-left: 2rem;
+  border-left: 1px solid rgba(17, 19, 24, 0.2);
+}
+
+.sales-pack-item > span {
+  display: block;
+  margin-bottom: 1.7rem;
+  color: #9c2432;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sales-pack-item h3,
+.sales-pack-focus h3 {
+  margin: 0;
+  color: #111318;
+  font-size: 24px;
+  line-height: 1.18;
+}
+
+.sales-pack-item p,
+.sales-pack-focus > p {
+  margin: 0.85rem 0 0;
+  color: #4b4e55;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.sales-pack-focus {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.8fr) minmax(0, 1.2fr);
+  gap: 3rem;
+  align-items: end;
+  padding: 2.5rem 0 0;
+}
+
+.sales-pack-focus > p,
+.sales-pack-focus > div:last-child > p {
+  margin: 0;
+  color: #4b4e55;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.sales-inline-link {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  margin-top: 1rem;
+  color: #7f1726;
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sales-inline-link:hover,
+.sales-inline-link:focus-visible {
+  color: #b82e3e;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .sales-pack-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sales-pack-item,
+  .sales-pack-item + .sales-pack-item {
+    padding: 1.7rem 0;
+    border-left: 0;
+  }
+
+  .sales-pack-item + .sales-pack-item {
+    border-top: 1px solid rgba(17, 19, 24, 0.2);
+  }
+
+  .sales-pack-focus {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1rem;
+  }
 }
 
 @media (max-width: 700px) {
