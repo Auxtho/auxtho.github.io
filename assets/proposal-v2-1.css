@@ -1732,6 +1732,46 @@ body > a[href="#problem"]:focus {
   border-top: 1px solid rgba(255, 255, 255, 0.16);
 }
 
+.vision-film-provenance {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.75fr) minmax(0, 1.5fr);
+  width: min(100% - 3rem, 1180px);
+  margin: 0 auto;
+  padding: 1.25rem 0 1.5rem;
+  gap: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.vision-film-provenance p,
+.vision-film-provenance ul {
+  margin: 0;
+  color: #bfc2c6;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.vision-film-provenance strong {
+  color: var(--sales-white);
+  font-weight: 700;
+}
+
+.vision-film-provenance ul {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0;
+  list-style: none;
+}
+
+.vision-film-provenance a {
+  color: var(--sales-white) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.42);
+}
+
+.vision-film-provenance a:hover,
+.vision-film-provenance a:focus-visible {
+  border-color: var(--sales-red);
+}
+
 .vision-film-lockup {
   display: inline-flex;
   align-items: center;
@@ -2019,8 +2059,7 @@ body > a[href="#problem"]:focus {
 }
 
 .sales-section-heading h2,
-.sales-start h2,
-.sales-contact h2 {
+.sales-start h2 {
   margin: 0;
   color: var(--sales-white);
   font-size: 48px;
@@ -2312,10 +2351,11 @@ body > a[href="#problem"]:focus {
   background: rgba(5, 6, 7, 0.86);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 3px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   line-height: 1.2;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .sales-outcome {
@@ -2385,31 +2425,6 @@ body > a[href="#problem"]:focus {
   font-size: 16px;
   font-weight: 550;
   line-height: 1.45;
-}
-
-.sales-verify-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 2rem;
-  margin-top: 3rem;
-  padding: 1.75rem 0;
-  border-bottom: 1px solid var(--sales-line);
-}
-
-.sales-verify-strip h3 {
-  margin: 0.55rem 0 0;
-  color: var(--sales-white);
-  font-size: 26px;
-  font-weight: 560;
-  line-height: 1.25;
-}
-
-.sales-verify-strip p:not(.sales-product-name) {
-  margin: 0.65rem 0 0;
-  color: var(--sales-copy);
-  font-size: 15px;
-  line-height: 1.6;
 }
 
 .sales-text-link {
@@ -2550,30 +2565,15 @@ body > a[href="#problem"]:focus {
   font-size: 13px;
 }
 
-.sales-contact {
-  padding: 6rem 0;
-  background: #0a0c0f;
-}
-
-.sales-contact-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1.3fr) auto;
-  gap: 3rem;
+.sales-start-action {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
 }
 
-.sales-contact h2 {
-  max-width: 820px;
-  font-size: 40px;
-}
-
-.sales-contact-action {
-  display: grid;
-  gap: 0.8rem;
-  justify-items: start;
-}
-
-.sales-contact-action span {
+.sales-start-action span {
   color: var(--sales-muted);
   font-size: 13px;
 }
@@ -2640,6 +2640,12 @@ body > a[href="#problem"]:focus {
   .vision-film-controls {
     width: min(100% - 2rem, 1180px);
     min-height: 58px;
+    gap: 0.75rem;
+  }
+
+  .vision-film-provenance {
+    grid-template-columns: minmax(0, 1fr);
+    width: min(100% - 2rem, 1180px);
     gap: 0.75rem;
   }
 
@@ -2731,8 +2737,7 @@ body > a[href="#problem"]:focus {
   }
 
   .sales-section-heading h2,
-  .sales-start h2,
-  .sales-contact h2 {
+  .sales-start h2 {
     font-size: 34px;
     line-height: 1.16;
   }
@@ -2747,9 +2752,7 @@ body > a[href="#problem"]:focus {
   .sales-record-grid,
   .sales-product-band,
   .sales-product-band-console,
-  .sales-start-layout,
-  .sales-contact-layout,
-  .sales-verify-strip {
+  .sales-start-layout {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -2859,21 +2862,12 @@ body > a[href="#problem"]:focus {
     border-top: 1px solid var(--sales-line);
   }
 
-  .sales-verify-strip {
-    align-items: start;
-  }
-
   .sales-text-link {
     justify-self: start;
   }
 
-  .sales-start-layout,
-  .sales-contact-layout {
+  .sales-start-layout {
     gap: 2rem;
-  }
-
-  .sales-contact-action {
-    width: 100%;
   }
 }
 
@@ -3041,32 +3035,6 @@ body > a[href="#problem"]:focus {
   max-width: 780px;
 }
 
-.sales-pack-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid rgba(17, 19, 24, 0.2);
-  border-bottom: 1px solid rgba(17, 19, 24, 0.2);
-}
-
-.sales-pack-item {
-  min-width: 0;
-  padding: 2.2rem 2rem 2.4rem 0;
-}
-
-.sales-pack-item + .sales-pack-item {
-  padding-left: 2rem;
-  border-left: 1px solid rgba(17, 19, 24, 0.2);
-}
-
-.sales-pack-item > span {
-  display: block;
-  margin-bottom: 1.7rem;
-  color: #9c2432;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.sales-pack-item h3,
 .sales-pack-focus h3 {
   margin: 0;
   color: #111318;
@@ -3074,7 +3042,6 @@ body > a[href="#problem"]:focus {
   line-height: 1.18;
 }
 
-.sales-pack-item p,
 .sales-pack-focus > p {
   margin: 0.85rem 0 0;
   color: #4b4e55;
@@ -3116,20 +3083,6 @@ body > a[href="#problem"]:focus {
 }
 
 @media (max-width: 900px) {
-  .sales-pack-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .sales-pack-item,
-  .sales-pack-item + .sales-pack-item {
-    padding: 1.7rem 0;
-    border-left: 0;
-  }
-
-  .sales-pack-item + .sales-pack-item {
-    border-top: 1px solid rgba(17, 19, 24, 0.2);
-  }
-
   .sales-pack-focus {
     grid-template-columns: minmax(0, 1fr);
     gap: 1rem;

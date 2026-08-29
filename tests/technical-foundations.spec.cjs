@@ -121,6 +121,17 @@ test('homepage shows the product proposition before the desktop vision film', as
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
   await expect(film).toBeVisible();
+  const provenance = film.locator('.vision-film-provenance');
+  await expect(provenance).toBeVisible();
+  await expect(provenance).toContainText('Editorial reconstructions from public records.');
+  await expect(provenance).toContainText('Auxtho was not involved in either event.');
+  await expect(provenance.getByRole('link', { name: 'Department of Finance FOI 25-26/084' }))
+    .toHaveAttribute('href', 'https://www.finance.gov.au/sites/default/files/foi-25-26-084-document-1.pdf');
+  await expect(provenance.getByRole('link', { name: 'Ayinde and Al-Haroun [2025] EWHC 1383 (Admin)' }))
+    .toHaveAttribute(
+      'href',
+      'https://www.judiciary.uk/wp-content/uploads/2025/06/Ayinde-v-London-Borough-of-Haringey-and-Al-Haroun-v-Qatar-National-Bank.pdf',
+    );
   const sectionTops = await page.locator('.sales-hero, #why-now, [data-vision-film], #how-it-works')
     .evaluateAll((sections) => sections.map((section) => (
       section.getBoundingClientRect().top + window.scrollY
@@ -155,6 +166,7 @@ test('homepage shows the product proposition before the mobile vision film witho
 
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
+  const provenance = film.locator('.vision-film-provenance');
   const sectionTops = await page.locator('.sales-hero, #why-now, [data-vision-film], #how-it-works')
     .evaluateAll((sections) => sections.map((section) => (
       section.getBoundingClientRect().top + window.scrollY
@@ -189,6 +201,13 @@ test('homepage shows the product proposition before the mobile vision film witho
   const controlHeights = await film.locator('.vision-film-toggle, .vision-film-continue')
     .evaluateAll((controls) => controls.map((control) => control.getBoundingClientRect().height));
   expect(controlHeights.every((height) => height >= 44)).toBe(true);
+  await expect(provenance).toBeVisible();
+  const provenanceCopy = await provenance.locator('p, li').evaluateAll((elements) => elements.map((element) => ({
+    fontSize: Number.parseFloat(getComputedStyle(element).fontSize),
+    lineHeight: Number.parseFloat(getComputedStyle(element).lineHeight),
+  })));
+  expect(provenanceCopy.every((item) => item.fontSize >= 14)).toBe(true);
+  expect(provenanceCopy.every((item) => item.lineHeight > item.fontSize)).toBe(true);
 
   await expectNoHorizontalOverflow(page);
 });
@@ -420,6 +439,16 @@ test('homepage shows the frozen Singapore source identity without reproducing th
     await expect(sourceRecord).toContainText('MAS Notice FSM-N05');
     await expect(sourceRecord).toContainText('Page 3');
     await expect(sourceReviewBand.locator('img[src*="source-traceability.png"]')).toHaveCount(0);
+    const productImageSizes = await page.locator('#product img').evaluateAll(async (images) => {
+      images.forEach((image) => { image.loading = 'eager'; });
+      await Promise.all(images.map((image) => image.decode()));
+      return images.map((image) => ({ height: image.naturalHeight, width: image.naturalWidth }));
+    });
+    expect(productImageSizes).toEqual([
+      { height: 1280, width: 1920 },
+      { height: 2025, width: 1620 },
+      { height: 509, width: 1280 },
+    ]);
     await expectNoHorizontalOverflow(page);
   }
 });
@@ -431,6 +460,13 @@ test('Singapore source-review proof serves the overview, source identity, and hu
   ]) {
     await page.setViewportSize(viewport);
     await openWithoutRuntimeErrors(page, '/proof/singapore-source-review/');
+
+    const outcome = page.locator('.sg-proof-outcome');
+    const disclosure = page.locator('.sg-proof-disclosure');
+    await expect(outcome).toHaveText('A changed version cannot reuse the prior approval.');
+    await expect(disclosure).toContainText('Demonstration only.');
+    await expect(disclosure).toContainText('Not affiliated with or endorsed by MAS.');
+    await expect(disclosure).toContainText('Not legal advice or a regulatory compliance determination.');
 
     const cleanCapture = page.locator(
       'img[src^="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63"]',
@@ -477,6 +513,17 @@ test('Singapore source-review proof serves the overview, source identity, and hu
     }));
     expect(contrastRatio(detailColors.body, detailColors.background)).toBeGreaterThanOrEqual(4.5);
     expect(contrastRatio(detailColors.caption, detailColors.background)).toBeGreaterThanOrEqual(4.5);
+    const boundaryStyles = await page.evaluate(() => ({
+      disclosureColor: getComputedStyle(document.querySelector('.sg-proof-disclosure')).color,
+      disclosureFontSize: Number.parseFloat(getComputedStyle(document.querySelector('.sg-proof-disclosure')).fontSize),
+      heroBackground: getComputedStyle(document.querySelector('.sg-proof-hero')).backgroundColor,
+      outcomeColor: getComputedStyle(document.querySelector('.sg-proof-outcome')).color,
+      outcomeFontSize: Number.parseFloat(getComputedStyle(document.querySelector('.sg-proof-outcome')).fontSize),
+    }));
+    expect(boundaryStyles.disclosureFontSize).toBeGreaterThanOrEqual(15);
+    expect(boundaryStyles.outcomeFontSize).toBeGreaterThanOrEqual(viewport.width < 600 ? 22 : 30);
+    expect(contrastRatio(boundaryStyles.disclosureColor, boundaryStyles.heroBackground)).toBeGreaterThanOrEqual(4.5);
+    expect(contrastRatio(boundaryStyles.outcomeColor, boundaryStyles.heroBackground)).toBeGreaterThanOrEqual(4.5);
     await expectNoHorizontalOverflow(page);
   }
 });
