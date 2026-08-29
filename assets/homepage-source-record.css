@@ -1,0 +1,120 @@
+.sales-source-record {
+  min-width: 0;
+  padding: 1.5rem;
+  color: #f4f5f2;
+  background: #090c0f;
+  border: 1px solid #30343a;
+  border-radius: 5px;
+}
+
+.sales-source-record-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sales-source-record-heading p,
+.sales-source-record-heading strong {
+  margin: 0;
+}
+
+.sales-source-record-heading p {
+  color: #858a91;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.sales-source-record-heading strong {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 22px;
+}
+
+.sales-source-record-heading span {
+  padding: 0.45rem 0.55rem;
+  color: #8ee8cc;
+  background: rgba(75, 208, 173, 0.08);
+  border: 1px solid rgba(75, 208, 173, 0.3);
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: right;
+}
+
+.sales-source-record dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+}
+
+.sales-source-record dl > div {
+  min-width: 0;
+  padding: 1rem 0.75rem 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sales-source-record dt {
+  color: #858a91;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sales-source-record dd {
+  margin: 0.35rem 0 0;
+  color: #f4f5f2;
+  font-size: 14px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.sales-source-record code {
+  color: #d8dadd;
+  font-size: 12px;
+}
+
+.sales-source-record > p {
+  margin: 1rem 0 0;
+  color: #aeb1b6;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.sales-source-record > a {
+  display: inline-flex;
+  gap: 0.35rem;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 0.65rem;
+  color: #f4f5f2;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sales-source-record > a:hover,
+.sales-source-record > a:focus-visible {
+  color: #4bd0ad;
+  text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+  .sales-source-record-heading {
+    display: grid;
+  }
+
+  .sales-source-record-heading span {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .sales-source-record dl {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "schema_version": "auxtho-public-singapore-source-review-proof-v1",
+  "schema_version": "auxtho-public-singapore-source-review-proof-v2",
   "proof_id": "AUXTHO_SINGAPORE_SOURCE_REVIEW_2026-08-29",
   "status": "MAS_DEMO_FREEZE_GO",
   "scope": "local synthetic provider-free demonstration",
@@ -28,6 +28,40 @@
       "sha256": "64E44BDA2841FDF0B63CB2927DD5AA5FE5792154245B5E902FE71DA66E4E4383"
     }
   },
+  "buyer_detail_captures": {
+    "status": "BUYER_DETAIL_CAPTURE_GO",
+    "accepted": [
+      {
+        "id": "accountable_human_decision_exact_artifact",
+        "path": "/assets/proof/singapore-source-review/human-decision-exact-artifact.png",
+        "byte_length": 87170,
+        "width": 434,
+        "height": 1194,
+        "sha256": "C7C6458B6B307A47C3B35D6215D65BA7C603CEAF6BFD141AB84260A3788D1B61",
+        "capture_source_commit": "38298a4c5f84ae04b31c85cb3288acdf30348f4e",
+        "demonstrates": "an accountable human decision tied to the exact reviewed artifact, authorized next action and recorded result"
+      }
+    ],
+    "public_source_locator_record": {
+      "claim_id": "C1",
+      "source_title": "MAS Notice FSM-N05.pdf",
+      "issuer": "Monetary Authority of Singapore",
+      "instrument_type": "notice",
+      "publication_status": "published in force",
+      "review_role": "primary eligible",
+      "page_locator": 3,
+      "source_sha256": "4DB66F0FEABB9E24E017B3D96FDF0306C3B7C02BC7945B0B49FFB8727D2D26B6",
+      "claim_map_sha256": "C1B4183DDBA55F2D544522B255B4C3A4638405E6D53AE3B57242F7CC16371B38",
+      "source_page_reproduced": false
+    },
+    "common_boundary": [
+      "local synthetic provider-free capture",
+      "no customer data",
+      "no external delivery",
+      "no original MAS source page reproduced in the buyer detail capture",
+      "not legal advice, compliance certification, MAS approval, customer use or production evidence"
+    ]
+  },
   "source_set": {
     "version": "mas-source-pack-2026-08-29.v2",
     "sha256": "8BC5DE02D55B91BE813C500E4C151B68461587DE40CEC43A230B81A73C502EC0",
@@ -40,8 +74,7 @@
         "review_role": "primary eligible",
         "release_support": "primary or supporting",
         "page_count": 3,
-        "sha256": "4DB66F0FEABB9E24E017B3D96FDF0306C3B7C02BC7945B0B49FFB8727D2D26B6",
-        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/notices/trpd/notice-fsm-n05/mas-notice-fsm-n05.pdf"
+        "sha256": "4DB66F0FEABB9E24E017B3D96FDF0306C3B7C02BC7945B0B49FFB8727D2D26B6"
       },
       {
         "title": "FAQ - Notice on Technology Risk Management.pdf",
@@ -51,8 +84,7 @@
         "review_role": "supporting only",
         "release_support": "supporting only",
         "page_count": 5,
-        "sha256": "F6173D1E46E273BE206B6E9DD29C5DB0914A5F24AAC66AB688EB892B8B0BD2AB",
-        "url": "https://www.mas.gov.sg/-/media/mas-media-library/regulation/faqs/trpd/faqs---notice-on-technology-risk-management/faqs---notice-on-trm/faq---notice-on-technology-risk-management.pdf"
+        "sha256": "F6173D1E46E273BE206B6E9DD29C5DB0914A5F24AAC66AB688EB892B8B0BD2AB"
       },
       {
         "title": "Consultation Paper on Proposed Amendments to Notices on Technology Risk Management.pdf",
@@ -62,8 +94,7 @@
         "review_role": "excluded",
         "release_support": "not eligible",
         "page_count": 88,
-        "sha256": "43A65B572E3C580853C256508F7DF977A8A3084880B80ED05DA642BCD75A9404",
-        "url": "https://www.mas.gov.sg/-/media/mas-media-library/publications/consultations/trpd/2026/consultation-paper-on-proposed-amendments-to-notices-on-technology-risk-management.pdf"
+        "sha256": "43A65B572E3C580853C256508F7DF977A8A3084880B80ED05DA642BCD75A9404"
       }
     ]
   },

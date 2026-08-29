@@ -1385,6 +1385,9 @@ test('candidate artifact rejects evidence traversal, cross-binding, duplicate pa
 test('first screen presents evidence-backed review and controlled release in plain language', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const hero = index.match(/<section[^>]*class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
+  const sourceReviewBand = index.match(
+    /<article class="sales-product-band sales-product-band-source-review">[\s\S]*?<\/article>/i,
+  )?.[0] || '';
   assert.match(hero, /For regulated financial teams/i);
   assert.match(hero, /AI can do the work\. A person must own the consequence/i);
   assert.match(hero, /checks selected claims/i);
@@ -1398,6 +1401,13 @@ test('first screen presents evidence-backed review and controlled release in pla
   assert.doesNotMatch(hero, /customer adoption|production readiness|regulatory approval/i);
   assert.match(index, /Source-based review helps determine what a person should approve/i);
   assert.match(index, /A changed or unconfirmed result does not inherit approval or trigger an automatic resend/i);
+  assert.match(sourceReviewBand, /class="sales-source-record"/i);
+  assert.match(sourceReviewBand, /MAS Notice FSM-N05/i);
+  assert.match(sourceReviewBand, /Page 3/i);
+  assert.match(sourceReviewBand, /4DB66F0F\.\.\.7D2D26B6/i);
+  assert.match(sourceReviewBand, /SUPPORTED IN SELECTED SOURCE SET/i);
+  assert.doesNotMatch(sourceReviewBand, /source-traceability\.png/i);
+  assert.doesNotMatch(sourceReviewBand, /frozen-demo\.png/i);
   assert.doesNotMatch(index, /important statements|material claims|Policy Packs?/i);
   assert.match(index, /class="vision-film-continue" href="#how-it-works"/i);
   assert.doesNotMatch(hero, /Request a pilot|production-ready|regulatory approval|masked data/i);
@@ -1468,8 +1478,11 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   const frozenScreen = fs.readFileSync(
     path.join(root, 'assets', 'proof', 'singapore-source-review', 'frozen-demo.png'),
   );
+  const humanDecisionDetail = fs.readFileSync(
+    path.join(root, 'assets', 'proof', 'singapore-source-review', 'human-decision-exact-artifact.png'),
+  );
 
-  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v1');
+  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v2');
   assert.equal(manifest.status, 'MAS_DEMO_FREEZE_GO');
   assert.equal(manifest.product_source.repository_visibility, 'private');
   assert.equal(manifest.source_set.sources.length, 3);
@@ -1486,11 +1499,25 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.equal(manifest.release_result.customer_data_used, false);
   assert.equal(manifest.release_result.external_dispatch_executed, false);
   assert.equal(manifest.presentation_capture.status, 'CLEAN_CAPTURE_GO');
+  assert.equal(manifest.buyer_detail_captures.status, 'BUYER_DETAIL_CAPTURE_GO');
+  assert.equal(manifest.buyer_detail_captures.accepted.length, 1);
+  assert.equal(
+    manifest.buyer_detail_captures.accepted[0].path,
+    '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
+  );
+  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.claim_id, 'C1');
+  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.page_locator, 3);
+  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.source_page_reproduced, false);
+  assert.equal(manifest.source_set.sources.every((source) => !Object.hasOwn(source, 'url')), true);
   assert.equal(manifest.capture_absence_assertions.nextjs_development_indicator, false);
   assert.equal(manifest.capture_absence_assertions.nextjs_portal, false);
   assert.equal(
     sha256(frozenScreen),
     'd4ce3a63f2e0f5e55be47c7854d2bf4d308abaeadd99448e89d50836fc75933e',
+  );
+  assert.equal(
+    sha256(humanDecisionDetail),
+    'c7c6458b6b307a47c3b35d6215d65ba7c603ceaf6bfd141ab84260a3788d1b61',
   );
 
   assert.match(page, /Claims defined for review/i);
@@ -1499,6 +1526,11 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.match(page, /Not eligible/i);
   assert.match(page, /Changed artifact blocked/i);
   assert.match(page, /Clean capture/i);
+  assert.match(page, /Follow the source identity into the human decision/i);
+  assert.match(page, /Frozen source traceability record/i);
+  assert.match(page, /without reproducing the source page/i);
+  assert.match(page, /human-decision-exact-artifact\.png\?sha256=c7c6458b[0-9a-f]{56}/i);
+  assert.doesNotMatch(page, /source-traceability\.png|https:\/\/www\.mas\.gov\.sg/i);
   assert.match(page, /No automatic retry/i);
   assert.doesNotMatch(page, /material claims|important statements|MAS approved|compliance certified/i);
 });
@@ -1581,8 +1613,10 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
 
   for (const required of [
     '/assets/technical-foundations.css',
+    '/assets/homepage-source-record.css',
     '/assets/proof-singapore-source-review.css',
     '/assets/proof/singapore-source-review/frozen-demo.png',
+    '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
     '/assets/proof/singapore-source-review/manifest.json',
     '/lineage/isp/index.html',
     '/proof/singapore-source-review/index.html',
