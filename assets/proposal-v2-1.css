@@ -2676,7 +2676,7 @@ body > a[href="#problem"]:focus {
 
   .sales-hero {
     align-items: flex-end;
-    min-height: 84svh;
+    min-height: auto;
     max-height: none;
   }
 
@@ -2692,8 +2692,8 @@ body > a[href="#problem"]:focus {
   }
 
   .sales-hero-content {
-    padding-top: 8rem;
-    padding-bottom: 4.8rem;
+    padding-top: 3.75rem;
+    padding-bottom: 1rem;
   }
 
   .sales-hero h1 {
@@ -2717,8 +2717,11 @@ body > a[href="#problem"]:focus {
   }
 
   .sales-urgency {
-    margin-top: 1.25rem;
-    font-size: 13px;
+    display: none;
+  }
+
+  .sales-button-contact {
+    display: none;
   }
 
   .sales-media-label {
@@ -2730,6 +2733,10 @@ body > a[href="#problem"]:focus {
   .sales-section,
   .technical-foundations-section {
     padding: 5rem 0 !important;
+  }
+
+  .sales-why {
+    padding-top: 2.5rem !important;
   }
 
   .sales-section-heading {

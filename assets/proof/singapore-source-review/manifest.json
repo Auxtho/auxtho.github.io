@@ -1,5 +1,5 @@
 {
-  "schema_version": "auxtho-public-singapore-source-review-proof-v2",
+  "schema_version": "auxtho-public-singapore-source-review-proof-v3",
   "proof_id": "AUXTHO_SINGAPORE_SOURCE_REVIEW_2026-08-29",
   "status": "MAS_DEMO_FREEZE_GO",
   "scope": "local synthetic provider-free demonstration",
@@ -32,6 +32,16 @@
     "status": "BUYER_DETAIL_CAPTURE_GO",
     "accepted": [
       {
+        "id": "exact_source_page_and_wording",
+        "path": "/assets/proof/singapore-source-review/exact-source-page.png",
+        "byte_length": 158676,
+        "width": 1152,
+        "height": 1260,
+        "sha256": "7210F9C77A162AA0F720ED490B383F94C5BED35672F426EBFB47902956A5E6C7",
+        "capture_source_commit": "82fe9b0775cd9196d51974b01ffb9d5ce059a5e9",
+        "demonstrates": "a selected claim opening the exact public source page, source-local wording and highlighted matching passage"
+      },
+      {
         "id": "accountable_human_decision_exact_artifact",
         "path": "/assets/proof/singapore-source-review/human-decision-exact-artifact.png",
         "byte_length": 87170,
@@ -52,13 +62,13 @@
       "page_locator": 3,
       "source_sha256": "4DB66F0FEABB9E24E017B3D96FDF0306C3B7C02BC7945B0B49FFB8727D2D26B6",
       "claim_map_sha256": "C1B4183DDBA55F2D544522B255B4C3A4638405E6D53AE3B57242F7CC16371B38",
-      "source_page_reproduced": false
+      "source_page_reproduced": true
     },
     "common_boundary": [
       "local synthetic provider-free capture",
       "no customer data",
       "no external delivery",
-      "no original MAS source page reproduced in the buyer detail capture",
+      "one bounded excerpt of MAS Notice FSM-N05 page 3 reproduced for exact-source inspection",
       "not legal advice, compliance certification, MAS approval, customer use or production evidence"
     ]
   },

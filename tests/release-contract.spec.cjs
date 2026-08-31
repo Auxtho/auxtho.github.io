@@ -1390,7 +1390,8 @@ test('first screen presents evidence-backed review and controlled release in pla
   )?.[0] || '';
   assert.match(hero, /For regulated financial teams/i);
   assert.match(hero, /AI can do the work\. A person must own the consequence/i);
-  assert.match(hero, /checks selected claims/i);
+  assert.match(hero, /reads the financial source documents used to prepare AI-assisted complaint responses/i);
+  assert.match(hero, /finds the relevant pages and exact wording/i);
   assert.match(hero, /approved sources and review rules/i);
   assert.match(hero, /accountable reviewer/i);
   assert.match(hero, /final decision stays tied to the exact reviewed version and recorded result/i);
@@ -1399,8 +1400,8 @@ test('first screen presents evidence-backed review and controlled release in pla
   assert.match(hero, /Synthetic workflow/i);
   assert.doesNotMatch(hero, /Public proof: a local synthetic Singapore source-review demo and a separate Release Core proof/i);
   assert.doesNotMatch(hero, /customer adoption|production readiness|regulatory approval/i);
-  assert.match(index, /Source-based review informs the decision/i);
-  assert.match(index, /A changed or unconfirmed result does not inherit approval or trigger an automatic resend/i);
+  assert.match(index, /Auxtho first reads the documents and finds the relevant source pages/i);
+  assert.match(index, /see where it appears on the original page/i);
   assert.match(sourceReviewBand, /class="sales-source-record"/i);
   assert.match(sourceReviewBand, /MAS Notice FSM-N05/i);
   assert.match(sourceReviewBand, /Page 3/i);
@@ -1481,8 +1482,11 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   const humanDecisionDetail = fs.readFileSync(
     path.join(root, 'assets', 'proof', 'singapore-source-review', 'human-decision-exact-artifact.png'),
   );
+  const exactSourceDetail = fs.readFileSync(
+    path.join(root, 'assets', 'proof', 'singapore-source-review', 'exact-source-page.png'),
+  );
 
-  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v2');
+  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v3');
   assert.equal(manifest.status, 'MAS_DEMO_FREEZE_GO');
   assert.equal(manifest.product_source.repository_visibility, 'private');
   assert.equal(manifest.source_set.sources.length, 3);
@@ -1500,14 +1504,18 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.equal(manifest.release_result.external_dispatch_executed, false);
   assert.equal(manifest.presentation_capture.status, 'CLEAN_CAPTURE_GO');
   assert.equal(manifest.buyer_detail_captures.status, 'BUYER_DETAIL_CAPTURE_GO');
-  assert.equal(manifest.buyer_detail_captures.accepted.length, 1);
+  assert.equal(manifest.buyer_detail_captures.accepted.length, 2);
   assert.equal(
     manifest.buyer_detail_captures.accepted[0].path,
+    '/assets/proof/singapore-source-review/exact-source-page.png',
+  );
+  assert.equal(
+    manifest.buyer_detail_captures.accepted[1].path,
     '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
   );
   assert.equal(manifest.buyer_detail_captures.public_source_locator_record.claim_id, 'C1');
   assert.equal(manifest.buyer_detail_captures.public_source_locator_record.page_locator, 3);
-  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.source_page_reproduced, false);
+  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.source_page_reproduced, true);
   assert.equal(manifest.source_set.sources.every((source) => !Object.hasOwn(source, 'url')), true);
   assert.equal(manifest.capture_absence_assertions.nextjs_development_indicator, false);
   assert.equal(manifest.capture_absence_assertions.nextjs_portal, false);
@@ -1519,6 +1527,10 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
     sha256(humanDecisionDetail),
     'c7c6458b6b307a47c3b35d6215d65ba7c603ceaf6bfd141ab84260a3788d1b61',
   );
+  assert.equal(
+    sha256(exactSourceDetail),
+    '7210f9c77a162aa0f720ed490b383f94c5bed35672f426ebfb47902956a5e6c7',
+  );
 
   assert.match(page, /Claims defined for review/i);
   assert.match(page, /source-policy eligibility separate from PDF traceability/i);
@@ -1526,9 +1538,10 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.match(page, /Not eligible/i);
   assert.match(page, /Changed artifact blocked/i);
   assert.match(page, /Clean capture/i);
+  assert.match(page, /Open Evidence\. Read the exact wording on the original page/i);
+  assert.match(page, /exact-source-page\.png\?sha256=7210f9c7[0-9a-f]{56}/i);
   assert.match(page, /Follow the source identity into the human decision/i);
   assert.match(page, /Frozen source traceability record/i);
-  assert.match(page, /without reproducing the source page/i);
   assert.match(page, /human-decision-exact-artifact\.png\?sha256=c7c6458b[0-9a-f]{56}/i);
   assert.doesNotMatch(page, /source-traceability\.png|https:\/\/www\.mas\.gov\.sg/i);
   assert.match(page, /No automatic retry/i);
@@ -1556,11 +1569,13 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.doesNotMatch(index, /href="\/verify\.html"/);
-  assert.match(index, /Auxtho checks selected claims in AI-assisted financial complaint responses/i);
-  assert.match(index, /Source-based review informs the decision/i);
-  assert.match(index, /Release Core keeps it tied to the exact reviewed version/i);
+  assert.match(index, /Auxtho reads the financial source documents used to prepare AI-assisted complaint responses/i);
+  assert.match(index, /finds the relevant pages and exact wording/i);
+  assert.match(index, /Auxtho first reads the documents and finds the relevant source pages/i);
+  assert.match(index, /Release Core then carries those findings into the exact reviewed version/i);
   assert.match(index, /Example release record/i);
-  assert.match(index, /See each selected claim, its source, and what needs judgment/i);
+  assert.match(index, /Read the document, find the exact page, and show what needs judgment/i);
+  assert.match(index, /including scanned pages and tables/i);
   assert.match(index, /See what needs attention/i);
   assert.match(index, /Track items awaiting review, blocked items, and follow-up/i);
   assert.match(index, /Synthetic \/ Open full view/i);
@@ -1627,6 +1642,7 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
     '/assets/technical-foundations.css',
     '/assets/homepage-source-record.css',
     '/assets/proof-singapore-source-review.css',
+    '/assets/proof/singapore-source-review/exact-source-page.png',
     '/assets/proof/singapore-source-review/frozen-demo.png',
     '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
     '/assets/proof/singapore-source-review/manifest.json',
