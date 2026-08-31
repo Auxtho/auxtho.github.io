@@ -86,6 +86,7 @@
 .sg-proof-claims,
 .sg-proof-result,
 .sg-proof-screen,
+.sg-proof-exact-source,
 .sg-proof-details,
 .sg-proof-anchors {
   padding: 6rem 0;
@@ -249,6 +250,27 @@
 
 .sg-proof-screen {
   background: #07090a;
+}
+
+.sg-proof-exact-source {
+  background: #0b0e11;
+}
+
+.sg-proof-exact-source .proof-body {
+  color: #a7abb0;
+}
+
+.sg-proof-exact-source-figure {
+  width: min(100%, 1152px);
+  margin: 2.5rem auto 0;
+}
+
+.sg-proof-exact-source-figure figcaption {
+  max-width: 900px;
+  margin-top: 1rem;
+  color: #a7abb0;
+  font-size: 14px;
+  line-height: 1.65;
 }
 
 .sg-proof-screen figure {
@@ -534,6 +556,7 @@
   .sg-proof-claims,
   .sg-proof-result,
   .sg-proof-screen,
+  .sg-proof-exact-source,
   .sg-proof-details,
   .sg-proof-anchors {
     padding: 4.5rem 0;

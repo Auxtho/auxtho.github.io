@@ -423,7 +423,7 @@ test('Release Core proof uses CSP-compatible external styles with deliberate des
   }
 });
 
-test('homepage shows the frozen Singapore source identity without reproducing the source page', async ({ page }) => {
+test('homepage shows the frozen Singapore source identity and exact highlighted page', async ({ page }) => {
   for (const viewport of [
     { width: 1440, height: 900 },
     { width: 390, height: 844 },
@@ -440,6 +440,9 @@ test('homepage shows the frozen Singapore source identity without reproducing th
     );
     await expect(sourceRecord).toContainText('MAS Notice FSM-N05');
     await expect(sourceRecord).toContainText('Page 3');
+    const exactSourceProof = page.locator('#exact-source-inspection');
+    await expect(exactSourceProof).toContainText('Open Evidence. Read the exact wording on the original page.');
+    await expect(exactSourceProof.locator('img[src*="exact-source-page.png"]')).toHaveCount(1);
     await expect(sourceReviewBand.locator('img[src*="source-traceability.png"]')).toHaveCount(0);
     const productImageSizes = await page.locator('#product img').evaluateAll(async (images) => {
       images.forEach((image) => { image.loading = 'eager'; });
@@ -447,6 +450,7 @@ test('homepage shows the frozen Singapore source identity without reproducing th
       return images.map((image) => ({ height: image.naturalHeight, width: image.naturalWidth }));
     });
     expect(productImageSizes).toEqual([
+      { height: 1260, width: 1152 },
       { height: 1280, width: 1920 },
       { height: 2025, width: 1620 },
       { height: 509, width: 1280 },
@@ -469,6 +473,16 @@ test('Singapore source-review proof serves the overview, source identity, and hu
     await expect(disclosure).toContainText('Demonstration only.');
     await expect(disclosure).toContainText('Not affiliated with or endorsed by MAS.');
     await expect(disclosure).toContainText('Not legal advice or a regulatory compliance determination.');
+
+    const exactSourceCapture = page.locator(
+      'img[src^="/assets/proof/singapore-source-review/exact-source-page.png?sha256=7210f9c7"]',
+    );
+    await exactSourceCapture.scrollIntoViewIfNeeded();
+    await expect(exactSourceCapture).toBeVisible();
+    await expect.poll(() => exactSourceCapture.evaluate((image) => ({
+      height: image.naturalHeight,
+      width: image.naturalWidth,
+    }))).toEqual({ height: 1260, width: 1152 });
 
     const cleanCapture = page.locator(
       'img[src^="/assets/proof/singapore-source-review/frozen-demo.png?sha256=d4ce3a63"]',

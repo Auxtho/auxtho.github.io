@@ -1482,8 +1482,11 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   const humanDecisionDetail = fs.readFileSync(
     path.join(root, 'assets', 'proof', 'singapore-source-review', 'human-decision-exact-artifact.png'),
   );
+  const exactSourceDetail = fs.readFileSync(
+    path.join(root, 'assets', 'proof', 'singapore-source-review', 'exact-source-page.png'),
+  );
 
-  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v2');
+  assert.equal(manifest.schema_version, 'auxtho-public-singapore-source-review-proof-v3');
   assert.equal(manifest.status, 'MAS_DEMO_FREEZE_GO');
   assert.equal(manifest.product_source.repository_visibility, 'private');
   assert.equal(manifest.source_set.sources.length, 3);
@@ -1501,14 +1504,18 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.equal(manifest.release_result.external_dispatch_executed, false);
   assert.equal(manifest.presentation_capture.status, 'CLEAN_CAPTURE_GO');
   assert.equal(manifest.buyer_detail_captures.status, 'BUYER_DETAIL_CAPTURE_GO');
-  assert.equal(manifest.buyer_detail_captures.accepted.length, 1);
+  assert.equal(manifest.buyer_detail_captures.accepted.length, 2);
   assert.equal(
     manifest.buyer_detail_captures.accepted[0].path,
+    '/assets/proof/singapore-source-review/exact-source-page.png',
+  );
+  assert.equal(
+    manifest.buyer_detail_captures.accepted[1].path,
     '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
   );
   assert.equal(manifest.buyer_detail_captures.public_source_locator_record.claim_id, 'C1');
   assert.equal(manifest.buyer_detail_captures.public_source_locator_record.page_locator, 3);
-  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.source_page_reproduced, false);
+  assert.equal(manifest.buyer_detail_captures.public_source_locator_record.source_page_reproduced, true);
   assert.equal(manifest.source_set.sources.every((source) => !Object.hasOwn(source, 'url')), true);
   assert.equal(manifest.capture_absence_assertions.nextjs_development_indicator, false);
   assert.equal(manifest.capture_absence_assertions.nextjs_portal, false);
@@ -1520,6 +1527,10 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
     sha256(humanDecisionDetail),
     'c7c6458b6b307a47c3b35d6215d65ba7c603ceaf6bfd141ab84260a3788d1b61',
   );
+  assert.equal(
+    sha256(exactSourceDetail),
+    '7210f9c77a162aa0f720ed490b383f94c5bed35672f426ebfb47902956a5e6c7',
+  );
 
   assert.match(page, /Claims defined for review/i);
   assert.match(page, /source-policy eligibility separate from PDF traceability/i);
@@ -1527,9 +1538,10 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.match(page, /Not eligible/i);
   assert.match(page, /Changed artifact blocked/i);
   assert.match(page, /Clean capture/i);
+  assert.match(page, /Open Evidence\. Read the exact wording on the original page/i);
+  assert.match(page, /exact-source-page\.png\?sha256=7210f9c7[0-9a-f]{56}/i);
   assert.match(page, /Follow the source identity into the human decision/i);
   assert.match(page, /Frozen source traceability record/i);
-  assert.match(page, /without reproducing the source page/i);
   assert.match(page, /human-decision-exact-artifact\.png\?sha256=c7c6458b[0-9a-f]{56}/i);
   assert.doesNotMatch(page, /source-traceability\.png|https:\/\/www\.mas\.gov\.sg/i);
   assert.match(page, /No automatic retry/i);
@@ -1630,6 +1642,7 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
     '/assets/technical-foundations.css',
     '/assets/homepage-source-record.css',
     '/assets/proof-singapore-source-review.css',
+    '/assets/proof/singapore-source-review/exact-source-page.png',
     '/assets/proof/singapore-source-review/frozen-demo.png',
     '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
     '/assets/proof/singapore-source-review/manifest.json',
