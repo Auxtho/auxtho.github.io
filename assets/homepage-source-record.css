@@ -192,6 +192,10 @@
 }
 
 @media (max-width: 720px) {
+  .sales-hero-content {
+    padding-bottom: 3.75rem;
+  }
+
   .sales-exact-source-proof {
     grid-template-columns: minmax(0, 1fr);
     gap: 1.65rem;

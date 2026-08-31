@@ -1390,11 +1390,12 @@ test('first screen presents evidence-backed review and controlled release in pla
   )?.[0] || '';
   assert.match(hero, /For regulated financial teams/i);
   assert.match(hero, /AI can do the work\. A person must own the consequence/i);
-  assert.match(hero, /reads the financial source documents used to prepare AI-assisted complaint responses/i);
-  assert.match(hero, /finds the relevant pages and exact wording/i);
-  assert.match(hero, /approved sources and review rules/i);
-  assert.match(hero, /accountable reviewer/i);
-  assert.match(hero, /final decision stays tied to the exact reviewed version and recorded result/i);
+  assert.match(hero, /performs repeatable source and rule checks for AI-assisted financial complaint responses/i);
+  assert.match(hero, /routes exceptions to the accountable reviewer/i);
+  assert.match(hero, /reviewer makes the final decision/i);
+  assert.match(hero, /decision tied to the exact reviewed version, permitted next action, and recorded result/i);
+  assert.match(hero, /Move repeatable source and rule checks to Auxtho/i);
+  assert.match(hero, /Keep exceptions and final release with the accountable reviewer/i);
   assert.match(hero, /Discuss one workflow/i);
   assert.match(hero, /View public proof/i);
   assert.match(hero, /Synthetic workflow/i);
@@ -1569,8 +1570,8 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.doesNotMatch(index, /href="\/verify\.html"/);
-  assert.match(index, /Auxtho reads the financial source documents used to prepare AI-assisted complaint responses/i);
-  assert.match(index, /finds the relevant pages and exact wording/i);
+  assert.match(index, /Auxtho reads the source material/i);
+  assert.match(index, /Auxtho finds the relevant pages and prepares exceptions/i);
   assert.match(index, /Auxtho first reads the documents and finds the relevant source pages/i);
   assert.match(index, /Release Core then carries those findings into the exact reviewed version/i);
   assert.match(index, /Example release record/i);
