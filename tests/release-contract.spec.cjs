@@ -1390,7 +1390,8 @@ test('first screen presents evidence-backed review and controlled release in pla
   )?.[0] || '';
   assert.match(hero, /For regulated financial teams/i);
   assert.match(hero, /AI can do the work\. A person must own the consequence/i);
-  assert.match(hero, /checks selected claims/i);
+  assert.match(hero, /reads the financial source documents used to prepare AI-assisted complaint responses/i);
+  assert.match(hero, /finds the relevant pages and exact wording/i);
   assert.match(hero, /approved sources and review rules/i);
   assert.match(hero, /accountable reviewer/i);
   assert.match(hero, /final decision stays tied to the exact reviewed version and recorded result/i);
@@ -1399,8 +1400,8 @@ test('first screen presents evidence-backed review and controlled release in pla
   assert.match(hero, /Synthetic workflow/i);
   assert.doesNotMatch(hero, /Public proof: a local synthetic Singapore source-review demo and a separate Release Core proof/i);
   assert.doesNotMatch(hero, /customer adoption|production readiness|regulatory approval/i);
-  assert.match(index, /Source-based review informs the decision/i);
-  assert.match(index, /A changed or unconfirmed result does not inherit approval or trigger an automatic resend/i);
+  assert.match(index, /Auxtho first reads the documents and finds the relevant source pages/i);
+  assert.match(index, /see where it appears on the original page/i);
   assert.match(sourceReviewBand, /class="sales-source-record"/i);
   assert.match(sourceReviewBand, /MAS Notice FSM-N05/i);
   assert.match(sourceReviewBand, /Page 3/i);
@@ -1556,11 +1557,13 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(index, /href="\/lineage\/isp\/"/);
   assert.match(index, /href="\/security\/ardamire\/"/);
   assert.doesNotMatch(index, /href="\/verify\.html"/);
-  assert.match(index, /Auxtho checks selected claims in AI-assisted financial complaint responses/i);
-  assert.match(index, /Source-based review informs the decision/i);
-  assert.match(index, /Release Core keeps it tied to the exact reviewed version/i);
+  assert.match(index, /Auxtho reads the financial source documents used to prepare AI-assisted complaint responses/i);
+  assert.match(index, /finds the relevant pages and exact wording/i);
+  assert.match(index, /Auxtho first reads the documents and finds the relevant source pages/i);
+  assert.match(index, /Release Core then carries those findings into the exact reviewed version/i);
   assert.match(index, /Example release record/i);
-  assert.match(index, /See each selected claim, its source, and what needs judgment/i);
+  assert.match(index, /Read the document, find the exact page, and show what needs judgment/i);
+  assert.match(index, /including scanned pages and tables/i);
   assert.match(index, /See what needs attention/i);
   assert.match(index, /Track items awaiting review, blocked items, and follow-up/i);
   assert.match(index, /Synthetic \/ Open full view/i);

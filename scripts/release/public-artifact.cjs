@@ -33,8 +33,8 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
-  'evidence-notes.html': '000b82646ee76336c0bdb71b064da63b914b71462654874d7c20cb75361bef4f',
-  'index.html': 'b46cb1b5d7f7483b46d3490a35d132824cae6075fbee4ffe6ad75f1d78639464',
+  'evidence-notes.html': '4e2499b4993925ff6d9f0968ebca9902abfc5f16e6f51f0881e3d10ece315a6f',
+  'index.html': '6c0289f6932d96fe1f2de7a21f52fc08dc6d844b6ee3d8098488c1d9140c14f0',
   'lineage/isp/index.html': 'ba032516fe4f49cd4d69117cd526b5b60d4702338e879420810fed35d838104f',
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
   'proof/release-core/index.html': 'f781d7246fa4ee7c6a689cd9e881d16ed61173efeedc401d7140edd4730e3dcc',

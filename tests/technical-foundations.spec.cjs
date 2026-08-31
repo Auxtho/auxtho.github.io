@@ -177,12 +177,14 @@ test('homepage shows the product proposition before the mobile vision film witho
   expect(sectionTops[2]).toBeGreaterThan(sectionTops[1]);
   expect(sectionTops[3]).toBeGreaterThan(sectionTops[2]);
 
-  const heroButtons = await page.locator('.sales-hero-actions .sales-button')
+  await expect(page.locator('.sales-hero-actions .sales-button')).toHaveCount(3);
+  await expect(page.locator('.sales-hero-actions .sales-button-contact')).toBeHidden();
+  const heroButtons = await page.locator('.sales-hero-actions .sales-button:visible')
     .evaluateAll((buttons) => buttons.map((button) => {
       const box = button.getBoundingClientRect();
       return { bottom: box.bottom, height: box.height, left: box.left, right: box.right, top: box.top };
     }));
-  expect(heroButtons).toHaveLength(3);
+  expect(heroButtons).toHaveLength(2);
   expect(heroButtons.slice(1).every((box, index) => (
     box.top >= heroButtons[index].bottom - 1
   ))).toBe(true);
