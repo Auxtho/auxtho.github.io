@@ -1550,7 +1550,11 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   );
 
   assert.match(page, /Claims defined for review/i);
-  assert.match(page, /source-policy eligibility separate from PDF traceability/i);
+  assert.match(page, /<title>Auxtho Singapore Source Review \| Exact MAS Source Evidence<\/title>/i);
+  assert.match(page, /<meta name="description" content="See how Auxtho compares selected report claims/i);
+  assert.equal((page.match(/<strong>Proof boundary:<\/strong>/g) || []).length, 1);
+  assert.match(page, /frozen pack dated 29 August 2026/i);
+  assert.match(page, /without being allowed to support the reviewed report/i);
   assert.match(page, /2026 TRM Consultation Paper/i);
   assert.match(page, /Not eligible/i);
   assert.match(page, /Changed artifact blocked/i);
@@ -1581,7 +1585,7 @@ test('Capability Library exposes the verified five-minute chain with one bounded
   for (const relative of CAPABILITY_HTML_FILES.filter((value) => value !== 'capabilities/index.html')) {
     const page = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
     assert.match(page, /Document or job/i, relative);
-    assert.match(page, /What (?:Auxtho|Ardamire) performs/i, relative);
+    assert.match(page, /What (?:(?:Auxtho|Ardamire) performs|the model shows)/i, relative);
     assert.match(page, /What a person decides/i, relative);
     assert.match(page, /What appears on screen/i, relative);
     assert.match(page, /What remains/i, relative);
@@ -1601,19 +1605,49 @@ test('Capability Library exposes the verified five-minute chain with one bounded
     path.join(root, 'capabilities', 'incident-reconstruction-recovery', 'index.html'),
     'utf8',
   );
-  assert.match(exactSource, /yellow geometry highlight/i);
+  const sourcePack = fs.readFileSync(
+    path.join(root, 'capabilities', 'regulatory-source-pack', 'index.html'),
+    'utf8',
+  );
+  assert.match(exactSource, /yellow highlight and matching source wording/i);
   assert.match(exactSource, /PRIMARY OR SUPPORTING/i);
-  assert.match(decision, /reviewer inspection attestation/i);
+  assert.match(exactSource, /frozen MAS pack dated 29 August 2026/i);
+  assert.match(sourcePack, /frozen MAS pack dated 29 August 2026/i);
+  assert.match(decision, /recorded statement that they inspected it/i);
   assert.match(decision, /45 receipt\/history browser tests passed/i);
   assert.match(incident, /UNKNOWN \/ NO AUTOMATIC RETRY/i);
+  assert.match(incident, /authenticated readback from that pinned receiver verifies it/i);
   assert.match(incident, /Raw timeline payloads and internal mechanics are intentionally excluded/i);
+  assert.doesNotMatch(library, /local publication candidate/i);
+
+  const ardamire = fs.readFileSync(
+    path.join(root, 'capabilities', 'ardamire-defense-layer', 'index.html'),
+    'utf8',
+  );
+  assert.match(ardamire, /<meta name="description" content="[^"]*public modeled sequence/i);
+  assert.match(ardamire, /<meta property="og:description" content="[^"]*public modeled sequence/i);
+  assert.match(ardamire, /class="cap-hero-lede">Ardamire's public modeled sequence/i);
+  assert.match(ardamire, /What the model shows/i);
+  assert.doesNotMatch(ardamire, /Teams can assemble|What Ardamire performs/i);
 });
 
 test('Capability Library capture manifest binds every used product image and excludes sensitive crops', () => {
   const manifestPath = path.join(root, 'assets', 'capabilities', 'manifest.json');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-  assert.equal(manifest.schema_version, 'auxtho-public-capability-library-capture-manifest-v1');
-  assert.equal(manifest.status, 'LOCAL_PUBLICATION_CANDIDATE_CAPTURE_GO');
+  assert.equal(manifest.schema_version, 'auxtho-public-capability-library-capture-and-publication-manifest-v2');
+  assert.equal(manifest.capture_status, 'LOCAL_PUBLICATION_CANDIDATE_CAPTURE_GO');
+  assert.equal(manifest.capture_status_scope, 'capture approval recorded before first public release');
+  assert.equal(manifest.publication_status, 'LIVE_READBACK_VERIFIED_2026-09-01');
+  assert.equal(manifest.first_publication.source_sha, 'd262386a10f30443aff1417dc9c5de8cedeca1f7');
+  assert.equal(manifest.first_publication.source_tree, '84d65d001501d28d1dae6a1bf8eac1fea5e8ecee');
+  assert.equal(manifest.first_publication.pull_request, 36);
+  assert.equal(manifest.first_publication.deployment_run_id, 33462528262);
+  assert.equal(manifest.first_publication.live_url, 'https://auxtho.com/capabilities/');
+  const library = fs.readFileSync(path.join(root, 'capabilities', 'index.html'), 'utf8');
+  assert.match(
+    library,
+    new RegExp(`manifest\\.json\\?sha256=${sha256(fs.readFileSync(manifestPath))}`),
+  );
   assert.equal(manifest.product_source.commit, '1cca2c79d92ffba686883dd0ef3a8c4eb08f7c1b');
   assert.equal(manifest.capture_workflow.full_page_screenshot_used, false);
   assert.equal(manifest.assets.length, 10);
@@ -1697,8 +1731,10 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.doesNotMatch(isp, /AgentRunner/i);
 
   assert.match(ardamire, /<meta name="robots" content="index,follow">/);
+  assert.match(ardamire, /<meta name="description" content="Ardamire's public modeled signal sequence/i);
+  assert.match(ardamire, /<meta property="og:description" content="A public modeled sequence/i);
   assert.match(ardamire, /Ardamire Defense Layer/i);
-  assert.match(ardamire, /Human-gated defensive change control/i);
+  assert.match(ardamire, /Public modeled defensive-change sequence/i);
   assert.match(ardamire, /Detect/i);
   assert.match(ardamire, /Quarantine/i);
   assert.match(ardamire, /Analyze \+ Profile/i);
@@ -1707,7 +1743,11 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(ardamire, /Verify before rollout/i);
   assert.match(ardamire, /Map the review and verification stages against SOC, SIEM, EDR, IAM/i);
   assert.match(ardamire, /Keep review, approval, release, and export decisions with designated people/i);
-  assert.match(ardamire, /Interactive control sequence \/ modelled signal scenario/i);
+  assert.match(ardamire, /Interactive control sequence \/ modeled signal scenario/i);
+  assert.match(ardamire, /Keep the decision point visible/i);
+  assert.doesNotMatch(ardamire, /Ready to run sequence|Teams can assemble|Record the decision/i);
+  assert.match(index, /MODELED DEFENSIVE SEQUENCE/i);
+  assert.match(index, /Public model: Detect/i);
   assert.match(ardamire, /Discuss one workflow/i);
   assert.match(ardamire, /verification before rollout/i);
   assert.doesNotMatch(ardamire, /Ardamire Workbench|Ardamire Watch|Ardamire Agent|Operator Board|Replay Lab|Reviewer Handoff|Dated publisher observation/i);

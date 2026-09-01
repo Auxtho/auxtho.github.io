@@ -3,6 +3,13 @@
 Date: 2026-09-01 KST
 Status: `LOCAL_CANDIDATE_COMPLETE / EXTERNAL_PUBLICATION_HELD`
 
+> Historical status note: this document records the pre-deploy candidate at
+> the moment it was completed. It was superseded for publication status by
+> `CAPABILITY_LIBRARY_LIVE_PUBLICATION_RECORD_2026-09-01.md` after PR #36
+> deployed source `d262386a10f30443aff1417dc9c5de8cedeca1f7`. The original
+> candidate facts and external-effect counts below remain unchanged as
+> historical evidence.
+
 ## 1. Canonical public-site source and deploy lineage
 
 - Repository: `Auxtho/auxtho.github.io`
