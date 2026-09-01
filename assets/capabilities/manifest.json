@@ -1,0 +1,166 @@
+{
+  "schema_version": "auxtho-public-capability-library-capture-manifest-v1",
+  "status": "LOCAL_PUBLICATION_CANDIDATE_CAPTURE_GO",
+  "created_date": "2026-09-01",
+  "product_source": {
+    "commit": "1cca2c79d92ffba686883dd0ef3a8c4eb08f7c1b",
+    "tree": "652839fd434bdd0741f2bd94a60844f65056eba7",
+    "runtime": "local provider-free synthetic"
+  },
+  "capture_workflow": {
+    "script": "scripts/qa/capture-capability-product-screens.cjs",
+    "viewport": { "width": 1440, "height": 1000 },
+    "device_scale_factor": 1,
+    "browser": "Playwright Chromium",
+    "crop_method": "product component locator screenshot",
+    "full_page_screenshot_used": false
+  },
+  "assets": [
+    {
+      "path": "/assets/proof/singapore-source-review/exact-source-page.png",
+      "module": "M120 Exact Source Traceability",
+      "source_kind": "existing accepted public-safe buyer-detail capture",
+      "capture_source_commit": "82fe9b0775cd9196d51974b01ffb9d5ce059a5e9",
+      "crop": "Evidence detail at natural component scale",
+      "redaction": "none required; accepted public-safe synthetic capture",
+      "synthetic_local_boundary": true,
+      "bytes": 158676,
+      "width": 1152,
+      "height": 1260,
+      "sha256": "7210f9c77a162aa0f720ed490b383f94c5bed35672f426ebfb47902956a5e6c7"
+    },
+    {
+      "path": "/assets/capabilities/source-pack/lifecycle-readback.png",
+      "module": "M121 Regulatory Source Pack",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid source-pack-lifecycle",
+      "redaction": "none required; synthetic pack identity and truncated hashes only",
+      "synthetic_local_boundary": true,
+      "bytes": 18657,
+      "width": 1152,
+      "height": 207,
+      "sha256": "e02feb4d796dbc6af1fe4fc2ff6978fa95c5dddc9d64855b385c94707a870149"
+    },
+    {
+      "path": "/assets/capabilities/source-pack/source-roles.png",
+      "module": "M120-M121 Regulatory Source Pack",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid source-pack-sources",
+      "redaction": "none required; official public MAS source identities",
+      "synthetic_local_boundary": true,
+      "bytes": 59933,
+      "width": 1152,
+      "height": 608,
+      "sha256": "e77e875b17835b08e12988f09a71ba3086ea73e8da08c1f9176d700f0b5c5b22"
+    },
+    {
+      "path": "/assets/capabilities/ai-review/exception-correction.png",
+      "module": "M122 AI Review and Exception Queue",
+      "source_kind": "terminal product App component after governed synthetic correction",
+      "crop": "data-testid exception-queue",
+      "redaction": "none required; provider-free synthetic corpus",
+      "synthetic_local_boundary": true,
+      "bytes": 35079,
+      "width": 1152,
+      "height": 438,
+      "sha256": "7108f320df1b12d1f1d30e9ae765e638b767dc9ddbf6f4b5e29366e943834697"
+    },
+    {
+      "path": "/assets/capabilities/ai-review/review-gate.png",
+      "module": "M122 AI Review and Exception Queue",
+      "source_kind": "terminal product App component after governed synthetic correction",
+      "crop": "data-testid review-gate",
+      "redaction": "none required; exact synthetic artifact and claim-set hashes are truncated",
+      "synthetic_local_boundary": true,
+      "bytes": 15643,
+      "width": 1152,
+      "height": 139,
+      "sha256": "ef3c787ed5a11deba6095f24ce4a8fa977db5c805189fa4b9d27fec52abc8516"
+    },
+    {
+      "path": "/assets/capabilities/audit-history/decision-receipt.png",
+      "module": "M133-M138 Decision Receipts and Audit History",
+      "source_kind": "terminal product Audit component with public-safe synthetic projection",
+      "crop": "data-testid audit-history-decision-receipt",
+      "redaction": "public-safe actor label and synthetic identifiers supplied before capture; no post-capture pixel editing",
+      "synthetic_local_boundary": true,
+      "bytes": 19355,
+      "width": 493,
+      "height": 283,
+      "sha256": "36551671e0418bedcb060c804f26064da5a763034dd57a3e7bcf27497dff7a76"
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/impact-inventory.png",
+      "module": "M123 Incident Reconstruction",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid impact-inventory",
+      "redaction": "none required; content-free synthetic incident",
+      "synthetic_local_boundary": true,
+      "bytes": 6485,
+      "width": 1152,
+      "height": 118,
+      "sha256": "1077f7a55a782cb154686a6e12784f542135b1f917a2ba0e584d9deab876c1bf"
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/notification-boundary.png",
+      "module": "M123 Incident Reconstruction",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid notification-boundary",
+      "redaction": "none required; no customer or notification data",
+      "synthetic_local_boundary": true,
+      "bytes": 7997,
+      "width": 1152,
+      "height": 118,
+      "sha256": "9be456974d5a3294136a90f3a53936cc51782e45e0accadd271c9267870f449f"
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/response-package.png",
+      "module": "M123 Incident Reconstruction",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid response-package",
+      "redaction": "none required; package hash truncated and no raw artifact or evidence shown",
+      "synthetic_local_boundary": true,
+      "bytes": 9910,
+      "width": 1152,
+      "height": 114,
+      "sha256": "af60d78668c012d3e7d0bebc8554c2a9993a6a36dd3965b886cb4bf7ceb43c61"
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/release-receipt-readback.png",
+      "module": "M125 Integrated Product Path",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid integrated-release",
+      "redaction": "none required; synthetic identifiers are truncated",
+      "synthetic_local_boundary": true,
+      "bytes": 15281,
+      "width": 1280,
+      "height": 150,
+      "sha256": "0a741d2ed3814c2682b613d58270b3d3a2b41619c2f019f0cb1ca9696090229f"
+    }
+  ],
+  "excluded_captures": [
+    {
+      "id": "m123-full-raw-timeline",
+      "reason": "excluded and deleted because raw event payloads and internal reason codes are outside the public evidence boundary"
+    },
+    {
+      "id": "m125-console-handoff",
+      "reason": "excluded and deleted because tenant and internal operations boundaries remain private"
+    },
+    {
+      "id": "m121-technical-contract-identities",
+      "reason": "excluded and deleted because the buyer-facing page does not need internal profile identifiers"
+    }
+  ],
+  "absence_assertions": {
+    "customer_data_visible": false,
+    "personal_identifier_visible": false,
+    "internal_email_visible": false,
+    "developer_avatar_visible": false,
+    "secret_or_token_visible": false,
+    "private_provenance_visible": false,
+    "internal_filesystem_path_visible": false,
+    "raw_log_payload_visible": false,
+    "tenant_or_auth_mechanics_visible": false
+  }
+}
