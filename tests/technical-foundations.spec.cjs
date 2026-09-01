@@ -114,6 +114,69 @@ async function openWithoutRuntimeErrors(page, route) {
   expect(failedRequests).toEqual([]);
 }
 
+const capabilityRoutes = [
+  '/capabilities/',
+  '/capabilities/exact-source-traceability/',
+  '/capabilities/regulatory-source-pack/',
+  '/capabilities/ai-review-exception-queue/',
+  '/capabilities/decision-receipts-audit-history/',
+  '/capabilities/incident-reconstruction-recovery/',
+  '/capabilities/ardamire-defense-layer/',
+];
+
+test('Capability Library pages remain readable, hash-bound, and overflow-free on desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  for (const route of capabilityRoutes) {
+    await openWithoutRuntimeErrors(page, route);
+    await expect(page.locator('main h1')).toBeVisible();
+    const layout = await page.evaluate(() => ({
+      canonical: document.querySelector('link[rel="canonical"]')?.href || '',
+      description: document.querySelector('meta[name="description"]')?.content || '',
+      h1FontSize: Number.parseFloat(getComputedStyle(document.querySelector('main h1')).fontSize),
+      heroCopyColor: getComputedStyle(document.querySelector('.cap-hero-lede')).color,
+      heroBackground: getComputedStyle(document.querySelector('.cap-hero')).backgroundColor,
+      sourceNoteCount: document.querySelectorAll('.cap-source-note').length,
+    }));
+    expect(new URL(layout.canonical).pathname).toBe(route);
+    expect(layout.description.length).toBeGreaterThan(80);
+    expect(layout.h1FontSize).toBeGreaterThanOrEqual(48);
+    expect(layout.sourceNoteCount).toBe(1);
+    expect(contrastRatio(layout.heroCopyColor, layout.heroBackground)).toBeGreaterThanOrEqual(4.5);
+
+    const images = page.locator('main img');
+    for (let index = 0; index < await images.count(); index += 1) {
+      const image = images.nth(index);
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(() => image.evaluate((element) => element.complete && element.naturalWidth > 0)).toBe(true);
+      expect((await image.getAttribute('alt') || '').trim().length).toBeGreaterThan(20);
+    }
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
+test('Capability Library pages reflow with readable copy and reachable actions on mobile', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of capabilityRoutes) {
+    await openWithoutRuntimeErrors(page, route);
+    const typography = await page.evaluate(() => ({
+      h1: Number.parseFloat(getComputedStyle(document.querySelector('main h1')).fontSize),
+      lede: Number.parseFloat(getComputedStyle(document.querySelector('.cap-hero-lede')).fontSize),
+      question: Number.parseFloat(getComputedStyle(document.querySelector('.cap-question p, .cap-workflow-step p')).fontSize),
+    }));
+    expect(typography.h1).toBeGreaterThanOrEqual(40);
+    expect(typography.lede).toBeGreaterThanOrEqual(18);
+    expect(typography.question).toBeGreaterThanOrEqual(16);
+    const actionHeights = await page.locator('.cap-button:visible').evaluateAll(
+      (items) => items.map((item) => item.getBoundingClientRect().height),
+    );
+    expect(actionHeights.length).toBeGreaterThan(0);
+    expect(actionHeights.every((height) => height >= 44)).toBe(true);
+    await page.keyboard.press('Tab');
+    expect(await page.evaluate(() => ['A', 'BUTTON'].includes(document.activeElement?.tagName || ''))).toBe(true);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test('homepage shows the product proposition before the desktop vision film', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await openWithoutRuntimeErrors(page, '/index.html');

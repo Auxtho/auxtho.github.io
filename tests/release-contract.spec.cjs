@@ -30,6 +30,15 @@ const {
 } = require('../scripts/release/verify-deployment.cjs');
 
 const root = path.resolve(__dirname, '..');
+const CAPABILITY_HTML_FILES = [
+  'capabilities/index.html',
+  'capabilities/exact-source-traceability/index.html',
+  'capabilities/regulatory-source-pack/index.html',
+  'capabilities/ai-review-exception-queue/index.html',
+  'capabilities/decision-receipts-audit-history/index.html',
+  'capabilities/incident-reconstruction-recovery/index.html',
+  'capabilities/ardamire-defense-layer/index.html',
+];
 const gitRoot = path.resolve(
   process.env.AUXTHO_PUBLIC_VERIFY_GIT_ROOT || root,
 );
@@ -116,7 +125,7 @@ function createSourceFixture(targetRoot) {
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
     'proof/singapore-source-review/index.html',
-    'security/ardamire/index.html', 'assets',
+    'security/ardamire/index.html', 'capabilities', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
@@ -886,6 +895,7 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'terms.html',
     'story.html', 'lineage/isp/index.html', 'security/ardamire/index.html',
+    ...CAPABILITY_HTML_FILES,
   ];
   const referenced = new Set();
   for (const relative of htmlFiles) {
@@ -905,6 +915,7 @@ test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', ()
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
+    ...CAPABILITY_HTML_FILES,
   ];
   for (const relative of htmlFiles) {
     const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
@@ -921,6 +932,7 @@ test('every candidate-rendered image URL carries the exact SHA-256 of its bytes'
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
+    ...CAPABILITY_HTML_FILES,
   ];
   for (const relative of htmlFiles) {
     const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
@@ -937,6 +949,7 @@ test('every candidate-rendered MP4 URL carries the exact SHA-256 of its bytes', 
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
+    ...CAPABILITY_HTML_FILES,
   ];
   const referenced = new Set();
   for (const relative of htmlFiles) {
@@ -1421,6 +1434,9 @@ test('post-deploy browser smoke covers Evidence Notes and the retired verifier r
   assert.match(smoke, /path: '\/proof\/release-core\/'/i);
   assert.match(smoke, /path: '\/proof\/release-core\/transcript\/'/i);
   assert.match(smoke, /path: '\/proof\/singapore-source-review\/'/i);
+  assert.match(smoke, /path: '\/capabilities\/'/i);
+  assert.match(smoke, /path: '\/capabilities\/decision-receipts-audit-history\/'/i);
+  assert.match(smoke, /path: '\/capabilities\/incident-reconstruction-recovery\/'/i);
   assert.match(smoke, /public verifier route is absent/i);
   assert.match(smoke, /response\.status\(\)\)\.toBe\(404\)/i);
   assert.match(smoke, /api_request_count/i);
@@ -1552,6 +1568,75 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.doesNotMatch(page, /material claims|important statements|MAS approved|compliance certified/i);
 });
 
+test('Capability Library exposes the verified five-minute chain with one bounded source note per module', () => {
+  const library = fs.readFileSync(path.join(root, 'capabilities', 'index.html'), 'utf8');
+  assert.match(library, /Five-minute product chain/i);
+  assert.match(library, /Approved source and AI-assisted work/i);
+  assert.match(library, /Selected claims and prepared exceptions/i);
+  assert.match(library, /Human correction and final decision/i);
+  assert.match(library, /Exact-version authorization and permitted action/i);
+  assert.match(library, /Receipt, UNKNOWN, or reconciliation/i);
+  assert.match(library, /Durable history, reconstruction, and recovery/i);
+
+  for (const relative of CAPABILITY_HTML_FILES.filter((value) => value !== 'capabilities/index.html')) {
+    const page = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
+    assert.match(page, /Document or job/i, relative);
+    assert.match(page, /What (?:Auxtho|Ardamire) performs/i, relative);
+    assert.match(page, /What a person decides/i, relative);
+    assert.match(page, /What appears on screen/i, relative);
+    assert.match(page, /What remains/i, relative);
+    assert.equal((page.match(/class="cap-source-note"/g) || []).length, 1, relative);
+    assert.doesNotMatch(page, /A:\\Projects|private-provenance|has proved customer effectiveness|guaranteed compliant|regulator approved/i, relative);
+  }
+
+  const exactSource = fs.readFileSync(
+    path.join(root, 'capabilities', 'exact-source-traceability', 'index.html'),
+    'utf8',
+  );
+  const decision = fs.readFileSync(
+    path.join(root, 'capabilities', 'decision-receipts-audit-history', 'index.html'),
+    'utf8',
+  );
+  const incident = fs.readFileSync(
+    path.join(root, 'capabilities', 'incident-reconstruction-recovery', 'index.html'),
+    'utf8',
+  );
+  assert.match(exactSource, /yellow geometry highlight/i);
+  assert.match(exactSource, /PRIMARY OR SUPPORTING/i);
+  assert.match(decision, /reviewer inspection attestation/i);
+  assert.match(decision, /45 receipt\/history browser tests passed/i);
+  assert.match(incident, /UNKNOWN \/ NO AUTOMATIC RETRY/i);
+  assert.match(incident, /Raw timeline payloads and internal mechanics are intentionally excluded/i);
+});
+
+test('Capability Library capture manifest binds every used product image and excludes sensitive crops', () => {
+  const manifestPath = path.join(root, 'assets', 'capabilities', 'manifest.json');
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  assert.equal(manifest.schema_version, 'auxtho-public-capability-library-capture-manifest-v1');
+  assert.equal(manifest.status, 'LOCAL_PUBLICATION_CANDIDATE_CAPTURE_GO');
+  assert.equal(manifest.product_source.commit, '1cca2c79d92ffba686883dd0ef3a8c4eb08f7c1b');
+  assert.equal(manifest.capture_workflow.full_page_screenshot_used, false);
+  assert.equal(manifest.assets.length, 10);
+
+  for (const asset of manifest.assets) {
+    const filePath = path.join(root, ...asset.path.slice(1).split('/'));
+    const bytes = fs.readFileSync(filePath);
+    assert.equal(bytes.length, asset.bytes, asset.path);
+    assert.equal(sha256(bytes), asset.sha256, asset.path);
+    assert.equal(bytes.readUInt32BE(16), asset.width, asset.path);
+    assert.equal(bytes.readUInt32BE(20), asset.height, asset.path);
+    assert.equal(asset.synthetic_local_boundary, true, asset.path);
+  }
+
+  assert.equal(manifest.excluded_captures.some((item) => item.id === 'm123-full-raw-timeline'), true);
+  assert.equal(manifest.excluded_captures.some((item) => item.id === 'm125-console-handoff'), true);
+  assert.equal(manifest.absence_assertions.customer_data_visible, false);
+  assert.equal(manifest.absence_assertions.personal_identifier_visible, false);
+  assert.equal(manifest.absence_assertions.secret_or_token_visible, false);
+  assert.equal(manifest.absence_assertions.raw_log_payload_visible, false);
+  assert.equal(manifest.absence_assertions.tenant_or_auth_mechanics_visible, false);
+});
+
 test('public research and trust routes are stable, scoped, and buyer-readable', () => {
   const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const isp = fs.readFileSync(path.join(root, 'lineage', 'isp', 'index.html'), 'utf8');
@@ -1629,6 +1714,10 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.doesNotMatch(ardamire, /guarantees? prevention|certified defense|autonomous approval/i);
 
   assert.match(sitemap, /https:\/\/auxtho\.com\/lineage\/isp\//);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/capabilities\//);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/capabilities\/exact-source-traceability\//);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/capabilities\/decision-receipts-audit-history\//);
+  assert.match(sitemap, /https:\/\/auxtho\.com\/capabilities\/incident-reconstruction-recovery\//);
   assert.match(sitemap, /https:\/\/auxtho\.com\/proof\/singapore-source-review\//);
   assert.match(sitemap, /https:\/\/auxtho\.com\/security\/ardamire\//);
   assert.doesNotMatch(sitemap, /verify\.html/);
@@ -1641,6 +1730,8 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
 
   for (const required of [
     '/assets/technical-foundations.css',
+    '/assets/capability-library.css',
+    '/assets/capabilities/manifest.json',
     '/assets/homepage-source-record.css',
     '/assets/proof-singapore-source-review.css',
     '/assets/proof/singapore-source-review/exact-source-page.png',
@@ -1648,6 +1739,13 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
     '/assets/proof/singapore-source-review/human-decision-exact-artifact.png',
     '/assets/proof/singapore-source-review/manifest.json',
     '/lineage/isp/index.html',
+    '/capabilities/index.html',
+    '/capabilities/exact-source-traceability/index.html',
+    '/capabilities/regulatory-source-pack/index.html',
+    '/capabilities/ai-review-exception-queue/index.html',
+    '/capabilities/decision-receipts-audit-history/index.html',
+    '/capabilities/incident-reconstruction-recovery/index.html',
+    '/capabilities/ardamire-defense-layer/index.html',
     '/proof/singapore-source-review/index.html',
     '/security/ardamire/index.html',
   ]) assert.ok(publicFiles.paths.includes(required), required);
