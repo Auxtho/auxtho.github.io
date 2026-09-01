@@ -1,7 +1,18 @@
 {
-  "schema_version": "auxtho-public-capability-library-capture-manifest-v1",
-  "status": "LOCAL_PUBLICATION_CANDIDATE_CAPTURE_GO",
+  "schema_version": "auxtho-public-capability-library-capture-and-publication-manifest-v2",
+  "capture_status": "LOCAL_PUBLICATION_CANDIDATE_CAPTURE_GO",
+  "capture_status_scope": "capture approval recorded before first public release",
+  "publication_status": "LIVE_READBACK_VERIFIED_2026-09-01",
   "created_date": "2026-09-01",
+  "first_publication": {
+    "source_sha": "d262386a10f30443aff1417dc9c5de8cedeca1f7",
+    "source_tree": "84d65d001501d28d1dae6a1bf8eac1fea5e8ecee",
+    "pull_request": 36,
+    "merged_at": "2026-09-01T02:24:04Z",
+    "deployment_run_id": 33462528262,
+    "deployment_completed_at": "2026-09-01T02:30:21Z",
+    "live_url": "https://auxtho.com/capabilities/"
+  },
   "product_source": {
     "commit": "1cca2c79d92ffba686883dd0ef3a8c4eb08f7c1b",
     "tree": "652839fd434bdd0741f2bd94a60844f65056eba7",

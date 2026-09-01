@@ -533,9 +533,11 @@ test('Singapore source-review proof serves the overview, source identity, and hu
     const outcome = page.locator('.sg-proof-outcome');
     const disclosure = page.locator('.sg-proof-disclosure');
     await expect(outcome).toHaveText('A changed version cannot reuse the prior approval.');
-    await expect(disclosure).toContainText('Demonstration only.');
-    await expect(disclosure).toContainText('Not affiliated with or endorsed by MAS.');
-    await expect(disclosure).toContainText('Not legal advice or a regulatory compliance determination.');
+    await expect(disclosure).toContainText('Proof boundary:');
+    await expect(disclosure).toContainText('Local, synthetic, and provider-free');
+    await expect(disclosure).toContainText('Auxtho is not affiliated with or endorsed by MAS.');
+    await expect(disclosure).toContainText('This is not legal advice or a regulatory compliance determination.');
+    await expect(page.getByText('Within the frozen pack dated 29 August 2026', { exact: false })).toBeVisible();
 
     const exactSourceCapture = page.locator(
       'img[src^="/assets/proof/singapore-source-review/exact-source-page.png?sha256=7210f9c7"]',
