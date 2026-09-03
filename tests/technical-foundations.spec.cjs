@@ -242,6 +242,7 @@ test('homepage shows the product proposition before the mobile vision film witho
 
   await expect(page.locator('.sales-hero-actions .sales-button')).toHaveCount(3);
   await expect(page.locator('.sales-hero-actions .sales-button-contact')).toBeHidden();
+  await expect(page.getByRole('link', { name: 'Try the guided walkthrough' })).toBeVisible();
   const heroButtons = await page.locator('.sales-hero-actions .sales-button:visible')
     .evaluateAll((buttons) => buttons.map((button) => {
       const box = button.getBoundingClientRect();

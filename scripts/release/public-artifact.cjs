@@ -34,7 +34,8 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '4e2499b4993925ff6d9f0968ebca9902abfc5f16e6f51f0881e3d10ece315a6f',
-  'index.html': '6d943a166d0c6332db6494777fad0d72a2d24015cd4ad7eef7a8402c4e541ce0',
+  'demo/singapore-source-review/index.html': '080deaf8f0a12392b843f5312c63a08c3bc3fa19147855560e333cc06179df29',
+  'index.html': '4c7afd47d2198f8878339c23ae0a24ea0adcd9b7944ad35813a01d0d78e6bacf',
   'capabilities/ai-review-exception-queue/index.html': '6d9d4ade4c0af47a2a931792e83417bb69f91465db0ce4d9f92408c850c8ccab',
   'capabilities/ardamire-defense-layer/index.html': 'dd284a42ea1135a92cbb78bcd91f774549ad9c47bea42dac94babf9582e5d62b',
   'capabilities/decision-receipts-audit-history/index.html': '28506af46ec2b585a1e5d6417fc8462270179776a6c363863d1e421383e9db3b',
@@ -46,7 +47,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   'privacy.html': '987da6cbe5011a47a87e69bec9288248e3ac8ab25af228445d391fdccd02d5b7',
   'proof/release-core/index.html': 'f781d7246fa4ee7c6a689cd9e881d16ed61173efeedc401d7140edd4730e3dcc',
   'proof/release-core/transcript/index.html': '40938725f8bc6434329a47f5987b23b758ca23fcdcf8705051b26ef903ec6f2d',
-  'proof/singapore-source-review/index.html': 'd4bd9c7b95ace44930e336a3ab2d30d7f56dcd6a6b115f04721ba0cf4321741f',
+  'proof/singapore-source-review/index.html': '445fd237effec8d7ae5924445a963715bb0b19d02329c48bdffc12df9c0d0e26',
   'security/ardamire/index.html': 'b636920b92593941ccb5a6abc69e6e02824202a71a28d2493b7994035242b850',
   'story.html': '6853310c4058a7d87f8a4373953d4d22da34bb87a4bdf91a477bd009f6da690b',
   'terms.html': '20efc6042ff1141854fbcedd25d910df3432d277b6c440e4ecc7e1eaf721e335',

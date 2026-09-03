@@ -125,7 +125,7 @@ function createSourceFixture(targetRoot) {
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
     'proof/singapore-source-review/index.html',
-    'security/ardamire/index.html', 'capabilities', 'assets',
+    'security/ardamire/index.html', 'capabilities', 'demo', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
@@ -1410,7 +1410,8 @@ test('first screen presents evidence-backed review and controlled release in pla
   assert.match(hero, /Move repeatable source and rule checks to Auxtho/i);
   assert.match(hero, /Keep exceptions and final release with the accountable reviewer/i);
   assert.match(hero, /Discuss one workflow/i);
-  assert.match(hero, /View public proof/i);
+  assert.match(hero, /Try the guided walkthrough/i);
+  assert.doesNotMatch(hero, /View public proof/i);
   assert.match(hero, /Synthetic workflow/i);
   assert.doesNotMatch(hero, /Public proof: a local synthetic Singapore source-review demo and a separate Release Core proof/i);
   assert.doesNotMatch(hero, /customer adoption|production readiness|regulatory approval/i);
