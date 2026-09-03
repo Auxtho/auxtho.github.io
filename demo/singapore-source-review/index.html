@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en-SG" data-language="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auxtho | Singapore source-review product walkthrough</title>
+  <meta name="description" content="Compare a fixed synthetic AI-assisted financial document with public MAS sources, make the human decision on one exact version, and see why a changed version returns to review.">
+  <meta name="robots" content="index,follow">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f4f6f8">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="icon" href="/assets/favicon.svg">
+  <link rel="canonical" href="https://auxtho.com/demo/singapore-source-review/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Auxtho | Singapore source-review product walkthrough">
+  <meta property="og:description" content="See how Auxtho prepares source-based exceptions for a person to resolve before one exact document version may proceed.">
+  <meta property="og:url" content="https://auxtho.com/demo/singapore-source-review/">
+  <meta property="og:locale" content="en_SG">
+  <meta property="og:locale:alternate" content="ko_KR">
+  <meta property="og:image" content="https://auxtho.com/assets/proof/singapore-source-review/og-20260829.png?sha256=96f694f949fcace3756af571eea8a53113206b4ea40b482d61f2f9f6e82f4ffe">
+  <meta property="og:image:alt" content="Auxtho Singapore source review showing exact sources, accountable human review, and exact-version control">
+  <link rel="stylesheet" href="/assets/demo/singapore-source-review/guided-demo.css?sha256=fa626a3dea209ef8f6bc9366be7bec67072bcbd54eef10b36743e02a5193a579">
+</head>
+<body>
+  <a class="skip-link" href="#guided-demo" data-i18n="skip">Skip to the walkthrough</a>
+
+  <header class="demo-header">
+    <div class="demo-header-inner">
+      <a class="brand" href="/" aria-label="Auxtho home">
+        <img class="brand-symbol" src="/assets/logo-scroll.svg?sha256=bbdfa64fda2006fa6dfe5f910b7ab6872f0f3bfdc089984b0885ee2fa8cedb80" alt="" aria-hidden="true">
+        <span class="brand-name">Auxtho</span>
+      </a>
+      <div class="header-actions">
+        <a class="home-link" href="/" data-i18n="home">Auxtho home</a>
+        <button class="language-toggle" type="button" data-language-toggle aria-label="Switch to Korean">한국어</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="guided-demo" class="demo-main" data-demo-root>
+    <div class="demo-shell">
+      <section class="demo-hero" aria-labelledby="demo-title">
+        <p class="eyebrow" data-i18n="eyebrow">Singapore source review · Guided product walkthrough</p>
+        <h1 id="demo-title" data-i18n="title">See how an AI-assisted document is checked, approved, and returned to review if it changes.</h1>
+        <p class="hero-copy" data-i18n="intro">Compare the source, apply the example correction, approve version 1.1, then see why version 1.2 cannot reuse that decision.</p>
+        <p class="boundary-summary" data-i18n="boundarySummary">Fixed synthetic example · Browser-only · Nothing saved</p>
+      </section>
+
+      <div class="demo-layout">
+        <div class="demo-workspace">
+          <section class="panel panel-pad review-panel" aria-labelledby="review-title">
+            <div class="panel-head">
+              <div>
+                <h2 id="review-title" class="panel-title" data-i18n="reviewTitle" data-review-title>Two source issues found</h2>
+                <p class="panel-sub" data-i18n="reviewSub" data-review-sub>Auxtho compared the selected statement with its source and prepared the differences for a person to resolve.</p>
+              </div>
+              <span class="status warn" data-review-status>Reviewer attention needed</span>
+            </div>
+
+            <details class="claim-explorer">
+              <summary data-i18n="otherChecks">Try another verified source check</summary>
+              <p data-i18n="otherChecksSummary">The main walkthrough starts with the two-issue example.</p>
+            <div class="claim-rail" role="tablist" aria-label="Statements defined for review" data-claim-rail>
+              <button class="claim-tab" type="button" role="tab" aria-selected="false" data-claim-select="C1">
+                <span class="claim-tab-copy"><strong>C1</strong><small data-i18n="claimC1Label">Current Notice · source confirmed</small></span>
+                <span class="claim-tab-state ok" data-i18n="claimC1State">Source confirmed</span>
+              </button>
+              <button class="claim-tab" type="button" role="tab" aria-selected="false" data-claim-select="C2">
+                <span class="claim-tab-copy"><strong>C2</strong><small data-i18n="claimC2Label">Notice and FAQ · source-role exception</small></span>
+                <span class="claim-tab-state warn" data-i18n="claimC2State">Review needed</span>
+              </button>
+              <button class="claim-tab" type="button" role="tab" aria-selected="true" data-claim-select="C3">
+                <span class="claim-tab-copy"><strong>C3</strong><small data-i18n="claimC3Label">Closed consultation · two exceptions</small></span>
+                <span class="claim-tab-state stop" data-i18n="claimC3State">Review required</span>
+              </button>
+            </div>
+            </details>
+
+            <p class="next-guidance" id="next-guidance" data-next-guidance aria-live="polite">
+              <span class="guidance-pulse" aria-hidden="true"></span>
+              <span data-i18n="next1">1 of 4 · Compare the highlighted statement with its source.</span>
+            </p>
+
+            <div class="document-preview">
+              <header class="document-preview-head">
+                <div><span data-i18n="documentType">AI-assisted draft</span><h3 data-i18n="documentTitle">Technology risk backup control note</h3></div>
+                <span class="document-version" data-i18n="documentMeta" data-document-version>Synthetic · version 1.0</span>
+              </header>
+              <div class="document-paper">
+                <p data-i18n="documentIntro">This short internal note summarises a proposed backup control for review.</p>
+                <div class="draft" data-draft>
+                  <div class="draft-label" data-draft-label>Selected statement · C3</div>
+                  <span data-draft-text>FSM-N05 <mark>currently requires</mark> financial institutions to maintain <mark>both immutable and offline backups</mark>.</span>
+                </div>
+                <p data-i18n="documentBody">The highlighted statement must be checked against its source before this draft can move forward.</p>
+              </div>
+            </div>
+
+            <div class="review-stage" data-review-stage>
+            <div class="findings">
+              <article class="finding">
+                <div class="finding-top"><h3 data-primary-title>Source status</h3><span class="status warn" data-primary-status>Closed consultation · proposed only</span></div>
+                <p data-primary-explanation>This wording comes from a closed 2026 consultation, not the current Notice.</p>
+              </article>
+              <article class="finding">
+                <div class="finding-top"><h3 data-secondary-title>Source wording</h3><span class="status stop" data-secondary-status>Wording mismatch</span></div>
+                <p data-secondary-explanation>The source says ‘immutable or offline’; the draft expands that to ‘both’.</p>
+              </article>
+            </div>
+
+            <details class="reason-details">
+              <summary data-i18n="reasonSummary">Why Auxtho flagged this</summary>
+              <div class="reason-box visible" data-reasons aria-live="polite">
+                <div><h4 data-reason-one-title>Issue 1 · A proposal is presented as a current requirement</h4><p data-reason-one>This closed consultation asked for feedback on proposed requirements. It is not eligible as evidence of a current requirement.</p></div>
+                <div><h4 data-reason-two-title>Issue 2 · “Either” becomes “both”</h4><p data-reason-two>The draft is stronger than the source. It must preserve the source wording before the reviewer can approve it.</p></div>
+              </div>
+            </details>
+
+            <div class="actions">
+              <button class="button primary is-next-action" type="button" data-open-source data-action-step="1" aria-describedby="next-guidance">
+                <span class="action-number" aria-hidden="true">1</span><span data-open-source-label>Inspect the exact page 6 source</span>
+              </button>
+            </div>
+            </div>
+          </section>
+
+          <section class="panel panel-pad reviewer-panel" data-reviewer-panel aria-labelledby="reviewer-title">
+            <div class="panel-head">
+              <div>
+                <h2 id="reviewer-title" class="panel-title" data-i18n="reviewerTitle" data-reviewer-title>Accountable review</h2>
+                <p class="panel-sub" data-i18n="reviewerSub" data-reviewer-sub>Review the correction prepared for this fixed example. The reviewer can apply it, hold, reject, or approve only the exact corrected version.</p>
+              </div>
+              <span class="status info" data-reviewer-status>Decision pending</span>
+            </div>
+            <div class="exception-summary">
+              <span data-i18n="exceptionCount" data-exception-count>2 source issues</span>
+              <p data-i18n="reviewerAction" data-reviewer-action>Keep the consultation proposed-only and preserve the source’s “or” wording.</p>
+            </div>
+            <div class="decision-actions">
+              <button class="button info" type="button" data-correct data-action-step="2" aria-describedby="next-guidance">
+                <span class="action-number" aria-hidden="true">2</span><span data-i18n="correct">Apply example correction</span>
+              </button>
+              <button class="button" type="button" data-hold><span data-i18n="hold">Hold</span></button>
+              <button class="button stop-button" type="button" data-reject><span data-i18n="reject">Reject</span></button>
+              <button class="button primary" type="button" data-approve data-action-step="3" aria-describedby="next-guidance" disabled>
+                <span class="action-number" aria-hidden="true">3</span><span data-i18n="approve">Approve this exact version</span>
+              </button>
+            </div>
+            <p class="button-lock-note" data-approve-lock-note data-i18n="approveLock">Apply the example correction before approving.</p>
+
+            <div class="decision-record" data-decision-record aria-live="polite">
+              <div class="panel-head"><h3 class="panel-title" data-i18n="decisionTitle">Decision tied to this reviewed version</h3><span class="status ok" data-decision-badge>Approved</span></div>
+              <p class="demo-state-note" data-i18n="decisionStateNote">This browser walkthrough shows the resulting state; it stores nothing.</p>
+              <dl class="record-grid">
+                <div class="record-item"><dt data-i18n="decisionLabel">Human decision</dt><dd data-decision-value>Approve</dd></div>
+                <div class="record-item"><dt data-i18n="artifactLabel">Exact reviewed document</dt><dd data-artifact-value>Synthetic AI draft · corrected version 1.1</dd></div>
+                <div class="record-item"><dt data-i18n="sourcesLabel">Sources considered</dt><dd data-i18n="sourcesValue">Frozen public MAS source identities · 29 Aug 2026</dd></div>
+                <div class="record-item"><dt data-i18n="nextLabel">Permitted next step</dt><dd data-next-value>Prepare the evaluation result · no external delivery</dd></div>
+              </dl>
+              <button class="button warn" type="button" data-check-changed data-action-step="4" aria-describedby="next-guidance" style="width:100%;margin-top:.8rem">
+                <span class="action-number" aria-hidden="true">4</span><span data-i18n="changedButton">Check a changed version</span>
+              </button>
+            </div>
+
+            <div class="changed-result" data-changed-result aria-live="polite">
+              <div class="panel-head"><h4 data-i18n="changedTitle">This document no longer matches the approved version</h4><span class="status stop" data-i18n="changedBadge">Prior decision cannot be reused</span></div>
+              <p data-i18n="changedCopy">The decision applies only to corrected version 1.1. A later changed document must return to review.</p>
+              <div class="version-compare" aria-label="Approved and changed document versions">
+                <article class="version-card version-card-approved">
+                  <span data-i18n="approvedVersionLabel">Approved document</span>
+                  <strong data-i18n="approvedVersion">Version 1.1</strong>
+                  <p data-approved-excerpt>The consultation proposes <mark>an immutable or offline backup</mark>.</p>
+                </article>
+                <article class="version-card version-card-changed">
+                  <span data-i18n="changedVersionLabel">Current changed document</span>
+                  <strong data-i18n="changedVersion">Version 1.2</strong>
+                  <p data-changed-excerpt>Version 1.2 says <mark>both an immutable backup and an offline backup</mark>.</p>
+                </article>
+              </div>
+              <p class="return-review"><span class="status warn" data-i18n="returnReview">Reviewer must review again</span></p>
+            </div>
+
+            <div class="next-action" data-next-action>
+              <p data-i18n="nextCtaCopy">Explore the full product with a private synthetic workflow.</p>
+              <a class="button primary" href="/#contact" data-i18n="workflowCta">Request a live product demo</a>
+            </div>
+          </section>
+
+          <details class="secondary-proof">
+            <summary data-i18n="sourceDetails">Inspect source details</summary>
+          <section class="panel panel-pad source-inventory" aria-labelledby="sources-title">
+            <div class="panel-head">
+              <div>
+                <h2 id="sources-title" class="panel-title" data-i18n="sourcesTitle">Source identities used in this walkthrough</h2>
+                <p class="panel-sub" data-i18n="sourcesSub">A current binding source, supporting clarification, and a closed consultation remain in distinct review roles.</p>
+              </div>
+              <span class="status ok" data-i18n="sourcesReady">Source identities verified</span>
+            </div>
+            <div class="source-grid">
+              <article class="source-card">
+                <div class="source-role" data-i18n="roleCurrent">Current binding source</div>
+                <div class="source-title">MAS Notice FSM-N05.pdf</div>
+                <div class="source-meta" data-i18n="noticeMeta">Notice · 9 May 2024 · 3 pages</div>
+                <span class="source-open source-identity" data-i18n="sourceIdentity">Exact identity retained in the frozen proof</span>
+              </article>
+              <article class="source-card">
+                <div class="source-role" data-i18n="roleSupport">Supporting clarification</div>
+                <div class="source-title">FAQ - Notice on Technology Risk Management.pdf</div>
+                <div class="source-meta" data-i18n="faqMeta">FAQ · 13 May 2024 · 5 pages</div>
+                <span class="source-open source-identity" data-i18n="sourceIdentity">Exact identity retained in the frozen proof</span>
+              </article>
+              <article class="source-card">
+                <div class="source-role" data-i18n="roleProposed">Closed consultation · proposed only</div>
+                <div class="source-title">Consultation Paper on Proposed Amendments to Notices on Technology Risk Management.pdf</div>
+                <div class="source-meta" data-i18n="consultationMeta">Closed consultation · P012-2026 · 88 pages</div>
+                <span class="source-open source-identity" data-i18n="sourceIdentity">Exact identity retained in the frozen proof</span>
+              </article>
+            </div>
+          </section>
+          </details>
+        </div>
+
+        <aside class="demo-side" aria-label="Demo guide">
+          <section class="panel timeline" aria-labelledby="guide-title">
+            <div class="timeline-head"><h2 id="guide-title" data-i18n="guideTitle">Guided review path</h2><span class="step-count" data-step-count>1 / 4</span></div>
+            <ol class="steps">
+              <li class="step active" data-step="1"><span class="step-number">1</span><span data-i18n="step1">Compare with source</span></li>
+              <li class="step" data-step="2"><span class="step-number">2</span><span data-i18n="step2">Apply correction</span></li>
+              <li class="step" data-step="3"><span class="step-number">3</span><span data-i18n="step3">Approve this version</span></li>
+              <li class="step" data-step="4"><span class="step-number">4</span><span data-i18n="step4">Check a changed version</span></li>
+            </ol>
+            <button class="button" type="button" data-reset data-i18n="reset" style="width:100%;margin-top:1rem">Reset demo</button>
+          </section>
+
+          <section class="panel buyer-summary" aria-labelledby="summary-title">
+            <h2 id="summary-title" data-i18n="summaryTitle">What to notice</h2>
+            <ol>
+              <li data-i18n="summary1">Auxtho prepares repeatable source checks and exception reasons.</li>
+              <li data-i18n="summary2">A person resolves exceptions and makes the final decision.</li>
+              <li data-i18n="summary3">The decision applies only to the version that person reviewed.</li>
+              <li data-i18n="summary4">A later changed document cannot inherit that decision.</li>
+            </ol>
+          </section>
+        </aside>
+      </div>
+    </div>
+
+    <p class="proof-boundary" data-i18n="boundary">Browser-only guided walkthrough using public MAS material and a fixed synthetic AI draft. It stores no interaction and takes no external action. Auxtho is not affiliated with or endorsed by MAS. This is not legal advice or a regulatory compliance determination.</p>
+  </main>
+
+  <div class="source-modal" data-source-modal data-source-backdrop aria-hidden="true">
+    <section class="source-dialog" role="dialog" aria-modal="true" aria-labelledby="source-dialog-title">
+      <button class="source-close" type="button" data-source-close aria-label="Close source">×</button>
+      <div class="comparison-summary">
+        <p class="eyebrow" data-i18n="compareTitle">Compare the selected wording</p>
+        <div class="comparison-card">
+          <span data-i18n="draftWording">AI-assisted draft</span>
+          <blockquote data-modal-draft>FSM-N05 currently requires financial institutions to maintain both immutable and offline backups.</blockquote>
+        </div>
+        <div class="prepared-issues" data-prepared-issues>
+          <strong data-prepared-issues-label>Auxtho prepared two issues</strong>
+          <p data-modal-issue-one>A proposal is presented as a current requirement</p>
+          <p data-modal-issue-two>“Either” becomes “both”</p>
+        </div>
+      </div>
+      <div class="source-detail">
+        <p class="source-kicker" data-modal-kicker>MAS source excerpt · page 6</p>
+        <h2 id="source-dialog-title" data-i18n="sourceComparisonTitle">What the source says</h2>
+        <div class="source-quote">
+          <div class="source-quote-label" data-modal-primary-label>MAS wording · paragraph 2.17</div>
+          <blockquote data-modal-primary-quote>“…maintain an immutable or offline backup of data that are crucial…”</blockquote>
+        </div>
+        <div class="source-quote" data-modal-secondary>
+          <div class="source-quote-label" data-modal-secondary-label>MAS wording · Question 5</div>
+          <blockquote data-modal-secondary-quote>“…whether maintaining either form of backup would suffice…”</blockquote>
+        </div>
+        <div class="plain-note">
+          <strong data-i18n="plainTitle">Auxtho plain-language explanation</strong>
+          <p data-modal-explanation>This closed consultation is proposed material, not a current requirement. It says “immutable or offline”, not both.</p>
+        </div>
+        <p class="translation-note" data-i18n="translationNote">This is an Auxtho plain-language explanation, not MAS text, legal advice, or a regulatory interpretation.</p>
+        <details class="source-proof-details">
+          <summary data-i18n="sourceProofDetails">Inspect exact source details</summary>
+          <h3 data-modal-document>Consultation Paper on Proposed Amendments to Notices on Technology Risk Management</h3>
+          <dl class="source-page-meta">
+            <div><dt data-i18n="pageProofIssuerLabel">Issuer</dt><dd>Monetary Authority of Singapore</dd></div>
+            <div><dt data-i18n="pageProofLocationLabel">Exact location</dt><dd data-modal-location>Page 6 · paragraph 2.17 · Question 5</dd></div>
+            <div><dt data-i18n="pageProofStatusLabel">Review role</dt><dd data-modal-role>Closed consultation · proposed only</dd></div>
+          </dl>
+          <p class="source-page-note" data-i18n="pageProofNote">This locator and excerpt come from the frozen local proof. The full MAS document is not republished here.</p>
+          <a class="evidence-link" href="/proof/singapore-source-review/#details-title" target="_blank" rel="noopener noreferrer" aria-label="Inspect the frozen evidence in a new tab"><span data-i18n="inspectEvidence">Inspect the frozen evidence</span><span aria-hidden="true"> ↗</span></a>
+        </details>
+        <div class="modal-actions">
+          <button class="button primary" type="button" data-source-continue><span data-source-continue-label>Continue to reviewer</span></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="/assets/demo/singapore-source-review/interactive-demo-data.b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7.js" defer></script>
+  <script src="/assets/demo/singapore-source-review/interactive-demo.06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2.js" defer></script>
+</body>
+</html>

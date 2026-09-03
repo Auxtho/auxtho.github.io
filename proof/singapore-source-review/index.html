@@ -36,7 +36,7 @@
   <main id="proof-content">
     <section class="proof-hero sg-proof-hero">
       <div class="proof-wrap">
-        <p class="proof-kicker">Auxtho / Singapore source-based demo</p>
+        <p class="proof-kicker">Auxtho / Singapore source-review walkthrough</p>
         <h1>Selected claims.<br>Exact public sources.<br>Accountable release control.</h1>
         <p class="proof-lede">Auxtho compares three selected report claims with three versioned public MAS documents, shows the exact pages and wording, records the reviewer's decision, and blocks a changed report version from reusing that approval.</p>
         <p class="sg-proof-outcome">A changed version cannot reuse the prior approval.</p>
@@ -123,7 +123,7 @@
             <p class="sg-source-identity">Public identity record: title, issuer, status, page count, and SHA-256.</p>
           </article>
         </div>
-        <p class="sg-source-separation">These documents are publicly available MAS materials used in the local synthetic proof described above.</p>
+        <p class="sg-source-separation">These documents are publicly available MAS materials used in this bounded local synthetic demonstration. Auxtho is not affiliated with or endorsed by MAS.</p>
       </div>
     </section>
 
@@ -239,7 +239,7 @@
     <section class="sg-proof-anchors" aria-labelledby="anchors-title">
       <div class="proof-wrap">
         <p class="proof-kicker">Verification anchors</p>
-        <h2 id="anchors-title" class="proof-section-title">Frozen, hash-pinned, and checked by a separate local verifier.</h2>
+        <h2 id="anchors-title" class="proof-section-title">Frozen, hash-pinned, and replayed from frozen inputs.</h2>
         <dl class="proof-anchor-grid">
           <div class="proof-anchor"><dt>Frozen product source (private)</dt><dd><code>bba1fc04c0f79426c45d49532e937edb5f2cbb79</code></dd></div>
           <div class="proof-anchor"><dt>Clean capture source (private)</dt><dd><code>07b9a36abcc4ef3b22da813101887721ada9d3e9</code></dd></div>
@@ -248,8 +248,8 @@
           <div class="proof-anchor"><dt>Claim-map SHA-256</dt><dd><code>C1B4183DDBA55F2D544522B255B4C3A4638405E6D53AE3B57242F7CC16371B38</code></dd></div>
           <div class="proof-anchor"><dt>Changed-risk backend owners</dt><dd><code>150 passed</code></dd></div>
           <div class="proof-anchor"><dt>Browser E2E</dt><dd><code>1 passed</code></dd></div>
-          <div class="proof-anchor"><dt>Separate local verifier</dt><dd><code>MAS_DEMO_FREEZE_GO</code></dd></div>
-          <div class="proof-anchor"><dt>Clean capture verifier</dt><dd><code>CLEAN_CAPTURE_GO</code></dd></div>
+          <div class="proof-anchor"><dt>Separate local replay check</dt><dd><code>MAS_DEMO_FREEZE_GO</code></dd></div>
+          <div class="proof-anchor"><dt>Clean capture replay check</dt><dd><code>CLEAN_CAPTURE_GO</code></dd></div>
           <div class="proof-anchor"><dt>Public machine-readable manifest</dt><dd><a href="/assets/proof/singapore-source-review/manifest.json?sha256=aa4a1990c055b3ebf8e8cc7e759cd293104c03cf194df2a4f7ac18f7b1297cd8">Open manifest</a></dd></div>
           <div class="proof-anchor"><dt>Clean capture manifest</dt><dd><a href="/assets/proof/singapore-source-review/capture-manifest.json?sha256=64e44bda2841fdf0b63cb2927dd5aa5fe5792154245b5e902fe71da66e4e4383">Open capture manifest</a></dd></div>
           <div class="proof-anchor"><dt>Separate release proof</dt><dd><a href="/proof/release-core/">Open Release Core proof</a></dd></div>
@@ -279,7 +279,7 @@
   </main>
 
   <footer class="proof-footer">
-    <div class="proof-wrap">Auxtho Singapore source-review proof. Local, synthetic, provider-free, and checked by a separate local verifier.</div>
+    <div class="proof-wrap">Auxtho Singapore source-review proof. Local, synthetic, provider-free, with a separate deterministic replay check.</div>
   </footer>
 </body>
 </html>
