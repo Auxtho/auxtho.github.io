@@ -34,7 +34,7 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '4e2499b4993925ff6d9f0968ebca9902abfc5f16e6f51f0881e3d10ece315a6f',
-  'demo/singapore-source-review/index.html': 'cf119c1151e7ac3010c2684d4135bf70b974dde80d5a7e57d65772c28f2b54f0',
+  'demo/singapore-source-review/index.html': 'abe48430a7eeb1ecc0442944c5bb22718200bdb27a65ca98d035d692ba736898',
   'index.html': '4c7afd47d2198f8878339c23ae0a24ea0adcd9b7944ad35813a01d0d78e6bacf',
   'capabilities/ai-review-exception-queue/index.html': '6d9d4ade4c0af47a2a931792e83417bb69f91465db0ce4d9f92408c850c8ccab',
   'capabilities/ardamire-defense-layer/index.html': 'dd284a42ea1135a92cbb78bcd91f774549ad9c47bea42dac94babf9582e5d62b',

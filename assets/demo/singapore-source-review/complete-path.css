@@ -20,4 +20,11 @@ body.dialog-open{overflow:hidden}
 .incident-explanation{margin:0 0 16px;max-width:900px}
 .audit-figure .image-tabs button{font-size:12px;padding:9px;min-height:44px}
 .decision-help{color:#c6d3df}
+.source-note>p{font-size:15px;line-height:1.7;max-width:850px}
+.demo-details{margin-top:14px;border-top:1px solid var(--line)}
+.demo-details summary{font-size:14px;font-weight:600;color:#d4e7ff;padding:14px 0}
+.demo-details-content{padding:8px 0 18px;max-width:850px}
+.demo-details-content h3{font-size:15px;margin:20px 0 10px}
+.demo-details-content h3:first-child{margin-top:0}
+.demo-details-content p{font-size:14px;line-height:1.75}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}

@@ -191,7 +191,7 @@ test('published guided demo preserves source scope, review choices, recorded evi
   await page.locator('[data-attest]').click();
   await page.locator('[data-approve]').click();
   await page.locator('[data-next="4"]').click();
-  await expect(page.locator('.case-transition')).toContainText('생성된 기록이 아닙니다');
+  await expect(page.locator('.case-transition')).toContainText('검토 체험과 구분된 각각의 사례');
   expect(await page.locator('[data-result-evidence]').evaluate(e=>e.scrollLeft)).toBeGreaterThan(600);
   await page.locator('[data-next="5"]').click();
   await page.locator('[data-open-audit]').focus();
@@ -203,6 +203,14 @@ test('published guided demo preserves source scope, review choices, recorded evi
   await expect(page.locator('[data-dialog-content]')).toContainText('UNKNOWN');
   await page.keyboard.press('Escape');
   await expect(page.locator('[data-branch="unknown"]')).toBeFocused();
+  await expect(page.locator('[data-demo-details]')).not.toHaveAttribute('open','');
+  await expect(page.locator('[data-i18n="sourceNote"]')).toContainText('안내형 데모');
+  await page.locator('[data-demo-details] summary').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('[data-i18n="proofEnvironment"]')).toBeVisible();
+  await expect(page.locator('[data-i18n="materialsNote"]')).toContainText('2026년 8월 29일');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('[data-demo-details]')).not.toHaveAttribute('open','');
   const widths=await page.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
   expect(widths.scroll-widths.client).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
