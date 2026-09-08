@@ -6,8 +6,8 @@
     "build": "tailwindcss -i ./src/input.css -o ./assets/style.css --minify",
     "test:js": "node scripts/release/validate-js.cjs",
     "test:yaml": "node scripts/release/validate-workflows.cjs",
-    "test:release": "node --test tests/release-contract.spec.cjs tests/release-controls.spec.cjs",
-    "test:verify": "playwright test tests/technical-foundations.spec.cjs --reporter=line --workers=1",
+    "test:release": "node --test tests/release-contract.spec.cjs tests/release-controls.spec.cjs tests/guided-demo-interactive.spec.cjs",
+    "test:verify": "playwright test tests/technical-foundations.spec.cjs tests/guided-demo-interactive-browser.spec.cjs --reporter=line --workers=1",
     "test:verify:deployed": "playwright test tests/post-deploy-verifier-smoke.spec.cjs --reporter=line --workers=1"
   },
   "devDependencies": {

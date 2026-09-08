@@ -1,0 +1,169 @@
+{
+  "schema_version": "auxtho-complete-path-demo-evidence-v1",
+  "status": "REVIEWED_PUBLICATION_CANDIDATE",
+  "website_base_commit": "43d229eeeedfe3c5190416995271e14c2245325a",
+  "created_date": "2026-09-08",
+  "new_product_claims": false,
+  "correlated_single_run_claimed": false,
+  "browser_persistence": false,
+  "external_action": false,
+  "evidence_source_manifest": "/assets/capabilities/manifest.json",
+  "proof_boundaries": {
+    "source_review": "M120 fixed synthetic MAS claim example; roles frozen 2026-08-29; C1 illustrates limit/period comparison, C2 illustrates source-attribution correction, with source scope retained in adjacent notes",
+    "release": "M125 separate local provider-free synthetic controlled receiver",
+    "audit": "M133-M138 synthetic UI projection; durable behavior supported by separate published tests",
+    "incident": "M123 impact inventory, unavailable notification rule and response package from the same incident; not the preceding release or Audit run",
+    "recovery": "M124-M125 separate bounded recovery proof; no automatic retry, real notification or production recovery",
+    "current_generation": "No M146/M147 promotion claimed",
+    "inspection": "M134 REVIEWER_EVIDENCE_RECEIPT_GO; browser acknowledgment is illustrative, product attestation authenticated; no cognitive-understanding claim"
+  },
+  "assets": [
+    {
+      "path": "/assets/proof/singapore-source-review/exact-source-page.png",
+      "module": "M120 Exact Source Traceability",
+      "source_kind": "existing accepted public-safe buyer-detail capture",
+      "capture_source_commit": "82fe9b0775cd9196d51974b01ffb9d5ce059a5e9",
+      "crop": "Evidence detail at natural component scale",
+      "redaction": "none required; accepted public-safe synthetic capture",
+      "synthetic_local_boundary": true,
+      "bytes": 158676,
+      "width": 1152,
+      "height": 1260,
+      "sha256": "7210f9c77a162aa0f720ed490b383f94c5bed35672f426ebfb47902956a5e6c7",
+      "source_manifest": "/assets/capabilities/manifest.json",
+      "bytes_unchanged": true,
+      "presentation": {
+        "scale": 1,
+        "method": "CSS viewport with horizontal scroll; full image available",
+        "regions": [
+          {
+            "name": "wording",
+            "x": 0,
+            "y": 382,
+            "width": 1152,
+            "height": 230
+          },
+          {
+            "name": "original_page",
+            "x": 0,
+            "y": 860,
+            "width": 1152,
+            "height": 360
+          }
+        ],
+        "case": "M120 C1 Notice page 3; never represented as C3 consultation page 6"
+      }
+    },
+    {
+      "path": "/assets/capabilities/audit-history/decision-receipt.png",
+      "module": "M133-M138 Decision Receipts and Audit History",
+      "source_kind": "terminal product Audit component with public-safe synthetic projection",
+      "crop": "data-testid audit-history-decision-receipt",
+      "redaction": "public-safe actor label and synthetic identifiers supplied before capture; no post-capture pixel editing",
+      "synthetic_local_boundary": true,
+      "bytes": 19355,
+      "width": 493,
+      "height": 283,
+      "sha256": "36551671e0418bedcb060c804f26064da5a763034dd57a3e7bcf27497dff7a76",
+      "source_manifest": "/assets/capabilities/manifest.json",
+      "bytes_unchanged": true,
+      "presentation": {
+        "scale": 1,
+        "method": "CSS viewport focuses source trace, durable readback and source reopening; full image available",
+        "crop": {
+          "x": 0,
+          "y": 106,
+          "width": 493,
+          "height": 177
+        },
+        "redaction": false,
+        "focus_offsets_px": {
+          "trace": 0,
+          "reopen": 270
+        }
+      }
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/impact-inventory.png",
+      "module": "M123 Incident Reconstruction",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid impact-inventory",
+      "redaction": "none required; content-free synthetic incident",
+      "synthetic_local_boundary": true,
+      "bytes": 6485,
+      "width": 1152,
+      "height": 118,
+      "sha256": "1077f7a55a782cb154686a6e12784f542135b1f917a2ba0e584d9deab876c1bf",
+      "source_manifest": "/assets/capabilities/manifest.json",
+      "bytes_unchanged": true,
+      "presentation": {
+        "scale": 1,
+        "method": "Natural-pixel horizontal scroll viewport and readable explanatory text",
+        "crop": "none"
+      }
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/response-package.png",
+      "module": "M123 Incident Reconstruction",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid response-package",
+      "redaction": "none required; package hash truncated and no raw artifact or evidence shown",
+      "synthetic_local_boundary": true,
+      "bytes": 9910,
+      "width": 1152,
+      "height": 114,
+      "sha256": "af60d78668c012d3e7d0bebc8554c2a9993a6a36dd3965b886cb4bf7ceb43c61",
+      "source_manifest": "/assets/capabilities/manifest.json",
+      "bytes_unchanged": true,
+      "presentation": {
+        "scale": 1,
+        "method": "Natural-pixel horizontal scroll viewport and readable explanatory text",
+        "crop": "none"
+      }
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/release-receipt-readback.png",
+      "module": "M125 Integrated Product Path",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid integrated-release",
+      "redaction": "none required; synthetic identifiers are truncated",
+      "synthetic_local_boundary": true,
+      "bytes": 15281,
+      "width": 1280,
+      "height": 150,
+      "sha256": "0a741d2ed3814c2682b613d58270b3d3a2b41619c2f019f0cb1ca9696090229f",
+      "source_manifest": "/assets/capabilities/manifest.json",
+      "bytes_unchanged": true,
+      "presentation": {
+        "scale": 1,
+        "method": "Natural-pixel scroll viewport with visible field controls; outcome focused by default",
+        "focus_offsets_px": {
+          "decision": 0,
+          "action": 640,
+          "outcome": 958
+        },
+        "crop": "none"
+      }
+    },
+    {
+      "path": "/assets/capabilities/incident-recovery/notification-boundary.png",
+      "module": "M123 Incident Reconstruction",
+      "source_kind": "terminal product App component",
+      "crop": "data-testid notification-boundary",
+      "redaction": "none required; no customer or notification data",
+      "synthetic_local_boundary": true,
+      "bytes": 7997,
+      "width": 1152,
+      "height": 118,
+      "sha256": "9be456974d5a3294136a90f3a53936cc51782e45e0accadd271c9267870f449f",
+      "source_manifest": "/assets/capabilities/manifest.json",
+      "bytes_unchanged": true,
+      "presentation": {
+        "scale": 1,
+        "method": "Natural-pixel horizontal scroll viewport with visible instruction",
+        "crop": "none"
+      }
+    }
+  ],
+  "sensitive_material_imported": false
+}

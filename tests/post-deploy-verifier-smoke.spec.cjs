@@ -171,3 +171,43 @@ test('public verifier route is absent and triggers no verification API request',
     page_errors: pageErrors,
   }, null, 2)}\n`);
 });
+
+test('published guided demo preserves source scope, review choices, recorded evidence and mobile focus', async ({ page }) => {
+  expect(origin).toBe('https://auxtho.com');
+  expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
+  const errors=[],writes=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('request',request=>{if(request.method()!=='GET')writes.push(request.url());});
+  await page.setViewportSize({width:390,height:844});
+  const response=await page.goto(origin+'/demo/singapore-source-review/?lang=ko&sha256_readback='+sourceSha,{waitUntil:'networkidle'});
+  expect(response.status()).toBe(200);
+  await expect(page.locator('html')).toHaveAttribute('lang','ko-KR');
+  await page.locator('[data-next="2"]').click();
+  await expect(page.locator('.pack-date')).toContainText('2026');
+  await expect(page.locator('[data-original-title]')).toContainText('별도의');
+  await page.locator('[data-review-next]').click();
+  await expect(page.locator('[data-approve]')).toBeDisabled();
+  await page.locator('[data-correct]').click();
+  await page.locator('[data-attest]').click();
+  await page.locator('[data-approve]').click();
+  await page.locator('[data-next="4"]').click();
+  await expect(page.locator('.case-transition')).toContainText('생성된 기록이 아닙니다');
+  expect(await page.locator('[data-result-evidence]').evaluate(e=>e.scrollLeft)).toBeGreaterThan(600);
+  await page.locator('[data-next="5"]').click();
+  await page.locator('[data-open-audit]').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('[data-audit-figure] .evidence-scroll')).toBeFocused();
+  await page.locator('[data-next="6"]').click();
+  await expect(page.locator('[data-stage="6"]')).toContainText('통보 기준');
+  await page.locator('[data-branch="unknown"]').click();
+  await expect(page.locator('[data-dialog-content]')).toContainText('UNKNOWN');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-branch="unknown"]')).toBeFocused();
+  const widths=await page.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));
+  expect(widths.scroll-widths.client).toBeLessThanOrEqual(1);
+  expect(errors).toEqual([]);
+  expect(writes).toEqual([]);
+  fs.mkdirSync(evidenceDirectory,{recursive:true});
+  await page.screenshot({path:path.join(evidenceDirectory,'guided-demo-mobile.png'),fullPage:false});
+  fs.writeFileSync(path.join(evidenceDirectory,'guided-demo-smoke.json'),JSON.stringify({source_sha:sourceSha,checked_at:new Date().toISOString(),page_errors:errors,non_get_requests:writes,widths,separate_case_boundary:true,source_scope_visible:true},null,2)+'\n');
+});
