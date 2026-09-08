@@ -52,9 +52,9 @@ test('image usage preserves accepted bytes and identifies separate cases',() => 
   }
   assert.match(html,/C1 on Notice page 3/);
   assert.match(html,/C3 refers to consultation page 6/);
-  assert.match(html,/not records created by your clicks/);
-  assert.match(html,/synthetic UI projection/);
-  assert.match(html,/different run from the preceding release example/);
+  assert.match(html,/distinct from your review exercise/);
+  assert.match(html,/Audit capture displays example data in the actual product component/);
+  assert.match(html,/separate case from the preceding delivery test/);
 });
 test('no backend, accounts, trackers, saved browser choices or republished source PDFs',() => {
   assert.doesNotMatch(html,/<(?:input|textarea|form|select|iframe)\b/i);
@@ -63,14 +63,14 @@ test('no backend, accounts, trackers, saved browser choices or republished sourc
   assert.doesNotMatch(html+script,/[A-Z]:\\|localhost|127\.0\.0\.1|serviceAccount|api[_-]?key|private-provenance/i);
   assert.doesNotMatch(html+script,/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
   assert.doesNotMatch(html,/consultation-page-6\.png|<[^>]+(?:src|href)="[^"]+\.pdf/);
-  assert.match(html,/stores no interaction and takes no external action/);
+  assert.match(html,/No actual record is saved and no report is sent/);
 });
 test('approval and unconfirmed outcomes preserve their distinct meanings',() => {
   assert.match(script,/!state\.corrected \|\| !state\.inspected/);
   assert.match(script,/UNKNOWN is not a confirmed failure or success/);
   assert.match(script,/does not dispatch the action again automatically/);
   assert.match(script,/held or rejected draft has no approval to reuse/);
-  assert.match(html,/acknowledgment|nothing saved/);
+  assert.match(html,/inspection acknowledgment|no actual record is saved/i);
 });
 test('canonical metadata, bilingual mode and accessible evidence remain present',() => {
   assert.match(html,/<html lang="en-SG"/);
@@ -87,4 +87,28 @@ test('homepage, public capability proof and release identity remain untouched',(
     const baseline=execFileSync('git',['show','43d229eeeedfe3c5190416995271e14c2245325a:'+p],{cwd:root,windowsHide:true});
     assert.equal(hash(fs.readFileSync(path.join(root,p))),hash(baseline),p);
   }
+});
+test('the short demo note leads with the workflow and detailed evidence stays available',() => {
+  const brief=html.match(/data-i18n="sourceNote">([^<]+)</)[1];
+  assert.match(brief,/source review, human decisions, result records and event reconstruction/);
+  assert.match(brief,/example data/);
+  assert.doesNotMatch(brief,/does not|not |provider|production|cognitive/i);
+  assert.match(html,/<details class="demo-details" data-demo-details>/);
+  const detail=html.match(/<details class="demo-details"[\s\S]+?<\/details>/)[0];
+  assert.match(detail,/synthetic example data in a local environment/);
+  assert.match(detail,/without external AI-provider calls/);
+  assert.match(detail,/Customer operation and hosted-production outcomes are outside this evidence scope/);
+  assert.match(detail,/29 August 2026/);
+  assert.match(detail,/MAS affiliation or endorsement/);
+  assert.match(detail,/No actual record is saved and no report is sent/);
+  assert.match(detail,/authenticated reviewer’s statement/);
+  assert.match(manifest.proof_boundaries.inspection,/no cognitive-understanding claim/);
+});
+test('Korean first-layer language names the work and leaves proof terminology in its detail layer',() => {
+  assert.match(script,/보고서의 검토 대상 문장을 Auxtho가 원문과 대조합니다/);
+  assert.match(script,/승인한 보고서와 처리 결과를 함께 기록합니다/);
+  assert.match(script,/어떤 자료를 보고, 어느 버전을 승인했을까요/);
+  assert.match(script,/sourceNoteTitle:'데모 안내'/);
+  assert.doesNotMatch(script,/이해 여부를 입증하지 않습니다/);
+  assert.doesNotMatch(html,/proof of cognitive understanding/);
 });

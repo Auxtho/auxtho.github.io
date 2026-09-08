@@ -108,7 +108,8 @@ for(const choice of ['hold','reject']){
     await expect(page.locator('[data-reviewed-version]')).toHaveText('1.0');
     await expect(page.locator('[data-approve]')).toBeDisabled();
     await page.locator('[data-next="4"]').click();
-    await expect(page.locator('.case-transition')).toContainText('not records created by your clicks');
+    await expect(page.locator('.case-transition')).toContainText('distinct from your review exercise');
+    await expect(page.locator('[data-i18n="browserChoice"]')).toHaveText('Demo choice only · no actual record is saved or report sent.');
     await page.locator('[data-next="5"]').click();
     await page.locator('[data-next="6"]').click();
     await page.locator('[data-branch="changed"]').click();
@@ -136,7 +137,7 @@ test('C2 correction attributes the FAQ and changing source case clears the prior
   await page.goto(base+'/demo/singapore-source-review/');
   await page.locator('[data-next="2"]').click();
   await page.locator('[data-claim="C2"]').click();
-  await expect(page.locator('[data-source-title]')).toContainText('One source-role issue');
+  await expect(page.locator('[data-source-title]')).toContainText('One source attribution');
   await page.locator('[data-review-next]').click();
   await expect(page.locator('[data-correction]')).toContainText('FAQ');
   await page.locator('[data-correct]').click();
@@ -161,7 +162,7 @@ test('frozen comparison scope and the separate original-page label are explicit'
   await page.goto(base+'/demo/singapore-source-review/');
   await page.locator('[data-next="2"]').click();
   await expect(page.locator('[data-original-title]')).toContainText('Separate original-page example');
-  await expect(page.locator('.pack-date')).toHaveText('Source pack frozen 29 August 2026');
+  await expect(page.locator('.pack-date')).toHaveText('Source-pack reference date · 29 August 2026');
   await page.locator('[data-claim="C1"]').click();
   await expect(page.locator('[data-source-title]')).toContainText('limit and period');
   await expect(page.locator('[data-scope-note]')).toContainText('operations or service to customers');
@@ -260,3 +261,34 @@ test('JavaScript-disabled page has a useful evidence fallback',async({browser})=
   await expect(page.locator('.notice a')).toBeVisible();
   await context.close();
 });
+for(const width of [390,1440]) {
+  for(const language of ['en','ko']) {
+    test('plain demo note and keyboard-accessible proof details '+width+' '+language,async({page})=>{
+      await page.setViewportSize({width,height:1000});
+      await page.goto(base+'/demo/singapore-source-review/?lang='+language);
+      const details=page.locator('[data-demo-details]');
+      const summary=details.locator('summary');
+      const note=page.locator('[data-i18n="sourceNote"]');
+      await expect(note).toContainText(language==='ko'?'예시 데이터':'example data');
+      await expect(details).not.toHaveAttribute('open','');
+      await expect(page.locator('[data-i18n="proofEnvironment"]')).not.toBeVisible();
+      await summary.focus();
+      await page.keyboard.press('Enter');
+      await expect(details).toHaveAttribute('open','');
+      await expect(page.locator('[data-i18n="proofEnvironment"]')).toBeVisible();
+      await expect(page.locator('[data-i18n="materialsNote"]')).toContainText(language==='ko'?'2026년 8월 29일':'29 August 2026');
+      await expect(page.locator('[data-i18n="inspectionMeaning"]')).toContainText(language==='ko'?'인증된 담당자':'authenticated reviewer');
+      await overflow(page);
+      await capture(page,width+'-'+language+'-expanded-demo-details');
+      await page.keyboard.press('Enter');
+      await expect(details).not.toHaveAttribute('open','');
+      await expect(summary).toBeFocused();
+      await page.locator('.source-note').screenshot({path:path.join(captures,width+'-'+language+'-concise-demo-note.png')});
+      const heading=await page.locator('[data-i18n="sourceNoteTitle"]').textContent();
+      expect(heading).toBe(language==='ko'?'데모 안내':'About this demo');
+      await page.locator('[data-language-toggle]').click();
+      await expect(note).toContainText(language==='en'?'예시 데이터':'example data');
+      await expect(details).not.toHaveAttribute('open','');
+    });
+  }
+}
