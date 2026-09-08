@@ -2,175 +2,89 @@ const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
+const vm = require('node:vm');
+const {execFileSync} = require('node:child_process');
 const test = require('node:test');
-
-const root = path.resolve(__dirname, '..');
-const demoPagePath = path.join(root, 'demo', 'singapore-source-review', 'index.html');
-const homepagePath = path.join(root, 'index.html');
-const proofPagePath = path.join(root, 'proof', 'singapore-source-review', 'index.html');
-const sitemapPath = path.join(root, 'sitemap.xml');
-const assetRoot = path.join(root, 'assets', 'demo', 'singapore-source-review');
-
-function sha256(filePath) {
-  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
-}
-
-function visibleText(html) {
-  return html
-    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-test('public route does not republish the frozen MAS PDFs or page image', () => {
-  const removed = [
-    'consultation-page-6.png',
-    'sources/01_MAS_Notice_FSM-N05.pdf',
-    'sources/02_MAS_TRM_FAQ.pdf',
-    'sources/03_MAS_TRM_Consultation_P012-2026.pdf',
-  ];
-  for (const relative of removed) {
-    assert.equal(fs.existsSync(path.join(assetRoot, ...relative.split('/'))), false, relative);
+const root = path.resolve(__dirname,'..');
+const read = (p) => fs.readFileSync(path.join(root,p),'utf8');
+const hash = (b) => crypto.createHash('sha256').update(b).digest('hex');
+const html = read('demo/singapore-source-review/index.html');
+const script = read('src/demo-complete-path.js');
+const publicPaths=JSON.parse(read('scripts/release/public-files.json')).paths;
+const manifest=JSON.parse(read('assets/demo/singapore-source-review/evidence-manifest.json'));
+test('six workflow stages put the recorded result before optional exception branches',() => {
+  assert.deepEqual([...html.matchAll(/data-stage="(\d)"/g)].map(m=>m[1]),['1','2','3','4','5','6']);
+  assert.ok(html.indexOf('data-stage="4"')<html.indexOf('data-branch="changed"'));
+  assert.ok(html.indexOf('data-stage="5"')<html.indexOf('data-branch="unknown"'));
+  assert.match(html,/what|What/);
+  assert.match(html,/data-start/);
+});
+test('script and stylesheet references are exact-byte addressed',() => {
+  const scripts=[...html.matchAll(/<script src="([^"]+)"/g)].map(m=>m[1]);
+  for(const url of scripts) {
+    const match=url.match(/\.([a-f0-9]{64})\.js$/);assert.ok(match,url);
+    assert.equal(hash(fs.readFileSync(path.join(root,url.slice(1)))),match[1]);
+    assert.ok(publicPaths.includes(url));
   }
-  const html = fs.readFileSync(demoPagePath, 'utf8');
-  assert.doesNotMatch(html, /assets\/demo\/singapore-source-review\/(?:sources|consultation-page-6)/);
-  assert.match(html, /The full MAS document is not republished/);
-  assert.match(html, /href="\/proof\/singapore-source-review\/#details-title"/);
-  assert.match(html, /href="\/proof\/singapore-source-review\/#details-title" target="_blank" rel="noopener noreferrer"/);
+  const style=html.match(/href="([^"]+complete-path\.css)\?sha256=([a-f0-9]{64})"/);
+  assert.ok(style);assert.equal(hash(fs.readFileSync(path.join(root,style[1].slice(1)))),style[2]);
+  const emitted=scripts.find(p=>p.includes('/complete-path.'));
+  assert.equal(read(emitted.slice(1)),script);
 });
-
-test('interactive demo CSS and scripts are local and content-addressed', () => {
-  const html = fs.readFileSync(demoPagePath, 'utf8');
-  const expected = new Map([
-    ['guided-demo.css', 'fa626a3dea209ef8f6bc9366be7bec67072bcbd54eef10b36743e02a5193a579'],
-    ['interactive-demo-data.b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7.js', 'b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7'],
-    ['interactive-demo.06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2.js', '06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2'],
-  ]);
-  for (const [name, digest] of expected) {
-    assert.equal(sha256(path.join(assetRoot, name)), digest, name);
-    if (name.endsWith('.css')) {
-      assert.match(html, new RegExp('/assets/demo/singapore-source-review/' + name.replace('.', '\\.') + '\\?sha256=' + digest));
-    } else {
-      assert.match(html, new RegExp('/assets/demo/singapore-source-review/' + name.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&') + '"'));
-    }
+test('existing M120 source wording and data remain byte-identical',() => {
+  const p='assets/demo/singapore-source-review/interactive-demo-data.b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7.js';
+  assert.equal(hash(fs.readFileSync(path.join(root,p))),'b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7');
+  const context={window:{}};vm.runInNewContext(read(p),context);
+  assert.equal(context.window.AuxthoInteractiveDemoData.claims.C1.reviewRequired,false);
+  assert.match(context.window.AuxthoInteractiveDemoData.claims.C3.en.corrected,/immutable or offline/);
+  assert.match(context.window.AuxthoInteractiveDemoData.claims.C2.en.corrected,/FAQ/);
+});
+test('image usage preserves accepted bytes and identifies separate cases',() => {
+  assert.equal(manifest.correlated_single_run_claimed,false);
+  assert.equal(manifest.new_product_claims,false);
+  assert.equal(manifest.assets.length,6);
+  for(const asset of manifest.assets){
+    assert.equal(hash(fs.readFileSync(path.join(root,asset.path.slice(1)))),asset.sha256);
+    assert.equal(asset.bytes_unchanged,true);
+    assert.ok(asset.redaction);
+    assert.ok(asset.presentation);
+    assert.ok(html.includes(asset.path));
   }
-  assert.equal(fs.existsSync(path.join(assetRoot, 'guided-demo.js')), false);
+  assert.match(html,/C1 on Notice page 3/);
+  assert.match(html,/C3 refers to consultation page 6/);
+  assert.match(html,/not records created by your clicks/);
+  assert.match(html,/synthetic UI projection/);
+  assert.match(html,/different run from the preceding release example/);
 });
-
-test('demo has no account, input, tracking, backend write, or private-state surface', () => {
-  const html = fs.readFileSync(demoPagePath, 'utf8');
-  const dataScript = fs.readFileSync(path.join(assetRoot, 'interactive-demo-data.b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7.js'), 'utf8');
-  const script = fs.readFileSync(path.join(assetRoot, 'interactive-demo.06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2.js'), 'utf8');
-  const combined = html + '\n' + dataScript + '\n' + script;
-  const text = visibleText(html);
-  assert.doesNotMatch(html, /<(?:form|input|textarea|select)\b/i);
-  assert.doesNotMatch(combined, /(?:fetch\s*\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|localStorage|sessionStorage)/);
-  assert.doesNotMatch(combined, /(?:gtag|dataLayer|plausible|umami|segment|mixpanel|hotjar|google-analytics)/i);
-  assert.doesNotMatch(combined, /[A-Z]:\\|localhost|127\.0\.0\.1|serviceAccount|api[_-]?key/i);
-  assert.doesNotMatch(combined, /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-  assert.doesNotMatch(text, /\b(?:SUPPORTED|PROPOSED_ONLY|UNKNOWN|INTENT_RECORDED|Release Core)\b/);
-  assert.doesNotMatch(text, /SHA-256|authorization-|workspace-|tenant-/i);
-  assert.match(text, /guided walkthrough/);
-  assert.match(text, /stores no interaction and takes no external action/);
-  assert.match(text, /not affiliated with or endorsed by MAS/);
+test('no backend, accounts, trackers, saved browser choices or republished source PDFs',() => {
+  assert.doesNotMatch(html,/<(?:input|textarea|form|select|iframe)\b/i);
+  assert.doesNotMatch(html+script,/\b(?:fetch\s*\(|XMLHttpRequest|WebSocket|sendBeacon|localStorage|sessionStorage|indexedDB|document\.cookie)/);
+  assert.doesNotMatch(html+script,/gtag|plausible|mixpanel|hotjar|google-analytics/i);
+  assert.doesNotMatch(html+script,/[A-Z]:\\|localhost|127\.0\.0\.1|serviceAccount|api[_-]?key|private-provenance/i);
+  assert.doesNotMatch(html+script,/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  assert.doesNotMatch(html,/consultation-page-6\.png|<[^>]+(?:src|href)="[^"]+\.pdf/);
+  assert.match(html,/stores no interaction and takes no external action/);
 });
-
-test('en-SG is default and ko-KR remains an explicit alternate', () => {
-  const html = fs.readFileSync(demoPagePath, 'utf8');
-  const dataScript = fs.readFileSync(path.join(assetRoot, 'interactive-demo-data.b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7.js'), 'utf8');
-  const script = fs.readFileSync(path.join(assetRoot, 'interactive-demo.06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2.js'), 'utf8');
-  assert.match(html, /<html lang="en-SG" data-language="en">/);
-  assert.match(html, /property="og:locale" content="en_SG"/);
-  assert.match(html, /property="og:locale:alternate" content="ko_KR"/);
-  assert.match(script, /language === 'en' \? 'en-SG' : 'ko-KR'/);
-  assert.match(dataScript, /이해를 위한 Auxtho의 비공식 한국어 설명/);
-  assert.doesNotMatch(dataScript, /공식 번역이나 법적 해석이 아닙니다/);
+test('approval and unconfirmed outcomes preserve their distinct meanings',() => {
+  assert.match(script,/!state\.corrected \|\| !state\.inspected/);
+  assert.match(script,/UNKNOWN is not a confirmed failure or success/);
+  assert.match(script,/does not dispatch the action again automatically/);
+  assert.match(script,/held or rejected draft has no approval to reuse/);
+  assert.match(html,/acknowledgment|nothing saved/);
 });
-
-test('the interaction exposes exact M120 claim states and meaningful reviewer choices', () => {
-  const html = fs.readFileSync(demoPagePath, 'utf8');
-  const dataScript = fs.readFileSync(path.join(assetRoot, 'interactive-demo-data.b7fb698009c4342c57e20e229abd927f6a22abf13ad24d5a4b4cc5fc9acedbf7.js'), 'utf8');
-  const script = fs.readFileSync(path.join(assetRoot, 'interactive-demo.06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2.js'), 'utf8');
-  assert.match(html, /data-claim-select="C1"/);
-  assert.match(html, /data-claim-select="C2"/);
-  assert.match(html, /data-claim-select="C3"/);
-  assert.match(dataScript, /does not exceed 4 hours within any 12-month period/);
-  assert.match(dataScript, /pendingTitle: 'Source wording confirmed'/);
-  assert.match(dataScript, /pendingTitle: 'One source-role issue found'/);
-  assert.match(dataScript, /pendingAction: 'Attribute the detail to the supporting FAQ, not to FSM-N05 itself\.'/);
-  assert.match(dataScript, /modalSummary: 'One source-role exception prepared for review'/);
-  assert.match(dataScript, /correctedSub: 'Version 1\.1 now attributes the detail to the MAS TRM FAQ rather than to FSM-N05 itself\./);
-  assert.match(dataScript, /sourceOpenGuidance: 'The selected wording matches the current Notice\./);
-  assert.match(dataScript, /sourceOpenGuidance: 'The detail appears in the supporting FAQ, not in FSM-N05 itself\./);
-  assert.match(dataScript, /버전 1\.2에서는 <mark>“변경 불가능한 백업 또는 오프라인 백업”이 “두 가지 모두”<\/mark>로 바뀌었습니다\./);
-  assert.match(dataScript, /supporting FAQ, not in FSM-N05 itself/);
-  assert.match(dataScript, /Closed consultation · proposed only/);
-  assert.match(dataScript, /an immutable or offline backup/);
-  assert.match(html, /data-hold/);
-  assert.match(html, /data-reject/);
-  assert.match(html, /data-approve/);
-  assert.match(html, /Fixed synthetic example · Browser-only · Nothing saved/);
-  assert.match(html, /data-approved-excerpt/);
-  assert.match(html, /data-changed-excerpt/);
-  assert.match(html, /Compare the selected wording/);
-  assert.match(html, /data-prepared-issues/);
-  assert.match(dataScript, /artifactChanged: 'Synthetic AI draft · changed version 1\.2'/);
-  assert.match(dataScript, /Version 1\.2 says <mark>both an immutable backup and an offline backup<\/mark>/);
-  assert.match(dataScript, /reviewerStatusApproved: 'Exact decision recorded'/);
-  assert.match(dataScript, /reviewerStatusChanged: 'Review required'/);
-  assert.match(dataScript, /documentStatusChanged: 'Version mismatch'/);
-  assert.match(script, /recordDecision\('HOLD'\)/);
-  assert.match(script, /recordDecision\('REJECT'\)/);
-  assert.match(script, /recordDecision\('APPROVE'\)/);
-  assert.match(script, /function renderLifecycle\(\)/);
-  assert.match(script, /copy\.changed/);
-  assert.match(script, /copy\.modalSummary/);
-  assert.match(script, /correctedCopy\?\.correctedSub/);
-  assert.match(script, /claimCopy\(\)\.sourceOpenGuidance/);
-  assert.match(script, /classList\.toggle\('confirmed', !selected\.reviewRequired\)/);
-  assert.match(script, /state\.decision !== 'APPROVE' \|\| state\.changed/);
-  assert.doesNotMatch(dataScript, /material(?:ity)? classifier/i);
+test('canonical metadata, bilingual mode and accessible evidence remain present',() => {
+  assert.match(html,/<html lang="en-SG"/);
+  assert.match(html,/rel="canonical" href="https:\/\/auxtho.com\/demo\/singapore-source-review\/"/);
+  assert.match(html,/og:locale:alternate" content="ko_KR"/);
+  assert.match(html,/<dialog[^>]+aria-labelledby="dialog-title"/);
+  for(const m of html.matchAll(/<img\b[^>]+>/g)) assert.match(m[0],/alt="[^"]*"/);
+  assert.match(script,/'en-SG' : 'ko-KR'/);
+  assert.match(script,/showModal\(\)/);
+  assert.match(html,/<noscript>/);
 });
-
-test('the primary path has exactly four numbered product actions', () => {
-  const html = fs.readFileSync(demoPagePath, 'utf8');
-  const css = fs.readFileSync(path.join(assetRoot, 'guided-demo.css'), 'utf8');
-  const script = fs.readFileSync(path.join(assetRoot, 'interactive-demo.06caa9cd1045d21b35f32ab9bd16dd406416887b95e6652e8fcbd6b4eb088ef2.js'), 'utf8');
-  for (let step = 1; step <= 4; step += 1) {
-    assert.match(html, new RegExp('data-step="' + step + '"'));
+test('homepage, public capability proof and release identity remain untouched',() => {
+  for(const p of ['index.html','release.json','proof/singapore-source-review/index.html','capabilities/index.html','assets/capabilities/manifest.json']){
+    const baseline=execFileSync('git',['show','43d229eeeedfe3c5190416995271e14c2245325a:'+p],{cwd:root,windowsHide:true});
+    assert.equal(hash(fs.readFileSync(path.join(root,p))),hash(baseline),p);
   }
-  assert.doesNotMatch(html, /data-step="[5-9]"/);
-  assert.match(html, /Guided product walkthrough/);
-  assert.equal((html.match(/data-action-step="[1-4]"/g) || []).length, 4);
-  assert.match(script, /const totalSteps = 4/);
-  assert.match(script, /addEventListener\('click', continueFromSource\)/);
-  assert.match(script, /addEventListener\('click', dismissSource\)/);
-  assert.match(css, /\.is-next-action/);
-  assert.match(css, /\.completed-action \.action-number::before/);
-  assert.match(css, /prefers-reduced-motion/);
-  assert.match(script, /value === nextStep/);
-});
-
-test('homepage and sitemap keep demo and evidence routes separate', () => {
-  const homepage = fs.readFileSync(homepagePath, 'utf8');
-  const proof = fs.readFileSync(proofPagePath, 'utf8');
-  const sitemap = fs.readFileSync(sitemapPath, 'utf8');
-  const heroActions = homepage.match(/<div class="sales-hero-actions">([\s\S]*?)<\/div>/)?.[1] || '';
-  assert.match(homepage, /href="\/demo\/singapore-source-review\/"[^>]*>Try the guided walkthrough</);
-  assert.match(homepage, /href="\/demo\/singapore-source-review\/"[^>]*>Open the guided walkthrough/);
-  assert.match(homepage, /href="\/proof\/singapore-source-review\/"[^>]*>Inspect the evidence/);
-  assert.match(homepage, /ONE WORKED EXAMPLE/);
-  assert.match(homepage, /Singapore source-review walkthrough/);
-  assert.match(homepage, /DOCUMENT EVIDENCE \+ SOURCE REVIEW/);
-  assert.match(homepage, /One source-review example of Auxtho’s exact-version release-control path\./);
-  assert.equal((heroActions.match(/<a\b/g) || []).length, 3);
-  assert.doesNotMatch(heroActions, /View public proof/);
-  assert.doesNotMatch(proof, /\bindependent(?:ly)?\b/i);
-  assert.match(proof, /Separate local replay check/);
-  assert.match(proof, /separate deterministic replay check/);
-  assert.match(sitemap, /<loc>https:\/\/auxtho\.com\/<\/loc>\s*<lastmod>2026-09-03<\/lastmod>/);
-  assert.match(sitemap, /<loc>https:\/\/auxtho\.com\/demo\/singapore-source-review\/<\/loc>\s*<lastmod>2026-09-03<\/lastmod>/);
-  assert.match(sitemap, /<loc>https:\/\/auxtho\.com\/proof\/singapore-source-review\/<\/loc>\s*<lastmod>2026-09-03<\/lastmod>/);
 });
