@@ -82,10 +82,17 @@ test('canonical metadata, bilingual mode and accessible evidence remain present'
   assert.match(script,/showModal\(\)/);
   assert.match(html,/<noscript>/);
 });
-test('homepage, public capability proof and release identity remain untouched',() => {
+test('homepage changes only by approved membership block; public proof and release identity remain untouched',() => {
   for(const p of ['index.html','release.json','proof/singapore-source-review/index.html','capabilities/index.html','assets/capabilities/manifest.json']){
     const baseline=execFileSync('git',['show','43d229eeeedfe3c5190416995271e14c2245325a:'+p],{cwd:root,windowsHide:true});
-    assert.equal(hash(fs.readFileSync(path.join(root,p))),hash(baseline),p);
+    let current=fs.readFileSync(path.join(root,p));
+    if(p==='index.html'){
+      const original=current.toString('utf8');
+      assert.match(original,/Auxtho is a member of NVIDIA Inception\./);
+      const withoutMembership=original.replace(/^  <link rel="stylesheet" href="\/assets\/membership\.css\?sha256=[a-f0-9]{64}">\n/m,'').replace(/^  <section class="inception-membership"[\s\S]*?^  <\/section>\n/m,'');
+      current=Buffer.from(withoutMembership);
+    }
+    assert.equal(hash(current),hash(baseline),p);
   }
 });
 test('the short demo note leads with the workflow and detailed evidence stays available',() => {
