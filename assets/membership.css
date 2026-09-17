@@ -4,3 +4,6 @@
 .inception-membership__badge-wrap{background:transparent;transform:translateY(12px)}
 .inception-membership__logos{margin-bottom:20px}
 @media(max-width:560px){.inception-membership__logos{flex-direction:column;align-items:flex-start;gap:0}.inception-membership__badge-wrap{transform:none}}
+@media(max-width:1180px){.inception-membership{text-align:center}.inception-membership__logos{justify-content:center}.inception-membership__legal{margin-inline:auto}}
+@media(max-width:560px){.inception-membership__logos{align-items:center;gap:8px}.inception-membership__company-frame{width:216px;height:81px}.inception-membership__company{width:655.2px;height:81px;margin-left:-19.8px}}
+@media(max-width:1024px){main h1,main h2,main h3{letter-spacing:-.01em!important;line-height:1.15!important}}
