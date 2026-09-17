@@ -35,7 +35,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '4e2499b4993925ff6d9f0968ebca9902abfc5f16e6f51f0881e3d10ece315a6f',
   'demo/singapore-source-review/index.html': 'abe48430a7eeb1ecc0442944c5bb22718200bdb27a65ca98d035d692ba736898',
-  'index.html': 'c951d3319adfe89a12a786ace54953d59e0bd6bca1cb862cd396a3dc87d6e4c7',
+  'index.html': '8af94b129d501c2a3de511bbf7c691a764dcf55a56d85295b5b1e767eccf2f78',
   'capabilities/ai-review-exception-queue/index.html': '6d9d4ade4c0af47a2a931792e83417bb69f91465db0ce4d9f92408c850c8ccab',
   'capabilities/ardamire-defense-layer/index.html': 'dd284a42ea1135a92cbb78bcd91f774549ad9c47bea42dac94babf9582e5d62b',
   'capabilities/decision-receipts-audit-history/index.html': '28506af46ec2b585a1e5d6417fc8462270179776a6c363863d1e421383e9db3b',
