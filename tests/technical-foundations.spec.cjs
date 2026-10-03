@@ -343,7 +343,7 @@ for (const detail of [
   },
   {
     route: '/security/ardamire/',
-    title: 'Ardamire Defense Layer',
+    title: /Controls that act\.\s*Records you can inspect\./,
     flowCount: 0,
   },
 ]) {
@@ -351,7 +351,11 @@ for (const detail of [
     await page.setViewportSize({ width: 1440, height: 900 });
     await openWithoutRuntimeErrors(page, detail.route);
     await expect(page.getByRole('heading', { level: 1, name: detail.title })).toBeVisible();
-    await expect(page.locator('.technical-status-line')).toBeVisible();
+    if (detail.route === '/security/ardamire/') {
+      await expect(page.locator('.proof-source-note').first()).toContainText('Recorded April 2026 work');
+    } else {
+      await expect(page.locator('.technical-status-line')).toBeVisible();
+    }
     await expect(page.locator('.technical-flow-step')).toHaveCount(detail.flowCount);
     await expect(page.getByRole('link', { name: 'Back to Auxtho' })).toHaveAttribute(
       'href',
@@ -379,9 +383,8 @@ for (const detail of [
     expect(steps.every((box) => box.left >= 0 && box.right <= 390)).toBe(true);
     if (detail.route === '/security/ardamire/') {
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'index,follow');
-      await expect(page.locator('.technical-status-line')).toContainText(
-        'Detect',
-      );
+      await expect(page.locator('.proof-source-note').first()).toContainText('Recorded April 2026 work');
+      await expect(page.locator('.proof-case-flow li')).toHaveCount(7);
       await expect(page.locator('body')).not.toContainText('Ardamire Workbench');
       await expect(page.locator('body')).not.toContainText('Ardamire Watch');
       await expect(page.locator('body')).not.toContainText('Ardamire Agent');

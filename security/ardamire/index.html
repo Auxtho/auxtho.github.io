@@ -3,183 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ardamire Defense Layer | Auxtho Security</title>
-  <meta name="description" content="Ardamire's public modeled signal sequence keeps detection, investigation, a defensive proposal, human review, and verification visible before rollout.">
+  <title>Ardamire Defense Layer | Recorded Implementation &amp; Tests</title>
+  <meta name="description" content="Inspect Ardamire's recorded April implementation, actual screen excerpts, defense tests and the execution foundations behind it.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Auxtho">
+  <meta property="og:title" content="Ardamire Defense Layer — Built. Tested. Recorded.">
+  <meta property="og:description" content="Recorded April 2026 defense controls, original screen excerpts and selected expected-versus-recorded test results.">
+  <meta property="og:url" content="https://auxtho.com/security/ardamire/">
+  <meta property="og:image" content="https://auxtho.com/assets/ardamire-records/ardamire-recorded-tests-share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Ardamire Defense Layer: Controls that act. Records you can inspect. Recorded April 2026 implementation and tests.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Ardamire Defense Layer — Built. Tested. Recorded.">
+  <meta name="twitter:description" content="Recorded April 2026 defense controls, original screen excerpts and selected expected-versus-recorded test results.">
+  <meta name="twitter:image" content="https://auxtho.com/assets/ardamire-records/ardamire-recorded-tests-share.jpg">
+  <meta name="twitter:image:alt" content="Ardamire Defense Layer: recorded April 2026 implementation and tests.">
   <meta name="robots" content="index,follow">
   <meta name="color-scheme" content="dark">
   <meta name="theme-color" content="#060708">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <link rel="canonical" href="https://auxtho.com/security/ardamire/">
   <link rel="icon" href="/assets/favicon.svg">
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Ardamire Defense Layer | Auxtho Security">
-  <meta property="og:description" content="A public modeled sequence keeps investigation, a defensive proposal, human review, and verification visible before rollout.">
-  <meta property="og:url" content="https://auxtho.com/security/ardamire/">
-  <meta property="og:image" content="https://auxtho.com/assets/og-image-v2-16.png">
-  <meta property="og:image:alt" content="Auxtho human review before release">
   <link rel="stylesheet" href="/assets/style.css?sha256=dae86678fceee76a0e55b6af31c0107f79aa2ce7980b900121e8d6a540bef9f5">
   <link rel="stylesheet" href="/assets/technical-foundations.css?sha256=d70455671ad7881b0ab69cda1fb8a8200e2359737fe853079e8c85bc176bda18">
   <link rel="stylesheet" href="/assets/ardamire-motion.css?sha256=25e6ca7849db6f5f93699b4c4a782fdd0308df85192ce947c218ee8d979ae367">
+  <link rel="stylesheet" href="/assets/ardamire-proof.css?sha256=53ae301db2f5a447044bea72124c6452f924121d9067ad683bdb5879ee0f31c4">
 </head>
 <body class="technical-page">
-  <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 z-50 p-3 bg-white text-black">
-    Skip to content
-  </a>
-
+  <a class="proof-skip" href="#main-content">Skip to content</a>
   <header class="technical-site-header">
     <div class="technical-site-header-inner">
-      <a class="technical-site-header-logo" href="/" aria-label="Auxtho home">
-        <img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho">
-      </a>
+      <a class="technical-site-header-logo" href="/" aria-label="Auxtho home"><img src="/assets/logo-white.svg?sha256=a4310806bd2e7254bd643959272db406af28a3925ee2ab98fd300a651c69d1bd" alt="Auxtho" width="96" height="32"></a>
       <a class="technical-back-link" href="/">Back to Auxtho</a>
     </div>
   </header>
-
   <main id="main-content" class="technical-detail-main">
-    <section class="technical-detail-hero">
+    <section class="technical-detail-hero proof-hero">
       <div class="technical-detail-hero-inner">
-        <p class="technical-detail-kicker">Public modeled defensive-change sequence</p>
-        <h1 class="technical-detail-title">Ardamire Defense Layer</h1>
-        <p class="technical-detail-summary">
-          Ardamire's public modeled sequence keeps detection, investigation, a defensive proposal, human approval,
-          and verification visible before rollout.
-        </p>
-        <p class="technical-status-line">
-          Detect &rarr; Quarantine &rarr; Analyze &rarr; Harden proposal &rarr; Human review &rarr; Verify before rollout
-        </p>
+        <p class="technical-detail-kicker">Ardamire Defense Layer</p>
+        <h1 class="technical-detail-title">Controls that act.<br>Records you can inspect.</h1>
+        <p class="technical-detail-summary">Ardamire is Auxtho's internal defense layer for AI-assisted document workflows and their backend. It grew out of our work on controlled execution and retries.</p>
+        <p class="proof-hero-detail">Our recorded April implementation connected related anomaly signals, targeted holds, replay-evidence checks and separately reviewed defensive changes.</p>
+        <div class="proof-actions">
+          <a class="proof-button primary" href="#recorded-controls">Inspect the recorded controls <span aria-hidden="true">↓</span></a>
+          <a class="proof-button" href="/assets/ardamire-records/Ardamire_April_2026_Implementation_and_Tests.pdf" target="_blank" rel="noopener">Read the 4-page record <span aria-hidden="true">↗</span></a>
+        </div>
+        <p class="proof-source-note">Recorded April 2026 work · Auxtho-owned test environments · Prepared October 3, 2026</p>
+        <nav class="proof-section-nav" aria-label="On this page">
+          <a href="#recorded-controls">Controls</a>
+          <a href="#screen-records">Original screens</a>
+          <a href="#backend-tests">Backend tests</a>
+          <a href="#engineering-record">Failure &amp; rerun</a>
+          <a href="#evidence-records">Evidence</a>
+          <a href="#control-loop">Model</a>
+        </nav>
+      </div>
+    </section>
+
+    <section class="technical-detail-section" id="recorded-controls">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Implemented controls / recorded April tests</p>
+        <h2 class="technical-detail-heading">The next action faced stronger controls.</h2>
+        <p class="technical-detail-lead">Within the tested operator and workflow context, related anomaly signals accumulated. Additional verification or a hold governed what could happen next.</p>
+        <div class="proof-control-grid">
+          <article class="proof-card"><span class="proof-number">01</span><h3>Keep related signals together</h3><p>Different authentication warnings were tracked together within that context, so subsequent actions could face stronger checks.</p><p class="proof-source-note">April 12, 2026 · Controlled service and route tests</p></article>
+          <article class="proof-card"><span class="proof-number">02</span><h3>Contain the affected object</h3><p>Artifact and export mismatches led to targeted holds. The tests distinguished the affected object from unrelated work.</p><p class="proof-source-note">April 12, 2026 · Controlled service and route tests</p></article>
+          <article class="proof-card"><span class="proof-number">03</span><h3>Keep the investigation readable</h3><p>Invalid replay results were excluded from accepted replay evidence. Their results and reasons remained available for investigation.</p><p class="proof-source-note">April 13, 2026 · Controlled local workflow</p></article>
+        </div>
+        <div class="proof-assertions">
+          <h3>What the controlled tests checked</h3>
+          <ul>
+            <li><strong>Related signals changed the next action.</strong> Different authentication anomaly signals accumulated within a bounded context. A challenged operator could still read the permitted authentication state, but a state-changing request required additional verification.</li>
+            <li><strong>A weak signal did not immediately stop the workflow.</strong> A single weak missing-export signal did not trigger quarantine. Repeated signals for the same object led to an artifact/export hold, rather than a whole-run hold.</li>
+          </ul>
+          <p class="proof-source-note">Selected assertions from preserved implementation tests, corroborated by recorded April 12 service/route test runs. These describe tested behavior, not newly captured production traffic or a measured attack-learning rate.</p>
+        </div>
+        <div class="proof-roles"><div><span>The system</span><p>Recorded signals, strengthened checks, enforced holds and prepared investigation evidence.</p></div><div><span>The person</span><p>Reviewed exceptions and authorized consequential defensive changes.</p></div></div>
+      </div>
+    </section>
+
+    <section class="technical-detail-section" id="screen-records">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Actual screen excerpts / April 13, 2026</p>
+        <h2 class="technical-detail-heading">Keep the state. Keep the reason.</h2>
+        <p class="technical-detail-lead">These are cropped original screen records from controlled local tests with seeded test data, not reconstructed UI or footage of a new attack.</p>
+        <div class="proof-excerpt-grid">
+          <figure class="proof-excerpt"><div class="proof-excerpt-image"><img src="/assets/ardamire-records/recorded_containment_excerpt.png?sha256=41d83c479762902dc2e52df7455aaa9e54fa3e5dbd22b8da15558cadffd89ae0" alt="Original containment-state card from the April local test" width="330" height="132" loading="lazy"></div><figcaption><h3>The object remained contained.</h3><p>The screen retains the containment state. A hold did not itself resolve or close the incident.</p></figcaption></figure>
+          <figure class="proof-excerpt"><div class="proof-excerpt-image"><img src="/assets/ardamire-records/recorded_replay_posture_excerpt.png?sha256=d93a14551d4fd4781fa864f5f9990600a984ab97cb52bdf3898f7d8e412c029f" alt="Original replay-evidence posture card: one verified replay, eight excluded results and seven high-risk exclusions" width="241" height="133" loading="lazy"></div><figcaption><h3>Keep the valid record. Exclude the invalid result.</h3><p>One verified baseline replay remained in accepted evidence. Eight invalid results were excluded, including seven marked high risk. The excluded results and their reasons stayed available for investigation.</p><dl class="proof-replay-counts"><div><dt>Verified baseline retained</dt><dd>1</dd></div><div><dt>Invalid results excluded</dt><dd>8</dd></div><div><dt>High risk, within the eight</dt><dd>7</dd></div></dl></figcaption></figure>
+        </div>
+        <p class="proof-source-note">Here, “verified replay” means that the result passed integrity and recorded request/execution-binding checks. It does not establish the truth of every AI-generated document or finding.</p>
+        <div class="proof-review"><p class="technical-detail-label">A separate review for a defensive change</p><h3>The requester could not approve their own reactivation.</h3><p>In the recorded local workflow, a disabled defense-rule proposal could return to shadow evaluation only after a request and review by a different authorized person. The requester could neither review nor apply that reactivation; applying it required the approved reviewer. Shadow evaluation assessed the proposal without changing production rules.</p></div>
+        <p class="proof-source-note">Original pixels retained; surrounding internal identifiers removed by cropping. Replay-result counts are not attack counts.</p>
+      </div>
+    </section>
+
+    <section class="technical-detail-section" id="backend-tests">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Auxtho-owned live backend / April 15, 2026</p>
+        <h2 class="technical-detail-heading">The action stopped.<br>The record stayed readable.</h2>
+        <p class="technical-detail-lead">An unknown operator or wrong token issuer was rejected. Replay attempts without a required prior step, or after a recorded failure, were rejected. Incident detail stayed available.</p>
+        <div class="proof-test-grid">
+          <article class="proof-test"><strong>10</strong><h3>Identity / state checks</h3><p>Identity, state transitions and permitted requests.</p><span class="proof-pass">0 expectation failures</span></article>
+          <article class="proof-test"><strong>18</strong><h3>Method / schema checks</h3><p>Request methods, body validation and a permitted request.</p><span class="proof-pass">0 expectation failures</span></article>
+          <article class="proof-test"><strong>1,420</strong><h3>Requests in extended soak</h3><p>Normal reads and invalid requests under sustained pressure.</p><span class="proof-pass">0 expectation failures</span></article>
+        </div>
+        <p class="proof-source-note">Three separate recorded suites on Auxtho's own then-live backend. Counts include normal requests; they are not counts of attacks prevented.</p>
+        <div class="proof-positive-control"><h3>Allowed work mattered too.</h3><p>The identity/state suite recorded five expected successful requests alongside its rejection checks. After a failure was recorded, another replay was blocked, but the permitted incident-detail read still succeeded.</p></div>
+        <div class="proof-case">
+          <h3>One incident. One bounded request. A readable result.</h3>
+          <p>These steps came from the same recorded incident and request in the identity/state suite—not separate cases assembled into a success story.</p>
+          <ol class="proof-case-flow">
+            <li><span>C01 · 200</span><strong>Create the test incident</strong><p>Incident intake succeeded.</p></li>
+            <li><span>C02 · 200</span><strong>Create the bounded request</strong><p>The sandbox request was recorded.</p></li>
+            <li><span>C03 · 409</span><strong>Reject premature replay</strong><p>The required prior step had not occurred.</p></li>
+            <li><span>C04 · 200</span><strong>Accept the required step</strong><p>The request was claimed for execution.</p></li>
+            <li><span>C05 · 200</span><strong>Record the failure</strong><p>The test's failed execution was recorded successfully—not treated as a successful execution.</p></li>
+            <li><span>C06 · 409</span><strong>Reject replay after failure</strong><p>The recorded state prevented another replay.</p></li>
+            <li><span>C07 · 200</span><strong>Keep the incident readable</strong><p>The permitted detail read still succeeded.</p></li>
+          </ol>
+          <p class="proof-source-note">All seven expected and recorded status codes matched. These are seven of the existing ten checks, not an additional suite. The identity rejection checks below were separate probes.</p>
+        </div>
+        <div class="proof-table-wrap"><table class="proof-outcome-table">
+          <caption>Selected recorded outcomes / April 15, 2026</caption>
+          <thead><tr><th scope="col">Tested case</th><th scope="col">Expected</th><th scope="col">Recorded</th></tr></thead>
+          <tbody>
+            <tr><th scope="row"><span class="proof-case-id">B01 · Identity / state</span>Unknown operator</th><td>Rejected<span class="proof-status-code">401</span></td><td>Rejected<span class="proof-status-code">401</span></td></tr>
+            <tr><th scope="row"><span class="proof-case-id">B02 · Identity / state</span>Wrong token issuer</th><td>Rejected<span class="proof-status-code">401</span></td><td>Rejected<span class="proof-status-code">401</span></td></tr>
+            <tr><th scope="row"><span class="proof-case-id">B03 · Identity / state</span>Replay before a required prior step</th><td>Blocked<span class="proof-status-code">409</span></td><td>Blocked<span class="proof-status-code">409</span></td></tr>
+            <tr><th scope="row"><span class="proof-case-id">B04 · Identity / state</span>Replay after a recorded failure</th><td>Blocked<span class="proof-status-code">409</span></td><td>Blocked<span class="proof-status-code">409</span></td></tr>
+            <tr class="proof-outcome-allowed"><th scope="row"><span class="proof-case-id">B05 · Identity / state</span>Permitted incident-detail read after failure</th><td>Succeeded<span class="proof-status-code">200</span></td><td>Succeeded<span class="proof-status-code">200</span></td></tr>
+            <tr><th scope="row"><span class="proof-case-id">B06 · Method / schema</span>Disallowed replay request method</th><td>Rejected<span class="proof-status-code">405</span></td><td>Rejected<span class="proof-status-code">405</span></td></tr>
+            <tr><th scope="row"><span class="proof-case-id">B07 · Method / schema</span>Replay request missing required body fields</th><td>Rejected<span class="proof-status-code">422</span></td><td>Rejected<span class="proof-status-code">422</span></td></tr>
+          </tbody>
+        </table></div>
+        <p class="proof-source-note">Tested by Auxtho on its own then-live backend. These seven rows are selected excerpts from two preserved result files; all seven recorded status codes matched their expectations. Case labels are simplified, and internal identities, endpoints and request details are omitted. The downloadable record identifies each selected row. These checks do not measure an overall false-positive rate.</p>
+        <details class="proof-details"><summary>Earlier pressure test: two client timeouts, then a separate rerun</summary><p>An earlier April 15 mini-soak issued 648 requests and recorded two client read timeouts. After the test client's timeout budget was adjusted, a separate 648-request rerun recorded no expectation failures. That is a changed test condition, not proof that a backend defect was fixed.</p><p>The later extended soak shown above comprised 1,296 pressure requests and 124 follow-up requests: 1,420 in total. These distinct runs are not combined into an attack count or learning score.</p></details>
+      </div>
+    </section>
+
+    <section class="technical-detail-section" id="engineering-record">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Connected execution foundations / April 11–12, 2026 KST</p>
+        <h2 class="technical-detail-heading">Find the failure.<br>Fix the path. Run it again.</h2>
+        <p class="technical-detail-lead">EP19 blocker records informed Ardamire's incident and signal-history work while Ardamire development also proceeded in parallel. The related EP19 operator-runtime program tested execution and retry behavior. The original run shown here completed 80 cycles and recorded six scenario failures. After retry handling and test isolation were corrected, the rerun completed 80 cycles with none; scenario allocations changed between runs, so this was not a matched attack-learning comparison.</p>
+        <ol class="proof-timeline">
+          <li><span>01 / Find</span><h3>Six failures stayed on the record.</h3><p>Failures concentrated in retry creation, acknowledgment-to-retry timing and timeout progression.</p></li>
+          <li><span>02 / Correct</span><h3>Correct the path and the test setup.</h3><p>Retry creation gained duplicate-request handling; the runtime supervisor was reset between test cycles.</p></li>
+          <li><span>03 / Verify</span><h3>Complete another 80-cycle program.</h3><p>The rerun recorded no scenario failures. Its changed scenario allocations do not establish an attack-learning improvement.</p></li>
+        </ol>
+        <div class="proof-table-wrap"><table class="proof-phase-table">
+          <caption>Recorded results by phase — original run and corrected rerun</caption>
+          <thead><tr><th scope="col">Phase / test mix</th><th scope="col">Cycles<br>per run</th><th scope="col">Original<br>failures</th><th scope="col">Rerun<br>failures</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">0 · Baseline stabilization</th><td>4</td><td>0</td><td>0</td></tr>
+            <tr><th scope="row">1 · Normal / duplicate-heavy</th><td>16</td><td>0</td><td>0</td></tr>
+            <tr><th scope="row">2 · Alert-heavy</th><td>16</td><td class="proof-found">5</td><td>0</td></tr>
+            <tr><th scope="row">3 · Failure / chaos</th><td>20</td><td class="proof-found">1</td><td>0</td></tr>
+            <tr><th scope="row">4 · Mixed soak</th><td>24</td><td>0</td><td>0</td></tr>
+          </tbody>
+          <tfoot><tr><th scope="row">Total / each run</th><td>80</td><td>6</td><td>0</td></tr></tfoot>
+        </table></div>
+        <p class="proof-source-note">Local isolated validation stack. The rerun's observed span was about 19 hours 53 minutes against a configured 20-hour program. Phase mixes differed; scenario allocations changed between runs. This is runtime validation connected to Ardamire's development, not a sequence of Ardamire breaches or a measured attack-learning rate.</p>
+        <details class="proof-details"><summary>Where these records connect to Ardamire</summary><p>EP19 blocker records became inputs to Ardamire's incident, profiling and signal-history work. Ardamire implementation also proceeded in a parallel development session; the EP19 closure was not the start date of all Ardamire work.</p><p>The recorded runtime corrections, Ardamire controlled local workflows and own-backend suites are separate evidence sets. Their counts are not combined into one security score.</p></details>
+      </div>
+    </section>
+
+    <section class="technical-detail-section" id="evidence-records">
+      <div class="technical-detail-section-inner">
+        <p class="technical-detail-label">Read the evidence</p>
+        <h2 class="technical-detail-heading">Built. Tested. Recorded.</h2>
+        <p class="technical-detail-lead">The four-page record covers Ardamire's April implementation and tests. The separate web record adds the execution-foundation history shown above.</p>
+        <div class="proof-record-links">
+          <a href="/assets/ardamire-records/Ardamire_April_2026_Implementation_and_Tests.pdf" target="_blank" rel="noopener"><span>Ardamire implementation &amp; tests</span><small>4-page PDF · Original published version · 58 KB</small><b aria-hidden="true">↗</b></a>
+          <a href="/assets/ardamire-records/recorded-test-summary.json" target="_blank" rel="noopener"><span>Selected recorded test outcomes</span><small>Public JSON · Expected / recorded results, dates and phase history</small><b aria-hidden="true">↗</b></a>
+        </div>
+        <p class="proof-source-note">These are dated implementation and test records, not an independent security certification or evidence of customer-wide protection. They do not establish the readiness of today's hosted restoration.</p>
       </div>
     </section>
 
     <section class="technical-detail-section ardamire-motion-section" id="control-loop">
       <div class="technical-detail-section-inner">
-        <p class="technical-detail-label">Six-stage defense path</p>
+        <p class="technical-detail-label">Model explanation / separate from test evidence</p>
         <h2 class="technical-detail-heading">See the modeled path from detection to verification before rollout.</h2>
-        <p class="technical-detail-lead">
-          The model shows a team investigating the signal, preparing a defensive change, stopping for an accountable
-          human decision, and verifying the approved proposal before rollout.
-        </p>
-
+        <p class="technical-detail-lead">This illustrative sequence explains the control structure. It is not a live incident stream or a replay of the recorded tests above.</p>
         <div class="ardamire-motion" data-ardamire-motion data-state="idle">
-          <div class="ardamire-motion-header">
-            <div>
-              <p class="ardamire-motion-eyebrow">Ardamire / six-stage control sequence</p>
-              <p class="ardamire-motion-disclosure">Interactive control sequence / modeled signal scenario</p>
-            </div>
-            <div class="ardamire-motion-controls" aria-label="Ardamire sequence controls">
-              <button type="button" data-ardamire-play>Play</button>
-              <button type="button" data-ardamire-pause disabled>Pause</button>
-              <button type="button" data-ardamire-replay>Replay</button>
-              <button type="button" data-ardamire-continue hidden>Continue to verification</button>
-            </div>
-          </div>
-
-          <div class="ardamire-motion-status" aria-live="polite">
-            <span>Current modeled stage</span>
-            <strong data-ardamire-status>Ready to play sequence</strong>
-          </div>
-
+          <div class="ardamire-motion-header"><div><p class="ardamire-motion-eyebrow">Ardamire / six-stage control sequence</p><p class="ardamire-motion-disclosure">Interactive control sequence / modeled signal scenario</p></div><div class="ardamire-motion-controls" aria-label="Ardamire sequence controls"><button type="button" data-ardamire-play>Play</button><button type="button" data-ardamire-pause disabled>Pause</button><button type="button" data-ardamire-replay>Replay</button><button type="button" data-ardamire-continue hidden>Continue to verification</button></div></div>
+          <div class="ardamire-motion-status" aria-live="polite"><span>Current modeled stage</span><strong data-ardamire-status>Ready to play sequence</strong></div>
           <ol class="ardamire-motion-sequence">
-            <li class="ardamire-motion-stage" data-ardamire-stage>
-              <span>01</span>
-              <strong>Detect</strong>
-              <p>A security signal enters the defensive control path.</p>
-            </li>
-            <li class="ardamire-motion-stage" data-ardamire-stage>
-              <span>02</span>
-              <strong>Quarantine</strong>
-              <p>The affected path enters a hold state while the signal is investigated.</p>
-            </li>
-            <li class="ardamire-motion-stage" data-ardamire-stage>
-              <span>03</span>
-              <strong>Analyze + Profile</strong>
-              <p>Signal, artifact, and policy context are assembled for review.</p>
-            </li>
-            <li class="ardamire-motion-stage" data-ardamire-stage>
-              <span>04</span>
-              <strong>Harden proposal</strong>
-              <p>A defensive change is prepared as a proposal, not executed.</p>
-            </li>
-            <li class="ardamire-motion-stage ardamire-motion-stage-human" data-ardamire-stage>
-              <span>05</span>
-              <strong>Human review</strong>
-              <p>An accountable person decides whether the proposal advances.</p>
-            </li>
-            <li class="ardamire-motion-stage" data-ardamire-stage>
-              <span>06</span>
-              <strong>Verify before rollout</strong>
-              <p>The approved proposal enters a separate verification stage before rollout.</p>
-            </li>
+            <li class="ardamire-motion-stage" data-ardamire-stage><span>01</span><strong>Detect</strong><p>A security signal enters the defensive control path.</p></li>
+            <li class="ardamire-motion-stage" data-ardamire-stage><span>02</span><strong>Quarantine</strong><p>The affected path enters a hold state while the signal is investigated.</p></li>
+            <li class="ardamire-motion-stage" data-ardamire-stage><span>03</span><strong>Analyze + Profile</strong><p>Signal, artifact, and policy context are assembled for review.</p></li>
+            <li class="ardamire-motion-stage" data-ardamire-stage><span>04</span><strong>Harden proposal</strong><p>A defensive change is prepared as a proposal, not executed.</p></li>
+            <li class="ardamire-motion-stage ardamire-motion-stage-human" data-ardamire-stage><span>05</span><strong>Human review</strong><p>An accountable person decides whether the proposal advances.</p></li>
+            <li class="ardamire-motion-stage" data-ardamire-stage><span>06</span><strong>Verify before rollout</strong><p>The approved proposal enters a separate verification stage before rollout.</p></li>
           </ol>
-
-          <div class="ardamire-motion-footer">
-            <p><strong>Human authority is required</strong> before the proposal advances to verification.</p>
-          </div>
+          <div class="ardamire-motion-footer"><p><strong>Human authority is required</strong> before the proposal advances to verification.</p></div>
         </div>
       </div>
     </section>
 
     <section class="technical-detail-section">
       <div class="technical-detail-section-inner">
-        <p class="technical-detail-label">Control structure</p>
-        <h2 class="technical-detail-heading">Investigate first. Decide explicitly. Verify before rollout.</h2>
-        <p class="technical-detail-lead">
-          The model keeps each consequential transition visible. It keeps context assembly and proposal preparation
-          separate from authority to execute.
-        </p>
-        <div class="technical-claim-grid">
-          <article class="technical-claim-block">
-            <h3>Inspect the signal</h3>
-            <p>Bring the signal and its available context into one inspectable path.</p>
-          </article>
-          <article class="technical-claim-block">
-            <h3>Control the proposal</h3>
-            <p>Keep the defensive change separate from execution while its supporting context is reviewed.</p>
-          </article>
-          <article class="technical-claim-block">
-            <h3>Keep the decision point visible</h3>
-            <p>The modeled sequence continues to verification only after an accountable person explicitly approves the next stage.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="technical-detail-section">
-      <div class="technical-detail-section-inner">
-        <p class="technical-detail-label">Enterprise control mapping</p>
-        <h2 class="technical-detail-heading">Connect defensive decisions to the controls already in use.</h2>
-        <p class="technical-detail-lead">
-          Start with one defensive-change workflow and map its signal, accountable reviewer, supporting evidence, and
-          verification point into the current control environment.
-        </p>
-        <ul class="technical-scope-list">
-          <li>Map the review and verification stages against SOC, SIEM, EDR, IAM, incident-response, and security-control environments.</li>
-          <li>Define the responsible people, required evidence, and controlled handoffs for the selected workflow.</li>
-          <li>Keep review, approval, release, and export decisions with designated people and controlled systems.</li>
-        </ul>
-        <div class="technical-reference">
-          <div>
-            <h3>Start with one defensive-change workflow</h3>
-            <p>Identify the signal, proposal, human decision, and verification point that should remain connected.</p>
-          </div>
-          <a href="mailto:hello@auxtho.com?subject=Discuss%20a%20defensive-change%20workflow">Discuss one workflow</a>
-        </div>
+        <p class="technical-detail-label">One controlled workflow</p>
+        <h2 class="technical-detail-heading">Keep the signal, decision and result connected.</h2>
+        <p class="technical-detail-lead">Start with one Auxtho-managed workflow. Identify the affected work, the supporting evidence, the responsible reviewer and the verification required before a defensive change advances.</p>
+        <div class="technical-reference"><div><h3>Discuss a workflow</h3><p>Ardamire's scope is Auxtho's workflow and backend, not the customer's entire security environment.</p></div><a href="mailto:hello@auxtho.com?subject=Discuss%20a%20defensive-change%20workflow">Discuss one workflow</a></div>
       </div>
     </section>
   </main>
-
-  <footer class="technical-detail-footer">
-    <div class="technical-detail-footer-inner">
-      <p>&copy; 2025-2026 Auxtho. All rights reserved.</p>
-      <div>
-        <a href="/privacy.html">Privacy</a>
-        <span aria-hidden="true"> &middot; </span>
-        <a href="/terms.html">Public Site Notice</a>
-        <span aria-hidden="true"> &middot; </span>
-        <a href="mailto:hello@auxtho.com">Contact</a>
-      </div>
-    </div>
-  </footer>
+  <footer class="technical-detail-footer"><div class="technical-detail-footer-inner"><p>&copy; 2025-2026 Auxtho. All rights reserved.</p><div><a href="https://auxtho.com/privacy.html">Privacy</a><span aria-hidden="true"> · </span><a href="https://auxtho.com/terms.html">Public Site Notice</a><span aria-hidden="true"> · </span><a href="mailto:hello@auxtho.com">Contact</a></div></div></footer>
   <script src="/assets/ardamire-motion.cda2fde1fd14e8c4f11e2cb8f85fefb65c9a0485c01a8822e079670868b7abc6.js" defer></script>
 </body>
 </html>

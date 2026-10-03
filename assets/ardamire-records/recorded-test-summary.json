@@ -1,0 +1,183 @@
+{
+  "record_type": "Selected public result excerpts and editorial summary from preserved first-party test records",
+  "prepared_date": "2026-10-03",
+  "publication_status": "PUBLIC_RECORD",
+  "editorial_version": "V3",
+  "test_operator": "Auxtho",
+  "provenance_note": "Auxtho conducted these tests in its own test environments. The selected rows preserve expected and recorded actual status codes and verdicts from original records. Plain-language case labels replace internal identifiers; identities, endpoints and request details are omitted. These are first-party test records, not independent security certification.",
+  "ardamire": {
+    "implementation_control_tests": {
+      "date": "2026-04-12",
+      "environment": "Controlled service and route tests",
+      "observations": [
+        "Related authentication anomaly signals accumulated within the tested operator and workflow context.",
+        "Additional verification and holds governed subsequent actions.",
+        "Artifact and export mismatches led to targeted object holds."
+      ],
+      "selected_test_assertions": [
+        {"public_id": "A01", "behavior": "Different related authentication anomaly signals accumulated within a bounded operator/workflow context and strengthened subsequent controls.", "evidence_type": "Preserved implementation-test assertions, corroborated by captured April 12 service/route test runs"},
+        {"public_id": "A02", "behavior": "A challenged operator could read permitted authentication state; state-changing requests required additional verification.", "evidence_type": "Preserved route-test assertions, corroborated by captured April 12 service/route test runs"},
+        {"public_id": "A03", "behavior": "A single weak missing-export signal did not trigger quarantine. Repeated signals for the same object resulted in an artifact/export hold rather than a whole-run hold.", "evidence_type": "Preserved implementation-test assertions with April 12 exact-object containment checkpoint"}
+      ],
+      "assertion_scope": "These are selected descriptions of test assertions and recorded implementation checkpoints, not new production observations. Preserved test code evolved beyond its earliest run; no claim is made that today's source is byte-identical to every historical test run. No matched attack-learning rate is established."
+    },
+    "local_workflows": {
+      "date": "2026-04-13",
+      "environment": "Controlled local workflows with seeded test data",
+      "invalid_replay_results": 8,
+      "verified_baseline_replay_before_invalid_cases": 1,
+      "verified_baseline_replay_after_invalid_cases": 1,
+      "high_risk_exclusions_within_eight": 7,
+      "replay_validation_scope": "Integrity and binding of the result to the recorded request/execution; not verification of every AI-generated document or finding",
+      "shadow_reactivation_authority": {
+        "requester_and_reviewer_distinct": true,
+        "requester_cannot_review": true,
+        "requester_cannot_apply": true,
+        "apply_requires_approved_reviewer": true,
+        "production_rules_changed": false,
+        "scope": "Recorded controlled local workflow"
+      },
+      "observations": [
+        "Invalid results were excluded from accepted replay evidence; results and reasons remained available for investigation.",
+        "The verified isolated-shadow baseline replay remained accepted after eight invalid results were excluded. Verified replay evidence does not itself resolve an incident or complete every reactivation condition.",
+        "A request and review by a distinct authorized reviewer were required to resume shadow evaluation. The requester could neither review nor apply that reactivation; applying it required the approved reviewer. Production rules were not changed.",
+        "Containment did not itself close the incident."
+      ]
+    },
+    "own_live_backend_suites": {
+      "date": "2026-04-15",
+      "environment": "Auxtho-owned then-live backend",
+      "separate_suites": [
+        {
+          "subject": "Identity/state",
+          "checks": 10,
+          "expectation_failures": 0
+        },
+        {
+          "subject": "Method/schema",
+          "checks": 18,
+          "expectation_failures": 0
+        },
+        {
+          "subject": "Extended soak",
+          "requests": 1420,
+          "pressure_requests": 1296,
+          "follow_up_requests": 124,
+          "expectation_failures": 0
+        }
+      ],
+      "count_note": "Normal reads and invalid requests are included. These are not counts of attacks prevented.",
+      "earlier_pressure_history": {
+        "date": "2026-04-15",
+        "original_mini_soak": {"cycles": 3, "requests": 648, "expectation_failures": 2, "failure_kind": "Client read timeouts"},
+        "separate_mini_soak_rerun": {"cycles": 3, "requests": 648, "expectation_failures": 0},
+        "changed_condition": "Test-client timeout budget adjusted before the separate rerun",
+        "interpretation": "This records an earlier failed test and a changed-condition rerun. It does not establish that a backend defect was fixed or combine these requests with the extended suite into an attack or learning count."
+      }
+    }
+  },
+  "selected_backend_result_rows": [
+    {"public_id": "B01", "suite": "Identity/state", "test_date": "2026-04-15", "case": "Unknown operator", "expected_status": 401, "recorded_actual_status": 401, "recorded_verdict": "PASS"},
+    {"public_id": "B02", "suite": "Identity/state", "test_date": "2026-04-15", "case": "Wrong token issuer", "expected_status": 401, "recorded_actual_status": 401, "recorded_verdict": "PASS"},
+    {"public_id": "B03", "suite": "Identity/state", "test_date": "2026-04-15", "case": "Replay before a required prior step", "expected_status": 409, "recorded_actual_status": 409, "recorded_verdict": "PASS"},
+    {"public_id": "B04", "suite": "Identity/state", "test_date": "2026-04-15", "case": "Replay after a recorded failure", "expected_status": 409, "recorded_actual_status": 409, "recorded_verdict": "PASS"},
+    {"public_id": "B05", "suite": "Identity/state", "test_date": "2026-04-15", "case": "Permitted incident-detail read after failure", "expected_status": 200, "recorded_actual_status": 200, "recorded_verdict": "PASS"},
+    {"public_id": "B06", "suite": "Method/schema", "test_date": "2026-04-15", "case": "Disallowed replay request method", "expected_status": 405, "recorded_actual_status": 405, "recorded_verdict": "PASS"},
+    {"public_id": "B07", "suite": "Method/schema", "test_date": "2026-04-15", "case": "Replay request missing required body fields", "expected_status": 422, "recorded_actual_status": 422, "recorded_verdict": "PASS"}
+  ],
+  "selected_normal_path_observation": {
+    "suite": "Identity/state",
+    "expected_successful_requests": 5,
+    "recorded_successful_requests": 5,
+    "specific_case": "Permitted incident-detail read after failure",
+    "expected_status": 200,
+    "recorded_actual_status": 200,
+    "boundary": "Selected checks do not establish an overall false-positive rate or behavior across every normal workload."
+  },
+  "same_case_backend_sequence": {
+    "date": "2026-04-15",
+    "suite": "Identity/state",
+    "scope": "One recorded test incident and its bounded sandbox request",
+    "rows": [
+      {"public_id": "C01", "case": "Create the test incident", "expected_status": 200, "recorded_actual_status": 200, "recorded_verdict": "PASS"},
+      {"public_id": "C02", "case": "Create the bounded sandbox request", "expected_status": 200, "recorded_actual_status": 200, "recorded_verdict": "PASS"},
+      {"public_id": "C03", "case": "Replay before a required prior step", "expected_status": 409, "recorded_actual_status": 409, "recorded_verdict": "PASS", "also_selected_as": "B03"},
+      {"public_id": "C04", "case": "Claim the request for execution", "expected_status": 200, "recorded_actual_status": 200, "recorded_verdict": "PASS"},
+      {"public_id": "C05", "case": "Record a failed execution", "expected_status": 200, "recorded_actual_status": 200, "recorded_verdict": "PASS", "interpretation": "Successful recording of failure, not successful execution"},
+      {"public_id": "C06", "case": "Replay after a recorded failure", "expected_status": 409, "recorded_actual_status": 409, "recorded_verdict": "PASS", "also_selected_as": "B04"},
+      {"public_id": "C07", "case": "Permitted incident-detail read after failure", "expected_status": 200, "recorded_actual_status": 200, "recorded_verdict": "PASS", "also_selected_as": "B05"}
+    ],
+    "count_note": "These seven steps are a subset of the ten identity/state checks, not seven additional checks. The identity rejection probes were separate checks."
+  },
+  "execution_foundations": {
+    "subject": "EP19 operator-runtime validation connected to Ardamire development",
+    "environment": "Local isolated validation stack",
+    "original_run": {
+      "start_kst": "2026-04-11T05:44:58+09:00",
+      "finish_kst": "2026-04-12T02:00:02+09:00",
+      "verdict": "PARTIAL_FAIL",
+      "completed_cycles": 80,
+      "scenario_failures": 6
+    },
+    "corrected_rerun": {
+      "start_kst": "2026-04-12T03:00:41+09:00",
+      "finish_kst": "2026-04-12T22:53:46+09:00",
+      "verdict": "PASS",
+      "completed_cycles": 80,
+      "scenario_failures": 0,
+      "configured_hours": 20,
+      "observed_span": "Approximately 19 hours 53 minutes"
+    },
+    "phases": [
+      {
+        "phase": 0,
+        "subject": "Baseline stabilization",
+        "cycles_each_run": 4,
+        "original_failures": 0,
+        "rerun_failures": 0
+      },
+      {
+        "phase": 1,
+        "subject": "Normal/duplicate-heavy",
+        "cycles_each_run": 16,
+        "original_failures": 0,
+        "rerun_failures": 0
+      },
+      {
+        "phase": 2,
+        "subject": "Alert-heavy",
+        "cycles_each_run": 16,
+        "original_failures": 5,
+        "rerun_failures": 0
+      },
+      {
+        "phase": 3,
+        "subject": "Failure/chaos",
+        "cycles_each_run": 20,
+        "original_failures": 1,
+        "rerun_failures": 0
+      },
+      {
+        "phase": 4,
+        "subject": "Mixed soak",
+        "cycles_each_run": 24,
+        "original_failures": 0,
+        "rerun_failures": 0
+      }
+    ],
+    "corrections": "Retry-creation duplicate-request handling and runtime-supervisor isolation between harness cycles",
+    "comparison_note": "Phase mixes differed and scenario allocations changed between runs. No matched attack-learning metric or breach count is asserted."
+  },
+  "source_descriptions": [
+    "Preserved April controlled service/route tests and original local browser records",
+    "Preserved April 15 own-backend result files",
+    "EP19 original and corrected-rerun reports dated April 12, corroborated by captured original tool outputs"
+  ],
+  "exclusions": [
+    "Independent security certification",
+    "Customer-wide or bank-wide protection",
+    "Universal attack prevention",
+    "Measured novel-attack learning",
+    "Current hosted restoration readiness"
+  ]
+}

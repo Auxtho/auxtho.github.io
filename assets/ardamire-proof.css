@@ -1,0 +1,95 @@
+/* Additive proof surface; existing modeled sequence remains independently labeled. */
+.technical-detail-section[id]{scroll-margin-top:80px}
+.proof-preview-note{padding:9px 20px;text-align:center;background:#15202d;color:#d4e4f7;font:500 12px/1.5 system-ui;letter-spacing:.06em}
+.proof-skip{position:absolute;left:16px;top:-80px;padding:12px;background:white;color:black;z-index:50}
+.proof-skip:focus{top:8px}
+.proof-hero .technical-detail-title{font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:-.035em;max-width:860px}
+.proof-hero-detail{font-size:18px;line-height:1.7;max-width:780px;color:#bdc7d1;margin-top:22px}
+.proof-actions{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 20px}
+.proof-button{display:inline-flex;gap:18px;align-items:center;justify-content:space-between;border:1px solid #394552;padding:14px 18px;border-radius:7px;font-size:14px;font-weight:600;color:#e9eef4;text-decoration:none}
+.proof-button.primary{color:#081018;background:#edf5ff;border-color:#edf5ff}
+.proof-button:hover{border-color:#9ec6f5}
+.proof-button:focus-visible,.proof-record-links a:focus-visible,summary:focus-visible{outline:3px solid #9ec6f5;outline-offset:5px}
+.proof-source-note{font-size:13px!important;line-height:1.7!important;color:#aab5c2!important;margin-top:20px;max-width:880px}
+.proof-section-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px;padding-top:20px;border-top:1px solid #29313b}
+.proof-section-nav a{display:inline-block;padding:10px 13px;border:1px solid #344355;border-radius:6px;font-size:13px;line-height:1.5;color:#cddcf0;text-decoration:none}
+.proof-section-nav a:hover{border-color:#9ec6f5;color:#fff}
+.proof-section-nav a:focus-visible{outline:3px solid #9ec6f5;outline-offset:3px}
+.proof-control-grid,.proof-test-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:30px}
+.proof-card{border:1px solid #29313b;border-radius:9px;padding:26px;background:#0d1117}
+.proof-number{font:600 12px/1.5 system-ui;color:#abc7e8;letter-spacing:.08em}
+.proof-card h3,.proof-test h3,.proof-excerpt h3,.proof-review h3,.proof-timeline h3{font-size:19px;line-height:1.4;color:#edf2f8;font-weight:650;margin:13px 0}
+.proof-card p,.proof-excerpt p,.proof-review p,.proof-test p,.proof-timeline p,.proof-details p{font-size:15px;line-height:1.75;color:#b8c3cf}
+.proof-card .proof-source-note{font-size:12px!important;margin-top:18px}
+.proof-roles{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:28px;border-top:1px solid #29313b}
+.proof-roles>div{padding:24px 24px 0 0}
+.proof-roles span{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#aec9e7}
+.proof-roles p{font-size:16px;line-height:1.7;color:#d1dbe7;margin-top:10px}
+.proof-assertions{margin-top:28px;padding:24px;border:1px solid #344355;border-radius:8px;background:#101820}
+.proof-assertions h3,.proof-case>h3{font-size:20px;line-height:1.4;color:#edf2f8;margin:0 0 16px}
+.proof-assertions ul{padding-left:20px;margin:0}
+.proof-assertions li{font-size:15px;line-height:1.75;color:#c5d0dc;padding-left:5px;margin-top:14px}
+.proof-assertions strong{color:#e1ecf8}
+.proof-case{margin:32px 0}
+.proof-case>p{font-size:15px;line-height:1.75;color:#b8c3cf;max-width:850px}
+.proof-case-flow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;padding:0;list-style:none;margin:24px 0}
+.proof-case-flow li{padding:20px;background:#0d1117;border:1px solid #29313b;border-radius:7px}
+.proof-case-flow span{display:block;font-size:12px;color:#abc7e8;margin-bottom:10px}
+.proof-case-flow strong{display:block;font-size:16px;line-height:1.5;color:#e1ecf8}
+.proof-case-flow p{font-size:14px;line-height:1.75;color:#b8c3cf;margin-top:10px}
+@media(max-width:800px){.proof-case-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.proof-case-flow{grid-template-columns:1fr}.proof-assertions{padding:20px}.proof-assertions li{font-size:14px}.proof-assertions h3,.proof-case>h3{font-size:18px}}
+.proof-excerpt-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:28px}
+.proof-excerpt{border:1px solid #29313b;border-radius:9px;overflow:hidden;background:#0d1117;margin:0}
+.proof-excerpt-image{min-height:186px;display:flex;align-items:center;justify-content:center;background:#0b1220;padding:22px;border-bottom:1px solid #29313b}
+.proof-excerpt-image img{display:block;max-width:100%;height:auto;object-fit:contain}
+.proof-excerpt figcaption{padding:12px 24px 26px}
+.proof-replay-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:22px 0 0;padding-top:18px;border-top:1px solid #29313b}
+.proof-replay-counts div{display:flex;flex-direction:column-reverse;gap:8px}
+.proof-replay-counts dt{font-size:12px;line-height:1.6;color:#b8c3cf}
+.proof-replay-counts dd{margin:0;font-size:30px;line-height:1.1;font-weight:650;color:#e9f3ff}
+.proof-review{margin-top:26px;background:#101820;border:1px solid #32404d;border-radius:8px;padding:25px}
+.proof-review .technical-detail-label{margin:0}
+.proof-test{border-top:2px solid #718ca9;padding:22px 0 6px}
+.proof-test>strong{display:block;font-size:46px;font-weight:700;line-height:1.1;letter-spacing:-.035em;color:#f1f6ff}
+.proof-test p{min-height:54px}
+.proof-pass{display:inline-block;margin-top:14px;color:#b7e1cb;font-size:13px}
+.proof-positive-control{padding:22px 26px;background:#101d18;border-left:3px solid #87c5a7;margin:30px 0 24px;border-radius:0 7px 7px 0}
+.proof-positive-control h3{color:#d4eddf;font-size:20px;line-height:1.4;margin:0 0 12px}
+.proof-positive-control p{font-size:16px;line-height:1.75;color:#c4d5cb;margin:0;max-width:850px}
+.proof-outcome-table{width:100%;border-collapse:collapse;text-align:left;font-size:14px;line-height:1.6}
+.proof-outcome-table caption{padding:18px 20px;text-align:left;color:#d4e3f5;background:#111923;font-weight:600}
+.proof-outcome-table th,.proof-outcome-table td{padding:15px 20px;border-top:1px solid #29313b;vertical-align:middle}
+.proof-outcome-table thead th{color:#bdccdc;background:#0e141c;font-weight:500;font-size:13px}
+.proof-outcome-table tbody th{color:#dee8f4;font-weight:500;width:50%}
+.proof-outcome-table td{color:#c4d0df;width:25%}
+.proof-outcome-table th:not(:first-child),.proof-outcome-table td{text-align:center}
+.proof-case-id{display:block;font-size:11px;color:#a7bdd7;margin-bottom:5px;letter-spacing:.02em}
+.proof-status-code{display:block;font-size:12px;color:#acbed2;font-variant-numeric:tabular-nums}
+.proof-outcome-allowed{background:#14201d}
+.proof-outcome-allowed td{color:#c4ebd5}
+.proof-timeline{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:32px 0;padding:0;list-style:none}
+.proof-timeline li{border-left:2px solid #4c6078;padding-left:18px}
+.proof-timeline span{font-size:12px;color:#b5cce6;text-transform:uppercase;letter-spacing:.08em}
+.proof-table-wrap{border:1px solid #2d3843;border-radius:8px;overflow:hidden}
+.proof-phase-table{border-collapse:collapse;width:100%;font-size:14px;line-height:1.55;text-align:left}
+.proof-phase-table caption{text-align:left;padding:18px 20px;background:#111923;color:#d4e3f5;font-weight:600}
+.proof-phase-table th,.proof-phase-table td{padding:15px 20px;border-top:1px solid #29313b}
+.proof-phase-table thead th{font-size:12px;color:#bdccdc;font-weight:500;background:#0e141c}
+.proof-phase-table tbody th{font-weight:500;color:#dee8f4}
+.proof-phase-table td{color:#c4d0df;font-variant-numeric:tabular-nums}
+.proof-phase-table th:not(:first-child),.proof-phase-table td{text-align:center}
+.proof-phase-table .proof-found{color:#f4cca0}
+.proof-phase-table tfoot{background:#14201d;color:#d4eddf;font-weight:650}
+.proof-details{padding:18px 0;border-top:1px solid #2d3843;margin-top:22px}
+.proof-details summary{font-size:15px;color:#d3e1f2;cursor:pointer;line-height:1.5}
+.proof-details p{margin-top:16px;max-width:820px}
+.proof-record-links{display:grid;gap:14px;margin-top:26px}
+.proof-record-links a{display:grid;grid-template-columns:1fr auto;border:1px solid #344355;border-radius:8px;padding:21px 24px;text-decoration:none;background:#0f151d;color:#e5edf6}
+.proof-record-links a:hover{border-color:#9ec6f5}
+.proof-record-links span{font-size:17px;font-weight:600}
+.proof-record-links small{grid-row:2;font-size:13px;color:#aebdce;margin-top:9px}
+.proof-record-links b{grid-column:2;grid-row:1 / span 2;align-self:center;font-size:22px}
+@media(max-width:800px){.proof-control-grid{grid-template-columns:1fr}.proof-card{padding:22px}.proof-test-grid{gap:20px}.proof-test>strong{font-size:38px}.proof-timeline{grid-template-columns:1fr;gap:22px}.proof-excerpt-grid{grid-template-columns:1fr}.proof-excerpt-image{min-height:172px}.proof-phase-table th,.proof-phase-table td{padding:13px 12px}.proof-phase-table{font-size:13px}}
+@media(max-width:520px){.proof-preview-note{font-size:10px;padding:8px 16px}.proof-hero .technical-detail-title{font-size:39px}.proof-hero-detail{font-size:16px}.proof-actions{display:grid}.proof-button{font-size:13px}.proof-section-nav{gap:7px}.proof-section-nav a{padding:9px 11px;font-size:12px}.proof-roles{grid-template-columns:1fr}.proof-roles>div{padding-right:0}.proof-test-grid{grid-template-columns:1fr;gap:24px}.proof-test p{min-height:0}.proof-test>strong{font-size:42px}.proof-phase-table{font-size:12px}.proof-phase-table th,.proof-phase-table td{padding:12px 8px}.proof-phase-table th:first-child{width:48%}.proof-phase-table caption{font-size:12px;padding:14px}.proof-positive-control{padding:20px}.proof-positive-control h3{font-size:18px}.proof-positive-control p{font-size:14px}.proof-outcome-table{font-size:12px}.proof-outcome-table th,.proof-outcome-table td{padding:12px 7px}.proof-outcome-table tbody th{width:46%}.proof-outcome-table td{width:27%}.proof-outcome-table caption{padding:14px;font-size:12px}.proof-outcome-table thead th{font-size:12px}.proof-case-id{font-size:10px;line-height:1.5}.proof-status-code{font-size:11px}.proof-source-note{font-size:12px!important}.proof-record-links a{padding:18px}.proof-record-links span{font-size:15px}.proof-record-links small{font-size:12px}.proof-card p,.proof-excerpt p,.proof-review p,.proof-timeline p{font-size:14px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

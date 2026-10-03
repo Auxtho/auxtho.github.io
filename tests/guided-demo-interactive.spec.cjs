@@ -82,15 +82,19 @@ test('canonical metadata, bilingual mode and accessible evidence remain present'
   assert.match(script,/showModal\(\)/);
   assert.match(html,/<noscript>/);
 });
-test('homepage changes only by approved membership block; public proof and release identity remain untouched',() => {
+test('homepage changes only by the reviewed Ardamire record card; membership, proof and release identity remain untouched',() => {
   for(const p of ['index.html','release.json','proof/singapore-source-review/index.html','capabilities/index.html','assets/capabilities/manifest.json']){
-    const baseline=execFileSync('git',['show','43d229eeeedfe3c5190416995271e14c2245325a:'+p],{cwd:root,windowsHide:true});
+    const baseline=execFileSync('git',['show','23e28e26c995f340df151d51e4177d22e30aeb48:'+p],{cwd:process.env.AUXTHO_PUBLIC_VERIFY_GIT_ROOT || root,windowsHide:true});
     let current=fs.readFileSync(path.join(root,p));
     if(p==='index.html'){
       const original=current.toString('utf8');
       assert.match(original,/Auxtho is a member of NVIDIA Inception\./);
-      const withoutMembership=original.replace(/^  <link rel="stylesheet" href="\/assets\/membership\.css\?sha256=[a-f0-9]{64}">\n/m,'').replace(/^  <section class="inception-membership"[\s\S]*?^  <\/section>\n/m,'');
-      current=Buffer.from(withoutMembership);
+      assert.equal((original.match(/RECORDED DEFENSE CONTROLS/g)||[]).length,1);
+      const restoredCard=original
+        .replace('<span>RECORDED DEFENSE CONTROLS</span>','<span>MODELED DEFENSIVE SEQUENCE</span>')
+        .replace('<small>Recorded April implementation and tests: related signals, targeted holds, replay evidence, and separately reviewed defensive changes.</small>','<small>Public model: Detect <b>&rarr;</b> Quarantine <b>&rarr;</b> Analyze <b>&rarr;</b> Harden proposal <b>&rarr;</b> Human review <b>&rarr;</b> Verify before rollout</small>')
+        .replace('<em>Inspect Ardamire records <b aria-hidden="true">&rarr;</b></em>','<em>Explore Ardamire <b aria-hidden="true">&rarr;</b></em>');
+      current=Buffer.from(restoredCard);
     }
     assert.equal(hash(current),hash(baseline),p);
   }
