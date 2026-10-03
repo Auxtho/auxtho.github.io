@@ -508,6 +508,42 @@ test('candidate artifact rejects unreviewed assets and non-UTF-8 public text enc
   }
 });
 
+test('reviewed Ardamire JPEG rejects changed bytes and any unreviewed JPEG path', () => {
+  const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'auxtho-ardamire-jpeg-'));
+  try {
+    for (const kind of ['changed', 'other-path']) {
+      const source = path.join(temporary, kind);
+      fs.mkdirSync(source);
+      createSourceFixture(source);
+      const relative = 'assets/ardamire-records/ardamire-recorded-tests-share.jpg';
+      const bytes = fs.readFileSync(path.join(source, relative));
+      if (kind === 'changed') {
+        bytes[bytes.length - 3] ^= 1;
+        fs.writeFileSync(path.join(source, relative), bytes);
+      } else {
+        const newPath = '/assets/ardamire-records/unreviewed.jpg';
+        fs.writeFileSync(path.join(source, newPath.slice(1)), bytes);
+        const manifestPath = path.join(source, 'scripts/release/public-files.json');
+        const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+        manifest.paths.push(newPath);
+        manifest.paths.sort();
+        fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+      }
+      assert.throws(() => buildArtifact({
+        sourceRoot: source, previousSourceRoot: source,
+        outputRoot: path.join(temporary, `${kind}-site`),
+        provenanceRoot: path.join(temporary, `${kind}-provenance`),
+        sourceSha: SITE_SHA, previousSha: LEGACY_SHA,
+        compatibleJson: JSON.stringify(COMPATIBILITY), mode: 'candidate',
+        retiredManifestPath: path.join(root, 'scripts/release/retired-public-paths.json'),
+        artifactName: 'local-jpeg-guard-test',
+      }), /public JPEG differs from its exact reviewed bytes/);
+    }
+  } finally {
+    fs.rmSync(temporary, { recursive: true, force: true });
+  }
+});
+
 test('public file manifest rejects duplicate keys and non-canonical path aliases', () => {
   for (const fixture of [
     {
@@ -1732,23 +1768,25 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.doesNotMatch(isp, /AgentRunner/i);
 
   assert.match(ardamire, /<meta name="robots" content="index,follow">/);
-  assert.match(ardamire, /<meta name="description" content="Ardamire's public modeled signal sequence/i);
-  assert.match(ardamire, /<meta property="og:description" content="A public modeled sequence/i);
+  assert.match(ardamire, /<meta name="description" content="Inspect Ardamire's recorded April implementation/i);
+  assert.match(ardamire, /<meta property="og:description" content="Recorded April 2026 defense controls/i);
   assert.match(ardamire, /Ardamire Defense Layer/i);
-  assert.match(ardamire, /Public modeled defensive-change sequence/i);
+  assert.match(ardamire, /Controls that act\.<br>Records you can inspect\./);
+  assert.match(ardamire, /Model explanation \/ separate from test evidence/);
   assert.match(ardamire, /Detect/i);
   assert.match(ardamire, /Quarantine/i);
   assert.match(ardamire, /Analyze \+ Profile/i);
   assert.match(ardamire, /Harden proposal/i);
   assert.match(ardamire, /Human review/i);
   assert.match(ardamire, /Verify before rollout/i);
-  assert.match(ardamire, /Map the review and verification stages against SOC, SIEM, EDR, IAM/i);
-  assert.match(ardamire, /Keep review, approval, release, and export decisions with designated people/i);
+  assert.match(ardamire, /The requester could neither review nor apply that reactivation/);
+  assert.match(ardamire, /review by a different authorized person/);
   assert.match(ardamire, /Interactive control sequence \/ modeled signal scenario/i);
-  assert.match(ardamire, /Keep the decision point visible/i);
+  assert.match(ardamire, /One incident\. One bounded request\. A readable result\./);
+  assert.match(ardamire, /Earlier pressure test: two client timeouts, then a separate rerun/);
   assert.doesNotMatch(ardamire, /Ready to run sequence|Teams can assemble|Record the decision/i);
-  assert.match(index, /MODELED DEFENSIVE SEQUENCE/i);
-  assert.match(index, /Public model: Detect/i);
+  assert.match(index, /RECORDED DEFENSE CONTROLS/i);
+  assert.match(index, /Recorded April implementation and tests/i);
   assert.match(ardamire, /Discuss one workflow/i);
   assert.match(ardamire, /verification before rollout/i);
   assert.doesNotMatch(ardamire, /Ardamire Workbench|Ardamire Watch|Ardamire Agent|Operator Board|Replay Lab|Reviewer Handoff|Dated publisher observation/i);

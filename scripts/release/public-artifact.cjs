@@ -10,7 +10,10 @@ const SCRIPT_PATH_PATTERN = /^\/assets\/[A-Za-z0-9._/-]+\.([0-9a-f]{64})\.js$/;
 const STYLESHEET_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/;
 const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/;
 const MEDIA_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.mp4)\?sha256=([0-9a-f]{64})$/;
-const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.mp4', '.pdf', '.png', '.svg']);
+const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.jpg', '.mp4', '.pdf', '.png', '.svg']);
+const REVIEWED_PUBLIC_JPEG_SHA256 = Object.freeze({
+  'assets/ardamire-records/ardamire-recorded-tests-share.jpg': '170f07c0a013c15762e39cd3466650d2c721f80db63bbaafc7022c622d8698b4',
+});
 const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
@@ -35,7 +38,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '4e2499b4993925ff6d9f0968ebca9902abfc5f16e6f51f0881e3d10ece315a6f',
   'demo/singapore-source-review/index.html': 'abe48430a7eeb1ecc0442944c5bb22718200bdb27a65ca98d035d692ba736898',
-  'index.html': 'e30ac89ecf65fd62fc195f20949ea84a1f34c2779d81fc2e288487d9603b7466',
+  'index.html': '49199dfa3b3c803dab9cc0a13ea21efc19157b5dd9620c9d4dd4866741ab4857',
   'capabilities/ai-review-exception-queue/index.html': '6d9d4ade4c0af47a2a931792e83417bb69f91465db0ce4d9f92408c850c8ccab',
   'capabilities/ardamire-defense-layer/index.html': 'dd284a42ea1135a92cbb78bcd91f774549ad9c47bea42dac94babf9582e5d62b',
   'capabilities/decision-receipts-audit-history/index.html': '28506af46ec2b585a1e5d6417fc8462270179776a6c363863d1e421383e9db3b',
@@ -48,7 +51,7 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   'proof/release-core/index.html': 'f781d7246fa4ee7c6a689cd9e881d16ed61173efeedc401d7140edd4730e3dcc',
   'proof/release-core/transcript/index.html': '40938725f8bc6434329a47f5987b23b758ca23fcdcf8705051b26ef903ec6f2d',
   'proof/singapore-source-review/index.html': '445fd237effec8d7ae5924445a963715bb0b19d02329c48bdffc12df9c0d0e26',
-  'security/ardamire/index.html': 'b636920b92593941ccb5a6abc69e6e02824202a71a28d2493b7994035242b850',
+  'security/ardamire/index.html': 'a323792ee14d8589a0b9859d1f91ced0a01af2b1b9f3f580e9236eb6089995df',
   'story.html': '6853310c4058a7d87f8a4373953d4d22da34bb87a4bdf91a477bd009f6da690b',
   'terms.html': '20efc6042ff1141854fbcedd25d910df3432d277b6c440e4ecc7e1eaf721e335',
   'verify.html': '679a62d6c2e2f9ff0fdb856bc3ae932ab7ef4066d67f324205a5fcbd13edb857',
@@ -476,6 +479,18 @@ function assertCanonicalPublicTextBytes(sourceRoot, relative) {
 }
 
 function assertReviewedPublicBinaryBytes(sourceRoot, relative) {
+  if (path.posix.extname(relative) === '.jpg') {
+    const expectedHash = REVIEWED_PUBLIC_JPEG_SHA256[relative];
+    const bytes = fs.readFileSync(path.join(sourceRoot, ...relative.split('/')));
+    if (!expectedHash || sha256(bytes) !== expectedHash) {
+      fail(`public JPEG differs from its exact reviewed bytes: ${relative}`);
+    }
+    if (bytes.length < 4 || !bytes.subarray(0, 2).equals(Buffer.from([0xff, 0xd8]))
+      || !bytes.subarray(-2).equals(Buffer.from([0xff, 0xd9]))) {
+      fail(`public JPEG does not have a valid JPEG signature boundary: ${relative}`);
+    }
+    return;
+  }
   if (path.posix.extname(relative) !== '.pdf') return;
   const bytes = fs.readFileSync(path.join(sourceRoot, ...relative.split('/')));
   if (bytes.length < 8 || bytes.length > 10 * 1024 * 1024) {
