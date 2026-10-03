@@ -12,6 +12,23 @@ const html = read('demo/singapore-source-review/index.html');
 const script = read('src/demo-complete-path.js');
 const publicPaths=JSON.parse(read('scripts/release/public-files.json')).paths;
 const manifest=JSON.parse(read('assets/demo/singapore-source-review/evidence-manifest.json'));
+
+test('queued dialog close preserves newer outside focus and restores stranded focus',() => {
+  const handler=script.match(/addEventListener\('close',\(\) => \{([\s\S]*?)\n  \}\);/);
+  assert.ok(handler,'dialog close handler exists');
+  const body={},inside={},summary={};
+  const dialog={contains:e=>e===inside};
+  for(const active of [summary,body,inside]) {
+    let restored=0;
+    const state={dialogKind:'unknown',returnFocus:{isConnected:true,focus:()=>{restored++;}}};
+    vm.runInNewContext(handler[1],{
+      state,q:()=>dialog,
+      document:{activeElement:active,body:Object.assign(body,{classList:{remove:()=>{}}})},
+    });
+    assert.equal(restored,active===summary?0:1);
+    assert.equal(state.dialogKind,null);
+  }
+});
 test('six workflow stages put the recorded result before optional exception branches',() => {
   assert.deepEqual([...html.matchAll(/data-stage="(\d)"/g)].map(m=>m[1]),['1','2','3','4','5','6']);
   assert.ok(html.indexOf('data-stage="4"')<html.indexOf('data-branch="changed"'));

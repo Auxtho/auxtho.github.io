@@ -303,7 +303,11 @@
   q('[data-dialog]').addEventListener('close',() => {
     document.body.classList.remove('dialog-open');
     state.dialogKind=null;
-    if (state.returnFocus?.isConnected) state.returnFocus.focus();
+    // A queued close event must not steal focus after the user has moved on.
+    const active=document.activeElement;
+    const dialog=q('[data-dialog]');
+    if (state.returnFocus?.isConnected &&
+        (active===document.body || dialog.contains(active))) state.returnFocus.focus();
   });
   q('[data-dialog]').addEventListener('keydown',(event) => {
     if (event.key !== 'Tab') return;
