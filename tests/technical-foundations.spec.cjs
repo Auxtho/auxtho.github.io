@@ -711,6 +711,23 @@ test('Ardamire reduced-motion mode stays static without implying completed stage
   expect(mobileStyles.stageParagraphColor).toBe('rgb(168, 175, 184)');
   await expectNoHorizontalOverflow(page);
 });
+test('portfolio resource readback uses reduced motion without skipping populated images', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  for (const route of ['/', ...['auxtho','moirion','agent-runner','ardamire','metdol'].map(id=>`/products/${id}/`)]) {
+    await openWithoutRuntimeErrors(page, route+'?lang=en');
+    const images=page.locator('img');
+    for(let i=0;i<await images.count();i++) {
+      const image=images.nth(i);
+      if(!await image.getAttribute('src')) {
+        expect(await image.evaluate(el=>Boolean(el.closest('dialog.image-dialog:not([open])')))).toBe(true);
+        continue;
+      }
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(()=>image.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+    }
+  }
+});
+
 test('company portfolio and all five product pages are bilingual, indexable and readable', async ({ page }) => {
   for (const viewport of [{width:1440,height:900},{width:320,height:812}]) {
     await page.setViewportSize(viewport);
@@ -729,15 +746,18 @@ test('company software selector, Moirion captures and bounded product claims sta
   await page.setViewportSize({width:1440,height:900});
   await openWithoutRuntimeErrors(page,'/?lang=en#software');
   await expect(page.locator('.product-select')).toHaveCount(5);
+  await expect(page.locator('#software .product-select')).toHaveCount(2);
+  await expect(page.locator('#technology .product-select')).toHaveCount(3);
   for (const id of ['auxtho','moirion','agent-runner','ardamire','metdol']) {
     await page.locator(`[data-product="${id}"]`).click();
     await expect(page.locator(`[data-product="${id}"]`)).toHaveAttribute('aria-pressed','true');
-    await expect(page.locator('#product-stage a.line-link')).toHaveAttribute('href',`/products/${id}/?lang=en`);
+    const stage=['auxtho','moirion'].includes(id)?'#product-stage':'#technology-stage';
+    await expect(page.locator(stage+' a.line-link')).toHaveAttribute('href',`/products/${id}/?lang=en`);
   }
   await openWithoutRuntimeErrors(page,'/products/moirion/?lang=en');
   for (const kind of ['mac','iphone']) {
     const tabs=page.locator(`[data-gallery="${kind}"] [role="tab"]`);
-    await expect(tabs).toHaveCount(kind==='mac'?3:7);
+    await expect(tabs).toHaveCount(kind==='mac'?9:7);
     for(let i=0;i<await tabs.count();i++){
       await tabs.nth(i).click();
       const image=page.locator(`[data-gallery="${kind}"] .gallery-image img`);
@@ -756,4 +776,3 @@ test('company software selector, Moirion captures and bounded product claims sta
   await openWithoutRuntimeErrors(page,'/products/metdol/?lang=en');
   await expect(page.locator('.connection-illustration').first()).toContainText('TERMINAL-BASED');
 });
-
