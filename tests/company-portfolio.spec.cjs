@@ -6,6 +6,18 @@ const vm=require('node:vm');
 const crypto=require('node:crypto');
 const root=path.resolve(__dirname,'..');
 const assetRoot=path.join(root,'assets/portfolio-20261009');
+test('All six pages use the original Auxtho favicon and Apple touch icon',()=>{
+ const routes=['index.html',...['auxtho','moirion','ardamire','metdol','agent-runner'].map(p=>'products/'+p+'/index.html')];
+ for(const relative of routes){
+  const html=fs.readFileSync(path.join(root,relative),'utf8');
+  assert.match(html,/<link rel="icon" href="\/assets\/favicon\.svg">/);
+  assert.match(html,/<link rel="apple-touch-icon" href="\/assets\/apple-touch-icon\.png">/);
+  assert.doesNotMatch(html,/<link rel="icon"[^>]*logo-white/);
+ }
+ for(const [relative,expected] of Object.entries({'assets/favicon.svg':'80315dd1c21135ec99d45edaf702e5c8d5bd53dbe17f6d1526d8d4e19bdc1a52','assets/apple-touch-icon.png':'3cd09aeeb5110c288acf44558895d3c8500b82e223c69a197cf4c8bea9a4495b'})){
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,relative))).digest('hex'),expected);
+ }
+});
 const appPath=path.join(root,"assets/portfolio-20261009/app.1998cf9b8bbc86cf60f162a52e3742e603bb71d3a2e053ac1ea83b2f03399986.js");
 test('JavaScript parses; private evidence not served',()=>{new vm.Script(fs.readFileSync(appPath,'utf8'));assert.ok(!fs.existsSync(path.join(root,'CLAIM_SCOPE_PRIVATE.json')));});
 test('Public HTML is indexable, canonical and uses exact-byte resources',()=>{for(const file of ['index.html',...['auxtho','moirion','agent-runner','ardamire','metdol'].map(x=>'products/'+x+'/index.html')]){const html=fs.readFileSync(path.join(root,file),'utf8');assert.match(html,/index,follow/);assert.doesNotMatch(html,/LOCAL DESIGN PREVIEW|Local preview|noindex,nofollow/);assert.match(html,/href="\/assets\/portfolio-20261009\/styles\.css\?sha256=[0-9a-f]{64}"/);assert.match(html,/src="\/assets\/portfolio-20261009\/app\.[0-9a-f]{64}\.js"/);assert.ok(html.includes('href="https://auxtho.com/'+file.replace(/index\.html$/,'')+'"'));}});
