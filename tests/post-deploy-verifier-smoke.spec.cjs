@@ -21,6 +21,8 @@ test('public pages render with packaged styles and images without CSP or same-or
   expect(origin).toBe('https://auxtho.com');
   expect(sourceSha).toMatch(/^[0-9a-f]{40}$/);
 
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+
   const failures = [];
   const expectedVisionMediaCancellations = [];
   const consoleErrors = [];
