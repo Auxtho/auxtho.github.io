@@ -28,6 +28,106 @@ const L = '1'.repeat(40);
 const S = 'a'.repeat(40);
 const COMPATIBILITY = [L, S].sort();
 
+const { navigatePublicPage, readbackResponseHeaders } = require('../scripts/release/browser-readback.cjs');
+
+function fakeNavigation(statuses, { finalUrl = 'https://auxtho.com/products/moirion/' } = {}) {
+  const calls = [];
+  const navigate = async (url, options) => {
+    calls.push({ url, options });
+    const status = statuses[Math.min(calls.length - 1, statuses.length - 1)];
+    return {
+      status: () => status, url: () => finalUrl,
+      allHeaders: async () => ({ server: 'cloudflare', 'cf-ray': 'test-LAX', 'set-cookie': 'private' }),
+    };
+  };
+  return { navigate, calls };
+}
+
+test('browser readback retries a transient 503 at the same URL and retains every attempt', async () => {
+  const fixture = fakeNavigation([503, 200]);
+  const observations = [], delays = [];
+  let clock = 0;
+  const url = 'https://auxtho.com/products/moirion/?sha256_readback=' + S;
+  const result = await navigatePublicPage({
+    url, expectedStatus: 200, navigate: fixture.navigate,
+    now: () => clock,
+    sleeper: async (ms) => { delays.push(ms); clock += ms; },
+    observe: async (item) => observations.push(item),
+  });
+  assert.deepEqual(observations.map(item => item.status), [503, 200]);
+  assert.deepEqual(delays, [1000]);
+  assert.deepEqual(fixture.calls.map(item => item.url), [url, url]);
+  assert.equal(fixture.calls[1].options.timeout, 24000);
+  assert.equal(result.response.status(), 200);
+  assert.equal(observations[0].headers['set-cookie'], undefined);
+});
+
+test('browser readback fails persistent 503 after exactly three attempts', async () => {
+  const fixture = fakeNavigation([503]);
+  const delays = [];
+  await assert.rejects(navigatePublicPage({
+    url: 'https://auxtho.com/products/moirion/', expectedStatus: 200,
+    navigate: fixture.navigate, sleeper: async (ms) => delays.push(ms),
+  }), error => {
+    assert.match(error.message, /products\/moirion\/.*received 503 after 3 attempt/);
+    assert.deepEqual(error.readbackObservations.map(item => item.status), [503, 503, 503]);
+    return true;
+  });
+  assert.deepEqual(delays, [1000, 3000]);
+  assert.equal(fixture.calls.length, 3);
+});
+
+for (const status of [401, 403, 404, 429]) {
+  test('browser readback never retries unexpected HTTP ' + status, async () => {
+    const fixture = fakeNavigation([status, 200]);
+    await assert.rejects(navigatePublicPage({
+      url: 'https://auxtho.com/products/moirion/', expectedStatus: 200,
+      navigate: fixture.navigate, sleeper: async () => assert.fail('must not sleep'),
+    }), new RegExp('received ' + status + ' after 1 attempt'));
+    assert.equal(fixture.calls.length, 1);
+  });
+}
+
+test('browser readback preserves a required 404 and rejects an off-origin redirect', async () => {
+  const fixture = fakeNavigation([404]);
+  const result = await navigatePublicPage({
+    url: 'https://auxtho.com/products/moirion/', expectedStatus: 404, navigate: fixture.navigate,
+  });
+  assert.equal(result.response.status(), 404);
+  const redirected = fakeNavigation([200], { finalUrl: 'https://example.com/' });
+  await assert.rejects(navigatePublicPage({
+    url: 'https://auxtho.com/products/moirion/', expectedStatus: 200, navigate: redirected.navigate,
+  }), /HOLD: browser readback/);
+  assert.equal(redirected.calls.length, 1);
+});
+
+test('browser readback respects the original total navigation deadline and records network failure', async () => {
+  let clock = 0;
+  const late = fakeNavigation([503, 200]);
+  await assert.rejects(navigatePublicPage({
+    url: 'https://auxtho.com/products/moirion/', expectedStatus: 200,
+    navigate: async (...args) => { clock = 24500; return late.navigate(...args); },
+    now: () => clock, sleeper: async () => assert.fail('must not exceed deadline'),
+  }), /after 1 attempt/);
+  const observations = [];
+  await assert.rejects(navigatePublicPage({
+    url: 'https://auxtho.com/products/moirion/', expectedStatus: 200,
+    navigate: async () => { throw new Error('certificate error'); },
+    observe: async (item) => observations.push(item),
+    sleeper: async () => assert.fail('must not retry certificate or navigation error'),
+  }), /certificate error/);
+  assert.equal(observations.length, 1);
+  assert.match(observations[0].error, /certificate/);
+});
+
+test('readback diagnostics include cache indicators but never cookie headers', () => {
+  assert.deepEqual(readbackResponseHeaders({
+    'cf-cache-status': 'HIT', age: '480', 'cache-control': 'max-age=14400',
+    'set-cookie': 'secret', authorization: 'secret',
+  }), { age: '480', 'cache-control': 'max-age=14400', 'cf-cache-status': 'HIT' });
+});
+
+
 function secureHtmlResponse(csp) {
   return {
     headers: {

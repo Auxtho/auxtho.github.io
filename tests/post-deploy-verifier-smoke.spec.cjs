@@ -1,13 +1,38 @@
 const { test, expect } = require('@playwright/test');
 const fs = require('node:fs');
 const path = require('node:path');
-const { findBrokenImageSources } = require('../scripts/release/browser-readback.cjs');
+const { findBrokenImageSources, navigatePublicPage } = require('../scripts/release/browser-readback.cjs');
 
 const origin = process.env.PUBLIC_SITE_ORIGIN;
 const sourceSha = process.env.EXPECTED_SITE_SHA;
 const evidenceDirectory = path.resolve(__dirname, '..', 'post-deploy-evidence');
 
 test.describe.configure({ mode: 'serial', timeout: 120_000 });
+test.use({ screenshot: 'only-on-failure' });
+
+async function readPublicPage(page, url, expectedStatus, label) {
+  fs.mkdirSync(evidenceDirectory, { recursive: true });
+  return (await navigatePublicPage({
+    url, expectedStatus,
+    navigate: (target, options) => page.goto(target, options),
+    observe: async (observation, response) => {
+      // Written incrementally, including the failed page before any rollback.
+      fs.appendFileSync(path.join(evidenceDirectory, 'browser-navigation-attempts.jsonl'),
+        JSON.stringify({ checked_at: new Date().toISOString(), source_sha: sourceSha, ...observation }) + '\n');
+      if (observation.status === expectedStatus && !observation.error) return;
+      const stem = label.replace(/[^a-z0-9-]/gi, '-').slice(0, 100) + '-attempt-' + observation.attempt;
+      if (response) {
+        try {
+          const body = await response.body();
+          fs.writeFileSync(path.join(evidenceDirectory, stem + '-response.bin'), body.subarray(0, 262144));
+        } catch (error) {
+          fs.writeFileSync(path.join(evidenceDirectory, stem + '-body-error.txt'), String(error.message));
+        }
+      }
+      try { await page.screenshot({ path: path.join(evidenceDirectory, stem + '.png'), timeout: 3000 }); } catch {}
+    },
+  })).response;
+}
 
 function isExpectedVisionMediaCancellation(request) {
   const url = new URL(request.url());
@@ -69,9 +94,9 @@ test('public pages render with packaged styles and images without CSP or same-or
   for (const item of pages) {
     const url = new URL(item.path, origin);
     url.searchParams.set('sha256_readback', sourceSha);
-    const response = await page.goto(url.toString(), { waitUntil: 'networkidle', timeout: 25_000 });
-    expect(response).not.toBeNull();
-    expect(response.status()).toBe(item.status);
+    const response = await readPublicPage(page, url.toString(), item.status, item.path);
+    expect(response, `missing response: ${url}`).not.toBeNull();
+    expect(response.status(), `unexpected page status: ${url}`).toBe(item.status);
     await expect(page.locator(item.locator)).toBeVisible();
     const styleSheets = await page.evaluate(() => [...document.styleSheets].map((sheet) => sheet.href).filter(Boolean));
     expect(styleSheets.length).toBeGreaterThan(0);
@@ -159,9 +184,9 @@ test('public verifier route is absent and triggers no verification API request',
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
-  const response = await page.goto(
-    `${origin}/verify.html?report=RPT-RETIRED&h=${'a'.repeat(64)}&exp=EXP-RETIRED`,
-    { waitUntil: 'networkidle', timeout: 25_000 },
+  const response = await readPublicPage(
+    page, `${origin}/verify.html?report=RPT-RETIRED&h=${'a'.repeat(64)}&exp=EXP-RETIRED`,
+    404, 'retired-verifier',
   );
 
   expect(response).not.toBeNull();
@@ -186,7 +211,7 @@ test('published guided demo preserves source scope, review choices, recorded evi
   page.on('pageerror',error=>errors.push(error.message));
   page.on('request',request=>{if(request.method()!=='GET')writes.push(request.url());});
   await page.setViewportSize({width:390,height:844});
-  const response=await page.goto(origin+'/demo/singapore-source-review/?lang=ko&sha256_readback='+sourceSha,{waitUntil:'networkidle'});
+  const response=await readPublicPage(page,origin+'/demo/singapore-source-review/?lang=ko&sha256_readback='+sourceSha,200,'guided-demo');
   expect(response.status()).toBe(200);
   await expect(page.locator('html')).toHaveAttribute('lang','ko-KR');
   await page.locator('[data-next="2"]').click();
