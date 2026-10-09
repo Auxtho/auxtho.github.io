@@ -101,7 +101,7 @@ function rewriteEvidenceImageAndSidecar(source, manifest, assetIndex, imageBytes
   asset.sha256 = sha256(imageBytes);
   const previousReference = `${asset.path}?sha256=${previousImageSha}`;
   const nextReference = `${asset.path}?sha256=${asset.sha256}`;
-  for (const relative of ['index.html', 'evidence-notes.html']) {
+  for (const relative of ['proof/workflow-overview/index.html', 'evidence-notes.html']) {
     const htmlPath = path.join(source, relative);
     const html = fs.readFileSync(htmlPath, 'utf8');
     fs.writeFileSync(htmlPath, html.split(previousReference).join(nextReference));
@@ -125,7 +125,7 @@ function createSourceFixture(targetRoot) {
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
     'proof/singapore-source-review/index.html',
-    'security/ardamire/index.html', 'capabilities', 'demo', 'assets',
+    'security/ardamire/index.html', 'proof/workflow-overview/index.html', 'products', 'capabilities', 'demo', 'assets',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
@@ -352,7 +352,7 @@ test('candidate artifact is deterministic, content-addressed, privacy-bounded, a
       assert.equal(reference.url.endsWith(reference.sha256), true);
     }
     for (const reference of result.releaseManifest.image_references) {
-      assert.match(reference.url, /^\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg)\?sha256=[0-9a-f]{64}$/);
+      assert.match(reference.url, /^\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg|jpg)\?sha256=[0-9a-f]{64}$/);
       assert.equal(reference.content_addressed, true);
       const bytes = fs.readFileSync(path.join(output, ...reference.path.slice(1).split('/')));
       assert.equal(sha256(bytes), reference.sha256);
@@ -662,7 +662,7 @@ test('rollback artifact preserves and hashes an approved legacy script URL exact
     createSourceFixture(source);
     createSourceFixture(previous);
 
-    const indexPath = path.join(source, 'index.html');
+    const indexPath = path.join(source, 'proof/workflow-overview/index.html');
     const index = fs.readFileSync(indexPath, 'utf8').replace(
       /(\/assets\/app\.[0-9a-f]{64}\.js)"/,
       '$1?legacy=approved"',
@@ -973,7 +973,7 @@ test('every candidate-rendered image URL carries the exact SHA-256 of its bytes'
   for (const relative of htmlFiles) {
     const document = fs.readFileSync(path.join(root, ...relative.split('/')), 'utf8');
     for (const source of findImageSources(document)) {
-      const match = source.match(/^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/);
+      const match = source.match(/^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg|jpg))\?sha256=([0-9a-f]{64})$/);
       assert.ok(match, `${relative} -> ${source}`);
       const bytes = fs.readFileSync(path.join(root, ...match[1].slice(1).split('/')));
       assert.equal(sha256(bytes), match[2]);
@@ -985,6 +985,7 @@ test('every candidate-rendered MP4 URL carries the exact SHA-256 of its bytes', 
   const htmlFiles = [
     '404.html', 'index.html', 'privacy.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
+    'proof/workflow-overview/index.html', ...['auxtho','moirion','agent-runner','ardamire','metdol'].map(id=>`products/${id}/index.html`),
     ...CAPABILITY_HTML_FILES,
   ];
   const referenced = new Set();
@@ -998,7 +999,7 @@ test('every candidate-rendered MP4 URL carries the exact SHA-256 of its bytes', 
       referenced.add(source);
     }
   }
-  assert.equal(referenced.size, 2);
+  assert.equal(referenced.size, 4);
 });
 
 test('public notice separates public information from signed commercial scope', () => {
@@ -1026,7 +1027,7 @@ test('privacy notice describes public-site data handling without exposing a veri
 });
 
 test('public evidence manifest and homepage preserve a concise synthetic boundary', () => {
-  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const index = fs.readFileSync(path.join(root, 'proof/workflow-overview/index.html'), 'utf8');
   const evidenceNotes = fs.readFileSync(path.join(root, 'evidence-notes.html'), 'utf8');
   const manifest = JSON.parse(fs.readFileSync(
     path.join(root, 'assets', 'proposal', 'evidence-manifest-20260716.json'),
@@ -1133,7 +1134,7 @@ test('candidate artifact binds each homepage evidence card to its reviewed surfa
     const consoleSurface = manifest.assets.find((asset) => asset.surface === 'Auxtho Console');
     const appReference = `${app.path}?sha256=${app.sha256}`;
     const consoleReference = `${consoleSurface.path}?sha256=${consoleSurface.sha256}`;
-    const indexPath = path.join(source, 'index.html');
+    const indexPath = path.join(source, 'proof/workflow-overview/index.html');
     const index = fs.readFileSync(indexPath, 'utf8');
     fs.writeFileSync(
       indexPath,
@@ -1432,7 +1433,7 @@ test('candidate artifact rejects evidence traversal, cross-binding, duplicate pa
 });
 
 test('first screen presents evidence-backed review and controlled release in plain language', () => {
-  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const index = fs.readFileSync(path.join(root, 'proof/workflow-overview/index.html'), 'utf8');
   const hero = index.match(/<section[^>]*class="sales-hero"[\s\S]*?<\/section>/i)?.[0] || '';
   const sourceReviewBand = index.match(
     /<article class="sales-product-band sales-product-band-source-review">[\s\S]*?<\/article>/i,
@@ -1709,7 +1710,7 @@ test('Capability Library capture manifest binds every used product image and exc
 });
 
 test('public research and trust routes are stable, scoped, and buyer-readable', () => {
-  const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+  const index = fs.readFileSync(path.join(root, 'proof/workflow-overview/index.html'), 'utf8');
   const isp = fs.readFileSync(path.join(root, 'lineage', 'isp', 'index.html'), 'utf8');
   const ardamire = fs.readFileSync(path.join(root, 'security', 'ardamire', 'index.html'), 'utf8');
   const sitemap = fs.readFileSync(path.join(root, 'sitemap.xml'), 'utf8');

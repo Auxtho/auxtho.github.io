@@ -99,10 +99,10 @@ test('canonical metadata, bilingual mode and accessible evidence remain present'
   assert.match(script,/showModal\(\)/);
   assert.match(html,/<noscript>/);
 });
-test('homepage changes only by the reviewed Ardamire record card; membership, proof and release identity remain untouched',() => {
+test('archived financial overview changes only by the reviewed Ardamire record card; proof and release identity remain untouched',() => {
   for(const p of ['index.html','release.json','proof/singapore-source-review/index.html','capabilities/index.html','assets/capabilities/manifest.json']){
     const baseline=execFileSync('git',['show','23e28e26c995f340df151d51e4177d22e30aeb48:'+p],{cwd:process.env.AUXTHO_PUBLIC_VERIFY_GIT_ROOT || root,windowsHide:true});
-    let current=fs.readFileSync(path.join(root,p));
+    let current=fs.readFileSync(path.join(root,p==='index.html'?'proof/workflow-overview/index.html':p));
     if(p==='index.html'){
       const original=current.toString('utf8');
       assert.match(original,/Auxtho is a member of NVIDIA Inception\./);
