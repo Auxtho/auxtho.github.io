@@ -6,7 +6,7 @@
     "build": "node scripts/release/validate-static-css.cjs",
     "test:js": "node scripts/release/validate-js.cjs",
     "test:yaml": "node scripts/release/validate-workflows.cjs",
-    "test:release": "node --test tests/release-contract.spec.cjs tests/release-controls.spec.cjs tests/guided-demo-interactive.spec.cjs tests/static-css-contract.spec.cjs tests/company-portfolio.spec.cjs",
+    "test:release": "node --test tests/release-contract.spec.cjs tests/release-controls.spec.cjs tests/guided-demo-interactive.spec.cjs tests/static-css-contract.spec.cjs tests/company-portfolio.spec.cjs tests/mobile-navigation.spec.cjs",
     "test:verify": "playwright test tests/technical-foundations.spec.cjs tests/guided-demo-interactive-browser.spec.cjs --reporter=line --workers=1",
     "test:verify:deployed": "playwright test tests/post-deploy-verifier-smoke.spec.cjs --reporter=line --workers=1"
   },
