@@ -5,6 +5,54 @@ const { expect, test } = require('@playwright/test');
 
 test.describe.configure({ mode: 'serial' });
 
+const { navigatePublicPage } = require('../scripts/release/browser-readback.cjs');
+
+test('real browser retries a recorded transient 503 then verifies the rendered page', async ({ page }) => {
+  let requests = 0;
+  await page.route('https://auxtho.com/__readback_retry_qa__', route => {
+    requests += 1;
+    return route.fulfill({
+      status: requests === 1 ? 503 : 200,
+      contentType: 'text/html',
+      headers: { 'cf-cache-status': requests === 1 ? 'MISS' : 'HIT' },
+      body: requests === 1 ? '<main>Temporary service error</main>' : '<main>Exact reviewed page</main>',
+    });
+  });
+  const recorded = [];
+  const result = await navigatePublicPage({
+    url: 'https://auxtho.com/__readback_retry_qa__', expectedStatus: 200,
+    navigate: (url, options) => page.goto(url, options),
+    sleeper: async () => {},
+    observe: async (item) => recorded.push(item),
+  });
+  expect(result.response.status()).toBe(200);
+  expect(recorded.map(item => item.status)).toEqual([503, 200]);
+  expect(recorded[0].headers['cf-cache-status']).toBe('MISS');
+  await expect(page.locator('main')).toHaveText('Exact reviewed page');
+  expect(requests).toBe(2);
+});
+
+test('real browser does not convert persistent 503 into a successful page', async ({ page }) => {
+  let requests = 0;
+  await page.route('https://auxtho.com/__readback_failure_qa__', route => {
+    requests += 1;
+    return route.fulfill({ status: 503, contentType: 'text/html', body: '<main>Service unavailable</main>' });
+  });
+  const recorded = [];
+  let failure;
+  try {
+    await navigatePublicPage({
+      url: 'https://auxtho.com/__readback_failure_qa__', expectedStatus: 200,
+      navigate: (url, options) => page.goto(url, options),
+      sleeper: async () => {}, observe: async (item) => recorded.push(item),
+    });
+  } catch (error) { failure = error; }
+  expect(failure?.message).toContain('received 503 after 3 attempt(s)');
+  expect(recorded.map(item => item.status)).toEqual([503, 503, 503]);
+  expect(requests).toBe(3);
+});
+
+
 const root = path.resolve(__dirname, '..');
 const visionPosterPaths = new Set([
   '/assets/vision-film/auxtho-incident-led-hero-v9-poster.png',

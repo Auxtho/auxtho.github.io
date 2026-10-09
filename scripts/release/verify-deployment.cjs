@@ -15,6 +15,7 @@ const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
 const UTF8_DECODER = new TextDecoder('utf-8', { fatal: true });
+const { readbackResponseHeaders } = require('./browser-readback.cjs');
 const MAX_READBACK_ATTEMPTS = 48;
 const MAX_READBACK_RETRY_DELAY_MS = 15_000;
 const MAX_READBACK_WINDOW_MS = 600_000;
@@ -461,6 +462,8 @@ async function waitForExpectedPublicFile({
       const observation = {
         attempt,
         status: response.status,
+        url: String(response.url || url),
+        headers: readbackResponseHeaders(response.headers || {}),
         actual_sha256: actualHash,
         chain: response.chain || [],
       };
@@ -516,7 +519,8 @@ async function waitForAbsentPublicPath(url, allowedOrigins, options, statusMessa
         deadlineAt,
         now: monotonicNow,
       });
-      const observation = { attempt, status: response.status, chain: response.chain || [] };
+      const observation = { attempt, url: String(response.url || url), status: response.status,
+        headers: readbackResponseHeaders(response.headers || {}), chain: response.chain || [] };
       observations.push(observation);
       recorded = true;
       if (monotonicNow() >= deadlineAt) {
@@ -561,6 +565,8 @@ async function waitForExactRelease(options, allowedOrigins, provenance) {
       const observation = {
         attempt,
         status: response.status,
+        url: String(response.url || url),
+        headers: readbackResponseHeaders(response.headers || {}),
         actual_sha256: sha256(response.body),
         chain: response.chain || [],
       };

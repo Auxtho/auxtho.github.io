@@ -324,6 +324,7 @@ jobs:
           path: |
             predeploy-authorization-evidence
             post-deploy-evidence
+            test-results
           if-no-files-found: warn
           retention-days: 90
           compression-level: 0
