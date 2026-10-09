@@ -44,6 +44,8 @@ test('public pages render with packaged styles and images without CSP or same-or
 
   const pages = [
     { path: '/', status: 200, locator: 'main' },
+    ...['auxtho', 'moirion', 'agent-runner', 'ardamire', 'metdol'].map(id => ({ path: `/products/${id}/`, status: 200, locator: 'main' })),
+    { path: '/proof/workflow-overview/', status: 200, locator: 'main' },
     { path: '/evidence-notes.html', status: 200, locator: 'main' },
     { path: '/lineage/isp/', status: 200, locator: 'main' },
     { path: '/proof/release-core/', status: 200, locator: 'main' },
@@ -100,7 +102,9 @@ test('public pages render with packaged styles and images without CSP or same-or
       const image = images.nth(index);
       const inactiveSampleLightboxPlaceholder = await image.evaluate((element) => {
         const lightbox = element.closest('dialog#sample-lightbox');
-        return element.id === 'sample-lightbox-image' && Boolean(lightbox) && !lightbox.open;
+        const portfolioDialog = element.closest('dialog.image-dialog');
+        return (element.id === 'sample-lightbox-image' && Boolean(lightbox) && !lightbox.open)
+          || (Boolean(portfolioDialog) && !portfolioDialog.open && !element.hasAttribute('src'));
       });
       if (inactiveSampleLightboxPlaceholder) continue;
       await image.scrollIntoViewIfNeeded();
@@ -111,14 +115,15 @@ test('public pages render with packaged styles and images without CSP or same-or
     }
     const imageStates = await page.locator('img').evaluateAll((images) => images.map((image) => {
       const lightbox = image.closest('dialog#sample-lightbox');
+      const portfolioDialog = image.closest('dialog.image-dialog');
       return {
         source: image.currentSrc || image.getAttribute('src'),
         complete: image.complete,
         naturalWidth: image.naturalWidth,
         descriptor: image.id ? `#${image.id}` : 'img',
-        inactiveSampleLightboxPlaceholder: image.id === 'sample-lightbox-image'
+        inactiveSampleLightboxPlaceholder: (image.id === 'sample-lightbox-image'
           && Boolean(lightbox)
-          && !lightbox.open,
+          && !lightbox.open) || (Boolean(portfolioDialog) && !portfolioDialog.open && !image.hasAttribute('src')),
       };
     }));
     expect(findBrokenImageSources(imageStates)).toEqual([]);

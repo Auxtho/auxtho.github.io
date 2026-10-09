@@ -179,7 +179,7 @@ test('Capability Library pages reflow with readable copy and reachable actions o
 
 test('homepage shows the product proposition before the desktop vision film', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await openWithoutRuntimeErrors(page, '/index.html');
+  await openWithoutRuntimeErrors(page, '/proof/workflow-overview/');
 
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
@@ -225,7 +225,7 @@ test('homepage shows the product proposition before the desktop vision film', as
 
 test('homepage shows the product proposition before the mobile vision film without overflow', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openWithoutRuntimeErrors(page, '/index.html');
+  await openWithoutRuntimeErrors(page, '/proof/workflow-overview/');
 
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
@@ -281,7 +281,7 @@ test('homepage shows the product proposition before the mobile vision film witho
 test('homepage vision film respects reduced motion until the visitor explicitly plays it', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.setViewportSize({ width: 390, height: 844 });
-  await openWithoutRuntimeErrors(page, '/index.html');
+  await openWithoutRuntimeErrors(page, '/proof/workflow-overview/');
 
   const film = page.locator('[data-vision-film]');
   const video = film.locator('video');
@@ -299,7 +299,7 @@ test('homepage vision film respects reduced motion until the visitor explicitly 
 
 test('homepage keeps technical references secondary and readable on desktop', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await openWithoutRuntimeErrors(page, '/index.html#research');
+  await openWithoutRuntimeErrors(page, '/proof/workflow-overview/#research');
 
   const section = page.locator('#research');
   await expect(section).toBeVisible();
@@ -321,7 +321,7 @@ test('homepage keeps technical references secondary and readable on desktop', as
 
 test('homepage technical references stack without overflow on mobile', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await openWithoutRuntimeErrors(page, '/index.html#research');
+  await openWithoutRuntimeErrors(page, '/proof/workflow-overview/#research');
 
   const section = page.locator('#research');
   const boxes = await section.locator('.sales-foundation').evaluateAll((cards) => cards.map((card) => {
@@ -496,7 +496,7 @@ test('homepage shows the frozen Singapore source identity and exact highlighted 
     { width: 390, height: 844 },
   ]) {
     await page.setViewportSize(viewport);
-    await openWithoutRuntimeErrors(page, '/');
+    await openWithoutRuntimeErrors(page, '/proof/workflow-overview/');
 
     const sourceReviewBand = page.locator('.sales-product-band-source-review');
     await sourceReviewBand.scrollIntoViewIfNeeded();
@@ -711,3 +711,49 @@ test('Ardamire reduced-motion mode stays static without implying completed stage
   expect(mobileStyles.stageParagraphColor).toBe('rgb(168, 175, 184)');
   await expectNoHorizontalOverflow(page);
 });
+test('company portfolio and all five product pages are bilingual, indexable and readable', async ({ page }) => {
+  for (const viewport of [{width:1440,height:900},{width:320,height:812}]) {
+    await page.setViewportSize(viewport);
+    for (const lang of ['en','ko']) for (const route of ['/',...['auxtho','moirion','agent-runner','ardamire','metdol'].map(id=>`/products/${id}/`)]) {
+      await openWithoutRuntimeErrors(page, route+'?lang='+lang);
+      await expect(page.locator('main h1')).toBeVisible();
+      await expect(page.locator('html')).toHaveAttribute('lang',lang);
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content','index,follow');
+      expect(await page.title()).not.toMatch(/preview|로컬 디자인/i);
+      expect(await page.locator('.preview-bar').count()).toBe(0);
+      await expectNoHorizontalOverflow(page);
+    }
+  }
+});
+test('company software selector, Moirion captures and bounded product claims stay connected', async ({ page }) => {
+  await page.setViewportSize({width:1440,height:900});
+  await openWithoutRuntimeErrors(page,'/?lang=en#software');
+  await expect(page.locator('.product-select')).toHaveCount(5);
+  for (const id of ['auxtho','moirion','agent-runner','ardamire','metdol']) {
+    await page.locator(`[data-product="${id}"]`).click();
+    await expect(page.locator(`[data-product="${id}"]`)).toHaveAttribute('aria-pressed','true');
+    await expect(page.locator('#product-stage a.line-link')).toHaveAttribute('href',`/products/${id}/?lang=en`);
+  }
+  await openWithoutRuntimeErrors(page,'/products/moirion/?lang=en');
+  for (const kind of ['mac','iphone']) {
+    const tabs=page.locator(`[data-gallery="${kind}"] [role="tab"]`);
+    await expect(tabs).toHaveCount(kind==='mac'?3:7);
+    for(let i=0;i<await tabs.count();i++){
+      await tabs.nth(i).click();
+      const image=page.locator(`[data-gallery="${kind}"] .gallery-image img`);
+      await expect.poll(()=>image.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+    }
+  }
+  await page.locator('[data-gallery="iphone"] [data-gallery-index="3"]').click();
+  await expect(page.locator('[data-gallery="iphone"]')).toContainText('not paired with Metdol');
+  await page.locator('[data-gallery="iphone"] [data-enlarge]').click();
+  await expect(page.locator('dialog.image-dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('dialog.image-dialog')).not.toBeVisible();
+  await openWithoutRuntimeErrors(page,'/products/auxtho/?lang=en#verification');
+  await expect(page.locator('.role-panel')).toContainText('INTERNAL / AUXTHO CONSOLE');
+  await expect(page.locator('.proof-list')).toContainText('7 OCTOBER 2026 / HOSTED APP');
+  await openWithoutRuntimeErrors(page,'/products/metdol/?lang=en');
+  await expect(page.locator('.connection-illustration').first()).toContainText('TERMINAL-BASED');
+});
+

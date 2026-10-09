@@ -8,11 +8,40 @@ const SHA_PATTERN = /^[0-9a-f]{40}$/;
 const HASH_PATTERN = /^[0-9a-f]{64}$/;
 const SCRIPT_PATH_PATTERN = /^\/assets\/[A-Za-z0-9._/-]+\.([0-9a-f]{64})\.js$/;
 const STYLESHEET_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.css)\?sha256=([0-9a-f]{64})$/;
-const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg))\?sha256=([0-9a-f]{64})$/;
+const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg|jpg))\?sha256=([0-9a-f]{64})$/;
 const MEDIA_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.mp4)\?sha256=([0-9a-f]{64})$/;
 const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.jpg', '.mp4', '.pdf', '.png', '.svg']);
 const REVIEWED_PUBLIC_JPEG_SHA256 = Object.freeze({
+  'assets/portfolio-20261009/moirion-mac-archive-20261009.jpg': '43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd',
+  'assets/portfolio-20261009/moirion-mac-talk-20261009.jpg': 'b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25',
+  'assets/portfolio-20261009/moirion-mac-write-20261009.jpg': '8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c',
   'assets/ardamire-records/ardamire-recorded-tests-share.jpg': '170f07c0a013c15762e39cd3466650d2c721f80db63bbaafc7022c622d8698b4',
+});
+const REVIEWED_PORTFOLIO_FILES_SHA256 = Object.freeze({
+  "assets/portfolio-20261009/agent-runner-office.mp4": "deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e",
+  "assets/portfolio-20261009/agent-runner-office.png": "7a492606d9777507db1b861ca853cb980efd88a2deb141fda651bb765f775cda",
+  "assets/portfolio-20261009/agent-runner-work.png": "446c12de625dae541852534e383555e09c777b31c4917ef6d65ddbeedf2447b5",
+  "assets/portfolio-20261009/ardamire-console-redacted.png": "adfbb9d12f1f5c1b4d47ee158a0dee209bbe08546ee8bfb536ef21d79c3b794b",
+  "assets/portfolio-20261009/json.png": "c44f79af68559b78f277e268e99e5d9062d0dbc2aac92d70cf3028937ed20685",
+  "assets/portfolio-20261009/logo-white.svg": "a3b6cb0ab2461fcd6e4a98f147c0a04416801d3caadc77539a02bba8ab19426f",
+  "assets/portfolio-20261009/metdol-phone.png": "682fc33a3a82405e2858408306469b9bec91531a7a829b9007a4df1b47db8603",
+  "assets/portfolio-20261009/moirion-iphone-archive-20261009.png": "cb92c377940a42a7059442a82621ac2611b4df79959436f901a5f094a555e069",
+  "assets/portfolio-20261009/moirion-iphone-calendar-20261009.png": "f6d3029441258e8c45a14d49f025e478e1c9f4fc26321d57960e792b58911a34",
+  "assets/portfolio-20261009/moirion-iphone-entry-20261009.png": "4d2416272019b928811833ac06ca9656e78901aa0354e0e4270afcd59ce06b8e",
+  "assets/portfolio-20261009/moirion-iphone-ondevice-20261009.png": "086b4f68eb84efe1bc649c9ce31aff94150aa71d1d24fa85a498db30ee77008d",
+  "assets/portfolio-20261009/moirion-iphone-style-20261009.png": "6d0c0740445b42e4fa389082a4fef9066afd45c78c5746414cbe056662f19212",
+  "assets/portfolio-20261009/moirion-iphone-welcome-20261009.png": "65bd275819cc17f911fb1b96d3c06e41003d78616d36fcf7ef5e2520a0fdc335",
+  "assets/portfolio-20261009/moirion-iphone-write-20261009.png": "2e9e28bed3a6300a9326aeddc493e6de2c616ce28c5d2881765aced0c98ddc2e",
+  "assets/portfolio-20261009/moirion-mac-archive-20261009.jpg": "43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd",
+  "assets/portfolio-20261009/moirion-mac-talk-20261009.jpg": "b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25",
+  "assets/portfolio-20261009/moirion-mac-write-20261009.jpg": "8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c",
+  "assets/portfolio-20261009/pdf.png": "7f204be25135d986daa45cfd2d3f809d4dc4f9542c569420d97d658b0ed6df91",
+  "assets/portfolio-20261009/source.png": "fa4400c231bb2a3ebc697566392abe5c2511c91a7f0bb69b0c49f0fe7489bf8c",
+  "assets/portfolio-20261009/version.png": "488ba192f7541b9fd0531a6492ff9b43013158e8cd486fd6dd06219a4c2e2c46",
+  "assets/portfolio-20261009/video-poster.png": "ab0a9da8695a942fb458aa79dfee4bea848600e77df50bfa7f3a9ca33ee1970d",
+  "assets/portfolio-20261009/walkthrough.mp4": "2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492",
+  "assets/portfolio-20261009/app.690328a2f0181c3af4fe54e37cf19a98eb12c3e1d9f9bc5568ea153f482ebf5e.js": "690328a2f0181c3af4fe54e37cf19a98eb12c3e1d9f9bc5568ea153f482ebf5e",
+  "assets/portfolio-20261009/styles.css": "6ae3320dde4f6d4c825a13808feac1425caf03637f4e2233500b35d27b2265e3"
 });
 const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
@@ -38,7 +67,13 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '4e2499b4993925ff6d9f0968ebca9902abfc5f16e6f51f0881e3d10ece315a6f',
   'demo/singapore-source-review/index.html': 'f74aaeb0aa6f138cc0c836d299c6aec071b014425df53a7c88bc43e57693149e',
-  'index.html': '49199dfa3b3c803dab9cc0a13ea21efc19157b5dd9620c9d4dd4866741ab4857',
+  'index.html': '90e38aabb1a176e1cee735a702f9675916558b17d5f79cf56bde3aba86a36207',
+  'products/auxtho/index.html': 'd2165fed08af6f657fc0628d60d4b642c14d771a49ac97bec9e4023e35b84e7e',
+  'products/moirion/index.html': 'fe9c78c8c47b27350f94bb972c765ffb8027211bd77976e50daab9d7d863f4fb',
+  'products/agent-runner/index.html': '683c09c0aef42eb388a71e4f27297af3a1723a0e08cfb55681870b255403739f',
+  'products/ardamire/index.html': '15506cbf047fd4742e1bb9f18029878e2e994f90051222403d1cc37298dd9b14',
+  'products/metdol/index.html': '568597ac28a79ae5bb6bef3ef450d74764ec2f53cc902e2bef2dd23e62eab086',
+  'proof/workflow-overview/index.html': '49199dfa3b3c803dab9cc0a13ea21efc19157b5dd9620c9d4dd4866741ab4857',
   'capabilities/ai-review-exception-queue/index.html': '6d9d4ade4c0af47a2a931792e83417bb69f91465db0ce4d9f92408c850c8ccab',
   'capabilities/ardamire-defense-layer/index.html': 'dd284a42ea1135a92cbb78bcd91f774549ad9c47bea42dac94babf9582e5d62b',
   'capabilities/decision-receipts-audit-history/index.html': '28506af46ec2b585a1e5d6417fc8462270179776a6c363863d1e421383e9db3b',
@@ -479,6 +514,12 @@ function assertCanonicalPublicTextBytes(sourceRoot, relative) {
 }
 
 function assertReviewedPublicBinaryBytes(sourceRoot, relative) {
+  if (relative.startsWith('assets/portfolio-20261009/')) {
+    const expected = REVIEWED_PORTFOLIO_FILES_SHA256[relative];
+    if (!expected || sha256(fs.readFileSync(path.join(sourceRoot, relative))) !== expected) {
+      fail(`public portfolio file differs from its exact reviewed bytes: ${relative}`);
+    }
+  }
   if (path.posix.extname(relative) === '.jpg') {
     const expectedHash = REVIEWED_PUBLIC_JPEG_SHA256[relative];
     const bytes = fs.readFileSync(path.join(sourceRoot, ...relative.split('/')));
@@ -1134,7 +1175,12 @@ function validatePrivacyAndClaims(
     }
     return { asset, sidecar };
   });
-  const index = fs.readFileSync(path.join(outputRoot, 'index.html'), 'utf8');
+  const homepage = fs.readFileSync(path.join(outputRoot, 'index.html'), 'utf8');
+  // The company portfolio replaces the first buyer story, not its retained evidence.
+  // Keep the exact previous App/Console claim and privacy contract on its named archive route.
+  const evidencePage = /data-company-portfolio/.test(homepage) ? 'proof/workflow-overview/index.html' : 'index.html';
+  if (!stagedPublicFiles.has(evidencePage)) fail('reviewed workflow evidence page is absent');
+  const index = fs.readFileSync(path.join(outputRoot, evidencePage), 'utf8');
   const parsedIndex = parse5.parse(index);
   const evidenceCards = findDescendants(parsedIndex, (node) => (
     node.tagName === 'article' && nodeClassList(node).includes('evidence-surface-card')
