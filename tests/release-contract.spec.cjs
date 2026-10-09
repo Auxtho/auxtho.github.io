@@ -255,6 +255,16 @@ test('CI and deploy workflows bind exact static-site authorization and same-job 
   assert.doesNotMatch(deploymentVerifier, /bypassCache: variant ===/);
 });
 
+test('rollback packaging uses the exact approved rollback checkout own reviewed byte contract', () => {
+  const deploy = YAML.parse(fs.readFileSync(path.join(root, '.github/workflows/deploy-pages.yml'), 'utf8'));
+  const build = deploy.jobs.package.steps.find(step => step.name === 'Build deterministic exact-SHA rollback Pages artifact');
+  assert.match(build.run, /^node _rollback_source\/scripts\/release\/public-artifact\.cjs build /);
+  assert.match(build.run, /--source _rollback_source /);
+  assert.match(build.run, /--source-sha "\$\{REQUESTED_ROLLBACK_SITE_SHA\}"/);
+  assert.match(build.run, /--mode rollback /);
+  assert.match(build.run, /--rollback-of-sha "\$\{REQUESTED_SITE_SHA\}"/);
+});
+
 test('browser readback exempts only the inactive sample lightbox placeholder', () => {
   assert.deepEqual(findBrokenImageSources([
     {

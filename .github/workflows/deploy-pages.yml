@@ -158,7 +158,7 @@ jobs:
           --artifact-name github-pages-candidate
       - name: Build deterministic exact-SHA rollback Pages artifact
         run: >-
-          node scripts/release/public-artifact.cjs build
+          node _rollback_source/scripts/release/public-artifact.cjs build
           --source _rollback_source
           --previous-source _release_source
           --output _rollback_site
