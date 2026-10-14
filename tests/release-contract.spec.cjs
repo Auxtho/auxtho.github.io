@@ -1672,11 +1672,16 @@ test('Capability Library exposes the verified five-minute chain with one bounded
     path.join(root, 'capabilities', 'ardamire-defense-layer', 'index.html'),
     'utf8',
   );
-  assert.match(ardamire, /<meta name="description" content="[^"]*public modeled sequence/i);
-  assert.match(ardamire, /<meta property="og:description" content="[^"]*public modeled sequence/i);
-  assert.match(ardamire, /class="cap-hero-lede">Ardamire's public modeled sequence/i);
-  assert.match(ardamire, /What the model shows/i);
-  assert.doesNotMatch(ardamire, /Teams can assemble|What Ardamire performs/i);
+  assert.match(ardamire, /<meta name="description" content="[^"]*implemented internal defence layer/i);
+  assert.match(ardamire, /<meta property="og:description" content="[^"]*implemented internal defence layer/i);
+  assert.match(ardamire, /class="cap-hero-lede">Ardamire is Auxtho's implemented internal defence layer/i);
+  assert.match(ardamire, /What Ardamire performs/i);
+  assert.match(ardamire, /This six-stage illustration explains the path/i);
+  assert.match(ardamire, /linked animation walks through this model/i);
+  assert.match(ardamire, /case-scoped evidence candidates and handoff records for operator review/i);
+  assert.match(ardamire, /records use synthetic data and summarise separate tests/i);
+  assert.match(ardamire, /File recovery and incident closure are separate decisions/i);
+  assert.doesNotMatch(ardamire, /only behavior published|IMPLEMENTED_NOT_PROMOTED|Teams can assemble/i);
 });
 
 test('Capability Library capture manifest binds every used product image and excludes sensitive crops', () => {
