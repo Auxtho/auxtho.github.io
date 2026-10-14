@@ -12,7 +12,7 @@ function render(route){
   nodes.set(selector,node);return node;
  }
  const document={documentElement:{},title:'',querySelector:element,querySelectorAll(){return []},addEventListener(){}};
- vm.runInNewContext(code,{document,location:{pathname:route,search:'?lang=en',hash:''},URLSearchParams,matchMedia(){return {matches:false}},requestAnimationFrame(fn){fn()}},{timeout:2000,filename:script});
+ vm.runInNewContext(code,{document,location:{pathname:route,search:'?lang=en',hash:''},URLSearchParams,matchMedia(){return {matches:false,addEventListener(){}}},requestAnimationFrame(fn){fn()}},{timeout:2000,filename:script});
  return {route,main:element('#main').innerHTML,footer:element('.site-footer').innerHTML};
 }
 if(require.main===module)process.stdout.write(JSON.stringify(['/',...['auxtho','moirion','agent-runner','ardamire','metdol'].map(id=>'/products/'+id+'/')].map(render)));
