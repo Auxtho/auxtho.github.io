@@ -18,28 +18,27 @@ test('All six pages use the original Auxtho favicon and Apple touch icon',()=>{
   assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,relative))).digest('hex'),expected);
  }
 });
-const appPath=path.join(root,"assets/portfolio-20261009/app.49bf7a1f225bb3d849c56b874ed03ce9b54b0fc075472a5efd83e8b92a388f6f.js");
-test('Ardamire distinguishes recorded hosted acceptance from the historical local milestone',()=>{
+const appPath=path.join(root,"assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js");
+test('Ardamire presents implemented controls and bounded tests without supplier or internal milestone detail',()=>{
  const js=fs.readFileSync(appPath,'utf8');
  const data=JSON.parse(js.split('\n').find(l=>l.startsWith('const products=')).slice('const products='.length).replace(/;$/,''));
  const p=data.find(x=>x.id==='ardamire');
  assert.match(p.en.detail,/implemented internal defence layer/);
  assert.match(p.ko.detail,/구현된 내부 방어층/);
- assert.match(p.en.records[3].label,/10 OCTOBER 2026 \/ LOCAL INTEGRATION/);
- assert.match(p.en.records[3].note,/October 10 local implementation record/);
- assert.match(p.en.activeLabel,/12–13 OCTOBER 2026/);
- assert.match(p.ko.activeLabel,/2026년 10월 12–13일/);
- assert.match(p.en.roadmapNote,/separate dated tests/);
- assert.match(p.ko.roadmapNote,/날짜별로 확인한 별도 시험 기록/);
- assert.match(p.en.activeLabel,/INTERNAL TESTS WITH SYNTHETIC DATA/);
- assert.match(p.ko.activeLabel,/합성 자료를 이용한 자체 시험/);
- for(const l of ['en','ko'])assert.equal(p[l].roadmap.active.length,2);
- assert.match(p.en.roadmap.active[1],/matching report inputs and the same review policy/);
- assert.match(p.en.roadmap.active[1],/comparison drafts were kept separately/);
- assert.match(p.ko.roadmap.active[1],/원래 문서의 승인·발행 상태를 유지/);
+ for(const l of ['en','ko']){assert.equal(p[l].records.length,3);assert.equal(p[l].roadmap.active.length,2);}
+ assert.match(p.en.activeLabel,/12–13 OCTOBER 2026 \/ INTERNAL TESTS WITH SYNTHETIC DATA/);
+ assert.match(p.ko.activeLabel,/2026년 10월 12–13일 \/ 합성 자료를 이용한 자체 시험/);
+ assert.match(p.en.roadmapNote,/separate first-party tests/);
+ assert.match(p.ko.roadmapNote,/서로 다른 자체 시험/);
+ assert.match(p.en.roadmap.active[1],/separate from the original document/);
+ assert.match(p.en.roadmap.active[1],/approval and release state unchanged/);
+ assert.match(p.ko.roadmap.active[1],/기존 문서의 승인·발행 상태를 유지/);
+ assert.match(p.en.records[2].body,/separately quarantined/);
+ assert.match(p.ko.records[2].body,/운영자가 별도로 격리/);
+ assert.match(p.en.features[0].body,/evidence candidates/);
  assert.match(p.en.features[1].body,/explains supported Console screens/);
  assert.doesNotMatch(p.ko.features[1].title,/AI에게/);
- assert.doesNotMatch(JSON.stringify(p),/Hosted rollout and acceptance remain separate|서버 반영 별도|ws_[a-f0-9]+|ard_inc_[a-f0-9]+/);
+ assert.doesNotMatch(JSON.stringify(p),/GPT|Gemini|token issuers|file-format metadata|파일 형식 정보|LOCAL INTEGRATION|로컬 구현|Hosted rollout and acceptance remain separate|ws_[a-f0-9]+|ard_inc_[a-f0-9]+/);
 });
 
 test('Ardamire indexable HTML contains the same recorded integration as runtime rendering',()=>{
@@ -47,7 +46,7 @@ test('Ardamire indexable HTML contains the same recorded integration as runtime 
  const html=fs.readFileSync(path.join(root,'products/ardamire/index.html'),'utf8');
  assert.ok(html.includes(render('/products/ardamire/').main));
  assert.match(html,/12–13 OCTOBER 2026 \/ INTERNAL TESTS WITH SYNTHETIC DATA/);
- assert.match(html,/<p class="detail-boundary">These are records from separate dated tests/);
+ assert.match(html,/<p class="detail-boundary">Summary of separate first-party tests./);
 });
 
 test('JavaScript parses; private evidence not served',()=>{new vm.Script(fs.readFileSync(appPath,'utf8'));assert.ok(!fs.existsSync(path.join(root,'CLAIM_SCOPE_PRIVATE.json')));});
@@ -62,7 +61,7 @@ test('New actual media is preserved byte-for-byte',()=>{for(const [file,expected
  'agent-runner-office.mp4':'deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e',
  'ardamire-console-redacted.png':'adfbb9d12f1f5c1b4d47ee158a0dee209bbe08546ee8bfb536ef21d79c3b794b'
 })){assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(assetRoot,file))).digest('hex'),expected);}});
-test('Actual views retain separate-run, pending-review, internal-role and asset-origin labels',()=>{const js=fs.readFileSync(appPath,'utf8');for(const text of ['review is incomplete and final acceptance is pending','not a recording of one continuous task','캐릭터와 배경은 생성형 AI를 활용해 자체 제작·편집한 그래픽 에셋입니다.','Edited image based on Auxtho','the file is released while the associated incident remains open','문제가 발견된 파일부터 보류 사유와 복구 이력까지'])assert.ok(js.includes(text),text);assert.match(js,/class="office-recording" controls playsinline preload="none"/);assert.match(js,/function bindImageDialog\(/);assert.doesNotMatch(js,/<video[^>]*autoplay/);});
+test('Actual views retain separate-run, pending-review, internal-role and asset-origin labels',()=>{const js=fs.readFileSync(appPath,'utf8');for(const text of ['review is incomplete and final acceptance is pending','not a recording of one continuous task','캐릭터와 배경은 생성형 AI를 활용해 자체 제작·편집한 그래픽 에셋입니다.','Edited image based on Auxtho','File recovery history and incident status are recorded separately','문제가 발견된 파일부터 보류 사유와 복구 이력까지'])assert.ok(js.includes(text),text);assert.match(js,/class="office-recording" controls playsinline preload="none"/);assert.match(js,/function bindImageDialog\(/);assert.doesNotMatch(js,/<video[^>]*autoplay/);});
 
 
 test('Display punctuation removes only terminal marks and line-break endings',()=>{
@@ -116,13 +115,13 @@ test('Public package preserves reviewed portfolio bytes and excludes private pre
  assert.doesNotMatch(js,/Local preview|로컬 디자인|preview-bar/);
  for(const route of ['/privacy.html','/terms.html','/evidence-notes.html'])assert.ok(js.includes(route),route);
  assert.ok(manifest.paths.includes('/proof/workflow-overview/index.html'));
- const expected={"assets/portfolio-20261009/agent-runner-office.mp4":"deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e","assets/portfolio-20261009/agent-runner-office.png":"7a492606d9777507db1b861ca853cb980efd88a2deb141fda651bb765f775cda","assets/portfolio-20261009/agent-runner-work.png":"446c12de625dae541852534e383555e09c777b31c4917ef6d65ddbeedf2447b5","assets/portfolio-20261009/app.49bf7a1f225bb3d849c56b874ed03ce9b54b0fc075472a5efd83e8b92a388f6f.js":"49bf7a1f225bb3d849c56b874ed03ce9b54b0fc075472a5efd83e8b92a388f6f","assets/portfolio-20261009/ardamire-console-redacted.png":"adfbb9d12f1f5c1b4d47ee158a0dee209bbe08546ee8bfb536ef21d79c3b794b","assets/portfolio-20261009/json.png":"c44f79af68559b78f277e268e99e5d9062d0dbc2aac92d70cf3028937ed20685","assets/portfolio-20261009/logo-white.svg":"a3b6cb0ab2461fcd6e4a98f147c0a04416801d3caadc77539a02bba8ab19426f","assets/portfolio-20261009/metdol-phone.png":"682fc33a3a82405e2858408306469b9bec91531a7a829b9007a4df1b47db8603","assets/portfolio-20261009/moirion-archive.png":"375e3ebaecc872b779db56c689735dcf0908e7bd9ce9e6e556484ad5d37d5aae","assets/portfolio-20261009/moirion-ask.png":"f53bd020371d35d8c81e9e90109a44150eb8c093a0993667bd324645372cefb1","assets/portfolio-20261009/moirion-iphone-archive-20261009.png":"cb92c377940a42a7059442a82621ac2611b4df79959436f901a5f094a555e069","assets/portfolio-20261009/moirion-iphone-calendar-20261009.png":"f6d3029441258e8c45a14d49f025e478e1c9f4fc26321d57960e792b58911a34","assets/portfolio-20261009/moirion-iphone-entry-20261009.png":"4d2416272019b928811833ac06ca9656e78901aa0354e0e4270afcd59ce06b8e","assets/portfolio-20261009/moirion-iphone-ondevice-20261009.png":"086b4f68eb84efe1bc649c9ce31aff94150aa71d1d24fa85a498db30ee77008d","assets/portfolio-20261009/moirion-iphone-style-20261009.png":"6d0c0740445b42e4fa389082a4fef9066afd45c78c5746414cbe056662f19212","assets/portfolio-20261009/moirion-iphone-welcome-20261009.png":"65bd275819cc17f911fb1b96d3c06e41003d78616d36fcf7ef5e2520a0fdc335","assets/portfolio-20261009/moirion-iphone-write-20261009.png":"2e9e28bed3a6300a9326aeddc493e6de2c616ce28c5d2881765aced0c98ddc2e","assets/portfolio-20261009/moirion-mac-a4-20261009.jpg":"2471d9c00cc9025e43c5d942062dfd7fc6bb8d60425d17db81a1d7b0085064ef","assets/portfolio-20261009/moirion-mac-archive-20261009.jpg":"43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd","assets/portfolio-20261009/moirion-mac-draw-20261009.jpg":"f7e0046508eacd3d2a822f836a2b8e5e1a2c239e73e6ed6d788352bb156b11d4","assets/portfolio-20261009/moirion-mac-glass-20261009.jpg":"6931cdcf9607b260074992d0a7bedb63d6c320fc4932589922ea74987c7b757b","assets/portfolio-20261009/moirion-mac-marker-tools-20261009.jpg":"670b58bd880dacde03ae71f114b370e1daacfa4d2f775658c4287ea04299ed76","assets/portfolio-20261009/moirion-mac-midnight-20261009.jpg":"38bd457db0ab7b1b9d1960b9e0b698fbad228c24a3bf81b12d292e64cd95c7e5","assets/portfolio-20261009/moirion-mac-notebook-20261009.jpg":"ba7aa67261b2c1fdc59317ade46ce569dd2437b4ff8763b058dd0ca3ece62739","assets/portfolio-20261009/moirion-mac-talk-20261009.jpg":"b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25","assets/portfolio-20261009/moirion-mac-write-20261009.jpg":"8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c","assets/portfolio-20261009/nvidia-inception-member.svg":"d2f1fc25616ba02933506b21fa668289169e58ac4c76b5f7f209f2632f289f2e","assets/portfolio-20261009/pdf.png":"7f204be25135d986daa45cfd2d3f809d4dc4f9542c569420d97d658b0ed6df91","assets/portfolio-20261009/source.png":"fa4400c231bb2a3ebc697566392abe5c2511c91a7f0bb69b0c49f0fe7489bf8c","assets/portfolio-20261009/styles.css":"6657f6e34390def686d53b05676cbb6a1973c6b959420e63cea2893877b8ab08","assets/portfolio-20261009/version.png":"488ba192f7541b9fd0531a6492ff9b43013158e8cd486fd6dd06219a4c2e2c46","assets/portfolio-20261009/video-poster.png":"ab0a9da8695a942fb458aa79dfee4bea848600e77df50bfa7f3a9ca33ee1970d","assets/portfolio-20261009/walkthrough.mp4":"2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492"};
+ const expected={"assets/portfolio-20261009/agent-runner-office.mp4":"deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e","assets/portfolio-20261009/agent-runner-office.png":"7a492606d9777507db1b861ca853cb980efd88a2deb141fda651bb765f775cda","assets/portfolio-20261009/agent-runner-work.png":"446c12de625dae541852534e383555e09c777b31c4917ef6d65ddbeedf2447b5","assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js":"6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6","assets/portfolio-20261009/ardamire-console-redacted.png":"adfbb9d12f1f5c1b4d47ee158a0dee209bbe08546ee8bfb536ef21d79c3b794b","assets/portfolio-20261009/json.png":"c44f79af68559b78f277e268e99e5d9062d0dbc2aac92d70cf3028937ed20685","assets/portfolio-20261009/logo-white.svg":"a3b6cb0ab2461fcd6e4a98f147c0a04416801d3caadc77539a02bba8ab19426f","assets/portfolio-20261009/metdol-phone.png":"682fc33a3a82405e2858408306469b9bec91531a7a829b9007a4df1b47db8603","assets/portfolio-20261009/moirion-archive.png":"375e3ebaecc872b779db56c689735dcf0908e7bd9ce9e6e556484ad5d37d5aae","assets/portfolio-20261009/moirion-ask.png":"f53bd020371d35d8c81e9e90109a44150eb8c093a0993667bd324645372cefb1","assets/portfolio-20261009/moirion-iphone-archive-20261009.png":"cb92c377940a42a7059442a82621ac2611b4df79959436f901a5f094a555e069","assets/portfolio-20261009/moirion-iphone-calendar-20261009.png":"f6d3029441258e8c45a14d49f025e478e1c9f4fc26321d57960e792b58911a34","assets/portfolio-20261009/moirion-iphone-entry-20261009.png":"4d2416272019b928811833ac06ca9656e78901aa0354e0e4270afcd59ce06b8e","assets/portfolio-20261009/moirion-iphone-ondevice-20261009.png":"086b4f68eb84efe1bc649c9ce31aff94150aa71d1d24fa85a498db30ee77008d","assets/portfolio-20261009/moirion-iphone-style-20261009.png":"6d0c0740445b42e4fa389082a4fef9066afd45c78c5746414cbe056662f19212","assets/portfolio-20261009/moirion-iphone-welcome-20261009.png":"65bd275819cc17f911fb1b96d3c06e41003d78616d36fcf7ef5e2520a0fdc335","assets/portfolio-20261009/moirion-iphone-write-20261009.png":"2e9e28bed3a6300a9326aeddc493e6de2c616ce28c5d2881765aced0c98ddc2e","assets/portfolio-20261009/moirion-mac-a4-20261009.jpg":"2471d9c00cc9025e43c5d942062dfd7fc6bb8d60425d17db81a1d7b0085064ef","assets/portfolio-20261009/moirion-mac-archive-20261009.jpg":"43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd","assets/portfolio-20261009/moirion-mac-draw-20261009.jpg":"f7e0046508eacd3d2a822f836a2b8e5e1a2c239e73e6ed6d788352bb156b11d4","assets/portfolio-20261009/moirion-mac-glass-20261009.jpg":"6931cdcf9607b260074992d0a7bedb63d6c320fc4932589922ea74987c7b757b","assets/portfolio-20261009/moirion-mac-marker-tools-20261009.jpg":"670b58bd880dacde03ae71f114b370e1daacfa4d2f775658c4287ea04299ed76","assets/portfolio-20261009/moirion-mac-midnight-20261009.jpg":"38bd457db0ab7b1b9d1960b9e0b698fbad228c24a3bf81b12d292e64cd95c7e5","assets/portfolio-20261009/moirion-mac-notebook-20261009.jpg":"ba7aa67261b2c1fdc59317ade46ce569dd2437b4ff8763b058dd0ca3ece62739","assets/portfolio-20261009/moirion-mac-talk-20261009.jpg":"b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25","assets/portfolio-20261009/moirion-mac-write-20261009.jpg":"8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c","assets/portfolio-20261009/nvidia-inception-member.svg":"d2f1fc25616ba02933506b21fa668289169e58ac4c76b5f7f209f2632f289f2e","assets/portfolio-20261009/pdf.png":"7f204be25135d986daa45cfd2d3f809d4dc4f9542c569420d97d658b0ed6df91","assets/portfolio-20261009/source.png":"fa4400c231bb2a3ebc697566392abe5c2511c91a7f0bb69b0c49f0fe7489bf8c","assets/portfolio-20261009/styles.css":"6657f6e34390def686d53b05676cbb6a1973c6b959420e63cea2893877b8ab08","assets/portfolio-20261009/version.png":"488ba192f7541b9fd0531a6492ff9b43013158e8cd486fd6dd06219a4c2e2c46","assets/portfolio-20261009/video-poster.png":"ab0a9da8695a942fb458aa79dfee4bea848600e77df50bfa7f3a9ca33ee1970d","assets/portfolio-20261009/walkthrough.mp4":"2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492"};
  for(const [relative,hash] of Object.entries(expected))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,relative))).digest('hex'),hash,relative);
 });
 test('Portfolio gates reject changes to reviewed code, style, screenshot and film',()=>{
  const os=require('node:os'),{buildArtifact}=require('../scripts/release/public-artifact.cjs');
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'scripts/release/public-files.json'),'utf8'));
- for(const selected of ["assets/portfolio-20261009/app.49bf7a1f225bb3d849c56b874ed03ce9b54b0fc075472a5efd83e8b92a388f6f.js",'assets/portfolio-20261009/styles.css','assets/portfolio-20261009/ardamire-console-redacted.png','assets/portfolio-20261009/walkthrough.mp4']){
+ for(const selected of ["assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js",'assets/portfolio-20261009/styles.css','assets/portfolio-20261009/ardamire-console-redacted.png','assets/portfolio-20261009/walkthrough.mp4']){
   const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'auxtho-portfolio-gate-'));
   try{
    const source=path.join(temporary,'source');fs.mkdirSync(source);
