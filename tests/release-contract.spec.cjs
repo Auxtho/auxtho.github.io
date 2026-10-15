@@ -125,7 +125,7 @@ function createSourceFixture(targetRoot) {
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
     'proof/singapore-source-review/index.html',
-    'security/ardamire/index.html', 'proof/workflow-overview/index.html', 'products', 'capabilities', 'demo', 'assets',
+    'security/ardamire/index.html', 'proof/workflow-overview/index.html', 'products', 'capabilities', 'demo', 'assets', 'whitecell',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }

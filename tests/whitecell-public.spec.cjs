@@ -1,0 +1,136 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const vm=require('node:vm');
+const crypto=require('node:crypto');
+const root=path.resolve(__dirname,'..');
+const assetRoot=path.join(root,'assets/whitecell-20261015');
+const hash=bytes=>crypto.createHash('sha256').update(bytes).digest('hex');
+const html=fs.readFileSync(path.join(root,'whitecell/index.html'),'utf8');
+const css=fs.readFileSync(path.join(assetRoot,'styles.css'),'utf8');
+const linkName='introduction-link.f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041.js';
+
+test('WhiteCell public route has canonical bilingual metadata and existing legal links',()=>{
+  assert.match(html,/name="robots" content="index,follow"/);
+  assert.match(html,/rel="canonical" href="https:\/\/auxtho\.com\/whitecell\/"/);
+  for(const lang of ['ko','en']) assert.ok(html.includes('https://auxtho.com/whitecell/?lang='+lang));
+  for(const page of ['privacy.html','terms.html','products/ardamire/']) assert.ok(html.includes('https://auxtho.com/'+page));
+  assert.doesNotMatch(html,/noindex|localhost|[A-Z]:\\|PACKAGING_|PRIVATE|api[_-]?key/i);
+});
+
+test('WhiteCell publication is exact-file addressed and excludes private preparation',()=>{
+  const manifest=JSON.parse(fs.readFileSync(path.join(root,'scripts/release/public-files.json'),'utf8'));
+  const publicFiles=manifest.paths.filter(p=>p.startsWith('/assets/whitecell-20261015/')||p==='/whitecell/index.html');
+  assert.equal(publicFiles.length,9);
+  for(const file of publicFiles) assert.ok(fs.existsSync(path.join(root,file.slice(1))),file);
+  assert.doesNotMatch(publicFiles.join('\n'),/PRIVATE|verify-hero|ART_|QA_|shadow-cell/);
+  for(const m of html.matchAll(/(?:src|href)="(\/assets\/whitecell-20261015\/[^"?]+)(?:\?sha256=([0-9a-f]{64}))?"/g)) {
+    const bytes=fs.readFileSync(path.join(root,m[1].slice(1)));
+    assert.equal(hash(bytes),m[2]||m[1].match(/\.([0-9a-f]{64})\.js$/)[1]);
+  }
+});
+
+test('Ardamire and diamond share one full-plane light trajectory, delay and pause',()=>{
+  assert.match(html,/class="jewel-illumination"><div class="jewel-layer"/);
+  assert.ok(css.includes('.gate-light,.jewel-illumination,.hero-art .moonlight>span{'));
+  assert.ok(css.includes('.hero .gate-light,.jewel-illumination,.hero-art .moonlight>span{animation-delay:-3.92s}'));
+  assert.ok(css.includes('html[data-motion-paused="true"] .jewel-illumination'));
+  assert.ok(css.includes('.hero .gate-light,.jewel-illumination,.hero-art .moonlight>span{animation:none;'));
+  assert.doesNotMatch(css,/@keyframes jewel-(?:facet|outline)-reveal/);
+  assert.ok(css.includes('transparent 48%,#fff 49.7%,#fff 50.3%,transparent 52%'));
+});
+
+test('WhiteCell scripts parse and do not add network, persistence or model disclosures',()=>{
+  for(const name of fs.readdirSync(assetRoot).filter(n=>n.endsWith('.js'))) {
+    const source=fs.readFileSync(path.join(assetRoot,name),'utf8');
+    new vm.Script(source);
+    assert.doesNotMatch(source,/\bfetch\s*\(|XMLHttpRequest|sendBeacon|WebSocket|localStorage|api[_-]?key/i);
+  }
+  assert.doesNotMatch(html,/GPT|Gemini|certified|guarantees prevention/i);
+});
+
+test('Ardamire introduction link survives rendering and language changes without duplicates',()=>{
+  let language='en',callback,children=[];
+  const related={querySelector(){return children[0]||null},appendChild(node){children.push(node)}};
+  const main={};
+  const document={readyState:'complete',documentElement:{get lang(){return language}},querySelector(selector){return selector==='#main .product-related'?related:selector==='#main'?main:null},createElement(){return {textContent:'',attributes:{},setAttribute(k,v){this.attributes[k]=v},getAttribute(k){return this.attributes[k]??null}}}};
+  class Observer {constructor(fn){callback=fn}observe(node,options){assert.equal(node,main);assert.equal(options.subtree,true)}}
+  vm.runInNewContext(fs.readFileSync(path.join(assetRoot,linkName),'utf8'),{document,MutationObserver:Observer},{timeout:1000});
+  assert.equal(children.length,1);assert.equal(children[0].attributes.href,'/whitecell/?lang=en');
+  callback();assert.equal(children.length,1);
+  children=[];language='ko';callback();
+  assert.equal(children.length,1);assert.equal(children[0].attributes.href,'/whitecell/?lang=ko');
+  assert.equal(children[0].textContent,'Ardamire WhiteCell 소개 ↗');
+});
+
+test('WhiteCell restores original typography while preserving the prior hero visibility fix',()=>{
+  assert.equal(hash(Buffer.from(css)),'a5e996f7aa4c66922574cc65cd39488473cf6f93faf124b433de5f8dfe5e8073');
+  assert.doesNotMatch(css,/Accessible reading scale:|Reading scale:/);
+  assert.ok(css.includes('z-index:6;bottom:34px'));
+  assert.doesNotMatch(html,/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/);
+});
+
+test('WhiteCell bilingual architecture preserves independent enforcement, evidence and human authority',()=>{
+  const appName=fs.readdirSync(assetRoot).find(name=>/^app\.[0-9a-f]{64}\.js$/.test(name));
+  assert.ok(appName);
+  const source=fs.readFileSync(path.join(assetRoot,appName),'utf8');
+  const cut=source.indexOf('  const labels =');
+  assert.ok(cut>0);
+  const scope={};
+  vm.runInNewContext(source.slice(0,cut)+'globalThis.content={copy,stages};})();',scope,{timeout:1000});
+  const {copy,stages}=scope.content;
+  for(const match of html.matchAll(/<([a-z0-9-]+)\b[^>]*data-i18n="([^"]+)"[^>]*>([\s\S]*?)<\/\1>/g)) {
+    for(const lang of ['ko','en']) assert.equal(typeof copy[lang][match[2]],'string',lang+':'+match[2]);
+    const initial=match[3].replace(/<br\s*\/?\s*>/g,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&');
+    assert.equal(initial,copy.ko[match[2]],'Initial KO mismatch: '+match[2]);
+  }
+  assert.ok(html.includes('id="oversight"'));
+  assert.match(copy.ko.architectureIntro,/독립된 역할/);
+  assert.match(copy.en.architectureIntro,/independent roles/);
+  assert.match(copy.ko.whitecellBody,/WhiteCell 자신도.*권한 검사/);
+  assert.match(copy.en.whitecellBody,/WhiteCell itself must pass Ardamire/);
+  assert.match(copy.ko.recordBody,/새 기록.*원본과 이전 기록.*보존/);
+  assert.match(copy.en.recordBody,/append.*preserving originals and earlier records/);
+  assert.match(copy.ko.humanBody,/검증 후 사람이 승인.*최종 책임/);
+  assert.match(copy.en.humanBody,/verify and approve.*final accountability/);
+  assert.match(copy.en.oversightIntro,/architecture.*Live Operator Wall/);
+  assert.match(stages.en[1][1],/^Ardamire applies/);
+  assert.doesNotMatch(source,/24\/7|tamper-proof|immutable storage|fully implemented|not implemented|already connected/i);
+});
+
+test('WhiteCell hosted acceptance covers both languages, controls, mobile and raw failure evidence',()=>{
+  const source=fs.readFileSync(path.join(root,'tests/post-deploy-verifier-smoke.spec.cjs'),'utf8');
+  assert.ok(source.includes('path: `/whitecell/?lang=${lang}`'));
+  assert.match(source,/test\('published WhiteCell preserves bilingual roles, human oversight, controls and mobile layout'/);
+  for(const required of ['await readPublicPage(page, `${origin}/whitecell/', 'await assertLanguage(lang)',
+    "await page.locator('#language').click()", 'index < 6', "data-motion-paused', 'true'", "motionButtons.nth(1).click()",
+    "reducedMotion: 'no-preference'", "reducedMotion: 'reduce'", 'canvasSample()', 'width: 390, height: 844',
+    'mobile_widths.scroll - result.mobile_widths.client', '[data-whitecell-introduction]',
+    'whitecell-hosted-smoke.json', 'same_origin_request_failures: failures', 'console_errors: consoleErrors',
+    'page_errors: pageErrors', 'non_get_head_requests: nonReadRequests', "route.abort('blockedbyclient')",
+    "expect(failures).toEqual([])", "expect(pageErrors).toEqual([])", "expect(nonReadRequests).toEqual([])",
+    "content security policy|refused to load|blocked", "evidence.status = 'PASS'", 'finally {']) assert.ok(source.includes(required),required);
+  // Catch an incorrect acceptance oracle without executing a browser or the page.
+  const expectedStart=source.indexOf('  const expected = {');
+  const expectedEnd=source.indexOf('  async function assertLanguage',expectedStart);
+  assert.ok(expectedStart>0&&expectedEnd>expectedStart);
+  const scope={};
+  vm.runInNewContext(source.slice(expectedStart,expectedEnd)+'globalThis.hosted=expected;',scope,{timeout:1000});
+  const appName=fs.readdirSync(assetRoot).find(name=>/^app\.[0-9a-f]{64}\.js$/.test(name));
+  const app=fs.readFileSync(path.join(assetRoot,appName),'utf8');
+  vm.runInNewContext(app.slice(0,app.indexOf('  const labels ='))+'globalThis.content={copy,stages};})();',scope,{timeout:1000});
+  const normalise=text=>text.replace(/\s+/g,' ').trim();
+  for(const lang of ['ko','en']) {
+    for(const key of ['architectureIntro','whitecellBody','ardamireBody','authorityNote','oversightIntro','recordBody','forensicBody','humanBody','oversightNote']) {
+      assert.equal(normalise(scope.hosted[lang][key]),normalise(scope.content.copy[lang][key]),lang+':'+key);
+    }
+    for(const [expectedKey,copyKey] of [['pause','pauseMotion'],['resume','resumeMotion'],['reduced','reducedMotion']]) {
+      assert.equal(scope.hosted[lang][expectedKey],scope.content.copy[lang][copyKey],lang+':'+expectedKey);
+    }
+    for(let index=0;index<6;index++) {
+      assert.equal(scope.hosted[lang].steps[index],scope.content.copy[lang]['step'+index]);
+      assert.equal(scope.hosted[lang].titles[index],normalise(scope.content.stages[lang][index][0]));
+    }
+  }
+});
