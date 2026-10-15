@@ -353,7 +353,7 @@ test('homepage keeps technical references secondary and readable on desktop', as
   await expect(section).toBeVisible();
   await expect(section.getByRole('heading', {
     level: 2,
-    name: 'Deeper technical work, outside the first buyer story.',
+    name: 'Deeper technical work, outside the first buyer story',
   })).toBeVisible();
   await expect(section.locator('.sales-foundation')).toHaveCount(3);
 
@@ -556,7 +556,7 @@ test('homepage shows the frozen Singapore source identity and exact highlighted 
     await expect(sourceRecord).toContainText('MAS Notice FSM-N05');
     await expect(sourceRecord).toContainText('Page 3');
     const exactSourceProof = page.locator('#exact-source-inspection');
-    await expect(exactSourceProof).toContainText('Open Evidence. Read the exact wording on the original page.');
+    await expect(exactSourceProof).toContainText('Open Evidence Read the exact wording on the original page');
     await expect(exactSourceProof.locator('img[src*="exact-source-page.png"]')).toHaveCount(1);
     await expect(sourceReviewBand.locator('img[src*="source-traceability.png"]')).toHaveCount(0);
     const productImageSizes = await page.locator('#product img').evaluateAll(async (images) => {
@@ -621,7 +621,7 @@ test('Singapore source-review proof serves the overview, source identity, and hu
     await expect(humanDecisionDetail).toBeVisible();
     await humanDecisionDetail.evaluate((element) => element.decode());
     await expect(page.getByText('Evidence detail', { exact: true })).toBeVisible();
-    await expect(page.getByText('Follow the source identity into the human decision.', { exact: true })).toBeVisible();
+    await expect(page.getByText('Follow the source identity into the human decision', { exact: true })).toBeVisible();
     await expect(sourceRecord).toContainText('Supported in selected source set');
     await expect(sourceRecord).toContainText('Page 3');
     await expect(page.getByRole('link', { name: 'Open full decision detail' })).toBeVisible();
