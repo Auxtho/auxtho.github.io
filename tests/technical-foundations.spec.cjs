@@ -793,15 +793,22 @@ test('company portfolio and all five product pages are bilingual, indexable and 
 test('company software selector, Moirion captures and bounded product claims stay connected', async ({ page }) => {
   await page.setViewportSize({width:1440,height:900});
   await openWithoutRuntimeErrors(page,'/?lang=en#software');
-  await expect(page.locator('.product-select')).toHaveCount(5);
+  await expect(page.locator('.product-select')).toHaveCount(4);
   await expect(page.locator('#software .product-select')).toHaveCount(2);
-  await expect(page.locator('#technology .product-select')).toHaveCount(3);
-  for (const id of ['auxtho','moirion','agent-runner','ardamire','metdol']) {
+  await expect(page.locator('#technology .product-select')).toHaveCount(2);
+  for (const id of ['auxtho','moirion','agent-runner','metdol']) {
     await page.locator(`[data-product="${id}"]`).click();
     await expect(page.locator(`[data-product="${id}"]`)).toHaveAttribute('aria-pressed','true');
     const stage=['auxtho','moirion'].includes(id)?'#product-stage':'#technology-stage';
     await expect(page.locator(stage+' a.line-link')).toHaveAttribute('href',`/products/${id}/?lang=en`);
   }
+  const securityCards=page.locator('#security .security-card');
+  await expect(securityCards).toHaveCount(2);
+  await expect(securityCards.locator('h3')).toHaveText(['Ardamire Defense Layer','Ardamire WhiteCell']);
+  const securityLinks=securityCards.locator('a.line-link');
+  await expect(securityLinks).toHaveCount(2);
+  await expect(securityLinks.nth(0)).toHaveAttribute('href','/products/ardamire/?lang=en');
+  await expect(securityLinks.nth(1)).toHaveAttribute('href','/whitecell/?lang=en');
   await openWithoutRuntimeErrors(page,'/products/moirion/?lang=en');
   for (const kind of ['mac','iphone']) {
     const tabs=page.locator(`[data-gallery="${kind}"] [role="tab"]`);
