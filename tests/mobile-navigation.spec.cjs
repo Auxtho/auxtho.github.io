@@ -5,7 +5,7 @@ const path=require('node:path');
 const crypto=require('node:crypto');
 const vm=require('node:vm');
 const root=path.resolve(__dirname,'..');
-const js=fs.readFileSync(path.join(root,'assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js'),'utf8');
+const js=fs.readFileSync(path.join(root,'assets/portfolio-20261009/app.34ba679d8bd8db80112b3f6843d9c6a352a46c1818bec6a1a456507af3ed5fd7.js'),'utf8');
 const css=fs.readFileSync(path.join(root,'assets/portfolio-20261009/styles.css'),'utf8');
 const hash=x=>crypto.createHash('sha256').update(x).digest('hex');
 

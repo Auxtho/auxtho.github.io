@@ -36,7 +36,7 @@
     <section class="proof-hero">
       <div class="proof-wrap">
         <p class="proof-kicker">Auxtho Release Core</p>
-        <h1>Three outcomes.<br>One release contract.</h1>
+        <h1>Three outcomes<br>One release contract</h1>
         <p class="proof-lede">An exact match completes once. A changed artifact is blocked. An uncertain result is held for reconciliation instead of being retried blindly.</p>
         <div class="proof-scope" aria-label="Proof scope">
           <span>Versioned synthetic scenarios</span>
@@ -57,7 +57,7 @@
       <div class="proof-wrap proof-definition-grid">
         <div>
           <p class="proof-kicker">The release object</p>
-          <h2 id="release-object-title" class="proof-section-title">Approval is only valid while every required relationship remains valid.</h2>
+          <h2 id="release-object-title" class="proof-section-title">Approval is only valid while every required relationship remains valid</h2>
           <p class="proof-body">Auxtho keeps the reviewed state and the permitted action connected at the consequence boundary.</p>
           <div class="proof-chain" aria-label="Release object components">
             <div class="proof-chain-row"><span class="proof-chain-index">01</span><span class="proof-chain-label">Exact reviewed output</span></div>
@@ -75,14 +75,14 @@
       <div class="proof-wrap">
         <div class="proof-scenarios-intro">
           <p class="proof-kicker">Implemented outcomes</p>
-          <h2 id="scenario-title" class="proof-section-title">The same boundary handles denial, uncertainty, and success.</h2>
+          <h2 id="scenario-title" class="proof-section-title">The same boundary handles denial, uncertainty, and success</h2>
           <p class="proof-body">These results come from three frozen, synthetic Level A scenarios. They are not customer or production results. Each scenario reports the observed consequence count for one attempted release.</p>
         </div>
 
         <article class="proof-scenario rc02">
           <div>
             <p class="proof-scenario-code">RC02 / Changed artifact</p>
-            <h3>The reviewed state changed. Release stopped.</h3>
+            <h3>The reviewed state changed Release stopped</h3>
             <p>Artifact version A was reviewed. Version B reached the release boundary. Revalidation failed before any downstream action began.</p>
             <div class="proof-result"><strong>BLOCKED</strong><span>0 downstream actions</span></div>
           </div>
@@ -92,7 +92,7 @@
         <article class="proof-scenario rc10">
           <div>
             <p class="proof-scenario-code">RC10 / Uncertain receipt</p>
-            <h3>The action may have started. Certainty was not invented.</h3>
+            <h3>The action may have started Certainty was not invented</h3>
             <p>The separate local verifier observed one effect in the synthetic path, but Release Core could not establish a trustworthy receipt. The state required reconciliation and the path did not retry automatically.</p>
             <div class="proof-result"><strong>UNKNOWN / RECONCILIATION REQUIRED</strong><span>1 verifier-observed local effect / 0 automatic retries</span></div>
           </div>
@@ -102,7 +102,7 @@
         <article class="proof-scenario rc01">
           <div>
             <p class="proof-scenario-code">RC01 / Exact match</p>
-            <h3>The reviewed state remained valid. The path completed once.</h3>
+            <h3>The reviewed state remained valid The path completed once</h3>
             <p>The exact reviewed state reached the boundary, one controlled action completed, and one linked receipt remained available for readback.</p>
             <div class="proof-result"><strong>COMPLETED ONCE</strong><span>1 action / 1 linked receipt</span></div>
           </div>

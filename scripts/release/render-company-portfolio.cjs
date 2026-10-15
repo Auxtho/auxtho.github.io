@@ -4,7 +4,7 @@ const vm=require('node:vm');
 const root=path.resolve(__dirname,'../..');
 const script=fs.readdirSync(path.join(root,'assets/portfolio-20261009')).find(n=>/^app\.[a-f0-9]{64}\.js$/.test(n));
 const code=fs.readFileSync(path.join(root,'assets/portfolio-20261009',script),'utf8');
-function render(route){
+function render(route,language='en'){
  const nodes=new Map();
  function element(selector){
   if(nodes.has(selector))return nodes.get(selector);
@@ -12,8 +12,8 @@ function render(route){
   nodes.set(selector,node);return node;
  }
  const document={documentElement:{},title:'',querySelector:element,querySelectorAll(){return []},addEventListener(){}};
- vm.runInNewContext(code,{document,location:{pathname:route,search:'?lang=en',hash:''},URLSearchParams,matchMedia(){return {matches:false,addEventListener(){}}},requestAnimationFrame(fn){fn()}},{timeout:2000,filename:script});
- return {route,main:element('#main').innerHTML,footer:element('.site-footer').innerHTML};
+ vm.runInNewContext(code,{document,location:{pathname:route,search:'?lang='+language,hash:''},URLSearchParams,matchMedia(){return {matches:false,addEventListener(){}}},requestAnimationFrame(fn){fn()}},{timeout:2000,filename:script});
+ return {route,main:element('#main').innerHTML,footer:element('.site-footer').innerHTML,nav:element('.desktop-nav').innerHTML};
 }
 if(require.main===module)process.stdout.write(JSON.stringify(['/',...['auxtho','moirion','agent-runner','ardamire','metdol'].map(id=>'/products/'+id+'/')].map(render)));
 module.exports={render};

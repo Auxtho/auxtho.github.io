@@ -18,7 +18,7 @@ test('All six pages use the original Auxtho favicon and Apple touch icon',()=>{
   assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,relative))).digest('hex'),expected);
  }
 });
-const appPath=path.join(root,"assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js");
+const appPath=path.join(root,"assets/portfolio-20261009/app.34ba679d8bd8db80112b3f6843d9c6a352a46c1818bec6a1a456507af3ed5fd7.js");
 test('Ardamire presents implemented controls and bounded tests without supplier or internal milestone detail',()=>{
  const js=fs.readFileSync(appPath,'utf8');
  const data=JSON.parse(js.split('\n').find(l=>l.startsWith('const products=')).slice('const products='.length).replace(/;$/,''));
@@ -82,6 +82,45 @@ test('Tracking is relaxed without changing type sizes or media',()=>{
  assert.doesNotMatch(css,/letter-spacing:\s*[^;}]*%/);
 });
 
+test('Heading punctuation removes sentence periods but preserves commas, questions, decimals and addresses',()=>{
+ const js=fs.readFileSync(appPath,'utf8');
+ const helper=js.split('\n').find(line=>line.startsWith('function headingCopy('));
+ const clean=vm.runInNewContext(helper+';headingCopy');
+ assert.equal(clean('Controls that act.<br>Records you can inspect.'),'Controls that act<br>Records you can inspect');
+ assert.equal(clean('근거,<br>사람의 판단.'),'근거,<br>사람의 판단');
+ assert.equal(clean('Validate, then apply.'),'Validate, then apply');
+ assert.equal(clean('Version 2.5, auxtho.com and hello@auxtho.com'),'Version 2.5, auxtho.com and hello@auxtho.com');
+ assert.equal(clean('What would you trust AI to do?'),'What would you trust AI to do?');
+});
+
+test('All public HTML headings follow the main-site punctuation convention',()=>{
+ const parse5=require('parse5');
+ const manifest=JSON.parse(fs.readFileSync(path.join(root,'scripts/release/public-files.json'),'utf8'));
+ let pages=0,headings=0;
+ function inspect(node,relative){
+  const cls=node.attrs?.find(a=>a.name==='class')?.value||'';
+  if(/^h[1-6]$/.test(node.tagName||'')||cls.split(/\s+/).includes('hero-heading')){
+   const text=n=>n.nodeName==='#text'?n.value:n.tagName==='br'?'\n':(n.childNodes||[]).map(text).join('');
+   assert.doesNotMatch(text(node),/\.(?=\s|$)/,relative);headings++;
+  }
+  for(const child of node.childNodes||[])inspect(child,relative);
+ }
+ for(const relative of manifest.paths.filter(p=>p.endsWith('.html'))){
+  inspect(parse5.parse(fs.readFileSync(path.join(root,relative.slice(1)),'utf8')),relative);pages++;
+ }
+ assert.equal(pages,26);assert.ok(headings>250);
+});
+
+test('Bilingual portfolio rendering keeps periods out of headings after product changes',()=>{
+ const {render}=require('../scripts/release/render-company-portfolio.cjs');
+ for(const lang of ['en','ko'])for(const route of ['/',...['auxtho','moirion','ardamire','metdol','agent-runner'].map(id=>'/products/'+id+'/')]){
+  const markup=render(route,lang).main;
+  for(const match of markup.matchAll(/<h[1-6]\b[^>]*>([\s\S]*?)<\/h[1-6]>/g)){
+   assert.doesNotMatch(match[1].replace(/<[^>]*>/g,' '),/\.(?=\s|$)/,lang+':'+route);
+  }
+ }
+});
+
 
 test('New Moirion capture copies are unchanged and have correct media signatures',()=>{
  const expected={"moirion-mac-write-20261009.jpg":"8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c","moirion-mac-archive-20261009.jpg":"43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd","moirion-mac-talk-20261009.jpg":"b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25","moirion-iphone-welcome-20261009.png":"65bd275819cc17f911fb1b96d3c06e41003d78616d36fcf7ef5e2520a0fdc335","moirion-iphone-style-20261009.png":"6d0c0740445b42e4fa389082a4fef9066afd45c78c5746414cbe056662f19212","moirion-iphone-write-20261009.png":"2e9e28bed3a6300a9326aeddc493e6de2c616ce28c5d2881765aced0c98ddc2e","moirion-iphone-archive-20261009.png":"cb92c377940a42a7059442a82621ac2611b4df79959436f901a5f094a555e069","moirion-iphone-entry-20261009.png":"4d2416272019b928811833ac06ca9656e78901aa0354e0e4270afcd59ce06b8e","moirion-iphone-ondevice-20261009.png":"086b4f68eb84efe1bc649c9ce31aff94150aa71d1d24fa85a498db30ee77008d","moirion-iphone-calendar-20261009.png":"f6d3029441258e8c45a14d49f025e478e1c9f4fc26321d57960e792b58911a34"};
@@ -115,13 +154,13 @@ test('Public package preserves reviewed portfolio bytes and excludes private pre
  assert.doesNotMatch(js,/Local preview|로컬 디자인|preview-bar/);
  for(const route of ['/privacy.html','/terms.html','/evidence-notes.html'])assert.ok(js.includes(route),route);
  assert.ok(manifest.paths.includes('/proof/workflow-overview/index.html'));
- const expected={"assets/portfolio-20261009/agent-runner-office.mp4":"deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e","assets/portfolio-20261009/agent-runner-office.png":"7a492606d9777507db1b861ca853cb980efd88a2deb141fda651bb765f775cda","assets/portfolio-20261009/agent-runner-work.png":"446c12de625dae541852534e383555e09c777b31c4917ef6d65ddbeedf2447b5","assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js":"6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6","assets/portfolio-20261009/ardamire-console-redacted.png":"adfbb9d12f1f5c1b4d47ee158a0dee209bbe08546ee8bfb536ef21d79c3b794b","assets/portfolio-20261009/json.png":"c44f79af68559b78f277e268e99e5d9062d0dbc2aac92d70cf3028937ed20685","assets/portfolio-20261009/logo-white.svg":"a3b6cb0ab2461fcd6e4a98f147c0a04416801d3caadc77539a02bba8ab19426f","assets/portfolio-20261009/metdol-phone.png":"682fc33a3a82405e2858408306469b9bec91531a7a829b9007a4df1b47db8603","assets/portfolio-20261009/moirion-archive.png":"375e3ebaecc872b779db56c689735dcf0908e7bd9ce9e6e556484ad5d37d5aae","assets/portfolio-20261009/moirion-ask.png":"f53bd020371d35d8c81e9e90109a44150eb8c093a0993667bd324645372cefb1","assets/portfolio-20261009/moirion-iphone-archive-20261009.png":"cb92c377940a42a7059442a82621ac2611b4df79959436f901a5f094a555e069","assets/portfolio-20261009/moirion-iphone-calendar-20261009.png":"f6d3029441258e8c45a14d49f025e478e1c9f4fc26321d57960e792b58911a34","assets/portfolio-20261009/moirion-iphone-entry-20261009.png":"4d2416272019b928811833ac06ca9656e78901aa0354e0e4270afcd59ce06b8e","assets/portfolio-20261009/moirion-iphone-ondevice-20261009.png":"086b4f68eb84efe1bc649c9ce31aff94150aa71d1d24fa85a498db30ee77008d","assets/portfolio-20261009/moirion-iphone-style-20261009.png":"6d0c0740445b42e4fa389082a4fef9066afd45c78c5746414cbe056662f19212","assets/portfolio-20261009/moirion-iphone-welcome-20261009.png":"65bd275819cc17f911fb1b96d3c06e41003d78616d36fcf7ef5e2520a0fdc335","assets/portfolio-20261009/moirion-iphone-write-20261009.png":"2e9e28bed3a6300a9326aeddc493e6de2c616ce28c5d2881765aced0c98ddc2e","assets/portfolio-20261009/moirion-mac-a4-20261009.jpg":"2471d9c00cc9025e43c5d942062dfd7fc6bb8d60425d17db81a1d7b0085064ef","assets/portfolio-20261009/moirion-mac-archive-20261009.jpg":"43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd","assets/portfolio-20261009/moirion-mac-draw-20261009.jpg":"f7e0046508eacd3d2a822f836a2b8e5e1a2c239e73e6ed6d788352bb156b11d4","assets/portfolio-20261009/moirion-mac-glass-20261009.jpg":"6931cdcf9607b260074992d0a7bedb63d6c320fc4932589922ea74987c7b757b","assets/portfolio-20261009/moirion-mac-marker-tools-20261009.jpg":"670b58bd880dacde03ae71f114b370e1daacfa4d2f775658c4287ea04299ed76","assets/portfolio-20261009/moirion-mac-midnight-20261009.jpg":"38bd457db0ab7b1b9d1960b9e0b698fbad228c24a3bf81b12d292e64cd95c7e5","assets/portfolio-20261009/moirion-mac-notebook-20261009.jpg":"ba7aa67261b2c1fdc59317ade46ce569dd2437b4ff8763b058dd0ca3ece62739","assets/portfolio-20261009/moirion-mac-talk-20261009.jpg":"b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25","assets/portfolio-20261009/moirion-mac-write-20261009.jpg":"8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c","assets/portfolio-20261009/nvidia-inception-member.svg":"d2f1fc25616ba02933506b21fa668289169e58ac4c76b5f7f209f2632f289f2e","assets/portfolio-20261009/pdf.png":"7f204be25135d986daa45cfd2d3f809d4dc4f9542c569420d97d658b0ed6df91","assets/portfolio-20261009/source.png":"fa4400c231bb2a3ebc697566392abe5c2511c91a7f0bb69b0c49f0fe7489bf8c","assets/portfolio-20261009/styles.css":"6657f6e34390def686d53b05676cbb6a1973c6b959420e63cea2893877b8ab08","assets/portfolio-20261009/version.png":"488ba192f7541b9fd0531a6492ff9b43013158e8cd486fd6dd06219a4c2e2c46","assets/portfolio-20261009/video-poster.png":"ab0a9da8695a942fb458aa79dfee4bea848600e77df50bfa7f3a9ca33ee1970d","assets/portfolio-20261009/walkthrough.mp4":"2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492"};
+ const expected={"assets/portfolio-20261009/agent-runner-office.mp4":"deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e","assets/portfolio-20261009/agent-runner-office.png":"7a492606d9777507db1b861ca853cb980efd88a2deb141fda651bb765f775cda","assets/portfolio-20261009/agent-runner-work.png":"446c12de625dae541852534e383555e09c777b31c4917ef6d65ddbeedf2447b5","assets/portfolio-20261009/app.34ba679d8bd8db80112b3f6843d9c6a352a46c1818bec6a1a456507af3ed5fd7.js":"34ba679d8bd8db80112b3f6843d9c6a352a46c1818bec6a1a456507af3ed5fd7","assets/portfolio-20261009/ardamire-console-redacted.png":"adfbb9d12f1f5c1b4d47ee158a0dee209bbe08546ee8bfb536ef21d79c3b794b","assets/portfolio-20261009/json.png":"c44f79af68559b78f277e268e99e5d9062d0dbc2aac92d70cf3028937ed20685","assets/portfolio-20261009/logo-white.svg":"a3b6cb0ab2461fcd6e4a98f147c0a04416801d3caadc77539a02bba8ab19426f","assets/portfolio-20261009/metdol-phone.png":"682fc33a3a82405e2858408306469b9bec91531a7a829b9007a4df1b47db8603","assets/portfolio-20261009/moirion-archive.png":"375e3ebaecc872b779db56c689735dcf0908e7bd9ce9e6e556484ad5d37d5aae","assets/portfolio-20261009/moirion-ask.png":"f53bd020371d35d8c81e9e90109a44150eb8c093a0993667bd324645372cefb1","assets/portfolio-20261009/moirion-iphone-archive-20261009.png":"cb92c377940a42a7059442a82621ac2611b4df79959436f901a5f094a555e069","assets/portfolio-20261009/moirion-iphone-calendar-20261009.png":"f6d3029441258e8c45a14d49f025e478e1c9f4fc26321d57960e792b58911a34","assets/portfolio-20261009/moirion-iphone-entry-20261009.png":"4d2416272019b928811833ac06ca9656e78901aa0354e0e4270afcd59ce06b8e","assets/portfolio-20261009/moirion-iphone-ondevice-20261009.png":"086b4f68eb84efe1bc649c9ce31aff94150aa71d1d24fa85a498db30ee77008d","assets/portfolio-20261009/moirion-iphone-style-20261009.png":"6d0c0740445b42e4fa389082a4fef9066afd45c78c5746414cbe056662f19212","assets/portfolio-20261009/moirion-iphone-welcome-20261009.png":"65bd275819cc17f911fb1b96d3c06e41003d78616d36fcf7ef5e2520a0fdc335","assets/portfolio-20261009/moirion-iphone-write-20261009.png":"2e9e28bed3a6300a9326aeddc493e6de2c616ce28c5d2881765aced0c98ddc2e","assets/portfolio-20261009/moirion-mac-a4-20261009.jpg":"2471d9c00cc9025e43c5d942062dfd7fc6bb8d60425d17db81a1d7b0085064ef","assets/portfolio-20261009/moirion-mac-archive-20261009.jpg":"43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd","assets/portfolio-20261009/moirion-mac-draw-20261009.jpg":"f7e0046508eacd3d2a822f836a2b8e5e1a2c239e73e6ed6d788352bb156b11d4","assets/portfolio-20261009/moirion-mac-glass-20261009.jpg":"6931cdcf9607b260074992d0a7bedb63d6c320fc4932589922ea74987c7b757b","assets/portfolio-20261009/moirion-mac-marker-tools-20261009.jpg":"670b58bd880dacde03ae71f114b370e1daacfa4d2f775658c4287ea04299ed76","assets/portfolio-20261009/moirion-mac-midnight-20261009.jpg":"38bd457db0ab7b1b9d1960b9e0b698fbad228c24a3bf81b12d292e64cd95c7e5","assets/portfolio-20261009/moirion-mac-notebook-20261009.jpg":"ba7aa67261b2c1fdc59317ade46ce569dd2437b4ff8763b058dd0ca3ece62739","assets/portfolio-20261009/moirion-mac-talk-20261009.jpg":"b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25","assets/portfolio-20261009/moirion-mac-write-20261009.jpg":"8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c","assets/portfolio-20261009/nvidia-inception-member.svg":"d2f1fc25616ba02933506b21fa668289169e58ac4c76b5f7f209f2632f289f2e","assets/portfolio-20261009/pdf.png":"7f204be25135d986daa45cfd2d3f809d4dc4f9542c569420d97d658b0ed6df91","assets/portfolio-20261009/source.png":"fa4400c231bb2a3ebc697566392abe5c2511c91a7f0bb69b0c49f0fe7489bf8c","assets/portfolio-20261009/styles.css":"99a51b036c093c0a64dc0643cba8f541a1ce8d7afa38e4a292fbb74bcb78987b","assets/portfolio-20261009/version.png":"488ba192f7541b9fd0531a6492ff9b43013158e8cd486fd6dd06219a4c2e2c46","assets/portfolio-20261009/video-poster.png":"ab0a9da8695a942fb458aa79dfee4bea848600e77df50bfa7f3a9ca33ee1970d","assets/portfolio-20261009/walkthrough.mp4":"2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492"};
  for(const [relative,hash] of Object.entries(expected))assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,relative))).digest('hex'),hash,relative);
 });
 test('Portfolio gates reject changes to reviewed code, style, screenshot and film',()=>{
  const os=require('node:os'),{buildArtifact}=require('../scripts/release/public-artifact.cjs');
  const manifest=JSON.parse(fs.readFileSync(path.join(root,'scripts/release/public-files.json'),'utf8'));
- for(const selected of ["assets/portfolio-20261009/app.6bb016347ade2647110f8855a9f2e53143f5d1ebdd3f7345e891fd2669f28dc6.js",'assets/portfolio-20261009/styles.css','assets/portfolio-20261009/ardamire-console-redacted.png','assets/portfolio-20261009/walkthrough.mp4']){
+ for(const selected of ["assets/portfolio-20261009/app.34ba679d8bd8db80112b3f6843d9c6a352a46c1818bec6a1a456507af3ed5fd7.js",'assets/portfolio-20261009/styles.css','assets/portfolio-20261009/ardamire-console-redacted.png','assets/portfolio-20261009/walkthrough.mp4']){
   const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'auxtho-portfolio-gate-'));
   try{
    const source=path.join(temporary,'source');fs.mkdirSync(source);

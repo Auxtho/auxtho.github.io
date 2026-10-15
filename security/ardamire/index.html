@@ -42,7 +42,7 @@
     <section class="technical-detail-hero proof-hero">
       <div class="technical-detail-hero-inner">
         <p class="technical-detail-kicker">Ardamire Defense Layer</p>
-        <h1 class="technical-detail-title">Controls that act.<br>Records you can inspect.</h1>
+        <h1 class="technical-detail-title">Controls that act<br>Records you can inspect</h1>
         <p class="technical-detail-summary">Ardamire is Auxtho's internal defense layer for AI-assisted document workflows and their backend. It grew out of our work on controlled execution and retries.</p>
         <p class="proof-hero-detail">Our recorded April implementation connected related anomaly signals, targeted holds, replay-evidence checks and separately reviewed defensive changes.</p>
         <div class="proof-actions">
@@ -64,7 +64,7 @@
     <section class="technical-detail-section" id="recorded-controls">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">Implemented controls / recorded April tests</p>
-        <h2 class="technical-detail-heading">The next action faced stronger controls.</h2>
+        <h2 class="technical-detail-heading">The next action faced stronger controls</h2>
         <p class="technical-detail-lead">Within the tested operator and workflow context, related anomaly signals accumulated. Additional verification or a hold governed what could happen next.</p>
         <div class="proof-control-grid">
           <article class="proof-card"><span class="proof-number">01</span><h3>Keep related signals together</h3><p>Different authentication warnings were tracked together within that context, so subsequent actions could face stronger checks.</p><p class="proof-source-note">April 12, 2026 · Controlled service and route tests</p></article>
@@ -86,14 +86,14 @@
     <section class="technical-detail-section" id="screen-records">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">Actual screen excerpts / April 13, 2026</p>
-        <h2 class="technical-detail-heading">Keep the state. Keep the reason.</h2>
+        <h2 class="technical-detail-heading">Keep the state Keep the reason</h2>
         <p class="technical-detail-lead">These are cropped original screen records from controlled local tests with seeded test data, not reconstructed UI or footage of a new attack.</p>
         <div class="proof-excerpt-grid">
-          <figure class="proof-excerpt"><div class="proof-excerpt-image"><img src="/assets/ardamire-records/recorded_containment_excerpt.png?sha256=41d83c479762902dc2e52df7455aaa9e54fa3e5dbd22b8da15558cadffd89ae0" alt="Original containment-state card from the April local test" width="330" height="132" loading="lazy"></div><figcaption><h3>The object remained contained.</h3><p>The screen retains the containment state. A hold did not itself resolve or close the incident.</p></figcaption></figure>
-          <figure class="proof-excerpt"><div class="proof-excerpt-image"><img src="/assets/ardamire-records/recorded_replay_posture_excerpt.png?sha256=d93a14551d4fd4781fa864f5f9990600a984ab97cb52bdf3898f7d8e412c029f" alt="Original replay-evidence posture card: one verified replay, eight excluded results and seven high-risk exclusions" width="241" height="133" loading="lazy"></div><figcaption><h3>Keep the valid record. Exclude the invalid result.</h3><p>One verified baseline replay remained in accepted evidence. Eight invalid results were excluded, including seven marked high risk. The excluded results and their reasons stayed available for investigation.</p><dl class="proof-replay-counts"><div><dt>Verified baseline retained</dt><dd>1</dd></div><div><dt>Invalid results excluded</dt><dd>8</dd></div><div><dt>High risk, within the eight</dt><dd>7</dd></div></dl></figcaption></figure>
+          <figure class="proof-excerpt"><div class="proof-excerpt-image"><img src="/assets/ardamire-records/recorded_containment_excerpt.png?sha256=41d83c479762902dc2e52df7455aaa9e54fa3e5dbd22b8da15558cadffd89ae0" alt="Original containment-state card from the April local test" width="330" height="132" loading="lazy"></div><figcaption><h3>The object remained contained</h3><p>The screen retains the containment state. A hold did not itself resolve or close the incident.</p></figcaption></figure>
+          <figure class="proof-excerpt"><div class="proof-excerpt-image"><img src="/assets/ardamire-records/recorded_replay_posture_excerpt.png?sha256=d93a14551d4fd4781fa864f5f9990600a984ab97cb52bdf3898f7d8e412c029f" alt="Original replay-evidence posture card: one verified replay, eight excluded results and seven high-risk exclusions" width="241" height="133" loading="lazy"></div><figcaption><h3>Keep the valid record Exclude the invalid result</h3><p>One verified baseline replay remained in accepted evidence. Eight invalid results were excluded, including seven marked high risk. The excluded results and their reasons stayed available for investigation.</p><dl class="proof-replay-counts"><div><dt>Verified baseline retained</dt><dd>1</dd></div><div><dt>Invalid results excluded</dt><dd>8</dd></div><div><dt>High risk, within the eight</dt><dd>7</dd></div></dl></figcaption></figure>
         </div>
         <p class="proof-source-note">Here, “verified replay” means that the result passed integrity and recorded request/execution-binding checks. It does not establish the truth of every AI-generated document or finding.</p>
-        <div class="proof-review"><p class="technical-detail-label">A separate review for a defensive change</p><h3>The requester could not approve their own reactivation.</h3><p>In the recorded local workflow, a disabled defense-rule proposal could return to shadow evaluation only after a request and review by a different authorized person. The requester could neither review nor apply that reactivation; applying it required the approved reviewer. Shadow evaluation assessed the proposal without changing production rules.</p></div>
+        <div class="proof-review"><p class="technical-detail-label">A separate review for a defensive change</p><h3>The requester could not approve their own reactivation</h3><p>In the recorded local workflow, a disabled defense-rule proposal could return to shadow evaluation only after a request and review by a different authorized person. The requester could neither review nor apply that reactivation; applying it required the approved reviewer. Shadow evaluation assessed the proposal without changing production rules.</p></div>
         <p class="proof-source-note">Original pixels retained; surrounding internal identifiers removed by cropping. Replay-result counts are not attack counts.</p>
       </div>
     </section>
@@ -101,7 +101,7 @@
     <section class="technical-detail-section" id="backend-tests">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">Auxtho-owned live backend / April 15, 2026</p>
-        <h2 class="technical-detail-heading">The action stopped.<br>The record stayed readable.</h2>
+        <h2 class="technical-detail-heading">The action stopped<br>The record stayed readable</h2>
         <p class="technical-detail-lead">An unknown operator or wrong token issuer was rejected. Replay attempts without a required prior step, or after a recorded failure, were rejected. Incident detail stayed available.</p>
         <div class="proof-test-grid">
           <article class="proof-test"><strong>10</strong><h3>Identity / state checks</h3><p>Identity, state transitions and permitted requests.</p><span class="proof-pass">0 expectation failures</span></article>
@@ -109,9 +109,9 @@
           <article class="proof-test"><strong>1,420</strong><h3>Requests in extended soak</h3><p>Normal reads and invalid requests under sustained pressure.</p><span class="proof-pass">0 expectation failures</span></article>
         </div>
         <p class="proof-source-note">Three separate recorded suites on Auxtho's own then-live backend. Counts include normal requests; they are not counts of attacks prevented.</p>
-        <div class="proof-positive-control"><h3>Allowed work mattered too.</h3><p>The identity/state suite recorded five expected successful requests alongside its rejection checks. After a failure was recorded, another replay was blocked, but the permitted incident-detail read still succeeded.</p></div>
+        <div class="proof-positive-control"><h3>Allowed work mattered too</h3><p>The identity/state suite recorded five expected successful requests alongside its rejection checks. After a failure was recorded, another replay was blocked, but the permitted incident-detail read still succeeded.</p></div>
         <div class="proof-case">
-          <h3>One incident. One bounded request. A readable result.</h3>
+          <h3>One incident One bounded request A readable result</h3>
           <p>These steps came from the same recorded incident and request in the identity/state suite—not separate cases assembled into a success story.</p>
           <ol class="proof-case-flow">
             <li><span>C01 · 200</span><strong>Create the test incident</strong><p>Incident intake succeeded.</p></li>
@@ -145,12 +145,12 @@
     <section class="technical-detail-section" id="engineering-record">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">Connected execution foundations / April 11–12, 2026 KST</p>
-        <h2 class="technical-detail-heading">Find the failure.<br>Fix the path. Run it again.</h2>
+        <h2 class="technical-detail-heading">Find the failure<br>Fix the path Run it again</h2>
         <p class="technical-detail-lead">EP19 blocker records informed Ardamire's incident and signal-history work while Ardamire development also proceeded in parallel. The related EP19 operator-runtime program tested execution and retry behavior. The original run shown here completed 80 cycles and recorded six scenario failures. After retry handling and test isolation were corrected, the rerun completed 80 cycles with none; scenario allocations changed between runs, so this was not a matched attack-learning comparison.</p>
         <ol class="proof-timeline">
-          <li><span>01 / Find</span><h3>Six failures stayed on the record.</h3><p>Failures concentrated in retry creation, acknowledgment-to-retry timing and timeout progression.</p></li>
-          <li><span>02 / Correct</span><h3>Correct the path and the test setup.</h3><p>Retry creation gained duplicate-request handling; the runtime supervisor was reset between test cycles.</p></li>
-          <li><span>03 / Verify</span><h3>Complete another 80-cycle program.</h3><p>The rerun recorded no scenario failures. Its changed scenario allocations do not establish an attack-learning improvement.</p></li>
+          <li><span>01 / Find</span><h3>Six failures stayed on the record</h3><p>Failures concentrated in retry creation, acknowledgment-to-retry timing and timeout progression.</p></li>
+          <li><span>02 / Correct</span><h3>Correct the path and the test setup</h3><p>Retry creation gained duplicate-request handling; the runtime supervisor was reset between test cycles.</p></li>
+          <li><span>03 / Verify</span><h3>Complete another 80-cycle program</h3><p>The rerun recorded no scenario failures. Its changed scenario allocations do not establish an attack-learning improvement.</p></li>
         </ol>
         <div class="proof-table-wrap"><table class="proof-phase-table">
           <caption>Recorded results by phase — original run and corrected rerun</caption>
@@ -172,7 +172,7 @@
     <section class="technical-detail-section" id="evidence-records">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">Read the evidence</p>
-        <h2 class="technical-detail-heading">Built. Tested. Recorded.</h2>
+        <h2 class="technical-detail-heading">Built Tested Recorded</h2>
         <p class="technical-detail-lead">The four-page record covers Ardamire's April implementation and tests. The separate web record adds the execution-foundation history shown above.</p>
         <div class="proof-record-links">
           <a href="/assets/ardamire-records/Ardamire_April_2026_Implementation_and_Tests.pdf" target="_blank" rel="noopener"><span>Ardamire implementation &amp; tests</span><small>4-page PDF · Original published version · 58 KB</small><b aria-hidden="true">↗</b></a>
@@ -185,7 +185,7 @@
     <section class="technical-detail-section ardamire-motion-section" id="control-loop">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">Model explanation / separate from test evidence</p>
-        <h2 class="technical-detail-heading">See the modeled path from detection to verification before rollout.</h2>
+        <h2 class="technical-detail-heading">See the modeled path from detection to verification before rollout</h2>
         <p class="technical-detail-lead">This illustrative sequence explains the control structure. It is not a live incident stream or a replay of the recorded tests above.</p>
         <div class="ardamire-motion" data-ardamire-motion data-state="idle">
           <div class="ardamire-motion-header"><div><p class="ardamire-motion-eyebrow">Ardamire / six-stage control sequence</p><p class="ardamire-motion-disclosure">Interactive control sequence / modeled signal scenario</p></div><div class="ardamire-motion-controls" aria-label="Ardamire sequence controls"><button type="button" data-ardamire-play>Play</button><button type="button" data-ardamire-pause disabled>Pause</button><button type="button" data-ardamire-replay>Replay</button><button type="button" data-ardamire-continue hidden>Continue to verification</button></div></div>
@@ -206,7 +206,7 @@
     <section class="technical-detail-section">
       <div class="technical-detail-section-inner">
         <p class="technical-detail-label">One controlled workflow</p>
-        <h2 class="technical-detail-heading">Keep the signal, decision and result connected.</h2>
+        <h2 class="technical-detail-heading">Keep the signal, decision and result connected</h2>
         <p class="technical-detail-lead">Start with one Auxtho-managed workflow. Identify the affected work, the supporting evidence, the responsible reviewer and the verification required before a defensive change advances.</p>
         <div class="technical-reference"><div><h3>Discuss a workflow</h3><p>Ardamire's scope is Auxtho's workflow and backend, not the customer's entire security environment.</p></div><a href="mailto:hello@auxtho.com?subject=Discuss%20a%20defensive-change%20workflow">Discuss one workflow</a></div>
       </div>

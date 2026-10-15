@@ -99,7 +99,7 @@ test('canonical metadata, bilingual mode and accessible evidence remain present'
   assert.match(script,/showModal\(\)/);
   assert.match(html,/<noscript>/);
 });
-test('archived financial overview changes only by the reviewed Ardamire record card; proof and release identity remain untouched',() => {
+test('archived financial overview preserves the reviewed card and non-heading bytes; only heading periods change on proof pages',() => {
   for(const p of ['index.html','release.json','proof/singapore-source-review/index.html','capabilities/index.html','assets/capabilities/manifest.json']){
     const baseline=execFileSync('git',['show','23e28e26c995f340df151d51e4177d22e30aeb48:'+p],{cwd:process.env.AUXTHO_PUBLIC_VERIFY_GIT_ROOT || root,windowsHide:true});
     let current=fs.readFileSync(path.join(root,p==='index.html'?'proof/workflow-overview/index.html':p));
@@ -113,7 +113,10 @@ test('archived financial overview changes only by the reviewed Ardamire record c
         .replace('<em>Inspect Ardamire records <b aria-hidden="true">&rarr;</b></em>','<em>Explore Ardamire <b aria-hidden="true">&rarr;</b></em>');
       current=Buffer.from(restoredCard);
     }
-    assert.equal(hash(current),hash(baseline),p);
+    const headingsOnly = value => value
+      .replace(/(<h[1-6]\b[^>]*>)([\s\S]*?)(<\/h[1-6]>)/g, (_, open, text, close) => open + text.replace(/\.(?=\s|<|$)/g,'') + close)
+      .replace('app.eb0dad8c9eb83e2e9ec71879749daea7fcad30d3ffee6fdc69fc6aba18139665.js','app.238a061afe45a87f67b1cba921e686127f82b9fbee382d4758451c0f16d6f11e.js');
+    assert.equal(hash(current),hash(Buffer.from(headingsOnly(baseline.toString('utf8')))),p);
   }
 });
 test('the short demo note leads with the workflow and detailed evidence stays available',() => {

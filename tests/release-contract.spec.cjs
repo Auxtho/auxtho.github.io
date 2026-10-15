@@ -460,7 +460,7 @@ test('candidate artifact rejects unreviewed assets and non-UTF-8 public text enc
     },
     {
       name: 'UTF-16LE content-addressed script',
-      relative: 'assets/app.eb0dad8c9eb83e2e9ec71879749daea7fcad30d3ffee6fdc69fc6aba18139665.js',
+      relative: 'assets/app.238a061afe45a87f67b1cba921e686127f82b9fbee382d4758451c0f16d6f11e.js',
       bytes: Buffer.concat([Buffer.from([0xff, 0xfe]), Buffer.from('window.test = true;\n', 'utf16le')]),
       expected: /public text file must not contain a byte-order mark/,
     },
@@ -1449,7 +1449,7 @@ test('first screen presents evidence-backed review and controlled release in pla
     /<article class="sales-product-band sales-product-band-source-review">[\s\S]*?<\/article>/i,
   )?.[0] || '';
   assert.match(hero, /For regulated financial teams/i);
-  assert.match(hero, /AI can do the work\. A person must own the consequence/i);
+  assert.match(hero, /AI can do the work A person must own the consequence/i);
   assert.match(hero, /performs repeatable source and rule checks for AI-assisted financial complaint responses/i);
   assert.match(hero, /routes exceptions to the accountable reviewer/i);
   assert.match(hero, /reviewer makes the final decision/i);
@@ -1607,7 +1607,7 @@ test('Singapore source-review proof preserves exact source roles, claim boundary
   assert.match(page, /Not eligible/i);
   assert.match(page, /Changed artifact blocked/i);
   assert.match(page, /Clean capture/i);
-  assert.match(page, /Open Evidence\. Read the exact wording on the original page/i);
+  assert.match(page, /Open Evidence Read the exact wording on the original page/i);
   assert.match(page, /exact-source-page\.png\?sha256=7210f9c7[0-9a-f]{56}/i);
   assert.match(page, /Follow the source identity into the human decision/i);
   assert.match(page, /Frozen source traceability record/i);
@@ -1787,7 +1787,7 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(ardamire, /<meta name="description" content="Inspect Ardamire's recorded April implementation/i);
   assert.match(ardamire, /<meta property="og:description" content="Recorded April 2026 defense controls/i);
   assert.match(ardamire, /Ardamire Defense Layer/i);
-  assert.match(ardamire, /Controls that act\.<br>Records you can inspect\./);
+  assert.match(ardamire, /Controls that act<br>Records you can inspect<\/h1>/);
   assert.match(ardamire, /Model explanation \/ separate from test evidence/);
   assert.match(ardamire, /Detect/i);
   assert.match(ardamire, /Quarantine/i);
@@ -1798,7 +1798,7 @@ test('public research and trust routes are stable, scoped, and buyer-readable', 
   assert.match(ardamire, /The requester could neither review nor apply that reactivation/);
   assert.match(ardamire, /review by a different authorized person/);
   assert.match(ardamire, /Interactive control sequence \/ modeled signal scenario/i);
-  assert.match(ardamire, /One incident\. One bounded request\. A readable result\./);
+  assert.match(ardamire, /One incident One bounded request A readable result<\/h3>/);
   assert.match(ardamire, /Earlier pressure test: two client timeouts, then a separate rerun/);
   assert.doesNotMatch(ardamire, /Ready to run sequence|Teams can assemble|Record the decision/i);
   assert.match(index, /RECORDED DEFENSE CONTROLS/i);

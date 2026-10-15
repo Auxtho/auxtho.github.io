@@ -201,7 +201,7 @@ test('published WhiteCell preserves bilingual roles, human oversight, controls a
       humanBody: 'Live Operator Wall에서 권한 있는 담당자가 사건·근거·조치 상태와 미확인 사항을 살핍니다. 새로운 방어 정책과 중요한 변경·복구는 검증 후 사람이 승인하며, 최종 책임도 사람이 맡습니다.',
       oversightNote: '미리 승인된 범위의 보호 대응과 사람의 감독은 함께 작동합니다. 화면을 보는 행위가 집행 권한을 대신하지는 않습니다.',
       steps: ['탐지', '대상 격리', '격리 환경 재현', '패턴 분석', '방어 개선안', '검증 후 적용'],
-      titles: ['평범한 흐름에서, 다른 신호를 읽다.', '전체가 아니라, 영향받는 대상을.', '운영과 분리해, 같은 원인을 살피다.', '반복된 문구보다, 경계를 넘는 행동을.', '관찰한 근거를, 제한된 개선안으로.', '검증한 것만, 다음 방어에.'],
+      titles: ['평범한 흐름에서, 다른 신호를 읽다', '전체가 아니라, 영향받는 대상을', '운영과 분리해, 같은 원인을 살피다', '반복된 문구보다, 경계를 넘는 행동을', '관찰한 근거를, 제한된 개선안으로', '검증한 것만, 다음 방어에'],
       pause: '움직임 멈추기', resume: '움직임 재생하기', reduced: '동작 줄이기 적용 중', introduction: 'Ardamire WhiteCell 소개 ↗',
     },
     en: {
@@ -215,7 +215,7 @@ test('published WhiteCell preserves bilingual roles, human oversight, controls a
       humanBody: 'Authorised operators use the Live Operator Wall to review cases, evidence, action status and unresolved questions. People verify and approve new defence policies and consequential changes or recovery, and retain final accountability.',
       oversightNote: 'Preauthorised, scoped protection and human oversight work together. Viewing the wall does not confer authority to enforce an action.',
       steps: ['Detect', 'Contain the target', 'Reproduce in isolation', 'Analyse patterns', 'Propose improvements', 'Validate, then apply'],
-      titles: ['Read the difference in an ordinary flow.', 'Contain the target. Scope the impact.', 'Same cause. A separate environment.', 'Beyond repeated words. Understand the action.', 'Turn evidence into a scoped proposal.', 'Validate before the next defence.'],
+      titles: ['Read the difference in an ordinary flow', 'Contain the target Scope the impact', 'Same cause A separate environment', 'Beyond repeated words Understand the action', 'Turn evidence into a scoped proposal', 'Validate before the next defence'],
       pause: 'Pause motion', resume: 'Resume motion', reduced: 'Reduced motion enabled', introduction: 'Explore Ardamire WhiteCell ↗',
     },
   };

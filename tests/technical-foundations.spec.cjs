@@ -391,7 +391,7 @@ for (const detail of [
   },
   {
     route: '/security/ardamire/',
-    title: /Controls that act\.\s*Records you can inspect\./,
+    title: /Controls that act\s*Records you can inspect/,
     flowCount: 0,
   },
 ]) {

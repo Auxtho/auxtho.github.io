@@ -312,3 +312,76 @@ html{scroll-padding-top:calc(var(--header-height) + 18px)}
 /* Shared actions across home and all five detail pages: no filled CTA or diagonal arrows. */
 .solid-link{background:transparent;color:inherit;border-bottom:1px solid currentColor;padding-left:0;padding-right:0}
 .solid-link:hover{background:transparent;color:var(--red);border-bottom-color:var(--red)}
+
+/* Security has its own place between products and the technology behind them. */
+.security-section{padding:84px var(--pad) 90px;background:#171a17;color:var(--white)}
+.security-section .section-heading h2{font-size:clamp(40px,5.5vw,84px);line-height:1.03}
+.security-section .section-heading>p{max-width:390px;color:#c1c6b9}
+.security-section .section-heading .eyebrow{margin-bottom:18px;color:#b4bca9}
+.security-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6vw}
+.security-card{min-width:0}
+.security-card h3{font-size:24px;line-height:1.3;font-weight:400;letter-spacing:-.00625em;margin-top:26px}
+.security-card>p{font-size:14px;line-height:1.75;color:#c1c6b9;margin-top:13px;max-width:540px}
+.security-card>.media-provenance{font-size:12px;color:#aeb7a4;line-height:1.7}
+.security-card .capture-hint{color:#d1d9c8}
+.security-card .line-link{margin-top:15px}
+.security-illustration{position:relative;min-height:400px;border:1px solid #596152;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:radial-gradient(ellipse at 50% 35%,#273127 0%,#151b16 60%,#111612 100%)}
+.security-illustration>p{font-size:14px;letter-spacing:.2em;margin-top:120px}
+.security-illustration>span,.security-boundary span{font-size:12px;line-height:1.6;color:#becbb5}
+.security-cell{position:absolute;top:38px;width:112px;height:112px;border:1px solid #bdcdb2;border-radius:46% 54% 58% 42% / 56% 41% 59% 44%;box-shadow:inset 14px -16px 28px #6f896329,0 0 35px #b7d4a91a}
+.security-cell:after{content:'';position:absolute;inset:25px 31px;border:1px solid #8eaa7d;border-radius:50%;transform:rotate(24deg)}
+.security-boundary{margin-top:16px;min-width:75%;border-top:1px solid #9eae90;border-bottom:1px solid #9eae90;padding:18px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.security-boundary strong{font-size:14px;letter-spacing:.16em;font-weight:500}
+.security-oversight{margin-top:55px;padding-top:30px;border-top:1px solid #74816a;display:grid;grid-template-columns:1fr 1fr;gap:6vw}
+.security-oversight h3{font-size:24px;font-weight:400;line-height:1.3}
+.security-oversight p{font-size:14px;line-height:1.8;color:#c1c6b9;max-width:540px}
+.footer-groups{grid-template-columns:.8fr 1.3fr 1.2fr;gap:30px}
+.bridge-section .role-panel{margin:35px 0}
+.bridge-section .stage-connection{margin-top:35px}
+.bridge-section .stage-connection h3{font-size:24px;font-weight:400;line-height:1.3;margin-bottom:15px}
+.bridge-section .stage-connection p{font-size:16px;line-height:1.85;max-width:900px;color:#525a48}
+@media(max-width:760px){
+ .security-section{padding-top:65px;padding-bottom:65px}
+ .security-section .section-heading h2{font-size:44px;line-height:1.08}
+ .security-grid,.security-oversight{grid-template-columns:1fr;gap:38px}
+ .security-card h3,.security-oversight h3{font-size:27px}
+ .security-card>p{font-size:15px}
+ .security-illustration{min-height:365px}
+ .security-oversight{gap:20px;margin-top:40px}
+ .footer-groups{grid-template-columns:1fr;gap:30px}
+ .security-boundary{min-width:0;width:88%;flex-wrap:wrap;justify-content:center;gap:8px 20px;text-align:center}
+}
+
+/* Shared display scale: quiet headings, unchanged copy and body typography. */
+html[lang] .hero h1{font-size:clamp(48px,6.3vw,104px);line-height:1.04;max-width:1120px;margin:28px 0 30px;text-wrap:pretty}
+html[lang=ko] .hero h1{font-size:clamp(46px,6vw,96px);line-height:1.12;word-break:keep-all}
+html[lang] .intro-section h2{font-size:clamp(32px,3.8vw,60px);line-height:1.12}
+html[lang] .section-heading h2{font-size:clamp(36px,4.1vw,64px);line-height:1.08;text-wrap:balance}
+html[lang] .practice-header h2,html[lang] .film-copy h2{font-size:clamp(34px,3.8vw,60px);line-height:1.1;text-wrap:balance}
+html[lang] .contact-section h2{font-size:clamp(36px,4.5vw,72px);line-height:1.08;text-wrap:balance}
+html[lang=ko] :is(.intro-section,.practice-header,.film-copy) h2{line-height:1.18;word-break:keep-all}
+html[lang=ko] .section-heading h2{font-size:clamp(34px,3.8vw,60px);line-height:1.16;word-break:keep-all}
+html[lang=ko] .contact-section h2{font-size:clamp(34px,4.25vw,68px);line-height:1.16;word-break:keep-all}
+html[lang] .detail-hero h1{font-size:clamp(40px,4.75vw,76px);line-height:1.08;margin:22px 0 26px;overflow-wrap:normal}
+html[lang=ko] .detail-hero h1{line-height:1.1;word-break:keep-all}
+@media(min-width:761px){
+ .hero{min-height:720px;height:min(820px,calc(100svh - 80px))}
+ .hero-copy{padding-top:clamp(64px,6vw,96px)}
+ .intro-section,.in-practice,.film-section{padding-top:88px;padding-bottom:88px}
+ .software-section,.security-section{padding-top:76px;padding-bottom:80px}
+ .contact-section{padding-top:80px;padding-bottom:80px}
+ .section-heading,.practice-header{margin-bottom:44px}
+ .detail-hero{padding-top:clamp(48px,4vw,64px);padding-bottom:64px;gap:6vw}
+ .detail-hero .breadcrumbs{margin-bottom:32px}
+}
+@media(max-width:760px){
+ html[lang] .hero h1{font-size:clamp(34px,9vw,60px);line-height:1.08;margin:24px 0 26px}
+ html[lang=ko] .hero h1{line-height:1.14}
+ html[lang] .intro-section h2{font-size:32px}
+ html[lang] .section-heading h2,html[lang] .practice-header h2{font-size:34px}
+ html[lang] .film-copy h2{font-size:38px}
+ html[lang] .contact-section h2{font-size:36px}
+ html[lang] .detail-hero h1{font-size:clamp(30px,6.6vw,46px);line-height:1.12;margin:20px 0 24px}
+ html[lang=ko] .detail-hero h1{font-size:clamp(30px,8.5vw,46px);line-height:1.14}
+ .detail-hero .breadcrumbs{margin-bottom:28px}
+}

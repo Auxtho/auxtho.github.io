@@ -140,11 +140,11 @@
     });
     q('[data-progress]').textContent = state.stage + ' / 6 · ' + t('step' + state.stage);
     qa('[data-draft]').forEach((e) => { e.innerHTML = c.draft; });
-    q('[data-source-title]').textContent = c.pendingTitle;
+    q('[data-source-title]').textContent = headingCopy(c.pendingTitle);
     q('[data-source-summary]').textContent = c.pendingSub;
-    q('[data-reason-one-title]').textContent = c.reasonOneTitle;
+    q('[data-reason-one-title]').textContent = headingCopy(c.reasonOneTitle);
     q('[data-reason-one]').textContent = c.reasonOne;
-    q('[data-reason-two-title]').textContent = c.reasonTwoTitle;
+    q('[data-reason-two-title]').textContent = headingCopy(c.reasonTwoTitle);
     q('[data-reason-two]').textContent = c.reasonTwo;
     q('[data-source-location]').textContent = c.modalLocation;
     q('[data-source-document]').textContent = c.modalDocument;
@@ -215,11 +215,12 @@
     window.scrollTo({top:0,behavior:'instant'});
     q('[data-start]').focus({preventScroll:true});
   }
+  const headingCopy = value => String(value).replace(/\.(?=\s|$)/g, '');
   function setLanguage(language) {
     state.language=language;
     document.documentElement.lang=language === 'en' ? 'en-SG' : 'ko-KR';
     document.documentElement.dataset.language=language;
-    qa('[data-i18n]').forEach((e) => { e.textContent=t(e.dataset.i18n); });
+    qa('[data-i18n]').forEach((e) => { const value=t(e.dataset.i18n); e.textContent=/^H[1-6]$/.test(e.tagName) ? headingCopy(value) : value; });
     initialAria.forEach((value,e)=>e.setAttribute('aria-label',value));
     initialAlt.forEach((value,e)=>{e.alt=value;});
     if(language==='ko') {
