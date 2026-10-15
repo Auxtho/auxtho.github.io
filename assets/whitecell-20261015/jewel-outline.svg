@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="438 459 74 110" fill="none">
+<!-- Garnet diamond: partial rose reflections on transparent edges, with no aura. -->
+<defs>
+<linearGradient id="edgeLight" x1="487" y1="467" x2="457" y2="560" gradientUnits="userSpaceOnUse"><stop stop-color="#c09ba4" stop-opacity=".58"/><stop offset=".32" stop-color="#8b3c50" stop-opacity=".35"/><stop offset=".57" stop-color="#390d1d" stop-opacity=".12"/><stop offset=".78" stop-color="#a66072" stop-opacity=".4"/><stop offset="1" stop-color="#4b1b2d" stop-opacity=".1"/></linearGradient>
+</defs>
+<g stroke="url(#edgeLight)" stroke-width=".55" stroke-linecap="round" stroke-linejoin="round">
+<path d="M461 473L475 464L495 478L504 487"/>
+<path d="M443.5 494L447 528L456 540"/>
+<path d="M506.5 496L502 528L492 541"/>
+<path d="M481 556L475 564L468 555"/>
+</g>
+<g stroke="#a2596d" stroke-opacity=".19" stroke-width=".35" stroke-linecap="round">
+<path d="M478 479L487 488L483 499"/>
+<path d="M463 487L470 496"/>
+<path d="M488 518L498 525"/>
+<path d="M475 537L475 550"/>
+</g>
+</svg>

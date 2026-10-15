@@ -56,7 +56,15 @@ const REVIEWED_PORTFOLIO_FILES_SHA256 = Object.freeze({
   "assets/portfolio-20261009/styles.css": "6657f6e34390def686d53b05676cbb6a1973c6b959420e63cea2893877b8ab08",
   "assets/portfolio-20261009/version.png": "488ba192f7541b9fd0531a6492ff9b43013158e8cd486fd6dd06219a4c2e2c46",
   "assets/portfolio-20261009/video-poster.png": "ab0a9da8695a942fb458aa79dfee4bea848600e77df50bfa7f3a9ca33ee1970d",
-  "assets/portfolio-20261009/walkthrough.mp4": "2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492"
+  "assets/portfolio-20261009/walkthrough.mp4": "2a2e109cc822ae0e5113b11104a3415363e4280fd58b3fe0e73b8ba871500492",
+  "assets/whitecell-20261015/styles.css": "a5e996f7aa4c66922574cc65cd39488473cf6f93faf124b433de5f8dfe5e8073",
+  "assets/whitecell-20261015/app.546fde4653761e2f7c12911d9ed64167dda7288e36b447555130b13f7b50b2a3.js": "546fde4653761e2f7c12911d9ed64167dda7288e36b447555130b13f7b50b2a3",
+  "assets/whitecell-20261015/cell-field.1ff10979fc8860ae1fb63552454181da5bf433bc6b77a5e8b4c7dadf9e6d447f.js": "1ff10979fc8860ae1fb63552454181da5bf433bc6b77a5e8b4c7dadf9e6d447f",
+  "assets/whitecell-20261015/mark.svg": "70a4317e37f55e7662fd2789a92201bad473a1ff3a00335bc98e3240e61f6dc7",
+  "assets/whitecell-20261015/jewel-gate.svg": "7139a61409f3662d7082e5a77d4033cdcf6ebb26554aa210d80ab4ea2e5f8dac",
+  "assets/whitecell-20261015/jewel-outline.svg": "323f7db0047943ce75e3fbad3e05261f1f9e1674b58d2a82f3148728ba3680c3",
+  "assets/whitecell-20261015/jewel-facets.svg": "6a02e06408776c829b65d1670bca69107f4a05251869a3f6b3c9c87b477ceaf6",
+  "assets/whitecell-20261015/introduction-link.f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041.js": "f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041"
 });
 const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
@@ -86,7 +94,8 @@ const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   "products/auxtho/index.html": "71078cdc9508141e890ed63d540d17f8dc552da300262e4216be2d829677a187",
   "products/moirion/index.html": "9232fd028868f9b4d85783e977d8636e16995a4853a235e74fbb75013cd73c51",
   "products/agent-runner/index.html": "e7945ca881b0701dc2c70b846b7be18691626088400d0ed840aa3ef328d313c8",
-  "products/ardamire/index.html": "1e487327a77b7195cf5d63514bf023f439f3e52dbec8c659fe4ebb00fe45c8eb",
+  "products/ardamire/index.html": "ea8992e30bb0255e214b35ff8cd639ca25c4829c20157c85dd776ad7e1bb85d4",
+  "whitecell/index.html": "048bc5997c4c191d7866ee62e6f14caee526be9be46128295f1734300b0611f0",
   "products/metdol/index.html": "f96137b718bf60e8772db09c7757f75655be14c7b3d71678fa16ce972e0a682d",
   'proof/workflow-overview/index.html': '49199dfa3b3c803dab9cc0a13ea21efc19157b5dd9620c9d4dd4866741ab4857',
   'capabilities/ai-review-exception-queue/index.html': '6d9d4ade4c0af47a2a931792e83417bb69f91465db0ce4d9f92408c850c8ccab',
@@ -529,7 +538,7 @@ function assertCanonicalPublicTextBytes(sourceRoot, relative) {
 }
 
 function assertReviewedPublicBinaryBytes(sourceRoot, relative) {
-  if (relative.startsWith('assets/portfolio-20261009/')) {
+  if (relative.startsWith('assets/portfolio-20261009/') || relative.startsWith('assets/whitecell-20261015/')) {
     const expected = REVIEWED_PORTFOLIO_FILES_SHA256[relative];
     if (!expected || sha256(fs.readFileSync(path.join(sourceRoot, relative))) !== expected) {
       fail(`public portfolio file differs from its exact reviewed bytes: ${relative}`);

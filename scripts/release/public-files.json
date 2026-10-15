@@ -102,6 +102,14 @@
     "/assets/vision-film/auxtho-incident-led-hero-mobile-v9.mp4",
     "/assets/vision-film/auxtho-incident-led-hero-v9-poster.png",
     "/assets/vision-film/auxtho-incident-led-hero-v9.mp4",
+    "/assets/whitecell-20261015/app.546fde4653761e2f7c12911d9ed64167dda7288e36b447555130b13f7b50b2a3.js",
+    "/assets/whitecell-20261015/cell-field.1ff10979fc8860ae1fb63552454181da5bf433bc6b77a5e8b4c7dadf9e6d447f.js",
+    "/assets/whitecell-20261015/introduction-link.f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041.js",
+    "/assets/whitecell-20261015/jewel-facets.svg",
+    "/assets/whitecell-20261015/jewel-gate.svg",
+    "/assets/whitecell-20261015/jewel-outline.svg",
+    "/assets/whitecell-20261015/mark.svg",
+    "/assets/whitecell-20261015/styles.css",
     "/capabilities/ai-review-exception-queue/index.html",
     "/capabilities/ardamire-defense-layer/index.html",
     "/capabilities/decision-receipts-audit-history/index.html",
@@ -127,6 +135,7 @@
     "/security/ardamire/index.html",
     "/sitemap.xml",
     "/story.html",
-    "/terms.html"
+    "/terms.html",
+    "/whitecell/index.html"
   ]
 }

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="438 459 74 110" fill="none">
+<!-- Dark red diamond facets, isolated for a parent-controlled grazing-light mask. -->
+<defs>
+<linearGradient id="crystalBase" x1="496" y1="472" x2="459" y2="559" gradientUnits="userSpaceOnUse"><stop stop-color="#672238"/><stop offset=".27" stop-color="#380b1c"/><stop offset=".47" stop-color="#10030b"/><stop offset=".67" stop-color="#79172f"/><stop offset="1" stop-color="#16030b"/></linearGradient>
+<linearGradient id="crystalCore" x1="479" y1="485" x2="467" y2="548" gradientUnits="userSpaceOnUse"><stop stop-color="#8e2b43"/><stop offset=".3" stop-color="#560b24"/><stop offset=".56" stop-color="#9a1035"/><stop offset=".72" stop-color="#650e28"/><stop offset="1" stop-color="#2a0612"/></linearGradient>
+<linearGradient id="crystalEdge" x1="492" y1="467" x2="452" y2="563" gradientUnits="userSpaceOnUse"><stop stop-color="#b28b95"/><stop offset=".25" stop-color="#743143"/><stop offset=".48" stop-color="#260817"/><stop offset=".72" stop-color="#8a4256"/><stop offset="1" stop-color="#3a1021" stop-opacity=".35"/></linearGradient>
+</defs>
+<path d="M475 464L495 478L507 490L502 528L475 564L447 528L443 490L456 477Z" fill="url(#crystalBase)" stroke="url(#crystalEdge)" stroke-width=".8"/>
+<path d="M475 464L478 479L463 487L456 477Z" fill="#4c1727"/>
+<path d="M475 464L495 478L487 488L478 479Z" fill="#af8a93"/>
+<path d="M456 477L463 487L452 501L443 490Z" fill="#270713"/>
+<path d="M495 478L507 490L496 501L487 488Z" fill="#65122e"/>
+<path d="M478 479L487 488L479 508L463 487Z" fill="#11030b"/>
+<path d="M463 487L479 508L465 511L452 501Z" fill="#59132b"/>
+<path d="M487 488L496 501L479 508Z" fill="#7e2c44"/>
+<path d="M465 511L479 508L488 518L475 537L462 524Z" fill="url(#crystalCore)"/>
+<path d="M479 508L487 488L488 518Z" fill="#900c30"/>
+<path d="M496 501L507 490L502 528L488 518Z" fill="#1f0510"/>
+<path d="M496 501L488 518L479 508Z" fill="#5b1b31"/>
+<path d="M443 490L452 501L462 524L447 528Z" fill="#0c0207"/>
+<path d="M452 501L465 511L462 524Z" fill="#3b071b"/>
+<path d="M447 528L462 524L475 537L460 546Z" fill="#6d1b35"/>
+<path d="M488 518L502 528L487 548L475 537Z" fill="#a00c33"/>
+<path d="M462 524L475 537L475 564L460 546Z" fill="#18040e"/>
+<path d="M475 537L487 548L475 564Z" fill="#4d0b23"/>
+<path d="M502 528L475 564L487 548Z" fill="#240512"/>
+<path d="M447 528L460 546L475 564Z" fill="#080206"/>
+<path d="M478 479L487 488L496 501L488 518L475 537L460 546M463 487L479 508L465 511L462 524M479 508L488 518L502 528M475 537L475 564" stroke="#8f4a5d" stroke-opacity=".25" stroke-width=".38"/>
+<path d="M475 464L495 478L507 490M443 490L447 528L460 546M488 518L502 528" stroke="#7e2c44" stroke-opacity=".45" stroke-width=".65"/>
+</svg>
