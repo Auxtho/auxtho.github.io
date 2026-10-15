@@ -27,14 +27,14 @@
     {
       "path": "/proof/release-core/index.html",
       "media_type": "text/html",
-      "bytes": 11032,
-      "sha256": "f781d7246fa4ee7c6a689cd9e881d16ed61173efeedc401d7140edd4730e3dcc"
+      "bytes": 11022,
+      "sha256": "6c7ed73b4f1d5393a824f10bd7f2e72fde3646a579beb7385f41fc77bcd47127"
     },
     {
       "path": "/proof/release-core/transcript/index.html",
       "media_type": "text/html",
-      "bytes": 9845,
-      "sha256": "40938725f8bc6434329a47f5987b23b758ca23fcdcf8705051b26ef903ec6f2d"
+      "bytes": 9836,
+      "sha256": "8213535051e8273102be43f4872af6b255d3df7d8635914e2c8c395c415fa0df"
     },
     {
       "path": "/assets/proof-release-core.css",

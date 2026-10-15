@@ -353,7 +353,7 @@ test('homepage keeps technical references secondary and readable on desktop', as
   await expect(section).toBeVisible();
   await expect(section.getByRole('heading', {
     level: 2,
-    name: 'Deeper technical work, outside the first buyer story.',
+    name: 'Deeper technical work, outside the first buyer story',
   })).toBeVisible();
   await expect(section.locator('.sales-foundation')).toHaveCount(3);
 
@@ -391,7 +391,7 @@ for (const detail of [
   },
   {
     route: '/security/ardamire/',
-    title: /Controls that act\.\s*Records you can inspect\./,
+    title: /Controls that act\s*Records you can inspect/,
     flowCount: 0,
   },
 ]) {
@@ -556,7 +556,7 @@ test('homepage shows the frozen Singapore source identity and exact highlighted 
     await expect(sourceRecord).toContainText('MAS Notice FSM-N05');
     await expect(sourceRecord).toContainText('Page 3');
     const exactSourceProof = page.locator('#exact-source-inspection');
-    await expect(exactSourceProof).toContainText('Open Evidence. Read the exact wording on the original page.');
+    await expect(exactSourceProof).toContainText('Open Evidence Read the exact wording on the original page');
     await expect(exactSourceProof.locator('img[src*="exact-source-page.png"]')).toHaveCount(1);
     await expect(sourceReviewBand.locator('img[src*="source-traceability.png"]')).toHaveCount(0);
     const productImageSizes = await page.locator('#product img').evaluateAll(async (images) => {
@@ -621,7 +621,7 @@ test('Singapore source-review proof serves the overview, source identity, and hu
     await expect(humanDecisionDetail).toBeVisible();
     await humanDecisionDetail.evaluate((element) => element.decode());
     await expect(page.getByText('Evidence detail', { exact: true })).toBeVisible();
-    await expect(page.getByText('Follow the source identity into the human decision.', { exact: true })).toBeVisible();
+    await expect(page.getByText('Follow the source identity into the human decision', { exact: true })).toBeVisible();
     await expect(sourceRecord).toContainText('Supported in selected source set');
     await expect(sourceRecord).toContainText('Page 3');
     await expect(page.getByRole('link', { name: 'Open full decision detail' })).toBeVisible();
@@ -793,15 +793,22 @@ test('company portfolio and all five product pages are bilingual, indexable and 
 test('company software selector, Moirion captures and bounded product claims stay connected', async ({ page }) => {
   await page.setViewportSize({width:1440,height:900});
   await openWithoutRuntimeErrors(page,'/?lang=en#software');
-  await expect(page.locator('.product-select')).toHaveCount(5);
+  await expect(page.locator('.product-select')).toHaveCount(4);
   await expect(page.locator('#software .product-select')).toHaveCount(2);
-  await expect(page.locator('#technology .product-select')).toHaveCount(3);
-  for (const id of ['auxtho','moirion','agent-runner','ardamire','metdol']) {
+  await expect(page.locator('#technology .product-select')).toHaveCount(2);
+  for (const id of ['auxtho','moirion','agent-runner','metdol']) {
     await page.locator(`[data-product="${id}"]`).click();
     await expect(page.locator(`[data-product="${id}"]`)).toHaveAttribute('aria-pressed','true');
     const stage=['auxtho','moirion'].includes(id)?'#product-stage':'#technology-stage';
     await expect(page.locator(stage+' a.line-link')).toHaveAttribute('href',`/products/${id}/?lang=en`);
   }
+  const securityCards=page.locator('#security .security-card');
+  await expect(securityCards).toHaveCount(2);
+  await expect(securityCards.locator('h3')).toHaveText(['Ardamire Defense Layer','Ardamire WhiteCell']);
+  const securityLinks=securityCards.locator('a.line-link');
+  await expect(securityLinks).toHaveCount(2);
+  await expect(securityLinks.nth(0)).toHaveAttribute('href','/products/ardamire/?lang=en');
+  await expect(securityLinks.nth(1)).toHaveAttribute('href','/whitecell/?lang=en');
   await openWithoutRuntimeErrors(page,'/products/moirion/?lang=en');
   for (const kind of ['mac','iphone']) {
     const tabs=page.locator(`[data-gallery="${kind}"] [role="tab"]`);

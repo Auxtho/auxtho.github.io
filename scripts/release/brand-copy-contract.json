@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "adopted_kst": "2026-10-16",
+  "status": "LOCAL_REVIEW_PENDING_PUBLICATION",
+  "rule": "Company identity, slogans, product names, fixed taglines, navigation and footer must not be rewritten as a side effect of a feature update. An intentional change requires Jin's explicit wording/structure decision and a new publication preview. Tests detect drift; this is not an unbreakable approval interlock.",
+  "company": {
+    "legalName": "Auxtho Inc.",
+    "contact": "hello@auxtho.com",
+    "en": {
+      "heroEyebrow": "AUXTHO INC. / HUMAN-DIRECTED AI",
+      "heroTitle": "AI software.<br><span>Human direction.</span>",
+      "heroRendered": "AI software\nHuman direction",
+      "heroLead": "Auxtho for organisations. Moirion for individuals. AI that works under human direction.",
+      "footerLine": "Human-directed AI software.",
+      "footerRendered": "Human-directed AI software"
+    },
+    "ko": {
+      "heroEyebrow": "AUXTHO INC. / 사람이 이끄는 AI",
+      "heroTitle": "AI가 일하고.<br><span>사람이 이끕니다.</span>",
+      "heroRendered": "AI가 일하고\n사람이 이끕니다",
+      "heroLead": "기업의 AI 문서 업무는 Auxtho로, 개인의 기록은 Moirion으로. AI가 일을 수행하고, 사람은 방향을 정하고 중요한 결정을 내립니다.",
+      "footerLine": "사람이 이끄는 AI 소프트웨어.",
+      "footerRendered": "사람이 이끄는 AI 소프트웨어"
+    },
+    "copyright": "© 2025-2026 Auxtho. All rights reserved.",
+    "informationLinks": [
+      [
+        "Evidence Notes",
+        "https://auxtho.com/evidence-notes.html"
+      ],
+      [
+        "Privacy",
+        "https://auxtho.com/privacy.html"
+      ],
+      [
+        "Terms",
+        "https://auxtho.com/terms.html"
+      ],
+      [
+        "Contact",
+        "mailto:hello@auxtho.com"
+      ],
+      [
+        "LinkedIn",
+        "https://www.linkedin.com/company/auxtho"
+      ]
+    ]
+  },
+  "navigation": {
+    "anchors": [
+      "#software",
+      "#security",
+      "#technology",
+      "#practice",
+      "#contact"
+    ],
+    "en": [
+      "Products",
+      "Security",
+      "Technology & research",
+      "In practice",
+      "Contact"
+    ],
+    "ko": [
+      "제품",
+      "보안",
+      "기술과 연구",
+      "실제 사례",
+      "문의"
+    ]
+  },
+  "groups": [
+    {
+      "id": "software",
+      "en": "Customer products",
+      "ko": "제품",
+      "members": [
+        [
+          "Auxtho",
+          "/products/auxtho/"
+        ],
+        [
+          "Moirion",
+          "/products/moirion/"
+        ]
+      ]
+    },
+    {
+      "id": "security",
+      "en": "Security",
+      "ko": "보안",
+      "members": [
+        [
+          "Ardamire Defense Layer",
+          "/products/ardamire/"
+        ],
+        [
+          "Ardamire WhiteCell",
+          "/whitecell/"
+        ]
+      ]
+    },
+    {
+      "id": "technology",
+      "en": "Technology & research",
+      "ko": "기술과 연구",
+      "members": [
+        [
+          "Metdol",
+          "/products/metdol/"
+        ],
+        [
+          "Agent Runner",
+          "/products/agent-runner/"
+        ]
+      ]
+    }
+  ],
+  "products": {
+    "auxtho": {
+      "name": "Auxtho",
+      "en": "From AI-assisted work to a decision and a result.",
+      "ko": "AI 문서 업무의 근거부터.<br>사람의 결정과 결과까지."
+    },
+    "moirion": {
+      "name": "Moirion",
+      "en": "Your words.<br>Your own AI.",
+      "ko": "내가 쓴 말.<br>나의 AI."
+    },
+    "ardamire": {
+      "name": "Ardamire Defense Layer",
+      "en": "Check the request<br>Protect the boundary",
+      "ko": "요청을 확인하고<br>경계를 지킵니다"
+    },
+    "metdol": {
+      "name": "Metdol",
+      "en": "Many machines.<br>Many models.<br>One working system.",
+      "ko": "여러 컴퓨터.<br>여러 모델.<br>하나의 작업 시스템."
+    },
+    "agent-runner": {
+      "name": "Agent Runner",
+      "en": "AI teams work together<br>People set the direction",
+      "ko": "AI는 함께 일하고<br>방향은 사람이 정합니다"
+    }
+  },
+  "bridge": {
+    "placement": "Metdol detail only; not a separate product card or company slogan.",
+    "en": {
+      "lead": "Write a book, compose music or play a game",
+      "title": "Focus on your world",
+      "bodyPrefix": "AI handles its assigned task in the permitted work environment."
+    },
+    "ko": {
+      "lead": "책을 쓰든, 작곡을 하든, 게임을 하든",
+      "title": "당신의 세상에 집중하세요",
+      "bodyPrefix": "AI는 허용된 작업 환경에서 맡은 일을 합니다."
+    }
+  },
+  "whitecell": {
+    "scope": "Dedicated immersive product navigation/footer are intentional; preserve their identity, company ownership and return links. Do not replace them with the portfolio layout during routine updates.",
+    "en": {
+      "navWhitecell": "WhiteCell",
+      "navArchitecture": "Architecture",
+      "navCycle": "Defence cycle",
+      "navContact": "Connect ↗",
+      "heroHeading": "A boundary for\nwhat matters most",
+      "shadowHeading": "Into the unseen\nIn search of risk",
+      "architectureTitle": "Intelligence that observes\nBoundaries that hold",
+      "oversightTitle": "Preserve the evidence\nKeep accountability clear",
+      "contactTitle": "Into the unseen boundary\nWHITE CELL",
+      "contactBody": "WhiteCell observes. Ardamire enforces. People remain accountable.\nAuxtho’s AI defence architecture.",
+      "footer": "ARDAMIRE / DEFENCE ARCHITECTURE"
+    },
+    "ko": {
+      "navWhitecell": "WhiteCell",
+      "navArchitecture": "아키텍처",
+      "navCycle": "방어 흐름",
+      "navContact": "연결하기 ↗",
+      "heroHeading": "가장 소중한 것을\n지키는 경계",
+      "shadowHeading": "보이지 않는 곳까지\n위험을 찾아서",
+      "architectureTitle": "살피는 지능\n지키는 경계",
+      "oversightTitle": "근거는 남기고\n책임은 분명하게",
+      "contactTitle": "보이지 않는 경계까지\nWHITE CELL",
+      "contactBody": "WhiteCell의 관찰. Ardamire의 집행. 사람의 책임.\nAuxtho의 AI 방어 아키텍처.",
+      "footer": "ARDAMIRE / 방어 아키텍처"
+    }
+  },
+  "changeableContent": "Feature explanations and dated evidence may change when supported by current owner evidence; that does not authorize unrelated brand copy or layout changes.",
+  "punctuation": "Remove sentence periods only from headings; preserve commas and questions. Preserve body punctuation and unchanged legal/trademark wording.",
+  "privateOnly": true
+}

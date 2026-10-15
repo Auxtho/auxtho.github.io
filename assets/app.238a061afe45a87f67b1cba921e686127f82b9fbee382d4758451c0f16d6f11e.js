@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
             verifiedReplay.dataset.stage = String(index);
             replayStatus.textContent = stage.status;
             replayStep.textContent = stage.step;
-            replayTitle.textContent = stage.title;
+            replayTitle.textContent = stage.title.replace(/\.(?=\s|$)/g, '');
             replayCopy.textContent = stage.copy;
             replayEvent.textContent = stage.event;
             metricNames.forEach((name, metricIndex) => {
