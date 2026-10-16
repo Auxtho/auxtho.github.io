@@ -83,7 +83,7 @@ test('WhiteCell bilingual architecture preserves independent enforcement, eviden
   for(const match of html.matchAll(/<([a-z0-9-]+)\b[^>]*data-i18n="([^"]+)"[^>]*>([\s\S]*?)<\/\1>/g)) {
     for(const lang of ['ko','en']) assert.equal(typeof copy[lang][match[2]],'string',lang+':'+match[2]);
     const initial=match[3].replace(/<br\s*\/?\s*>/g,'\n').replace(/<[^>]+>/g,'').replace(/&amp;/g,'&');
-    assert.equal(initial,copy.ko[match[2]],'Initial KO mismatch: '+match[2]);
+    assert.equal(initial,copy.en[match[2]],'Initial EN mismatch: '+match[2]);
   }
   assert.ok(html.includes('id="oversight"'));
   assert.match(copy.ko.architectureIntro,/독립된 역할/);
@@ -133,4 +133,21 @@ test('WhiteCell hosted acceptance covers both languages, controls, mobile and ra
       assert.equal(scope.hosted[lang].titles[index],normalise(scope.content.stages[lang][index][0]));
     }
   }
+});
+
+
+test('WhiteCell defaults to English and Korean requires an explicit selection',()=>{
+  assert.match(html,/<html lang="en">/);
+  assert.match(html,/property="og:locale" content="en_US"/);
+  assert.match(html,/id="language"[^>]*lang="ko">KO<\/button>/);
+  const appName=fs.readdirSync(assetRoot).find(name=>/^app\.[0-9a-f]{64}\.js$/.test(name));
+  const source=fs.readFileSync(path.join(assetRoot,appName),'utf8');
+  const initialiser=source.match(/  let language = ([^;]+);/);
+  assert.ok(initialiser);
+  for(const [search,expected] of [['','en'],['?lang=en','en'],['?lang=ko','ko'],['?lang=fr','en']]) {
+    const scope={URLSearchParams,window:{location:{search}}};
+    vm.runInNewContext('globalThis.result='+initialiser[1],scope,{timeout:1000});
+    assert.equal(scope.result,expected,search||'no query');
+  }
+  assert.equal(hash(Buffer.from(source.slice(0,source.indexOf('  const labels =')))),'ad45fc14e19b0f5224ca7ba7a1959155063f8017a94eb82e507a724b941539af','Bilingual copy/stages must remain unchanged');
 });

@@ -240,6 +240,15 @@ test('published WhiteCell preserves bilingual roles, human oversight, controls a
   }
   fs.mkdirSync(evidenceDirectory, { recursive: true });
   try {
+    const defaultResponse = await readPublicPage(page, `${origin}/whitecell/`, 200, 'whitecell-default-en');
+    expect(defaultResponse.status()).toBe(200);
+    await assertLanguage('en');
+    await page.locator('#language').click();
+    await assertLanguage('ko');
+    await page.locator('#language').click();
+    await assertLanguage('en');
+    evidence.default_language = 'en';
+    evidence.default_language_switch_roundtrip = true;
     for (const lang of ['ko', 'en']) {
       const result = { language: lang, stages: [], screenshots: [] };
       evidence.languages.push(result);
