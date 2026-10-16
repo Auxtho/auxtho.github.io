@@ -63,7 +63,7 @@
     ]
   };
   const labels = ['OBSERVE', 'CONTAIN', 'REPRODUCE', 'ANALYSE', 'PROPOSE', 'VALIDATE'];
-  let language = new URLSearchParams(window.location.search).get('lang') === 'en' ? 'en' : 'ko';
+  let language = new URLSearchParams(window.location.search).get('lang') === 'ko' ? 'ko' : 'en';
   let current = 0;
   const tabs = Array.from(document.querySelectorAll('[data-step]'));
   const panel = document.getElementById('step-panel');
