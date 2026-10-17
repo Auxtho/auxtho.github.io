@@ -7,7 +7,7 @@ const crypto=require('node:crypto');
 const vm=require('node:vm');
 const parse5=require('parse5');
 const {routes,manuscript,article,shell,renderPage}=require('../scripts/release/render-publications.cjs');
-const {publicationLinks,decorateMain,decorateFooter,researchRecordLink}=require('../src/publication-links.js');
+const {publicationLinks,decorateMain,decorateFooter,researchRecordLink,agentRunnerRecordUrl,agentRunnerRecordLabel}=require('../src/publication-links.js');
 const {render}=require('../scripts/release/render-company-portfolio.cjs');
 const root=path.resolve(__dirname,'..');
 const read=file=>fs.readFileSync(path.join(root,file),'utf8');
@@ -232,7 +232,7 @@ test('Added footer and record links stay singular and correct on repeated EN/KO 
   const purpose={insertAdjacentHTML(_,html){recordHtml+=html}};
   const button={closest(){return {nextElementSibling:purpose}}};
   const main={querySelector(){return null},insertAdjacentHTML(_,html){panelHtml=html}};
-  const document={documentElement:element,querySelector(selector){
+  const document={documentElement:element,querySelectorAll(){return []},querySelector(selector){
    if(selector==='.footer-information nav')return footer;
    if(selector==='main')return main;
    if(selector==='#technology [data-product="agent-runner"]')return route==='/'?button:null;
@@ -251,4 +251,47 @@ test('Added footer and record links stay singular and correct on repeated EN/KO 
    if(route==='/')assert.equal(recordHtml,researchRecordLink(lang));else assert.equal(recordHtml,'');
   }
  }
+});
+
+test('AgentRunner primary CTAs, dated card and home link share the native record without changing other product content',()=>{
+ const route='/products/agent-runner/';
+ for(const lang of ['en','ko']){
+  const original=render(route,lang).main;
+  const result=decorateMain(original,route,lang);
+  const anchors=all(parse5.parseFragment(result),n=>n.tagName==='a'&&attr(n,'data-agentrunner-latest-record')!==undefined);
+  assert.equal(anchors.length,2);
+  assert.deepEqual(anchors.map(n=>attr(n,'class')),['solid-link','line-link']);
+  for(const link of anchors){assert.equal(attr(link,'href'),agentRunnerRecordUrl(lang));assert.equal(text(link),agentRunnerRecordLabel(lang));}
+  const oldLinks=original.match(/<a class="(?:solid-link|line-link)" href="https:\/\/metdol\.com\/development-note#records-title">[^<]*<\/a>/g);
+  assert.equal(oldLinks.length,2);
+  const newLinks=result.match(/<a class="(?:solid-link|line-link)" data-agentrunner-latest-record href="[^"]+">[^<]*<\/a>/g);
+  assert.equal(newLinks.length,2);
+  let restored=result;
+  for(const [i,link] of newLinks.entries())restored=restored.replace(link,oldLinks[i]);
+  assert.equal(restored,original,'Only the two primary CTA anchors may change');
+  assert.equal(decorateMain(result,route,lang),result);
+  assert.ok(publicationLinks(route,lang).includes(agentRunnerRecordUrl(lang)));
+  assert.ok(researchRecordLink(lang).includes(agentRunnerRecordUrl(lang)));
+  assert.doesNotMatch(result,/href="https:\/\/metdol\.com\/development-note#records-title"/);
+ }
+ for(const route of ['/products/auxtho/','/products/moirion/','/products/metdol/','/products/ardamire/'])for(const lang of ['en','ko'])assert.equal(decorateMain(render(route,lang).main,route,lang),render(route,lang).main);
+ assert.ok(read('products/agent-runner/index.html').replace(publicationLinks('/products/agent-runner/','en'),'').includes(decorateMain(render('/products/agent-runner/','en').main,'/products/agent-runner/','en')));
+});
+
+test('AgentRunner primary CTA destinations survive repeated client language changes and a fresh portfolio render',()=>{
+ let callback,selection;
+ const makeLink=()=>({attrs:{href:'https://metdol.com/development-note#records-title'},textContent:'old',setAttribute(k,v){this.attrs[k]=v}});
+ let links=[makeLink(),makeLink()];
+ const element={lang:'en'};
+ const main={querySelector(){return null},insertAdjacentHTML(){}};
+ const document={documentElement:element,querySelector(s){return s==='main'?main:null},querySelectorAll(s){selection=s;return links}};
+ class Observer{constructor(fn){callback=fn}observe(){}}
+ vm.runInNewContext(read('src/publication-links.js'),{document,location:{pathname:'/products/agent-runner/'},MutationObserver:Observer},{timeout:1000});
+ for(const lang of ['en','ko','ko','en']){
+  element.lang=lang;callback();
+  assert.ok(selection.includes('data-agentrunner-latest-record'));
+  for(const link of links){assert.equal(link.attrs.href,agentRunnerRecordUrl(lang));assert.equal(link.textContent,agentRunnerRecordLabel(lang));assert.equal(link.attrs['data-agentrunner-latest-record'],'');}
+ }
+ links=[makeLink(),makeLink()];element.lang='ko';callback();
+ for(const link of links){assert.equal(link.attrs.href,agentRunnerRecordUrl('ko'));assert.equal(link.textContent,agentRunnerRecordLabel('ko'));}
 });
