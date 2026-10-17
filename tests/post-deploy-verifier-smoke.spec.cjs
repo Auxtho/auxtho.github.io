@@ -69,7 +69,9 @@ test('public pages render with packaged styles and images without CSP or same-or
   });
   page.on('pageerror', (error) => pageErrors.push(error.message));
 
+  const publicationRoutes = ['/charter/', '/charter/defense/', '/products/agent-runner/development-record-2026-10-18/'];
   const pages = [
+    ...publicationRoutes.flatMap(route => ['', '?lang=en', '?lang=ko'].map(query => ({path:route+query,status:200,locator:'main',publicationLanguage:query==='?lang=ko'?'ko':'en'}))),
     { path: '/', status: 200, locator: 'main' },
     ...['ko', 'en'].map(lang => ({ path: `/whitecell/?lang=${lang}`, status: 200, locator: '#oversight' })),
     ...['auxtho', 'moirion', 'agent-runner', 'ardamire', 'metdol'].map(id => ({ path: `/products/${id}/`, status: 200, locator: 'main' })),
@@ -99,6 +101,12 @@ test('public pages render with packaged styles and images without CSP or same-or
     expect(response, `missing response: ${url}`).not.toBeNull();
     expect(response.status(), `unexpected page status: ${url}`).toBe(item.status);
     await expect(page.locator(item.locator)).toBeVisible();
+    if(item.publicationLanguage){
+      await expect(page.locator('html')).toHaveAttribute('lang', item.publicationLanguage);
+      await expect(page.locator('main h1')).toHaveCount(1);
+      await expect(page.locator('.language-link')).toHaveAttribute('href', new RegExp('lang='+(item.publicationLanguage==='en'?'ko':'en')));
+      expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+    }
     const styleSheets = await page.evaluate(() => [...document.styleSheets].map((sheet) => sheet.href).filter(Boolean));
     expect(styleSheets.length).toBeGreaterThan(0);
     for (const stylesheet of styleSheets.filter((href) => new URL(href).origin === origin)) {
