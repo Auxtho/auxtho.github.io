@@ -23,7 +23,7 @@ test('Charters retain every approved paragraph, heading and list item in both la
   const expected=doc.blocks.flatMap(block=>block.startsWith('- ')?block.split('\n').map(x=>plain(x.slice(2))):[plain(block.replace(/^#{2,3} /,''))]);
   assert.deepEqual(articleNodes(article(p,lang).html).map(text),expected,p.id+':'+lang);
  }
- assert.equal(manuscript(routes[0],'en').blocks.length,50);
+ assert.equal(manuscript(routes[0],'en').blocks.length,53);
  assert.ok(article(routes[0],'ko').html.includes('의사는 미처 보지 못했던 근거와 가능성까지 살펴'));
  assert.ok(article(routes[0],'en').html.includes('live a life true to themselves'));
  assert.ok(article(routes[0],'en').html.includes('Auxtho will never develop offensive AI.'));
@@ -41,6 +41,23 @@ test('Publications have English initial HTML, exact Korean template, canonical a
   assert.equal(all(parsed,n=>n.tagName==='h1').length,1);
   const client=all(parsed,n=>n.tagName==='script')[0];
   assert.equal(html,renderPage(p,attr(client,'src')),'deterministic output '+p.id);
+ }
+});
+test('Customer non-publicity commitment is bilingual and part of the trust principle, not a claimed customer result',()=>{
+ for(const lang of ['en','ko']){
+  const blocks=manuscript(routes[0],lang).blocks;
+  const heading=blocks.findIndex(x=>x.startsWith('### 06 '));
+  const next=blocks.findIndex(x=>x.startsWith('### 07 '));
+  const section=blocks.slice(heading+1,next).join('\n');
+  for(const phrase of lang==='en'?[
+   'Our customers’ security comes before publicity.',
+   'Auxtho does not use customer names, logos or the fact that they use our systems for publicity.',
+   'We will earn trust through our technology and verification results, not our customers’ names.'
+  ]:[
+   '고객의 이름보다, 고객의 보안을 먼저 생각합니다.',
+   'Auxtho는 고객사명·로고·도입 사실을 홍보에 사용하지 않습니다.',
+   '우리는 고객의 이름이 아니라, 기술과 검증 결과로 신뢰를 쌓겠습니다.'
+  ]){assert.ok(section.includes(phrase),lang+':'+phrase);assert.equal(blocks.join('\n').split(phrase).length-1,1);}
  }
 });
 test('Publication language/menu client handles bare, explicit, unknown language and preserved section hash without a browser',()=>{
@@ -90,10 +107,10 @@ test('AgentRunner article retains all supplied paragraphs, dates, view-only scop
  assert.equal(hash('assets/publications-20261018/agentrunner-office-xo-briefing.jpg'),'18778aaf67e6b03a8fd1f43975b07019549695d190c65228b080f2f053e51ecb');
  assert.equal(fs.statSync(path.join(root,'assets/publications-20261018/agentrunner-office-xo-briefing.jpg')).size,133422);
 });
-test('Public allowlist contains only the seven new public files, never internal manuscripts or handoff',()=>{
+test('Public allowlist contains only the eight publication files, never internal manuscripts or handoff',()=>{
  const list=JSON.parse(read('scripts/release/public-files.json')).paths;
  const additions=list.filter(p=>p.startsWith('/charter/')||p.includes('/publications-20261018/')||p.includes('/development-record-2026-10-18/'));
- assert.equal(additions.length,7);
+ assert.equal(additions.length,8);
  assert.deepEqual(list,[...new Set(list)].sort());
  for(const p of list)assert.doesNotMatch(p,/HANDOFF|CHECKSUMS|NOTE-(?:KO|EN)|src\/publications|PRIVATE|MANUSCRIPT|REVIEW_AND_FUTURE/);
  for(const p of routes){
@@ -124,6 +141,30 @@ test('Publication menu markup stays keyboard reachable and responsive layout avo
  assert.match(css,/@media\(max-width:900px\)/);
  assert.match(css,/minmax\(0,1fr\)/);
  assert.match(css,/max-width:100%/);
+});
+test('Every publication including Korean templates avoids CSP-blocked inline styles',()=>{
+ function assertNoInlineStyles(html){
+  function visit(node){
+   assert.equal(attr(node,'style'),undefined,'inline style on '+node.nodeName);
+   for(const child of node.childNodes||[])visit(child);
+   if(node.content)visit(node.content);
+  }
+  visit(parse5.parse(html));
+ }
+ for(const p of routes){
+  assertNoInlineStyles(read(p.route.slice(1)+'index.html'));
+  for(const lang of ['en','ko']){
+   const markup=shell(p,lang);
+   assertNoInlineStyles(markup);
+   assert.equal(markup.includes('publication-record-layout'),p.kind==='record');
+   assert.equal(markup.includes('publication-record-article'),p.kind==='record');
+  }
+ }
+ const css=read('assets/publications-20261018/record-layout.77b9c5af6d0e475ddc8dfb14fda2fbe51c7affbb6dc07adf374e959ff72dc507.css');
+ assert.match(css,/\.publication-layout\.publication-record-layout\{grid-template-columns:minmax\(0,1fr\)\}/);
+ assert.match(css,/\.publication-article\.publication-record-article\{max-width:1000px\}/);
+ assert.throws(()=>assertNoInlineStyles('<div style="grid-template-columns:minmax(0,1fr)"></div>'),/inline style/);
+ assert.throws(()=>assertNoInlineStyles('<template><article style="max-width:1000px"></article></template>'),/inline style/);
 });
 test('WhiteCell in-place EN→KO→EN updates the added charter panel and destination language',()=>{
  let callback,markup='';
