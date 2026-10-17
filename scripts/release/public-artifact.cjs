@@ -28,6 +28,7 @@ const REVIEWED_PUBLICATION_FILES_SHA256 = Object.freeze({
   "assets/publications-20261018/agentrunner-office-xo-briefing.jpg": "18778aaf67e6b03a8fd1f43975b07019549695d190c65228b080f2f053e51ecb",
   "assets/publications-20261018/app.8339630c2273499b070a615a5f79a95c4c714094943a5b57cd202a02acba9fdb.js": "8339630c2273499b070a615a5f79a95c4c714094943a5b57cd202a02acba9fdb",
   "assets/publications-20261018/links.325e2a0b27139c363a1fb65f7f0e96383f0cba8a61d8e4cdd61af2795ce22f58.js": "325e2a0b27139c363a1fb65f7f0e96383f0cba8a61d8e4cdd61af2795ce22f58",
+  "assets/publications-20261018/record-layout.77b9c5af6d0e475ddc8dfb14fda2fbe51c7affbb6dc07adf374e959ff72dc507.css": "77b9c5af6d0e475ddc8dfb14fda2fbe51c7affbb6dc07adf374e959ff72dc507",
   "assets/publications-20261018/styles.css": "f762495b24715c1e5c7762d1fcd5af3c38eaef0bae050350021dee6efa4b4a4d"
 });
 const REVIEWED_PORTFOLIO_FILES_SHA256 = Object.freeze({
@@ -95,8 +96,8 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
   "charter/defense/index.html": "4dd7a4665cd29bdd83fd7474b001bf0baee120b633835b58580f53bf6e0f7e07",
-  "charter/index.html": "70ce2b751089d74ce5f2fe603c2878003f53d1636a8f121868136edcce3925a1",
-  "products/agent-runner/development-record-2026-10-18/index.html": "af658decb189f5e960defbc2d1c43d9356ca39d1110475075eaccfdb898ee409",
+  "charter/index.html": "46addeb0fb7ac79b661cf27c2d9d0d0b9bc743ee5903fd31ad9ffc841c809d4a",
+  "products/agent-runner/development-record-2026-10-18/index.html": "73b1eb55cd06d7d2564da7f12f3b5935a85a8f97f1e9f36ee8761aa443e84508",
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '62f5cd50b085ee5d0ead3a37324924580ee1174221d2b620dc5667caa7491752',
   'demo/singapore-source-review/index.html': '9a2931fe1b94f2b6f00e76968629e48cd49ef63fee442438f9bf73d29e4cd958',

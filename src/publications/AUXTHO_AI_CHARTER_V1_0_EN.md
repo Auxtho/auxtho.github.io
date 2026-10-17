@@ -74,6 +74,12 @@ When a result cannot be established, we preserve that uncertainty and assign res
 
 We evaluate whether models and systems perform their assigned work accurately and on time, and distinguish necessary action from justified refusal. We also assess their effects on people and legitimate work, considering usefulness, response time, wrongful blocking, recoverability and operating cost together.
 
+**Our customers’ security comes before publicity.**
+
+Auxtho does not use customer names, logos or the fact that they use our systems for publicity. We put customer security and confidentiality ahead of the promotional benefit of publicizing those relationships.
+
+We will earn trust through our technology and verification results, not our customers’ names.
+
 ### 07 Advance Intelligence and Control Together
 
 We actively research faster and more capable models, specialized intelligence, long-term memory and collaboration, and new ways of learning. As those capabilities advance, so must authority controls, verification and recovery.
