@@ -44,7 +44,8 @@ test('Ardamire presents implemented controls and bounded tests without supplier 
 test('Ardamire indexable HTML contains the same recorded integration as runtime rendering',()=>{
  const {render}=require('../scripts/release/render-company-portfolio.cjs');
  const html=fs.readFileSync(path.join(root,'products/ardamire/index.html'),'utf8');
- assert.ok(html.includes(render('/products/ardamire/').main));
+ const {publicationLinks}=require('../src/publication-links.js');
+ assert.ok(html.includes(render('/products/ardamire/').main.replace('<section class="contact-section"',publicationLinks('/products/ardamire/','en')+'<section class="contact-section"')));
  assert.match(html,/12–13 OCTOBER 2026 \/ INTERNAL TESTS WITH SYNTHETIC DATA/);
  assert.match(html,/<p class="detail-boundary">Summary of separate first-party tests./);
 });
@@ -101,14 +102,15 @@ test('All public HTML headings follow the main-site punctuation convention',()=>
   const cls=node.attrs?.find(a=>a.name==='class')?.value||'';
   if(/^h[1-6]$/.test(node.tagName||'')||cls.split(/\s+/).includes('hero-heading')){
    const text=n=>n.nodeName==='#text'?n.value:n.tagName==='br'?'\n':(n.childNodes||[]).map(text).join('');
-   assert.doesNotMatch(text(node),/\.(?=\s|$)/,relative);headings++;
+   const headingText = relative === '/charter/index.html' ? text(node).replace(/^A\.O\.I\. (?=Anchor of Intellect|지성의 닻)/, '') : text(node);
+   assert.doesNotMatch(headingText,/\.(?=\s|$)/,relative);headings++;
   }
   for(const child of node.childNodes||[])inspect(child,relative);
  }
  for(const relative of manifest.paths.filter(p=>p.endsWith('.html'))){
   inspect(parse5.parse(fs.readFileSync(path.join(root,relative.slice(1)),'utf8')),relative);pages++;
  }
- assert.equal(pages,26);assert.ok(headings>250);
+ assert.equal(pages,29);assert.ok(headings>250);
 });
 
 test('Bilingual portfolio rendering keeps periods out of headings after product changes',()=>{

@@ -61,8 +61,10 @@ test('All six indexable pages match the final runtime main, footer and navigatio
  for(const route of routes){
   const html=fs.readFileSync(path.join(root,route.slice(1)+'index.html'),'utf8');
   const output=render(route,'en');
-  assert.ok(html.includes(output.main),route+':main');
-  assert.ok(html.includes(output.footer),route+':footer');
+  const {publicationLinks,decorateMain,decorateFooter}=require('../src/publication-links.js');
+  const expectedMain=decorateMain(output.main,route,'en').replace('<section class="contact-section"',publicationLinks(route,'en')+'<section class="contact-section"');
+  assert.ok(html.includes(expectedMain),route+':main');
+  assert.ok(html.includes(decorateFooter(output.footer,'en')),route+':footer');
   assert.equal(html.split(output.nav).length-1,2,route+':desktop and mobile nav');
  }
 });

@@ -12,6 +12,7 @@ const IMAGE_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.(?:png|svg|jpg))\?sha25
 const MEDIA_URL_PATTERN = /^(\/assets\/[A-Za-z0-9._/-]+\.mp4)\?sha256=([0-9a-f]{64})$/;
 const ALLOWED_ASSET_EXTENSIONS = new Set(['.css', '.js', '.json', '.jpg', '.mp4', '.pdf', '.png', '.svg']);
 const REVIEWED_PUBLIC_JPEG_SHA256 = Object.freeze({
+  "assets/publications-20261018/agentrunner-office-xo-briefing.jpg": "18778aaf67e6b03a8fd1f43975b07019549695d190c65228b080f2f053e51ecb",
   "assets/portfolio-20261009/moirion-mac-archive-20261009.jpg": "43ea1414966ddb2b91764bd943aa03d483334bd06466f3eb44e0ac7d1e219efd",
   "assets/portfolio-20261009/moirion-mac-talk-20261009.jpg": "b242562cee3d5783d97ef082b88fceffa1d3c9ae75e3ee9e07cd2e09fcac6e25",
   "assets/portfolio-20261009/moirion-mac-write-20261009.jpg": "8d35eb4ecc299b7064815f813be6a6be3a74443b6c0ff526d0a75b0029ac3e4c",
@@ -22,6 +23,12 @@ const REVIEWED_PUBLIC_JPEG_SHA256 = Object.freeze({
   "assets/portfolio-20261009/moirion-mac-marker-tools-20261009.jpg": "670b58bd880dacde03ae71f114b370e1daacfa4d2f775658c4287ea04299ed76",
   "assets/portfolio-20261009/moirion-mac-midnight-20261009.jpg": "38bd457db0ab7b1b9d1960b9e0b698fbad228c24a3bf81b12d292e64cd95c7e5",
   "assets/portfolio-20261009/moirion-mac-notebook-20261009.jpg": "ba7aa67261b2c1fdc59317ade46ce569dd2437b4ff8763b058dd0ca3ece62739"
+});
+const REVIEWED_PUBLICATION_FILES_SHA256 = Object.freeze({
+  "assets/publications-20261018/agentrunner-office-xo-briefing.jpg": "18778aaf67e6b03a8fd1f43975b07019549695d190c65228b080f2f053e51ecb",
+  "assets/publications-20261018/app.8339630c2273499b070a615a5f79a95c4c714094943a5b57cd202a02acba9fdb.js": "8339630c2273499b070a615a5f79a95c4c714094943a5b57cd202a02acba9fdb",
+  "assets/publications-20261018/links.325e2a0b27139c363a1fb65f7f0e96383f0cba8a61d8e4cdd61af2795ce22f58.js": "325e2a0b27139c363a1fb65f7f0e96383f0cba8a61d8e4cdd61af2795ce22f58",
+  "assets/publications-20261018/styles.css": "f762495b24715c1e5c7762d1fcd5af3c38eaef0bae050350021dee6efa4b4a4d"
 });
 const REVIEWED_PORTFOLIO_FILES_SHA256 = Object.freeze({
   "assets/portfolio-20261009/agent-runner-office.mp4": "deef130a53631a4c7c8fcf7cad2c723a133daa1d0a0278a07194a133c1883e8e",
@@ -87,16 +94,19 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
   }),
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
+  "charter/defense/index.html": "4dd7a4665cd29bdd83fd7474b001bf0baee120b633835b58580f53bf6e0f7e07",
+  "charter/index.html": "70ce2b751089d74ce5f2fe603c2878003f53d1636a8f121868136edcce3925a1",
+  "products/agent-runner/development-record-2026-10-18/index.html": "af658decb189f5e960defbc2d1c43d9356ca39d1110475075eaccfdb898ee409",
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '62f5cd50b085ee5d0ead3a37324924580ee1174221d2b620dc5667caa7491752',
   'demo/singapore-source-review/index.html': '9a2931fe1b94f2b6f00e76968629e48cd49ef63fee442438f9bf73d29e4cd958',
-  "index.html": "44b7fe22b90e512ee2f5f32c58a2360d769bf4739b7e5f7f4067623d433f9e4a",
-  "products/auxtho/index.html": "e28c02b2dbe3ef50f1e5bf15019b20a25107f951757691b4b3e18a81fdbe26ed",
-  "products/moirion/index.html": "3e3f13c99d21fbb35d7547ba5a1b3294be59bd1a25c624076b47a370b2265030",
-  "products/agent-runner/index.html": "2f54f70b4e94f725c07a39e52d114568657369ef6330852d17175dab83ed2901",
-  "products/ardamire/index.html": "c6059474d1664d9fe81a405f73111f0cb8ce8ff8b70449cf1c1abc4c3f268795",
-  "whitecell/index.html": "02999fce5db8439d8d263061434e57d8ad69a678e307b9ed219b1eb068bf949f",
-  "products/metdol/index.html": "7539dc04ae25e63511f5fe14a5753dd126cd36e8b8addbf7d6f45d509659e80d",
+  "index.html": "41d9cfdddb0ff5061ecb5b6754a43e29cbc5a9329be2a50cc7d6b72c4c48e71c",
+  "products/auxtho/index.html": "c6dcd01e25ffbe391a6666c8a9cd13c63e6cca6f836f88c234044f7ea495cab2",
+  "products/moirion/index.html": "ef9220c33b5b63a6787c5370eecf4013dab30716a2ccfc3e3d697b9ad2805fea",
+  "products/agent-runner/index.html": "18084943e44d8f72d430366ab5a54979099b5907173c73ca4f9910aac48ff76b",
+  "products/ardamire/index.html": "d02a96db80d3f47f5a08b5a819a62057b903fe4287bde724627c63139deb52dd",
+  "whitecell/index.html": "c0560517e581de27eca43a267c81cc5a30f760cf4986a0b2be9837269ad3774a",
+  "products/metdol/index.html": "01c444a1c9e6a9ba80ac9be65fed592ca8fc4dc79bd1550ac09ce2833d6920c1",
   'proof/workflow-overview/index.html': 'dcfa049757a7170df2862022fe20ae9f0969a60edfceca379197ff9d88084afc',
   'capabilities/ai-review-exception-queue/index.html': 'b304fb842a80f25fe414a9fbd5fd3926d3449ed51d7077c6f5936c634e5ce47e',
   'capabilities/ardamire-defense-layer/index.html': 'f8a4bae05f752f0360c94813548382d61111535a23bf2d37c801a08f39287122',
@@ -538,6 +548,12 @@ function assertCanonicalPublicTextBytes(sourceRoot, relative) {
 }
 
 function assertReviewedPublicBinaryBytes(sourceRoot, relative) {
+  if (relative.startsWith('assets/publications-20261018/')) {
+    const expected = REVIEWED_PUBLICATION_FILES_SHA256[relative];
+    if (!expected || sha256(fs.readFileSync(path.join(sourceRoot, relative))) !== expected) {
+      fail('public publication asset differs from its exact reviewed bytes: ' + relative);
+    }
+  }
   if (relative.startsWith('assets/portfolio-20261009/') || relative.startsWith('assets/whitecell-20261015/')) {
     const expected = REVIEWED_PORTFOLIO_FILES_SHA256[relative];
     if (!expected || sha256(fs.readFileSync(path.join(sourceRoot, relative))) !== expected) {
