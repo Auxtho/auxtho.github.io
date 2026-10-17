@@ -1,0 +1,16 @@
+Connecting six AI employees’ results to an XO briefing
+
+AgentRunner development record · 18 October 2026
+Observed environment: the current local source development version on Mac
+
+In this development run, we connected six AI employees’ work, reviewed files, a results meeting and an XO briefing within the same task.
+
+The task was to prepare an inventory and packing guide for a fictional mobile science exhibit: allocate 12 sample cards between two crates, assign handoff duties to four fictional helpers, and produce visitor guidance and machine-readable allocation data. The scope excluded real contacts, spending and real-world operations. Timing estimates were to remain explicitly untested.
+
+The six employees’ tasks produced six reviewed files. In the results meeting, XO and the review-role employee recorded presentations and critiques based on retained outputs. XO then prepared a summary, opinion, recommendation and unresolved issues. Three additional local Qwen calls supported the meeting and briefing, following the 12 existing calls for employee work and review. Completed employee work was not rerun.
+
+The results are available in the Office’s XO window. It shows the reviewed file list, summary, recommendation and remaining issues, while distinguishing task completion from the person’s final decision. The Human decision for this task remains pending.
+
+We also restarted the app service after employee work had completed and again after the results meeting had completed. Existing work and results remained readable, without repeating completed employee work. The meeting record and XO briefing were preserved.
+
+This record covers the same-task flow observed in the local source development version. It does not include verification in an installed or distributed app.

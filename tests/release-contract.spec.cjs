@@ -125,7 +125,7 @@ function createSourceFixture(targetRoot) {
     'CNAME', 'robots.txt', 'sitemap.xml', 'lineage/isp/index.html',
     'proof/release-core/index.html', 'proof/release-core/transcript/index.html',
     'proof/singapore-source-review/index.html',
-    'security/ardamire/index.html', 'proof/workflow-overview/index.html', 'products', 'capabilities', 'demo', 'assets', 'whitecell',
+    'security/ardamire/index.html', 'proof/workflow-overview/index.html', 'products', 'capabilities', 'demo', 'assets', 'whitecell', 'charter',
     'package.json', 'scripts/release/BOOTSTRAP.md', 'scripts/release/public-files.json',
   ]) copy(relative, targetRoot);
 }
@@ -954,7 +954,7 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
       referenced.add(source);
     }
   }
-  assert.equal(referenced.size, 4);
+  assert.equal(referenced.size, 5);
 });
 
 test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', () => {
