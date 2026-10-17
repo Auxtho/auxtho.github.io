@@ -74,7 +74,8 @@ test('public pages render with packaged styles and images without CSP or same-or
     ...publicationRoutes.flatMap(route => ['', '?lang=en', '?lang=ko'].map(query => ({path:route+query,status:200,locator:'main',publicationLanguage:query==='?lang=ko'?'ko':'en'}))),
     { path: '/', status: 200, locator: 'main' },
     ...['ko', 'en'].map(lang => ({ path: `/whitecell/?lang=${lang}`, status: 200, locator: '#oversight' })),
-    ...['auxtho', 'moirion', 'agent-runner', 'ardamire', 'metdol'].map(id => ({ path: `/products/${id}/`, status: 200, locator: 'main' })),
+    ...['auxtho', 'moirion', 'ardamire', 'metdol'].map(id => ({ path: `/products/${id}/`, status: 200, locator: 'main' })),
+    ...['', '?lang=en', '?lang=ko'].map(query => ({path:'/products/agent-runner/'+query,status:200,locator:'main',agentRunnerLanguage:query==='?lang=ko'?'ko':'en'})),
     { path: '/proof/workflow-overview/', status: 200, locator: 'main' },
     { path: '/evidence-notes.html', status: 200, locator: 'main' },
     { path: '/lineage/isp/', status: 200, locator: 'main' },
@@ -106,6 +107,19 @@ test('public pages render with packaged styles and images without CSP or same-or
       await expect(page.locator('main h1')).toHaveCount(1);
       await expect(page.locator('.language-link')).toHaveAttribute('href', new RegExp('lang='+(item.publicationLanguage==='en'?'ko':'en')));
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+    }
+    if(item.agentRunnerLanguage){
+      const lang=item.agentRunnerLanguage;
+      const target='/products/agent-runner/development-record-2026-10-18/?lang='+lang;
+      await expect(page.locator('html')).toHaveAttribute('lang',lang);
+      const primary=page.locator('main a[data-agentrunner-latest-record]');
+      await expect(primary).toHaveCount(2);
+      for(const link of await primary.all()){
+        await expect(link).toHaveAttribute('href',target);
+        await expect(link).toHaveText(lang==='ko'?'최신 AgentRunner 개발 기록 보기':'Read the latest AgentRunner development record');
+      }
+      await expect(page.locator('#publication-links a')).toHaveAttribute('href',target);
+      await expect(page.locator('main a[href="https://metdol.com/development-note#records-title"]')).toHaveCount(0);
     }
     const styleSheets = await page.evaluate(() => [...document.styleSheets].map((sheet) => sheet.href).filter(Boolean));
     expect(styleSheets.length).toBeGreaterThan(0);

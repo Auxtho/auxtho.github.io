@@ -1,5 +1,9 @@
 (function () {
   'use strict';
+  const agentRunnerRecordPath = '/products/agent-runner/development-record-2026-10-18/';
+  const legacyRecordUrl = 'https://metdol.com/development-note#records-title';
+  function agentRunnerRecordUrl(lang) { return agentRunnerRecordPath + '?lang=' + lang; }
+  function agentRunnerRecordLabel(lang) { return lang === 'ko' ? '최신 AgentRunner 개발 기록 보기' : 'Read the latest AgentRunner development record'; }
   function publicationLinks(route, lang) {
     const ko = lang === 'ko';
     const charter = '/charter/?lang=' + lang;
@@ -8,7 +12,7 @@
     if (route === '/products/agent-runner/') {
       title = ko ? '여섯 직원의 결과물을 XO 브리핑까지' : 'Six employees’ results, connected to an XO briefing';
       description = ko ? '2026년 10월 18일 개발 기록 · Mac 로컬 소스 개발본. 검토된 파일 여섯 개, 결과 회의와 XO 브리핑을 같은 업무에서 연결했습니다. 최종 Human 결정은 대기 중입니다.' : 'Development record · 18 October 2026 · Mac local source development version. Six reviewed files, a results meeting and an XO briefing within the same task. The final Human decision remains pending.';
-      links = [['/products/agent-runner/development-record-2026-10-18/?lang=' + lang, ko ? '새 개발 기록 읽기' : 'Read the new development record']];
+      links = [[agentRunnerRecordUrl(lang), ko ? '새 개발 기록 읽기' : 'Read the new development record']];
     } else if (route === '/products/ardamire/' || route === '/whitecell/') {
       title = ko ? 'Ardamire × WhiteCell 방어 설계 헌장' : 'Ardamire × WhiteCell Defense Architecture Charter';
       description = ko ? '강력한 능동 방어, 독립적인 집행, 인간의 실질적인 선택권을 위한 설계 원칙입니다.' : 'Our design principles for powerful active defense, independent enforcement and meaningful human choice.';
@@ -25,9 +29,13 @@
   }
   function researchRecordLink(lang) {
     const ko = lang === 'ko';
-    return '<p class="research-record" data-research-record><a href="/products/agent-runner/development-record-2026-10-18/?lang=' + lang + '"><time datetime="2026-10-18">' + (ko ? '2026년 10월 18일 · 개발 기록' : '18 Oct 2026 · Development record') + '</time><span>' + (ko ? '여섯 직원의 결과물을 XO 브리핑까지' : 'Six employees’ results → XO briefing') + '</span></a></p>';
+    return '<p class="research-record" data-research-record><a href="' + agentRunnerRecordUrl(lang) + '"><time datetime="2026-10-18">' + (ko ? '2026년 10월 18일 · 개발 기록' : '18 Oct 2026 · Development record') + '</time><span>' + (ko ? '여섯 직원의 결과물을 XO 브리핑까지' : 'Six employees’ results → XO briefing') + '</span></a></p>';
   }
   function decorateMain(markup, route, lang) {
+    if (route === '/products/agent-runner/') {
+      return markup.replace(/<a class="(solid-link|line-link)" href="https:\/\/metdol\.com\/development-note#records-title">[^<]*<\/a>/g,
+        (_, cls) => '<a class="' + cls + '" data-agentrunner-latest-record href="' + agentRunnerRecordUrl(lang) + '">' + agentRunnerRecordLabel(lang) + '</a>');
+    }
     if (route !== '/') return markup;
     const clean = markup.replace(/<p class="research-record" data-research-record>[\s\S]*?<\/p>/g, '');
     return clean.replace(/(<div class="product-row"><button class="product-select" data-product="agent-runner"[\s\S]*?<\/div><p class="product-purpose">[\s\S]*?<\/p>)/, '$1' + researchRecordLink(lang));
@@ -36,11 +44,18 @@
     const clean = markup.replace(/<a data-company-charter[^>]*>[\s\S]*?<\/a>/g, '');
     return clean.replace(/(<div class="footer-information">[\s\S]*?<nav class="footer-links"[^>]*>[\s\S]*?)(<\/nav>)/, '$1' + charterFooterLink(lang) + '$2');
   }
-  if (typeof module !== 'undefined' && module.exports) module.exports = { publicationLinks, charterFooterLink, researchRecordLink, decorateMain, decorateFooter };
+  if (typeof module !== 'undefined' && module.exports) module.exports = { publicationLinks, charterFooterLink, researchRecordLink, decorateMain, decorateFooter, agentRunnerRecordUrl, agentRunnerRecordLabel };
   if (typeof document === 'undefined') return;
   const route = location.pathname.endsWith('/index.html') ? location.pathname.slice(0, -10) : location.pathname;
   function refresh() {
     const lang = document.documentElement.lang === 'ko' ? 'ko' : 'en';
+    if (route === '/products/agent-runner/') {
+      document.querySelectorAll('main a[data-agentrunner-latest-record], main a[href="' + legacyRecordUrl + '"]').forEach(link => {
+        link.setAttribute('data-agentrunner-latest-record', '');
+        link.setAttribute('href', agentRunnerRecordUrl(lang));
+        link.textContent = agentRunnerRecordLabel(lang);
+      });
+    }
     const footer = document.querySelector('.footer-information nav');
     if (footer) {
       footer.querySelector('[data-company-charter]')?.remove();
