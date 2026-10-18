@@ -6,7 +6,7 @@
 
 Through AI, we seek to expand human possibility.
 
-So doctors can consider evidence and possibilities they might otherwise miss, and focus on better judgment and care.
+So doctors can consider evidence and possibilities they might otherwise miss, and focus on better judgment and patient care.
 
 So students can discover paths they did not know existed and make choices toward the lives they want.
 
@@ -30,7 +30,7 @@ The anchor is not intended to hold back the growth of intelligence. It is intend
 
 ### 01 Expand Human Possibility
 
-AI should expand people's capacity to learn, judge, create and act. We pursue capable AI that handles repetitive work and complex context, enabling people to understand and undertake things that would have been difficult alone.
+AI should expand people's capacity to learn, judge, create and act. We pursue capable AI that handles repetitive work and analyzes complex information and situations, enabling people to understand and undertake things that would have been difficult alone.
 
 Our goal is not for people to perform every step themselves or repeatedly approve things they do not understand. We design so that people can concentrate on consequential decisions, understand what is happening when it matters, and intervene effectively. We judge progress by the possibilities and practical value it creates for people, not model size alone.
 
@@ -46,7 +46,7 @@ We enable AI to plan proactively, collaborate and continue working within a defi
 
 Delegation must identify who may act, the targets, permitted actions, duration and necessary limits. Distributing or copying work across AI and devices must not expand the authority of individual tasks or the overall undertaking. Greater capability, agreement from another model and urgency do not create authority by themselves.
 
-Authorized routine work should proceed without unnecessary repeated approval. New authority, material changes in impact and unresolved conflicts should bring the judgment of the appropriate person into focus. Withdrawal of delegation must change which actions are actually permitted, not merely what a screen displays.
+Routine work within the scope of valid delegated authority should proceed without unnecessary repeated approval. When new authority is needed, the impact of an action changes materially, or a conflict remains unresolved, the person with the relevant authority must decide how to proceed. Withdrawal of delegation must change which actions are actually permitted, not merely what a screen displays.
 
 ### 04 Human Rights Extend Beyond an Operator's Authority
 
@@ -54,7 +54,7 @@ Human control does not mean imposing one operator's will on everyone else. The a
 
 We make clear who may decide what, who may be affected, and how people can challenge a decision and request review. We account for misuse by both AI and operators, designing for independent review and accountability where consequential powers are concentrated.
 
-A human identity or approval does not make every action legitimate. Emergency powers also need a purpose, scope, time limit and subsequent review. AI capability must not become a means of expanding the control of a few without limits.
+Verified identity or human approval alone does not make every action legitimate. Emergency powers also need a purpose, scope, time limit and subsequent review. AI capability must not become a means of expanding the control of a few without limits.
 
 ### 05 Defend Strongly Within Legitimate Boundaries
 
@@ -84,7 +84,7 @@ We will earn trust through our technology and verification results, not our cust
 
 We actively research faster and more capable models, specialized intelligence, long-term memory and collaboration, and new ways of learning. As those capabilities advance, so must authority controls, verification and recovery.
 
-Improving a work plan is different from changing one's own authority or enforcement rules. Changes to a model, tool, device or policy require review of the affected boundaries, while unaffected validation can be reused appropriately. Greater capability does not automatically expand existing authority or remove the need for verification.
+Improving a work plan is different from changing one's own authority or enforcement rules. Changes to a model, tool, device or policy require review of the affected boundaries, while existing validation results unaffected by the change can be reused appropriately. Greater capability does not automatically expand existing authority or remove the need for verification.
 
 Mistaken rules and human judgments must also be open to correction through accountable processes. Our commitment to human rights and agency endures, while the particular technologies and interpretations used to realize it remain open to evidence and criticism.
 
@@ -94,7 +94,7 @@ After an error or attack, systems must limit harm, enable investigation and help
 
 We design so that replacing a worker or model does not erase responsibility for incidents or actions. We preserve necessary evidence and correction history without using accountability as a reason to retain all personal information indefinitely.
 
-People must have practical ways, within their rights, to retrieve or move their material, withdraw delegation and leave a service. Where others' rights or legitimate retention duties impose limits, we explain the reason, scope and resolution process. A change of operator or service shutdown must not silently expand existing delegation or erase responsibility for unfinished work and unconfirmed results.
+People must have practical ways, within their rights, to download or move their material elsewhere, withdraw delegation and leave a service. Where others' rights or legitimate retention duties impose limits, we explain the reason, scope and resolution process. A change of operator or service shutdown must not silently expand existing delegation or erase responsibility for unfinished work and unconfirmed results.
 
 ## Putting the Principles Into Practice
 
@@ -104,6 +104,6 @@ We support the [Asilomar AI Principles](https://futureoflife.org/open-letter/ai-
 
 ## The Future We Seek
 
-The future we seek is not one in which AI protects people by allowing them only a prescribed set of choices. It is one in which people can collaborate with greater intelligence in trust, with a meaningful role in their own lives and our shared future.
+The future we seek is not one in which AI protects people by allowing them only a prescribed set of choices. It is one in which people can work with more capable AI on a foundation of trust, with a meaningful role in their own lives and our shared future.
 
 We work toward that future by developing capable AI alongside effective means of human control. **So that as intelligence grows, people remain authors of their own lives. That is our direction toward the Anchor of Intellect.**

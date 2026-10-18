@@ -28,6 +28,61 @@ test('Charters retain every approved paragraph, heading and list item in both la
  assert.ok(article(routes[0],'en').html.includes('live a life true to themselves'));
  assert.ok(article(routes[0],'en').html.includes('Auxtho will never develop offensive AI.'));
 });
+
+test('The six company and eight defense wording corrections retain their bilingual meaning',()=>{
+ const companyKo=read('src/publications/AUXTHO_AI_CHARTER_V1_0_KO.md');
+ const companyEn=read('src/publications/AUXTHO_AI_CHARTER_V1_0_EN.md');
+ const defenseKo=read('src/publications/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_KO.md');
+ const defenseEn=read('src/publications/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_EN.md');
+ const checks=[
+  ['C01',companyKo,'더 나은 판단과 환자 진료',companyEn,'better judgment and patient care'],
+  ['C02',companyKo,'정당한 권한을 가진 사람이 판단하도록 합니다.',companyEn,'the person with the relevant authority must decide how to proceed'],
+  ['C03',companyKo,'변경의 영향을 받지 않는 기존 검증 결과',companyEn,'existing validation results unaffected by the change'],
+  ['C04',companyKo,'유효한 위임 범위 안의 통상 업무',companyEn,'Routine work within the scope of valid delegated authority'],
+  ['C05',companyKo,'영향력이 큰 권한이 한곳에 집중되는 경우',companyEn,'where consequential powers are concentrated'],
+  ['C06',companyKo,'자료를 내려받거나 다른 곳으로 옮기고',companyEn,'download or move their material elsewhere'],
+  ['D01',defenseKo,'AI와 사람의 오류와 오용을 함께 고려해 설계한다',defenseEn,'Design for Mistakes and Misuse by Both AI and People'],
+  ['D02',defenseKo,'정당한 권한이 있는 영역 안에서 공격자의 행동 능력을 적극적으로 제압하고',defenseEn,'neutralizes attack capabilities within legitimately authorized environments'],
+  ['D03',defenseKo,'공격은 제압하고 정상 업무와 회복 경로는 지킨다',defenseEn,'Neutralize Attacks While Preserving Legitimate Work and Recovery Paths'],
+  ['D04',defenseKo,'판단에 필요한 근거나 상태를 확인할 수 없을 때는 UNKNOWN으로 표시한다.',defenseEn,'report UNKNOWN when the evidence or state needed for a determination cannot be established'],
+  ['D05',defenseKo,'개별 사안에 관한 판단이 불확실하더라도',defenseEn,'Uncertainty in an individual judgment'],
+  ['D06',defenseKo,'방어 설계에 적용하고 구체화합니다.',defenseEn,'to the design of the Ardamire Defense Layer and WhiteCell'],
+  ['D07',defenseKo,'자료별 이용 목적, 정보보호 요건과 정당한 보존 의무',defenseEn,'applicable information-protection requirements and legitimate retention obligations'],
+  ['D08',defenseKo,'필요한 사건 기록은 정당한 권한과 적법한 절차에 따라 제공한다.',defenseEn,'Provide necessary incident records only under proper authorization and through lawful procedures.']
+ ];
+ assert.equal(checks.length,14);
+ for(const [id,ko,koPhrase,en,enPhrase] of checks){assert.ok(ko.includes(koPhrase),id+' Korean');assert.ok(en.includes(enPhrase),id+' English');}
+ assert.ok(defenseKo.includes('맡은 역할에 따라 정확하게 관찰·분석하거나'));
+ assert.ok(defenseKo.includes('방어 조치 요청을 작성할 수 있어야 한다.'));
+ assert.ok(defenseEn.includes('according to its assigned role'));
+ assert.ok(defenseEn.includes('generate defensive action requests'));
+});
+
+test('Copy editing preserves the protected commitments and all eight defense standards',()=>{
+ for(const [file,phrases] of [
+  ['AUXTHO_AI_CHARTER_V1_0_KO.md',['인간의 권리는 운영자의 권한보다 넓다','위임의 철회는 화면의 표시가 아니라 실제로 허용되는 행동의 변화로 다룹니다.','고객의 이름보다, 고객의 보안을 먼저 생각합니다.','지능이 더 커져도 인간이 자기 삶의 주체로 남을 수 있도록.','Auxtho는 절대로 공격형 AI를 만들지 않습니다.']],
+  ['AUXTHO_AI_CHARTER_V1_0_EN.md',["Human Rights Extend Beyond an Operator's Authority",'Withdrawal of delegation must change which actions are actually permitted, not merely what a screen displays.','Our customers’ security comes before publicity.','So that as intelligence grows, people remain authors of their own lives.','Auxtho will never develop offensive AI.']]
+ ])for(const phrase of phrases)assert.ok(read('src/publications/'+file).includes(phrase),phrase);
+ const standards={ko:['판단은 권한이 아니다.','추정은 사실이 아니다.','승인은 실행 성공이 아니다.','중단 요청은 실제 중단의 증거가 아니다.','기록의 무결성은 내용의 진실성을 대신하지 않는다.','빠른 대응은 권한 초과의 이유가 될 수 없다.','보호는 인간의 정당한 선택권을 빼앗는 명분이 될 수 없다.','더 큰 지능은 책임을 없애거나 권한을 스스로 넓히지 않는다.'],en:['Judgment is not authority.','Inference is not fact.','Approval is not successful execution.','A stop request is not proof that an action stopped.','Record integrity does not establish the truth of its contents.','Speed does not justify exceeding authority.','Protection must not become a pretext for taking away legitimate human choice.','Greater intelligence does not erase accountability or expand its own authority.']};
+ for(const lang of ['ko','en']){
+  const source=read('src/publications/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_'+lang.toUpperCase()+'.md');
+  const heading=lang==='ko'?'## 능력이 커져도 지켜갈 기준':'## Standards We Uphold as Capability Grows';
+  const block=source.slice(source.indexOf(heading)).split(/\r?\n/).filter(x=>x.startsWith('- ')).map(x=>x.slice(2));
+  assert.deepEqual(block,standards[lang]);
+ }
+ assert.ok(read('src/publications/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_KO.md').includes('역할의 독립성은 이름이나 별도 폴더만으로 성립하지 않으며, 실제 권한과 집행 경계로 검증한다.'));
+});
+
+test('Unambiguous expression fixes identify AI workers without relaxing authority or protection',()=>{
+ const ko=read('src/publications/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_KO.md');
+ const en=read('src/publications/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_EN.md');
+ for(const phrase of ['빠른 짧은 임무','오염·고장','여러 사건과 시간대','조치량','임시 문맥·권한·실행 환경을'])assert.ok(!ko.includes(phrase),phrase);
+ for(const phrase of ['신속한 대응이 필요한 짧은 임무','오염되거나 고장 나더라도','여러 사건과 시점','조치의 횟수와 규모','WhiteCell AI 작업자','권한을 회수하며'])assert.ok(ko.includes(phrase),phrase);
+ assert.ok(en.includes('Make AI Workers Replaceable'));
+ assert.ok(en.includes('its permissions are revoked'));
+ assert.ok(en.includes('disabling valid mandatory security policies or lifting existing protections'));
+ for(const phrase of ['권한이 확인되지 않은 새 행동은 집행하지 않는다.','권한과 조건은 실제 집행 시점에도 유효해야 한다.','외부 시스템을 침해하거나 무단 변경한다면 허용된 내부 방어가 아니다.'])assert.ok(ko.includes(phrase),phrase);
+});
 test('Publications have English initial HTML, exact Korean template, canonical and language-specific metadata',()=>{
  for(const p of routes){
   const html=read(p.route.slice(1)+'index.html');

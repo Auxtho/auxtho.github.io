@@ -26,11 +26,11 @@ We develop for powerful defense within legitimately authorized environments. We 
 
 ## Nine Core Design Principles
 
-### 01 Bound Missions and Make Workers Replaceable
+### 01 Bound Missions and Make AI Workers Replaceable
 
-Each WhiteCell worker performs a bounded mission, records its results and terminates. Long-running investigations are designed to continue through replaceable workers receiving the evidence they need.
+Each WhiteCell AI worker (hereafter, worker) performs a bounded mission, records its results and terminates. Long-running investigations are designed to continue through replaceable workers receiving the evidence they need.
 
-A worker's temporary context, permissions and execution environment are discarded or reset through a defined process after its mission. Model weights and inference servers need not be recreated each time, but reuse of shared servers, caches and memory must be checked for information or authority crossing mission, incident or user boundaries.
+After a mission, a worker's temporary working information is discarded, its permissions are revoked, and its execution environment is discarded or reset through a defined process. Model weights and inference servers need not be recreated each time, but reuse of shared servers, caches and memory must be checked for information or authority crossing mission, incident or user boundaries.
 
 When a mission expires, is canceled or ends, new action requests must be blocked and the worker's authority revoked. Responsibility for tracking, stopping and verifying actions underway continues separately. Worker termination does not establish that effects in processes, networks or storage have stopped, or that an incident is closed.
 
@@ -45,7 +45,7 @@ Assign roles according to response deadlines and the judgment required. The rang
 - **Mid-range WhiteCell:** Connects signals across incidents and time to review missed detections, false positives, attack propagation and conflicting defenses.
 - **Long-range WhiteCell:** Investigates complex sequences, new variants and long-term patterns, and proposes defensive improvements.
 
-Consider models suited to fast, short missions and to broader, deeper analysis respectively. Assign them by actual task performance and response deadlines, not model size. Deep analysis or a model majority must not delay immediate protection that is already authorized. Essential protective paths must not depend on the availability or integrity of a particular AI.
+Consider models suited to short missions requiring rapid responses, and models suited to broader, deeper analysis. Assign them by actual task performance and response deadlines, not model size. Deep analysis or a model majority must not delay immediate protection that is already authorized. Essential protective paths must not depend on the availability or integrity of a particular AI.
 
 Measure the full path through detection, judgment, request, authority checks, action and effect verification. Evaluate missed defensive opportunities and delays imposed on legitimate work, not just first-response latency.
 
@@ -55,7 +55,7 @@ WhiteCell is designed to request defensive actions that restrict an attacker's a
 
 WhiteCell's judgments, learning results and agreement among models do not create execution authority. WhiteCell cannot expand its own policies or permissions, or approve its own proposals. Ardamire must independently check current identity, authority, target, version, policy and state, rather than trust an explanation alone.
 
-Authority and conditions must remain valid at execution time. Delegation, copying and distributed execution do not create new authority or expand limits on targets, action volume, duration or other constraints for either individual tasks or the overall undertaking. Earlier approvals cannot justify execution after scope changes, expiry or revocation. Define and validate when revocation takes effect and how disconnected operation behaves at the actual enforcement boundary.
+Authority and conditions must remain valid at execution time. Delegation, copying and distributed execution do not create new authority or expand limits on targets, the number and scale of actions, duration or other constraints for either individual tasks or the overall undertaking. Earlier approvals cannot justify execution after scope changes, expiry or revocation. Define and validate when revocation takes effect and how disconnected operation behaves at the actual enforcement boundary.
 
 Preauthorized protection may execute promptly within its defined targets, actions, scope, deadlines and conditions. New policies, expanded permissions, material changes and restoration require validation and legitimate approval for the specific change. Urgency and model confidence do not replace these boundaries.
 
@@ -75,7 +75,7 @@ Do not reward unsupported confidence over an appropriate UNKNOWN. Equally, uncer
 
 Preparing a request, receiving it, approving it, starting execution, completing execution and verifying effects are different states. A lost response or unclear result must not be arbitrarily classified as success, failure or cancellation, or trigger blind repetition of the same action.
 
-Do not execute a new action whose authority is unverified. Uncertainty in an individual judgment must not arbitrarily release valid mandatory security policies or existing protection. Address failures in recording and verification paths, and design to preserve necessary protection and human intervention paths.
+Do not execute a new action whose authority is unverified. Uncertainty in an individual judgment must not lead to arbitrarily disabling valid mandatory security policies or lifting existing protections. Address failures in recording and verification paths, and design to preserve necessary protection and human intervention paths.
 
 ### 06 Preserve Records and Accountability Across Worker Changes
 
@@ -85,13 +85,13 @@ Keep original evidence, collection source, time and method, observed facts, AI a
 
 Record integrity does not establish the truth of its contents. Forged or poisoned input can also be preserved faithfully, so address provenance, verification status and conflicting evidence together. Hashes, signatures and audit records alone do not establish that an attack occurred or a defense succeeded.
 
-Manage retention and deletion according to the material's purpose, information protection and legitimate retention duties. Incident continuity does not require permanent storage of all personal data. Minimize retained material and access, and provide ways to address legitimate deletion or correction requests alongside necessary evidence preservation.
+Manage retention and deletion according to the purpose for which the information is used, applicable information-protection requirements and legitimate retention obligations. Incident continuity does not require permanent storage of all personal data. Minimize retained material and access, and provide ways to address legitimate deletion or correction requests alongside necessary evidence preservation.
 
 ### 07 Develop and Adopt Models for Actual Defensive Performance
 
 We need models that perform authorized defensive work accurately and on time, not simply famous or large models. Compare rules, state machines and existing models, considering performance, permissions, data, licensing and cost before choosing specialized training or dedicated model development where needed.
 
-A specialized model's objective is accurate observation and analysis in its assigned role, defensive action requests with clear targets, versions, actions, scope, deadlines and evidence, or an appropriate finding of uncertainty. Develop capability through actual mission performance rather than plausible explanations.
+A specialized model should, according to its assigned role, observe and analyze accurately or generate defensive action requests with explicit targets, versions, actions, scope, deadlines and evidence. It should report UNKNOWN when the evidence or state needed for a determination cannot be established. Develop capability through actual mission performance rather than plausible explanations.
 
 A model that repeatedly refuses authorized defensive work or misses the time for action is unsuitable for that role. Distinguish justified refusal of unauthorized requests from unnecessary avoidance of authorized work. Do not bypass provider refusals or security boundaries to use a model.
 
@@ -105,9 +105,9 @@ Actual targets and effects determine the boundary. A command originating in our 
 
 Even when an attacker is using our systems, we do not intrude into their external systems, send malware or attack commands back at them, or retaliate. Greater AI capability does not change this boundary.
 
-Investigating external offenders and enforcing the law belong to competent authorities. Provide necessary incident records through legitimate authority and lawful procedures. This does not confer permission for automatic external transmission or unlimited sharing of personal information.
+Investigating external offenders and enforcing the law belong to competent authorities. Provide necessary incident records only under proper authorization and through lawful procedures. This does not confer permission for automatic external transmission or unlimited sharing of personal information.
 
-### 09 Neutralize Attacks and Preserve Legitimate Work and Recovery
+### 09 Neutralize Attacks While Preserving Legitimate Work and Recovery Paths
 
 A suspicious signal alone must not automatically shut down an entire organization. Restrict affected targets and actions for the necessary scope and duration, while allowing unaffected work to continue after independent authority and state checks.
 
@@ -132,6 +132,6 @@ Do not judge defense by explanations, approval records, compilation, test counts
 
 We pursue defense that actively neutralizes attack capabilities within legitimately authorized environments, preserves legitimate work and protects meaningful human choice. As workers are replaced and models advance, we design so that effects remain verifiable, authority checks remain independent, and evidence and accountability for actions endure.
 
-We support the [Asilomar AI Principles](https://futureoflife.org/open-letter/ai-principles/). We advance powerful defense and responsible control together so that people can collaborate with greater intelligence in trust.
+We support the [Asilomar AI Principles](https://futureoflife.org/open-letter/ai-principles/). We advance powerful defense and responsible control together so that people can work with more capable AI on a foundation of trust.
 
 [Ardamire implementation and test records](https://auxtho.com/security/ardamire/) · [WhiteCell introduction](https://auxtho.com/whitecell/)
