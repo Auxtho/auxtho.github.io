@@ -95,8 +95,8 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
   }),
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
-  "charter/defense/index.html": "4dd7a4665cd29bdd83fd7474b001bf0baee120b633835b58580f53bf6e0f7e07",
-  "charter/index.html": "46addeb0fb7ac79b661cf27c2d9d0d0b9bc743ee5903fd31ad9ffc841c809d4a",
+  "charter/defense/index.html": "e2c74641c6d82400543cff1de8e5258b8f8f82ad511ffe663338edf5ccf0d9e7",
+  "charter/index.html": "cfc35ea30f3b13745426ee778146ca26f494b0fff50411f52b012a4e1e3feb95",
   "products/agent-runner/development-record-2026-10-18/index.html": "73b1eb55cd06d7d2564da7f12f3b5935a85a8f97f1e9f36ee8761aa443e84508",
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '62f5cd50b085ee5d0ead3a37324924580ee1174221d2b620dc5667caa7491752',
