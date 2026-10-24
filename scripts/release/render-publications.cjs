@@ -23,7 +23,7 @@ function inline(text, lang) {
     .replace(/AUXTHO_AI_CHARTER_V1_0_(?:EN|KO)\.md/g, '/charter/?lang=' + lang)
     .replace(/ARDAMIRE_WHITECELL_DEFENSE_CHARTER_V1_1_(?:EN|KO)\.md/g, '/charter/defense/?lang=' + lang)
     .replace(/https:\/\/auxtho\.com\/whitecell\/(?:\?lang=ko)?/g, '/whitecell/?lang=' + lang)
-    .replace(/https:\/\/auxtho\.com\/security\/ardamire\//g, '/security/ardamire/?lang=' + lang);
+    .replace(/https:\/\/auxtho\.com\/security\/ardamire\//g, '/security/ardamire/');
   return escape(transformed).replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, label, href) => {
     const url = href.replace(/&amp;/g, '&');
     if (!/^(?:\/(?!\/)|https:\/\/futureoflife\.org\/)/.test(url)) throw Error('Unreviewed manuscript link: ' + url);

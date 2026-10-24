@@ -107,8 +107,13 @@
     document.querySelector('#next-step [data-i18n]').textContent = copy[language][current === 5 ? 'restart' : 'next'];
     if (focusTab) tabs[current].focus();
   }
-  function setLanguage(nextLanguage) {
+  function setLanguage(nextLanguage, updateUrl = false) {
     language = nextLanguage;
+    if (updateUrl) {
+      const selectedUrl = new URL(window.location.href);
+      selectedUrl.searchParams.set('lang', language);
+      window.history.replaceState(window.history.state, '', selectedUrl.pathname + selectedUrl.search + selectedUrl.hash);
+    }
     document.documentElement.lang = language;
     document.querySelectorAll('[data-i18n]').forEach(element => {
       const value = copy[language][element.dataset.i18n];
@@ -138,7 +143,7 @@
     });
   });
   document.getElementById('next-step').addEventListener('click', () => showStep(current + 1));
-  document.getElementById('language').addEventListener('click', () => setLanguage(language === 'ko' ? 'en' : 'ko'));
+  document.getElementById('language').addEventListener('click', () => setLanguage(language === 'ko' ? 'en' : 'ko', true));
   motionButtons.forEach(button => button.addEventListener('click', toggleMotion));
   reducedMotion.addEventListener('change', updateMotionControls);
   setLanguage(language);

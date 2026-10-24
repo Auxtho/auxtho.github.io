@@ -243,6 +243,7 @@ test('published WhiteCell preserves bilingual roles, human oversight, controls a
   };
   async function assertLanguage(lang) {
     await expect(page.locator('html')).toHaveAttribute('lang', lang);
+    expect(new URL(page.url()).searchParams.get('lang') || 'en').toBe(lang);
     for (const key of ['architectureIntro', 'whitecellBody', 'ardamireBody', 'authorityNote', 'oversightIntro', 'recordBody', 'forensicBody', 'humanBody', 'oversightNote']) {
       await expect(page.locator(`[data-i18n="${key}"]`)).toHaveText(expected[lang][key], { useInnerText: true });
     }
@@ -281,9 +282,14 @@ test('published WhiteCell preserves bilingual roles, human oversight, controls a
       await assertLanguage(lang);
       await page.locator('#language').click();
       await assertLanguage(lang === 'ko' ? 'en' : 'ko');
+      expect(new URL(page.url()).searchParams.get('sha256_readback')).toBe(sourceSha);
+      await page.waitForLoadState('networkidle');
+      await page.reload({ waitUntil: 'networkidle' });
+      await assertLanguage(lang === 'ko' ? 'en' : 'ko');
       await page.locator('#language').click();
       await assertLanguage(lang);
       result.language_switch_roundtrip = true;
+      result.language_url_and_reload = true;
       const tabs = page.locator('[role="tab"][data-step]');
       await expect(tabs).toHaveCount(6);
       for (let index = 0; index < 6; index += 1) {

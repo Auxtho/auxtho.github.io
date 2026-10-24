@@ -11,6 +11,88 @@ const html=fs.readFileSync(path.join(root,'whitecell/index.html'),'utf8');
 const css=fs.readFileSync(path.join(assetRoot,'styles.css'),'utf8');
 const linkName='introduction-link.f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041.js';
 
+test('Selected WhiteCell language survives a URL round trip without losing the query or section',()=>{
+  const appName=fs.readdirSync(assetRoot).find(name=>/^app\.[0-9a-f]{64}\.js$/.test(name));
+  const app=fs.readFileSync(path.join(assetRoot,appName),'utf8');
+  const prefix=app.slice(0,app.indexOf('  const boundaryScene'))+'})();';
+  function open(href){
+    let address=new URL(href),replacements=0;
+    const nodes=new Map();
+    function element(id){
+      if(!nodes.has(id))nodes.set(id,{dataset:{},listeners:{},children:[],setAttribute(k,v){this[k]=v},
+        addEventListener(k,fn){this.listeners[k]=fn},replaceChildren(){this.children=[]},append(n){this.children.push(n)},focus(){}});
+      return nodes.get(id);
+    }
+    const tabs=Array.from({length:6},(_,i)=>Object.assign(element('tab'+i),{id:'step-tab-'+i,dataset:{step:String(i)}}));
+    const document={documentElement:{dataset:{}},getElementById:element,
+      querySelector:element,querySelectorAll(selector){
+        if(selector==='[data-step]')return tabs;
+        if(selector==='[data-motion-toggle]')return [element('motion1'),element('motion2')];
+        return [];
+      },createElement(tag){return {tag}},createTextNode(text){return {text}},dispatchEvent(){}};
+    const state={marker:'unchanged'};
+    const window={location:{get href(){return address.href},get search(){return address.search}},
+      history:{state,replaceState(received,title,url){assert.equal(received,state);assert.equal(title,'');address=new URL(url,address);replacements++}},
+      matchMedia(){return {matches:false,addEventListener(){}}}};
+    vm.runInNewContext(prefix,{window,document,URL,URLSearchParams},{timeout:1000});
+    return {document,toggle(){element('language').listeners.click()},get href(){return address.href},get replacements(){return replacements}};
+  }
+  const first=open('https://auxtho.com/whitecell/?lang=en&ref=shared#cycle');
+  assert.equal(first.document.documentElement.lang,'en');
+  assert.equal(first.replacements,0);
+  first.toggle();
+  assert.equal(first.document.documentElement.lang,'ko');
+  const korean=new URL(first.href);
+  assert.equal(korean.searchParams.get('lang'),'ko');
+  assert.equal(korean.searchParams.get('ref'),'shared');
+  assert.equal(korean.hash,'#cycle');
+  assert.equal(first.replacements,1);
+  // Re-initialise the actual page source from the copied/shared address.
+  const reopened=open(first.href);
+  assert.equal(reopened.document.documentElement.lang,'ko');
+  assert.equal(reopened.replacements,0);
+  reopened.toggle();
+  assert.equal(reopened.document.documentElement.lang,'en');
+  assert.equal(new URL(reopened.href).searchParams.get('lang'),'en');
+  assert.equal(new URL(reopened.href).hash,'#cycle');
+  const bare=open('https://auxtho.com/whitecell/#architecture');
+  bare.toggle();
+  assert.equal(new URL(bare.href).searchParams.get('lang'),'ko');
+  assert.equal(new URL(bare.href).hash,'#architecture');
+});
+
+test('Every common contact section places the data warning next to the email action in both languages',()=>{
+  const {render}=require('../scripts/release/render-company-portfolio.cjs');
+  for(const lang of ['en','ko'])for(const route of ['/','/products/auxtho/','/products/moirion/','/products/ardamire/','/products/metdol/','/products/agent-runner/']){
+    const main=render(route,lang).main;
+    const section=main.slice(main.indexOf('<section class="contact-section"'));
+    assert.ok(section.includes('<p data-contact-note>'),route+lang);
+    assert.ok(section.includes(lang==='ko'?'개인정보·고객 기밀·규제 대상·실서비스 자료나 비밀정보는 이메일로 보내지 마세요':'Do not email personal, customer-confidential'),route+lang);
+    assert.ok(section.indexOf('data-contact-note')<section.indexOf('mailto:hello@auxtho.com'),route+lang);
+  }
+});
+
+test('The Korean defense charter identifies its English-only implementation record',()=>{
+  const {routes,article}=require('../scripts/release/render-publications.cjs');
+  const defense=routes.find(route=>route.id==='defense');
+  const korean=article(defense,'ko').html;
+  assert.match(korean,/<a href="\/security\/ardamire\/">Ardamire 구현·시험 기록\(영문\)<\/a>/);
+  assert.doesNotMatch(korean,/\/security\/ardamire\/\?lang=ko/);
+  assert.ok(korean.includes('/whitecell/?lang=ko'));
+});
+
+test('The public evidence index separates dated workflow checks from preserved July illustrations',()=>{
+  const notes=fs.readFileSync(path.join(root,'evidence-notes.html'),'utf8');
+  assert.ok(notes.includes('/products/auxtho/?lang=en#verification'));
+  assert.ok(notes.includes('/products/auxtho/?lang=ko#verification'));
+  assert.ok(notes.includes('16 JULY 2026 / EARLIER INTERFACE ILLUSTRATIONS'));
+  assert.ok(notes.includes('app-overview-synthetic-replay-20260716.json'));
+  assert.ok(notes.includes('console-synthetic-workflow-replay-20260716.json'));
+  assert.ok(notes.includes('evidence-manifest-20260716.json'));
+  assert.ok(notes.indexOf('workflow-record-title')<notes.indexOf('app-evidence-title'));
+});
+
+
 test('WhiteCell public route has canonical bilingual metadata and existing legal links',()=>{
   assert.match(html,/name="robots" content="index,follow"/);
   assert.match(html,/rel="canonical" href="https:\/\/auxtho\.com\/whitecell\/"/);

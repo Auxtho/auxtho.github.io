@@ -134,4 +134,4 @@ AI의 환각·오판·오염과 사람의 실수·과신·잘못된 승인을 �
 
 우리는 [Asilomar AI Principles](https://futureoflife.org/open-letter/ai-principles/)를 지지한다. 인간이 더 뛰어난 AI와 신뢰를 바탕으로 협력할 수 있도록, 강력한 방어와 책임 있는 통제를 함께 발전시킨다.
 
-[Ardamire 구현·시험 기록](https://auxtho.com/security/ardamire/) · [WhiteCell 소개](https://auxtho.com/whitecell/?lang=ko)
+[Ardamire 구현·시험 기록(영문)](https://auxtho.com/security/ardamire/) · [WhiteCell 소개](https://auxtho.com/whitecell/?lang=ko)
