@@ -763,16 +763,58 @@ test('portfolio resource readback uses reduced motion without skipping populated
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const route of ['/', ...['auxtho','moirion','agent-runner','ardamire','metdol'].map(id=>`/products/${id}/`)]) {
     await openWithoutRuntimeErrors(page, route+'?lang=en');
-    const images=page.locator('img');
+    if(route==='/products/auxtho/') {
+      await page.locator('[data-av-family="insurance"]').click();
+      await page.locator('[data-ai-result-open]').click();
+      await expect(page.locator('.ai-window')).toBeVisible();
+    }
+    // A closed full-screen menu has real images: open it before checking those images.
+    // Ordinary content and the empty image-enlargement placeholder retain their checks.
+    const images=page.locator('img:not(dialog.am-menu img)');
     for(let i=0;i<await images.count();i++) {
       const image=images.nth(i);
       if(!await image.getAttribute('src')) {
         expect(await image.evaluate(el=>Boolean(el.closest('dialog.image-dialog:not([open])')))).toBe(true);
         continue;
       }
+      const panelId=await image.evaluate(el=>el.closest('.as-row-content,.as-defense-panel')?.id || null);
+      if(panelId) {
+        const toggle=page.locator(`[data-as-toggle][aria-controls="${panelId}"]`);
+        await toggle.focus();
+        await expect(toggle).toHaveAttribute('aria-expanded','true');
+      }
       await image.scrollIntoViewIfNeeded();
       await expect.poll(()=>image.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
     }
+    if(route==='/products/auxtho/') {
+      for(const decision of ['deny','pay']) {
+        await page.locator(`[data-ai-case="${decision}"]`).click();
+        const source=page.locator('#ai-source img');
+        await expect.poll(()=>source.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+        await page.locator('[data-ai-page]').click();
+        await expect(page.locator('dialog.ai-page-dialog')).toBeVisible();
+        const originalPage=page.locator('.ai-dialog-page img');
+        await expect.poll(()=>originalPage.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+        await expect(page.locator('[data-ai-dialog-pdf]')).toHaveAttribute('href',new RegExp('insurance-demo-policy-v1\\.pdf#page='+(decision==='pay'?2:3)+'$'));
+        await page.locator('[data-ai-close]').click();
+        await expect(page.locator('dialog.ai-page-dialog')).not.toBeVisible();
+      }
+    }
+    const trigger=page.locator('.am-menu-trigger');
+    await trigger.click();
+    const menu=page.locator('dialog.am-menu');
+    await expect(menu).toBeVisible();
+    const menuImages=menu.locator('img');
+    expect(await menuImages.count()).toBeGreaterThan(0);
+    for(let i=0;i<await menuImages.count();i++) {
+      const image=menuImages.nth(i);
+      await expect(image).toHaveAttribute('src',/\S+/);
+      await image.scrollIntoViewIfNeeded();
+      await expect.poll(()=>image.evaluate(el=>el.complete&&el.naturalWidth>0)).toBe(true);
+    }
+    await page.keyboard.press('Escape');
+    await expect(menu).not.toBeVisible();
+    await expect(trigger).toBeFocused();
   }
 });
 
@@ -790,25 +832,39 @@ test('company portfolio and all five product pages are bilingual, indexable and 
     }
   }
 });
-test('company software selector, Moirion captures and bounded product claims stay connected', async ({ page }) => {
+test('company product catalogue, Moirion captures and bounded product claims stay connected', async ({ page }) => {
   await page.setViewportSize({width:1440,height:900});
   await openWithoutRuntimeErrors(page,'/?lang=en#software');
-  await expect(page.locator('.product-select')).toHaveCount(4);
-  await expect(page.locator('#software .product-select')).toHaveCount(2);
-  await expect(page.locator('#technology .product-select')).toHaveCount(2);
-  for (const id of ['auxtho','moirion','agent-runner','metdol']) {
-    await page.locator(`[data-product="${id}"]`).click();
-    await expect(page.locator(`[data-product="${id}"]`)).toHaveAttribute('aria-pressed','true');
-    const stage=['auxtho','moirion'].includes(id)?'#product-stage':'#technology-stage';
-    await expect(page.locator(stage+' a.line-link')).toHaveAttribute('href',`/products/${id}/?lang=en`);
+  const rows=page.locator('.as-product-row');
+  await expect(rows).toHaveCount(4);
+  await expect(page.locator('#software .as-product-row')).toHaveCount(2);
+  await expect(page.locator('#technology .as-product-row')).toHaveCount(2);
+  for (const id of ['auxtho','moirion','agentrunner','metdol']) {
+    const row=page.locator(`.as-${id}-row`);
+    const toggle=row.locator('[data-as-toggle]');
+    const panel=page.locator('#'+await toggle.getAttribute('aria-controls'));
+    await toggle.focus();
+    await expect(toggle).toHaveAttribute('aria-expanded','true');
+    await expect(panel).toHaveAttribute('aria-hidden','false');
+    const destination=id==='agentrunner'?'agent-runner':id;
+    const href=destination==='auxtho'?`/products/auxtho/?lang=en#auxtho-workflow`:`/products/${destination}/?lang=en`;
+    await expect(panel.locator('a.as-secondary').first()).toHaveAttribute('href',href);
+    await page.keyboard.press('Escape');
+    await expect(toggle).toHaveAttribute('aria-expanded','false');
+    await expect(toggle).toBeFocused();
   }
-  const securityCards=page.locator('#security .security-card');
-  await expect(securityCards).toHaveCount(2);
-  await expect(securityCards.locator('h3')).toHaveText(['Ardamire Defense Layer','Ardamire WhiteCell']);
-  const securityLinks=securityCards.locator('a.line-link');
-  await expect(securityLinks).toHaveCount(2);
-  await expect(securityLinks.nth(0)).toHaveAttribute('href','/products/ardamire/?lang=en');
-  await expect(securityLinks.nth(1)).toHaveAttribute('href','/whitecell/?lang=en');
+  const securityItems=page.locator('#security .as-defense-item');
+  await expect(securityItems).toHaveCount(2);
+  for (const [panelId,href] of [['as-defense-panel','/products/ardamire/?lang=en'],['as-whitecell-panel','/whitecell/?lang=en']]) {
+    const toggle=page.locator(`[data-as-toggle][aria-controls="${panelId}"]`);
+    await toggle.focus();
+    await expect(toggle).toHaveAttribute('aria-expanded','true');
+    const panel=page.locator('#'+panelId);
+    await expect(panel).toHaveAttribute('aria-hidden','false');
+    await expect(panel.locator('a.as-secondary')).toHaveAttribute('href',href);
+    await page.keyboard.press('Escape');
+    await expect(toggle).toHaveAttribute('aria-expanded','false');
+  }
   await openWithoutRuntimeErrors(page,'/products/moirion/?lang=en');
   for (const kind of ['mac','iphone']) {
     const tabs=page.locator(`[data-gallery="${kind}"] [role="tab"]`);
