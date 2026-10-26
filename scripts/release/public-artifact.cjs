@@ -74,6 +74,23 @@ const REVIEWED_PORTFOLIO_FILES_SHA256 = Object.freeze({
   "assets/whitecell-20261015/jewel-facets.svg": "6a02e06408776c829b65d1670bca69107f4a05251869a3f6b3c9c87b477ceaf6",
   "assets/whitecell-20261015/introduction-link.f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041.js": "f17aeb18fa071b0c9ee4ec5a0ebf604ec7b2d03f2049e4741d08b0bddcc6a041"
 });
+const REVIEWED_WORKFLOW_FILES_SHA256 = Object.freeze({
+  "assets/auxtho-insurance-preview/insurance-demo-policy-v1.pdf": "fedaeb2bed5219f9769658cdd82b2a2b399488a57d6ec500d20275c8f35fca8a",
+  "assets/auxtho-insurance-preview/policy-clause-deny.png": "e6a82cb5071605561335fd14b72eec49ab158be934398ec1a02c8bde5174daa0",
+  "assets/auxtho-insurance-preview/policy-clause-pay.png": "0e590680af2f184ce384364b597e7c337e8339f7706c6e896a4e1226a6bd5d24",
+  "assets/auxtho-insurance-preview/policy-page-2.png": "1a8ac792463dbda088a44fef6f1887e6cd6bcca3520ae22d27fb96530c001651",
+  "assets/auxtho-insurance-preview/policy-page-3.png": "858552862da659851a49d57585de6c90d041f5e4fa43da919059a2f034accb13",
+  "assets/auxtho-overview-20261026/home.389612c20ea98d94a518d428285f953c2273c52ca1df67265b137230e96e8709.js": "389612c20ea98d94a518d428285f953c2273c52ca1df67265b137230e96e8709",
+  "assets/auxtho-overview-20261026/home.css": "8f31eb5be2f1b05aa0f834a2018d3758a6a393e1e5a314bcf56c35d8615597ed",
+  "assets/auxtho-overview-20261026/menu.6682ebb12da3c4e9a54c869676c9620d3c09b67b874195453dbe1ea990659d9f.js": "6682ebb12da3c4e9a54c869676c9620d3c09b67b874195453dbe1ea990659d9f",
+  "assets/auxtho-overview-20261026/menu.css": "84ee9d584426ae3bdfae22c34af109c918f4d1877768aaa070b8c01320632d6c",
+  "assets/auxtho-workflow-20261026/finance-reading.css": "ab96cc2735ca4908d9becd227b41f86f85b64d7ffbab7a82b976aff298efd8c5",
+  "assets/auxtho-workflow-20261026/flow.6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03.js": "6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03",
+  "assets/auxtho-workflow-20261026/flow.css": "6410b49ac66100655a0706ee4c376a8e6acb7200fc2002f316dd35c59c13d763",
+  "assets/auxtho-workflow-20261026/long-term.9231ce1a38ae212b614d8e637c547add4da12fb6a672537106a2a696ff2a465d.js": "9231ce1a38ae212b614d8e637c547add4da12fb6a672537106a2a696ff2a465d",
+  "assets/auxtho-workflow-20261026/long-term.css": "604000ad46221a0873b480ca43b4a1076350a7e7c121068f6f00f9a6f0da7d11"
+}
+);
 const CANONICAL_PUBLIC_TEXT_EXTENSIONS = new Set(['.css', '.html', '.js', '.json', '.svg', '.txt', '.xml']);
 const PUBLIC_FILE_MANIFEST_RELATIVE = 'scripts/release/public-files.json';
 const PRIVACY_MANIFEST_PATH = '/assets/proposal/evidence-manifest-20260716.json';
@@ -95,19 +112,19 @@ const APPROVED_HISTORICAL_ROLLBACK_EVIDENCE = Object.freeze({
   }),
 });
 const REVIEWED_PUBLIC_HTML_SHA256 = Object.freeze({
-  "charter/defense/index.html": "05674e34aebf30ae40fa6aecbc8248b2c304dbbdfffa8106bfa86342366a4ea1",
-  "charter/index.html": "cfc35ea30f3b13745426ee778146ca26f494b0fff50411f52b012a4e1e3feb95",
-  "products/agent-runner/development-record-2026-10-18/index.html": "73b1eb55cd06d7d2564da7f12f3b5935a85a8f97f1e9f36ee8761aa443e84508",
+  "charter/defense/index.html": "1083d78f366f2e955d807f9f4d9e638acd10409d1a05e655d0e1a65aa2ace5cf",
+  "charter/index.html": "5d8c9b569f71df33bbab6fefea23714557d762317294a5b036b476852824a350",
+  "products/agent-runner/development-record-2026-10-18/index.html": "b66f78d8128a8bedf8226a0fef2869f7241d7440511d58c6e0510bb34d040441",
   '404.html': '1e31659de27c76ad8cb36372283cffe90bfd2401820dd3e7f4d73b717b3d5793',
   'evidence-notes.html': '37086e4aca6a71ba23189b3244c1d38b4073a5a7eb2e15193387a02da1e93375',
   'demo/singapore-source-review/index.html': '9a2931fe1b94f2b6f00e76968629e48cd49ef63fee442438f9bf73d29e4cd958',
-  "index.html": "760eb48b1c528a76651dc4970fc673db3e8c91a2e26795387947595a6ef9984b",
-  "products/auxtho/index.html": "24eff50e2953d9466b11c2b35927ef779553f4adf1d9752330cecd6e0689d40d",
-  "products/moirion/index.html": "b578c7a90f88af35fd4410ec0e837dfb340724c5758483f6b4bd29f505123ad7",
-  "products/agent-runner/index.html": "de3323aaa1397f0ba7149ff9781944f8a1c799caef9e040014cc33bd08c99f65",
-  "products/ardamire/index.html": "2cfe1eb76067b88b40af261963df06de909218e3fe4ab7b0f5362846fd86c80e",
+  "index.html": "3a67fde40a686a96e5c2629ceca3b9050ace94ddd5e5d2f5539e6ace0bacc455",
+  "products/auxtho/index.html": "f285b0ed28e57739d9b362870e6dde4c70eebc82ea8682ad7b06af17024b67fa",
+  "products/moirion/index.html": "b48cda81b05869811959256af8f33c4084f3229daef434378e76df8f0f9afddb",
+  "products/agent-runner/index.html": "131e8ba7683ab1e67fd19c6fb453dd6444f75d9620eed31117ca69050f05b25c",
+  "products/ardamire/index.html": "309dffa04a5f5cd20cfa1702cc97c03d54e068b9a279c96184b5df22285fa660",
   "whitecell/index.html": "cb6c0e7fe6d0b9275e1863fee85a9bd1e057290af81deda23f70dfa0ed8e21cd",
-  "products/metdol/index.html": "81472802511b5aff5767305f3edaef128de3444f35cafea897387709488371d9",
+  "products/metdol/index.html": "8d219cc1807f53cc3f41f8e60aa4190e1ba8dd429987db3e682cc366911655b0",
   'proof/workflow-overview/index.html': 'dcfa049757a7170df2862022fe20ae9f0969a60edfceca379197ff9d88084afc',
   'capabilities/ai-review-exception-queue/index.html': 'b304fb842a80f25fe414a9fbd5fd3926d3449ed51d7077c6f5936c634e5ce47e',
   'capabilities/ardamire-defense-layer/index.html': 'f8a4bae05f752f0360c94813548382d61111535a23bf2d37c801a08f39287122',
@@ -549,6 +566,12 @@ function assertCanonicalPublicTextBytes(sourceRoot, relative) {
 }
 
 function assertReviewedPublicBinaryBytes(sourceRoot, relative) {
+  if (relative.startsWith('assets/auxtho-workflow-20261026/') || relative.startsWith('assets/auxtho-insurance-preview/') || relative.startsWith('assets/auxtho-overview-20261026/')) {
+    const expected = REVIEWED_WORKFLOW_FILES_SHA256[relative];
+    if (!expected || sha256(fs.readFileSync(path.join(sourceRoot, relative))) !== expected) {
+      fail('homepage workflow asset differs from exact reviewed bytes: ' + relative);
+    }
+  }
   if (relative.startsWith('assets/publications-20261018/')) {
     const expected = REVIEWED_PUBLICATION_FILES_SHA256[relative];
     if (!expected || sha256(fs.readFileSync(path.join(sourceRoot, relative))) !== expected) {

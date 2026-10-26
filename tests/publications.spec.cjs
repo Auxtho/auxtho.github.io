@@ -95,7 +95,9 @@ test('Publications have English initial HTML, exact Korean template, canonical a
   assert.doesNotMatch(html,/portfolio-20261009\/app\.[a-f0-9]+\.js/);
   assert.equal(all(parsed,n=>n.tagName==='h1').length,1);
   const client=all(parsed,n=>n.tagName==='script')[0];
-  assert.equal(html,renderPage(p,attr(client,'src')),'deterministic output '+p.id);
+  const menuTags=html.match(/<(?:link|script)[^>]*\/menu\.[^>]*>(?:<\/script>)?/g)||[];
+  assert.equal(menuTags.length,2);
+  assert.equal(menuTags.reduce((text,tag)=>text.replace(tag+'\n',''),html),renderPage(p,attr(client,'src')),'deterministic output '+p.id);
  }
 });
 test('Customer non-publicity commitment is bilingual and part of the trust principle, not a claimed customer result',()=>{
