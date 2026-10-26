@@ -146,22 +146,44 @@ test('public pages render with packaged styles and images without CSP or same-or
       expect(proofLayout.logoHomePath).toBe('/');
       expect(proofLayout.proofStyleSheets).toHaveLength(1);
     }
-    const images = page.locator('img');
-    const imageCount = await images.count();
-    for (let index = 0; index < imageCount; index += 1) {
+    // Exercise the real disclosure UI before checking its populated images.
+    // A closed dialog is not a broken image and must not be scrolled blindly.
+    if (item.path === '/products/auxtho/') {
+      await page.locator('[data-av-family="insurance"]').click();
+      await page.locator('[data-ai-result-open]').click();
+      await expect(page.locator('.ai-window')).toBeVisible();
+    }
+    const images = page.locator('img:not(dialog.am-menu img)');
+    for (let index = 0; index < await images.count(); index += 1) {
       const image = images.nth(index);
-      const inactiveSampleLightboxPlaceholder = await image.evaluate((element) => {
-        const lightbox = element.closest('dialog#sample-lightbox');
-        const portfolioDialog = element.closest('dialog.image-dialog');
-        return (element.id === 'sample-lightbox-image' && Boolean(lightbox) && !lightbox.open)
-          || (Boolean(portfolioDialog) && !portfolioDialog.open && !element.hasAttribute('src'));
+      const inactivePlaceholder = await image.evaluate((element) => {
+        const sample = element.closest('dialog#sample-lightbox');
+        const portfolio = element.closest('dialog.image-dialog');
+        return (element.id === 'sample-lightbox-image' && sample && !sample.open)
+          || (portfolio && !portfolio.open && !element.hasAttribute('src'));
       });
-      if (inactiveSampleLightboxPlaceholder) continue;
+      if (inactivePlaceholder) continue;
+      const panelId = await image.evaluate(element => element.closest('.as-row-content,.as-defense-panel')?.id || null);
+      if (panelId) {
+        const toggle = page.locator(`[data-as-toggle][aria-controls="${panelId}"]`);
+        await toggle.focus();
+        await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      }
       await image.scrollIntoViewIfNeeded();
-      await expect.poll(
-        () => image.evaluate((element) => element.complete && element.naturalWidth > 0),
-        { message: `image did not load or decode: ${await image.getAttribute('src')}` },
-      ).toBe(true);
+      await expect.poll(() => image.evaluate(element => element.complete && element.naturalWidth > 0),
+        {message: `image did not load or decode: ${await image.getAttribute('src')}`}).toBe(true);
+    }
+    const menuTrigger = page.locator('.am-menu-trigger');
+    if (await menuTrigger.count()) {
+      await menuTrigger.click();
+      await expect(page.locator('dialog.am-menu')).toBeVisible();
+      for (const image of await page.locator('dialog.am-menu img').all()) {
+        await image.scrollIntoViewIfNeeded();
+        await expect.poll(() => image.evaluate(element => element.complete && element.naturalWidth > 0)).toBe(true);
+      }
+      await page.keyboard.press('Escape');
+      await expect(page.locator('dialog.am-menu')).not.toBeVisible();
+      await expect(menuTrigger).toBeFocused();
     }
     const imageStates = await page.locator('img').evaluateAll((images) => images.map((image) => {
       const lightbox = image.closest('dialog#sample-lightbox');
