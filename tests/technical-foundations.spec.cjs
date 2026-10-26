@@ -832,6 +832,84 @@ test('company portfolio and all five product pages are bilingual, indexable and 
     }
   }
 });
+
+test('full menu restores the same reading position on Back and clears it after explicit close', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion:'reduce' });
+  for(const width of [1440,390]) for(const lang of ['en','ko']) {
+    await page.setViewportSize({width,height:844});
+    await openWithoutRuntimeErrors(page,'/?lang='+lang+'#top');
+    await page.evaluate(()=>history.replaceState({unrelatedState:'keep'},''));
+    const historyLength=await page.evaluate(()=>history.length);
+    const trigger=page.locator('.am-menu-trigger'), menu=page.locator('dialog.am-menu');
+    await trigger.click();
+    await expect(menu).toBeVisible();
+    expect(await page.evaluate(()=>history.length)).toBe(historyLength);
+    const shortcut=page.locator('[data-am-reading]');
+    if(width>760) await expect(shortcut).toBeHidden();
+    else {
+      await expect(shortcut).toHaveText(lang==='ko'?'공개 개발 기록 보기':'View development records');
+      await shortcut.click();
+    }
+    const record=menu.locator('.am-card a').first();
+    await record.scrollIntoViewIfNeeded();
+    const before=await menu.evaluate(e=>e.scrollTop);
+    await record.click();
+    await expect(page).toHaveURL(new RegExp('/products/agent-runner/development-record-2026-10-18/\\?lang='+lang+'$'));
+    await expect(page.locator('dialog.am-menu')).not.toBeVisible();
+    await page.goBack();
+    await expect(menu).toBeVisible();
+    await expect(trigger).toHaveAttribute('aria-expanded','true');
+    await expect.poll(async()=>Math.abs(await menu.evaluate(e=>e.scrollTop)-before)).toBeLessThanOrEqual(2);
+    expect(await page.evaluate(()=>history.state.unrelatedState)).toBe('keep');
+    await expect(record).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(menu).not.toBeVisible();
+    await expect(trigger).toBeFocused();
+    await record.evaluate(e=>location.assign(e.href));
+    await expect(page).toHaveURL(/development-record-2026-10-18/);
+    await page.goBack();
+    await expect(trigger).toHaveAttribute('aria-expanded','false');
+    await expect(menu).not.toBeVisible();
+  }
+});
+
+test('menu contact actions close at the current hash and preserve section Back navigation', async ({ page }) => {
+  await page.emulateMedia({reducedMotion:'reduce'});
+  for(const width of [1440,390]) for(const lang of ['en','ko']) {
+    await page.setViewportSize({width,height:900});
+    await openWithoutRuntimeErrors(page,'/?lang='+lang+'#contact');
+    await page.evaluate(()=>history.replaceState({unrelatedState:'keep'},''));
+    const trigger=page.locator('.am-menu-trigger'),menu=page.locator('dialog.am-menu');
+    for(const selector of ['.am-nav-extra a[href="/?lang='+lang+'#contact"]','.am-head-actions .am-contact']) {
+      if(width<760&&selector.startsWith('.am-head-actions')) {
+        await expect(menu.locator(selector)).toBeHidden();
+        continue;
+      }
+      const historyLength=await page.evaluate(()=>history.length);
+      await trigger.click();
+      await expect(menu).toBeVisible();
+      await menu.locator(selector).click();
+      await expect(menu).not.toBeVisible();
+      await expect(trigger).toHaveAttribute('aria-expanded','false');
+      await expect(page.locator('#contact h2')).toBeInViewport();
+      expect(await page.evaluate(()=>history.length)).toBe(historyLength);
+      expect(await page.evaluate(()=>history.state.unrelatedState)).toBe('keep');
+    }
+    await page.goto('about:blank');
+    await openWithoutRuntimeErrors(page,'/?lang='+lang+'#top');
+    await trigger.click();
+    const contact=menu.locator('.am-nav-extra a[href="/?lang='+lang+'#contact"]');
+    await contact.click();
+    await expect(page).toHaveURL(new RegExp('/\\?lang='+lang+'#contact$'));
+    await expect(menu).not.toBeVisible();
+    await expect(page.locator('#contact h2')).toBeInViewport();
+    await page.goBack();
+    await expect(menu).toBeVisible();
+    await expect(menu.locator('a[href="/?lang='+lang+'#contact"]:visible').first()).toBeFocused();
+    await page.keyboard.press('Escape');
+  }
+});
+
 test('company product catalogue, Moirion captures and bounded product claims stay connected', async ({ page }) => {
   await page.setViewportSize({width:1440,height:900});
   await openWithoutRuntimeErrors(page,'/?lang=en#software');

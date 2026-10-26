@@ -956,7 +956,7 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
   }
   const homeSources=findScriptSources(fs.readFileSync(path.join(root,'index.html'),'utf8'));
   const detailSources=findScriptSources(fs.readFileSync(path.join(root,'products/auxtho/index.html'),'utf8'));
-  assert.ok(homeSources.includes('/assets/auxtho-overview-20261026/home.389612c20ea98d94a518d428285f953c2273c52ca1df67265b137230e96e8709.js'));
+  assert.ok(homeSources.includes('/assets/auxtho-overview-20261026/home.0f518c9606ecd25ebbf062f1caf48e03862182b56b40b4a0944d9fb7ae8d291c.js'));
   assert.ok(!homeSources.includes('/assets/auxtho-workflow-20261026/flow.6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03.js'), 'Full walkthrough belongs to the product detail');
   assert.ok(detailSources.includes('/assets/auxtho-workflow-20261026/flow.6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03.js'));
   assert.ok(!homeSources.includes('/assets/auxtho-workflow-20261026/long-term.9231ce1a38ae212b614d8e637c547add4da12fb6a672537106a2a696ff2a465d.js'), 'Full walkthrough belongs to the product detail');

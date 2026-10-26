@@ -5,3 +5,9 @@
 @media(prefers-reduced-motion:reduce){.am-menu[open] .am-primary-list li{animation:none;opacity:1;transform:none}.am-primary-list a>span{transition:none}}
 
 .am-reading{scroll-margin-top:110px}.am-primary-list a{position:relative;padding-right:24px}.am-primary-list a>span{position:absolute;right:0;top:.6em;margin-left:0}
+
+/* Vector arrows stay monochrome on Apple and do not depend on emoji fonts. */
+.am-arrow{display:inline-block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.35;stroke-linecap:square;stroke-linejoin:miter;vertical-align:-2px;margin-left:4px;flex-shrink:0}.am-primary-list a>span .am-arrow{margin-left:0}.am-menu .am-reading-arrow{transform:none}@media(max-width:760px){.am-menu .am-reading-arrow{transform:rotate(90deg)}}
+
+/* The reading shortcut is useful only when the cards are below the product list. */
+.am-nav-extra [data-am-reading]{display:none}@media(max-width:760px){.am-nav-extra [data-am-reading]{display:inline-block}}
