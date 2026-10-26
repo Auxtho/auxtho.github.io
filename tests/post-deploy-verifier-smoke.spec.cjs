@@ -383,6 +383,15 @@ test('published WhiteCell preserves bilingual roles, human oversight, controls a
       await expect(introduction).toHaveAttribute('href', `/whitecell/?lang=${lang}`);
       await expect(introduction).toBeVisible();
       await introduction.scrollIntoViewIfNeeded();
+      // Scrolling to the introduction can start additional lazy image requests.
+      // Verify every rendered image before this test navigates away; keep real failures fatal.
+      for (const image of await page.locator('img[src]:visible').all()) {
+        await image.scrollIntoViewIfNeeded();
+        await expect.poll(() => image.evaluate(node => node.complete && node.naturalWidth > 0)).toBe(true);
+        await image.evaluate(node => node.decode());
+      }
+      await page.waitForLoadState('networkidle');
+      await introduction.scrollIntoViewIfNeeded();
       const introductionShot = `whitecell-${lang}-ardamire-introduction.png`;
       await page.screenshot({ path: path.join(evidenceDirectory, introductionShot), fullPage: false });
       result.screenshots.push(introductionShot);
