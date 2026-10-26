@@ -895,6 +895,7 @@ test('menu contact actions close at the current hash and preserve section Back n
       expect(await page.evaluate(()=>history.length)).toBe(historyLength);
       expect(await page.evaluate(()=>history.state.unrelatedState)).toBe('keep');
     }
+    await page.goto('about:blank');
     await openWithoutRuntimeErrors(page,'/?lang='+lang+'#top');
     await trigger.click();
     const contact=menu.locator('.am-nav-extra a[href="/?lang='+lang+'#contact"]');
@@ -904,7 +905,7 @@ test('menu contact actions close at the current hash and preserve section Back n
     await expect(page.locator('#contact h2')).toBeInViewport();
     await page.goBack();
     await expect(menu).toBeVisible();
-    await expect(contact).toBeFocused();
+    await expect(menu.locator('a[href="/?lang='+lang+'#contact"]:visible').first()).toBeFocused();
     await page.keyboard.press('Escape');
   }
 });

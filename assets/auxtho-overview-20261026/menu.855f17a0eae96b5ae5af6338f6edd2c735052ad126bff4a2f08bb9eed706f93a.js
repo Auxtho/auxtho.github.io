@@ -33,7 +33,7 @@
     document.body.classList.add('am-menu-open');trigger.setAttribute('aria-expanded','true');
     if(!returnState)rememberMenu(true);
     requestAnimationFrame(()=>{
-      const previous=returnState&&[...dialog.querySelectorAll('a[href]')].find(a=>a.getAttribute('href')===returnState.returnHref);
+      const previous=returnState&&[...dialog.querySelectorAll('a[href]')].find(a=>a.getAttribute('href')===returnState.returnHref&&a.getClientRects().length);
       (previous||dialog.querySelector('.am-primary-list a')).focus({preventScroll:true});
       dialog.scrollTop=returnState?returnState.menuScrollTop:0;
       if(returnState)window.scrollTo({top:savedScrollY,behavior:'instant'});
