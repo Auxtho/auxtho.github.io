@@ -147,7 +147,7 @@ test('Ardamire introduction link survives rendering and language changes without
 });
 
 test('WhiteCell restores original typography while preserving the prior hero visibility fix',()=>{
-  assert.equal(hash(Buffer.from(css)),'a5e996f7aa4c66922574cc65cd39488473cf6f93faf124b433de5f8dfe5e8073');
+  assert.equal(hash(Buffer.from(css)),'ebc37b418648a1eb59ed0f0431ccf4819e5dc3166b497abe7a9b1f7ffe1fc363');
   assert.doesNotMatch(css,/Accessible reading scale:|Reading scale:/);
   assert.ok(css.includes('z-index:6;bottom:34px'));
   assert.doesNotMatch(html,/user-scalable\s*=\s*no|maximum-scale\s*=\s*1/);

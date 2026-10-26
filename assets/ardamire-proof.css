@@ -3,7 +3,7 @@
 .proof-preview-note{padding:9px 20px;text-align:center;background:#15202d;color:#d4e4f7;font:500 12px/1.5 system-ui;letter-spacing:.06em}
 .proof-skip{position:absolute;left:16px;top:-80px;padding:12px;background:white;color:black;z-index:50}
 .proof-skip:focus{top:8px}
-.proof-hero .technical-detail-title{font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:-.035em;max-width:860px}
+.proof-hero .technical-detail-title{font-size:clamp(36px,5vw,64px);line-height:1.06;letter-spacing:.01em;max-width:860px}
 .proof-hero-detail{font-size:18px;line-height:1.7;max-width:780px;color:#bdc7d1;margin-top:22px}
 .proof-actions{display:flex;flex-wrap:wrap;gap:12px;margin:30px 0 20px}
 .proof-button{display:inline-flex;gap:18px;align-items:center;justify-content:space-between;border:1px solid #394552;padding:14px 18px;border-radius:7px;font-size:14px;font-weight:600;color:#e9eef4;text-decoration:none}
@@ -51,7 +51,7 @@
 .proof-review{margin-top:26px;background:#101820;border:1px solid #32404d;border-radius:8px;padding:25px}
 .proof-review .technical-detail-label{margin:0}
 .proof-test{border-top:2px solid #718ca9;padding:22px 0 6px}
-.proof-test>strong{display:block;font-size:46px;font-weight:700;line-height:1.1;letter-spacing:-.035em;color:#f1f6ff}
+.proof-test>strong{display:block;font-size:46px;font-weight:700;line-height:1.1;letter-spacing:.01em;color:#f1f6ff}
 .proof-test p{min-height:54px}
 .proof-pass{display:inline-block;margin-top:14px;color:#b7e1cb;font-size:13px}
 .proof-positive-control{padding:22px 26px;background:#101d18;border-left:3px solid #87c5a7;margin:30px 0 24px;border-radius:0 7px 7px 0}

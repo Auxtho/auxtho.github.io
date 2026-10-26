@@ -36,7 +36,7 @@ main > section + section {
 .hero-title {
   font-size: clamp(2.2rem, 5.6vw, 4.5rem) !important;
   line-height: 1.18 !important;
-  letter-spacing: -0.04em !important;
+  letter-spacing:.01em !important;
   margin-top: 0.75rem !important;
 }
 
@@ -83,7 +83,7 @@ main > section + section {
 
 #problem h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing:.01em !important;
 }
 
 /* (1) More space between problem subtitle and cards */
@@ -146,7 +146,7 @@ main > section + section {
 
 #solution h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing:.01em !important;
 }
 
 #solution > div > .text-center > p {
@@ -181,7 +181,7 @@ main > section + section {
 
 #overview h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing:.01em !important;
 }
 
 #overview h2 + p {
@@ -291,7 +291,7 @@ main > section + section {
 
 #verify h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing:.01em !important;
 }
 
 #verify h2 + p {
@@ -456,7 +456,7 @@ main > section + section {
 
 #contact h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing:.01em !important;
 }
 
 /* ?? Section heading kicker uniformity ?? */
@@ -685,7 +685,7 @@ footer > div {
 
 .story-cards .bg-gray-900\/50 h2 {
   font-size: 2rem !important;
-  letter-spacing: -0.03em;
+  letter-spacing:.01em;
 }
 
 .story-cards .bg-gray-900\/50 p {
@@ -871,7 +871,7 @@ footer > div {
 
 #whats-new h2 {
   font-size: clamp(1.9rem, 4vw, 2.8rem) !important;
-  letter-spacing: -0.03em !important;
+  letter-spacing:.01em !important;
 }
 
 #whats-new .control-grid {
@@ -972,7 +972,7 @@ footer > div {
   .hero-title {
     font-size: clamp(1.9rem, 8.6vw, 2.7rem) !important;
     line-height: 1.14 !important;
-    letter-spacing: -0.03em !important;
+    letter-spacing:.01em !important;
   }
 }
 

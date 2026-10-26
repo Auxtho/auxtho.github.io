@@ -46,7 +46,7 @@ h4,
 h5,
 h6 {
   color: #fff;
-  letter-spacing: -0.02em;
+  letter-spacing:.01em;
 }
 
 p,
@@ -369,7 +369,7 @@ a:hover {
   margin: 0 auto;
   font-size: clamp(2rem, 5.2vw, 4rem);
   line-height: 1.08;
-  letter-spacing: -0.035em;
+  letter-spacing:.01em;
 }
 
 .hero-copy {

@@ -28,13 +28,13 @@
       "path": "/proof/release-core/index.html",
       "media_type": "text/html",
       "bytes": 11022,
-      "sha256": "6c7ed73b4f1d5393a824f10bd7f2e72fde3646a579beb7385f41fc77bcd47127"
+      "sha256": "71e17d87654ae1679011a64f58324b1c7dcb6bbc0fa4feddb45a115464ecb070"
     },
     {
       "path": "/proof/release-core/transcript/index.html",
       "media_type": "text/html",
       "bytes": 9836,
-      "sha256": "8213535051e8273102be43f4872af6b255d3df7d8635914e2c8c395c415fa0df"
+      "sha256": "0ae990de1ea22dde80e4cc7a9588659667bccf55c99e3a397efecff986692d96"
     },
     {
       "path": "/assets/proof-release-core.css",
