@@ -939,7 +939,7 @@ test('bootstrap rollback packages the actual approved legacy tree without invent
 
 test('every HTML script reference is query-free and bound to exact SHA-256 bytes', () => {
   const htmlFiles = [
-    '404.html', 'index.html', 'privacy.html', 'terms.html',
+    '404.html', 'index.html', 'products/auxtho/index.html', 'privacy.html', 'terms.html',
     'story.html', 'lineage/isp/index.html', 'security/ardamire/index.html',
     ...CAPABILITY_HTML_FILES,
   ];
@@ -954,12 +954,23 @@ test('every HTML script reference is query-free and bound to exact SHA-256 bytes
       referenced.add(source);
     }
   }
-  assert.equal(referenced.size, 5);
+  const homeSources=findScriptSources(fs.readFileSync(path.join(root,'index.html'),'utf8'));
+  const detailSources=findScriptSources(fs.readFileSync(path.join(root,'products/auxtho/index.html'),'utf8'));
+  assert.ok(homeSources.includes('/assets/auxtho-overview-20261026/home.389612c20ea98d94a518d428285f953c2273c52ca1df67265b137230e96e8709.js'));
+  assert.ok(!homeSources.includes('/assets/auxtho-workflow-20261026/flow.6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03.js'), 'Full walkthrough belongs to the product detail');
+  assert.ok(detailSources.includes('/assets/auxtho-workflow-20261026/flow.6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03.js'));
+  assert.ok(!homeSources.includes('/assets/auxtho-workflow-20261026/long-term.9231ce1a38ae212b614d8e637c547add4da12fb6a672537106a2a696ff2a465d.js'), 'Full walkthrough belongs to the product detail');
+  assert.ok(detailSources.includes('/assets/auxtho-workflow-20261026/long-term.9231ce1a38ae212b614d8e637c547add4da12fb6a672537106a2a696ff2a465d.js'));
+  assert.equal(referenced.size, 9);
+  assert.ok(homeSources.some(s=>/\/auxtho-overview-20261026\/menu\.[a-f0-9]{64}\.js$/.test(s)), "Shared full menu must be present");
+  assert.ok(referenced.has('/assets/auxtho-workflow-20261026/flow.6ef6c8fa038d961aebc432aba81653013ac73d4eb7c709e5f29eac983183ce03.js'), 'Reviewed product workflow script must be present');
+  assert.ok(referenced.has('/assets/auxtho-workflow-20261026/long-term.9231ce1a38ae212b614d8e637c547add4da12fb6a672537106a2a696ff2a465d.js'), 'Reviewed product workflow script must be present');
+
 });
 
 test('every candidate stylesheet URL carries the exact SHA-256 of its bytes', () => {
   const htmlFiles = [
-    '404.html', 'index.html', 'privacy.html', 'story.html', 'terms.html',
+    '404.html', 'index.html', 'products/auxtho/index.html', 'privacy.html', 'story.html', 'terms.html',
     'lineage/isp/index.html', 'security/ardamire/index.html',
     ...CAPABILITY_HTML_FILES,
   ];

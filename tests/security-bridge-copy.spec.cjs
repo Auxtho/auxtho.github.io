@@ -62,7 +62,10 @@ test('All six indexable pages match the final runtime main, footer and navigatio
   const html=fs.readFileSync(path.join(root,route.slice(1)+'index.html'),'utf8');
   const output=render(route,'en');
   const {publicationLinks,decorateMain,decorateFooter}=require('../src/publication-links.js');
-  const expectedMain=decorateMain(output.main,route,'en').replace('<section class="contact-section"',publicationLinks(route,'en')+'<section class="contact-section"');
+  const {composeHome,detailAnchors}=require('../scripts/release/home-overview-render.cjs');
+  let expectedMain=decorateMain(output.main,route,'en').replace('<section class="contact-section"',publicationLinks(route,'en')+'<section class="contact-section"');
+  if(route==='/')expectedMain=composeHome(expectedMain,'en');
+  if(route==='/products/auxtho/')expectedMain=detailAnchors(expectedMain);
   assert.ok(html.includes(expectedMain),route+':main');
   assert.ok(html.includes(decorateFooter(output.footer,'en')),route+':footer');
   assert.equal(html.split(output.nav).length-1,2,route+':desktop and mobile nav');
